@@ -1,7 +1,7 @@
 # Vue-Components
 在HTML5/CSS3/ECMAScript5的基础上, 基于Vue2的web UI工具套件
 
-[DEMO](https://xparlyn.github.io/vue-component/examples/index.html)
+[DEMO](https://xparlyn.github.io/Vue-Components/examples/index.html)
 # Inspired or Powered
 * [Vue](https://github.com/vuejs/vue)
 * [vuex](https://github.com/vuejs/vuex)
