@@ -13,6 +13,7 @@
 * [Sortable](https://github.com/RubaXa/Sortable)
 * [Vue.Draggable](https://github.com/SortableJS/Vue.Draggable)
 * [vue-virtual-scroll-list](https://github.com/tangbc/vue-virtual-scroll-list)
-* [Cleave.js](http://nosir.github.io/cleave.js/)
+* [Cleave.js](https://github.com/nosir/cleave.js)
+* [RequireJS](https://github.com/requirejs/requirejs)
 # License
 [MIT](https://opensource.org/licenses/MIT)
