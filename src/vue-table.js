@@ -1052,11 +1052,10 @@
 				var newRow = rows[data.indexOf(storeData[newVal])];
 				if (oldRow) {
 					oldRow.classList.remove('hover-row');
-				} else if (rows) {
-					[].forEach.call(rows, function(row) {
-						row.classList.remove('hover-row')
-					});
 				}
+				[].forEach.call(rows, function(row) {
+					row.classList.remove('hover-row')
+				});
 				if (newRow) {
 					newRow.classList.add('hover-row');
 				}
@@ -1082,11 +1081,10 @@
 				var newRow = rows[data.indexOf(newVal)];
 				if (oldRow) {
 					oldRow.classList.remove('current-row');
-				} else if (rows) {
-					[].forEach.call(rows, function(row) {
-						row.classList.remove('current-row')
-					});
 				}
+				[].forEach.call(rows, function(row) {
+					row.classList.remove('current-row')
+				});
 				if (newRow) {
 					newRow.classList.add('current-row');
 				}
@@ -1140,21 +1138,21 @@
 				delta.start = start;
 				this.$forceUpdate();
 			},
-			updateCurrentRowClass: function() {
+			updateHoverCurrentClass: function() {
 				var self = this;
-				if (!self.highlight)
-					return;
 				var el = self.$el;
-				if (!el)
-					return;
+				if (!el) return;
 				var data = self.data.filter(function(data, index) {
 					return index >= self.$options.delta.start && index <= self.$options.delta.end;
 				});
 				var rows = el.querySelectorAll('tbody > tr');
-				var newRow = rows[data.indexOf(self.store.states.currentRow)];
+				var currentRow;
+				if (self.highlight)
+					currentRow = rows[data.indexOf(self.store.states.currentRow)];
 				[].forEach.call(rows, function(row) {
 					row.classList.remove('current-row');
-					if (newRow && row === newRow) {
+					row.classList.remove('hover-row')
+					if (currentRow && row === currentRow) {
 						row.classList.add('current-row');
 					}
 				});
@@ -1842,7 +1840,7 @@
 						self.$children.forEach(function(child) {
 							if (child.updateZone && child.$options.delta.keeps !== 0) {
 								child.updateZone(scrollTop);
-								child.updateCurrentRowClass();
+								child.updateHoverCurrentClass();
 							}
 						});
 						if (refs.fixedBodyWrapper)
@@ -1875,7 +1873,7 @@
 				this.$children.forEach(function(child) {
 					if (child.updateZone && child.$options.delta.keeps !== 0) {
 						child.updateZone(scrollTop);
-						child.updateCurrentRowClass();
+						child.updateHoverCurrentClass();
 					}
 				});
 			},
