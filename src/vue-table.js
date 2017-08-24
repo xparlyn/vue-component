@@ -1032,16 +1032,30 @@
 		},
 		watch: {
 			'store.states.hoverRow': function(newVal, oldVal) {
-				if (!this.store.states.isComplex)
+				var self = this;
+				if (!self.store.states.isComplex)
 					return;
-				var el = this.$el;
+				var el = self.$el;
 				if (!el)
 					return;
+				var data;
+				var storeData = self.store.states.data;
+				if (self.$options.delta.keeps !== 0) {
+					data = storeData.filter(function(data, index) {
+						return index >= self.$options.delta.start && index <= self.$options.delta.end;
+					});
+				} else {
+					data = storeData;
+				}
 				var rows = el.querySelectorAll('tbody > tr');
-				var oldRow = rows[oldVal];
-				var newRow = rows[newVal];
+				var oldRow = rows[data.indexOf(storeData[oldVal])];
+				var newRow = rows[data.indexOf(storeData[newVal])];
 				if (oldRow) {
 					oldRow.classList.remove('hover-row');
+				} else if (rows) {
+					[].forEach.call(rows, function(row) {
+						row.classList.remove('hover-row')
+					});
 				}
 				if (newRow) {
 					newRow.classList.add('hover-row');
@@ -1054,11 +1068,14 @@
 				var el = self.$el;
 				if (!el)
 					return;
-				var data = self.store.states.data;
+				var data;
+				var storeData = self.store.states.data;
 				if (self.$options.delta.keeps !== 0) {
-					data = self.store.states.data.filter(function(data, index) {
+					data = storeData.filter(function(data, index) {
 						return index >= self.$options.delta.start && index <= self.$options.delta.end;
 					});
+				} else {
+					data = storeData;
 				}
 				var rows = el.querySelectorAll('tbody > tr');
 				var oldRow = rows[data.indexOf(oldVal)];
