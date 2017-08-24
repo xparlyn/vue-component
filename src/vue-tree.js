@@ -683,9 +683,13 @@
 	};
 	TreeStore.prototype.setCurrentNodeKey = function(key) {
 		var self = this;
-		var node = self.getNode(key);
-		if (node) {
-			self.currentNode = node;
+		if (!key) {
+			self.currentNode = null;
+		} else {
+			var node = self.getNode(key);
+			if (node) {
+				self.currentNode = node;
+			}
 		}
 	};
 	var VueTreeNode = {
@@ -925,6 +929,27 @@
 					return node.data[nodeKey];
 				}
 				return index;
+			},
+			getCurrentNode: function() {
+				var currentNode = this.store.getCurrentNode();
+				return currentNode ? currentNode.data : null;
+			},
+			getCurrentKey: function() {
+				if (!this.nodeKey) return null;
+				var currentNode = this.store.getCurrentNode();
+				return currentNode ? currentNode.data[this.nodeKey] : null;
+			},
+			setCurrentNode: function(node) {
+				if (!this.nodeKey)
+					throw new Error('[Tree] nodeKey is required in setCheckedNodes');
+				if (!node) return this.store.setCurrentNodeKey(null);
+				var key = node[this.nodeKey];
+				return this.store.setCurrentNodeKey(key);
+			},
+			setCurrentKey: function(key) {
+				if (!this.nodeKey)
+					throw new Error('[Tree] nodeKey is required in setCheckedNodes');
+				return this.store.setCurrentNodeKey(key);
 			},
 			getCheckedNodes: function(leafOnly) {
 				return this.store.getCheckedNodes(leafOnly);

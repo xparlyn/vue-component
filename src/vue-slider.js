@@ -112,10 +112,10 @@
 					var diff = 0;
 					if (this.vertical) {
 						this.currentY = event.clientY;
-						diff = (this.startY - this.currentY) / this.$parent.$sliderSize * 100;
+						diff = (this.startY - this.currentY) / this.$parent.sliderSize * 100;
 					} else {
 						this.currentX = event.clientX;
-						diff = (this.currentX - this.startX) / this.$parent.$sliderSize * 100;
+						diff = (this.currentX - this.startX) / this.$parent.sliderSize * 100;
 					}
 					this.newPosition = this.startPosition + diff;
 					this.setPosition(this.newPosition);
@@ -135,6 +135,7 @@
 				}
 			},
 			setPosition: function(newPosition) {
+				if (newPosition === null) return;
 				if (newPosition < 0) {
 					newPosition = 0;
 				} else if (newPosition > 100) {
@@ -307,17 +308,19 @@
 				if (this.disabled || this.dragging) return;
 				if (this.vertical) {
 					var sliderOffsetBottom = this.$refs.slider.getBoundingClientRect().bottom;
-					this.setPosition((sliderOffsetBottom - event.clientY) / this.$sliderSize * 100);
+					this.setPosition((sliderOffsetBottom - event.clientY) / this.sliderSize * 100);
 				} else {
 					var sliderOffsetLeft = this.$refs.slider.getBoundingClientRect().left;
-					this.setPosition((event.clientX - sliderOffsetLeft) / this.$sliderSize * 100);
+					this.setPosition((event.clientX - sliderOffsetLeft) / this.sliderSize * 100);
+				}
+			},
+			resetSize: function() {
+				if (this.$refs.slider) {
+					this.sliderSize = this.$refs.slider['client' + (this.vertical ? 'Height' : 'Width')];
 				}
 			}
 		},
 		computed: {
-			$sliderSize: function() {
-				return parseInt(VueUtil.getStyle(this.$refs.slider, (this.vertical ? 'height' : 'width')), 10);
-			},
 			stops: function() {
 				var self = this;
 				var stopCount = (self.max - self.min) / self.step;
@@ -379,6 +382,11 @@
 				}
 				this.oldValue = this.firstValue;
 			}
+			this.resetSize();
+			window.addEventListener('resize', this.resetSize);
+		},
+		beforeDestroy: function() {
+			window.removeEventListener('resize', this.resetSize);
 		}
 	};
 	Vue.component(VueSlider.name, VueSlider);

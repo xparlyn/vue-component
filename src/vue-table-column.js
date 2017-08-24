@@ -284,10 +284,10 @@
 			VueUtil.merge(column, forced[type] || {});
 			this.columnConfig = column;
 			var renderCell = column.renderCell;
-			var _self = this;
+			var self = this;
 			if (type === 'expand') {
 				owner.renderExpanded = function(createElement, data) {
-					return _self.$scopedSlots.default ? _self.$scopedSlots.default(data) : _self.$slots.default;
+					return self.$scopedSlots.default ? self.$scopedSlots.default(data) : self.$slots.default;
 				}
 				column.renderCell = function(createElement, data) {
 					return createElement('div', {
@@ -297,29 +297,29 @@
 				return;
 			}
 			column.renderCell = function(createElement, data) {
-				if (_self.$vnode.data.inlineTemplate) {
+				if (self.$vnode.data.inlineTemplate) {
 					renderCell = function() {
-						data._self = _self.context || data._self;
-						if (Object.prototype.toString.call(data._self) === '[object Object]') {
-							for (var prop in data._self) {
+						data.self = self.context || data.self;
+						if (Object.prototype.toString.call(data.self) === '[object Object]') {
+							for (var prop in data.self) {
 								if (!data.hasOwnProperty(prop)) {
-									data[prop] = data._self[prop];
+									data[prop] = data.self[prop];
 								}
 							}
 						}
-						data._staticTrees = _self._staticTrees;
-						data.$options.staticRenderFns = _self.$options.staticRenderFns;
-						return _self.customRender.call(data);
+						data._staticTrees = self._staticTrees;
+						data.$options.staticRenderFns = self.$options.staticRenderFns;
+						return self.customRender.call(data);
 					}
-				} else if (_self.$scopedSlots.default) {
+				} else if (self.$scopedSlots.default) {
 					renderCell = function() {
-						return _self.$scopedSlots.default(data);
+						return self.$scopedSlots.default(data);
 					}
 				}
 				if (!renderCell) {
 					renderCell = DEFAULT_RENDER_CELL;
 				}
-				return _self.showOverflowTooltip || _self.showTooltipWhenOverflow ? createElement('div',
+				return self.showOverflowTooltip || self.showTooltipWhenOverflow ? createElement('div',
 				{ 'class': 'cell vue-tooltip', style: 'width:' + (data.column.realWidth || data.column.width) + 'px' },
 				[renderCell(createElement, data)]) : createElement('div', {
 					class: 'cell'

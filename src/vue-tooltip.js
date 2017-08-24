@@ -21,10 +21,7 @@
 				default: 0
 			},
 			disabled: Boolean,
-			effect: {
-				type: String,
-				default: 'dark'
-			},
+			effect: String,
 			popperClass: String,
 			content: String,
 			visibleArrow: {
@@ -63,6 +60,7 @@
 		},
 		render: function(createElement) {
 			var self = this;
+			var effect = self.effect === 'light' ? 'light' : 'dark';
 			if (self.popperVM) {
 				self.popperVM.node = createElement('transition', {
 					attrs: {
@@ -86,7 +84,7 @@
 						name: 'show',
 						value: !self.disabled && self.showPopper
 					}],
-					class: ['vue-tooltip__popper', 'is-' + self.effect, self.popperClass]
+					class: ['vue-tooltip__popper', 'is-' + effect, self.popperClass]
 				}, [self.$slots.content || self.content])]);
 			}
 			if (!self.$slots.default || !self.$slots.default.length)
