@@ -9,7 +9,7 @@
 })('VuePopover', this, function(Vue, VueUtil, VuePopper) {
 	'use strict';
 	var VuePopover = {
-		template: '<span><transition :name="transition" @after-leave="doDestroy"><div class="vue-popover" :class="[popperClass]" ref="popper" v-show="!disabled && showPopper" :style="{ width: width + \'px\' }"><div class="vue-popover__title" v-if="title" v-text="title"></div><slot>{{ content }}</slot></div></transition><slot name="reference"></slot></span>',
+		template: '<span><transition :name="transition" @after-leave="doDestroy"><div class="vue-popover" :class="[popperClass, {\'no-arrow\': !visibleArrow}]" ref="popper" v-show="!disabled && showPopper" :style="{ width: popoverWidth + \'px\' }"><div class="vue-popover__title" v-if="title" v-text="title"></div><slot>{{ content }}</slot></div></transition><slot name="reference"></slot></span>',
 		name: 'VuePopover',
 		mixins: [VuePopper()],
 		props: {
@@ -29,13 +29,18 @@
 			content: String,
 			reference: {},
 			popperClass: String,
-			width: {},
+			width: [String, Number],
 			visibleArrow: {
 				default: true
 			},
 			transition: {
 				type: String,
 				default: 'fade-in-linear'
+			}
+		},
+		data: function() {
+			return {
+				popoverWidth: null
 			}
 		},
 		watch: {
@@ -49,6 +54,10 @@
 			var popper = self.popper || self.$refs.popper;
 			if (!reference && self.$slots.reference && self.$slots.reference[0]) {
 				reference = self.referenceElm = self.$slots.reference[0].elm;
+			}
+			self.popoverWidth = self.width
+			if (!self.popoverWidth) {
+				self.popoverWidth = parseInt(VueUtil.getStyle(reference, 'width'));
 			}
 			if (self.trigger === 'click') {
 				VueUtil.on(reference, 'click', self.doToggle);

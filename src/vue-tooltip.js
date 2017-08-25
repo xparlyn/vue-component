@@ -41,7 +41,7 @@
 			},
 			enterable: {
 				type: Boolean,
-				default: true
+				default: false
 			}
 		},
 		beforeCreate: function() {
