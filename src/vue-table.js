@@ -142,8 +142,7 @@
 		var order = (reverse && reverse < 0) ? -1 : 1;
 		return array.slice().sort(sortMethod ? function(a, b) {
 			return sortMethod(a, b) ? order : -order;
-		}
-		: function(a, b) {
+		} : function(a, b) {
 			if (sortKey !== '$key') {
 				if (isObject(a) && '$value'in a)
 					a = a.$value;
@@ -153,8 +152,7 @@
 			a = isObject(a) ? getValueByPath(a, sortKey) : a;
 			b = isObject(b) ? getValueByPath(b, sortKey) : b;
 			return a === b ? 0 : a > b ? order : -order;
-		}
-		);
+		});
 	};
 	var getColumnById = function(table, columnId) {
 		var column = null;
@@ -1503,6 +1501,7 @@
 				if (self.draggingColumn && self.border) {
 					self.dragging = true;
 					self.$parent.resizeProxyVisible = true;
+					var table = self.$parent;
 					var tableEl = self.$parent.$el;
 					var tableLeft = tableEl.getBoundingClientRect().left;
 					var columnEl = self.$el.querySelector('th.' + column.id);
@@ -1531,8 +1530,11 @@
 					var handleMouseUp = function() {
 						if (self.dragging) {
 							var finalLeft = parseInt(resizeProxy.style.left, 10);
-							var columnWidth = finalLeft - self.dragState.startColumnLeft;
+							var startLeft = self.dragState.startLeft;
+							var startColumnLeft = self.dragState.startColumnLeft;
+							var columnWidth = finalLeft - startColumnLeft;
 							column.width = column.realWidth = columnWidth;
+							table.$emit('header-dragend', column.width, startLeft - startColumnLeft, column, event);
 							self.store.scheduleLayout();
 							document.body.style.cursor = '';
 							self.dragging = false;

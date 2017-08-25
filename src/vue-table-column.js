@@ -135,13 +135,11 @@
 		var row = data.row;
 		var column = data.column;
 		var property = column.property;
+		var value = property && property.indexOf('.') === -1 ? row[property] : getValueByPath(row, property);
 		if (column && column.formatter) {
-			return column.formatter(row, column);
+			return column.formatter(row, column, value);
 		}
-		if (property && property.indexOf('.') === -1) {
-			return row[property];
-		}
-		return getValueByPath(row, property);
+		return value;
 	};
 	var VueTableColumn = {
 		name: 'VueTableColumn',
@@ -269,7 +267,7 @@
 				filterMultiple: this.filterMultiple,
 				filterOpened: false,
 				filteredValue: this.filteredValue || [],
-				filterPlacement: this.filterPlacement || '',
+				filterPlacement: this.filterPlacement || 'bottom',
 				getCellClass: function(rowIndex, cellIndex, rowData) {
 					var classes = [];
 					var className = this.className;
