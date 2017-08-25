@@ -45,7 +45,16 @@
 		},
 		watch: {
 			showPopper: function(newVal, oldVal) {
-				newVal ? this.$emit('show') : this.$emit('hide');
+				if (newVal) {
+					this.popoverWidth = this.width;
+					if (!this.popoverWidth) {
+						var reference = this.reference || this.$refs.reference;
+						this.popoverWidth = parseInt(VueUtil.getStyle(reference, 'width'));
+					}
+					this.$emit('show');
+				} else {
+					this.$emit('hide');
+				}
 			}
 		},
 		mounted: function() {
@@ -54,10 +63,6 @@
 			var popper = self.popper || self.$refs.popper;
 			if (!reference && self.$slots.reference && self.$slots.reference[0]) {
 				reference = self.referenceElm = self.$slots.reference[0].elm;
-			}
-			self.popoverWidth = self.width
-			if (!self.popoverWidth) {
-				self.popoverWidth = parseInt(VueUtil.getStyle(reference, 'width'));
 			}
 			if (self.trigger === 'click') {
 				VueUtil.on(reference, 'click', self.doToggle);
