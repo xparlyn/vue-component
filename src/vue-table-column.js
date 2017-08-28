@@ -175,9 +175,9 @@
 			formatter: Function,
 			selectable: Function,
 			reserveSelection: Boolean,
-			isHidden: {
+			visible: {
 				type: Boolean,
-				default: false
+				default: true
 			},
 			filterMethod: Function,
 			filteredValue: Array,
@@ -248,8 +248,8 @@
 				renderHeader: this.renderHeader,
 				minWidth: minWidth,
 				width: width,
+				visible: this.visible,
 				isColumnGroup: isColumnGroup,
-				isHidden: this.isHidden ? 'is-hidden-column' : null,
 				context: this.context,
 				align: this.align ? 'is-' + this.align : null,
 				headerAlign: this.headerAlign ? 'is-' + this.headerAlign : 'is-center',
@@ -389,6 +389,12 @@
 			sortable: function(newVal) {
 				if (this.columnConfig) {
 					this.columnConfig.sortable = newVal;
+				}
+			},
+			visible: function(newVal) {
+				if (this.columnConfig) {
+					this.columnConfig.visible = newVal;
+					this.owner.store.scheduleLayout();
 				}
 			}
 		},

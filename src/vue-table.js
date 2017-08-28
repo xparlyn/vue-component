@@ -468,6 +468,9 @@
 	TableStore.prototype.updateColumns = function() {
 		var states = this.states;
 		var _columns = states._columns || [];
+		_columns = _columns.filter(function(column) {
+			return column.visible
+		});
 		states.fixedColumns = _columns.filter(function(column) {
 			return column.fixed === true || column.fixed === 'left'
 		});
@@ -754,17 +757,13 @@
 			} else {
 				this.scrollX = true;
 				flexColumns.forEach(function(column) {
-					column.realWidth = column.minWidth;
+					column.realWidth = column.minWidth || 80;
 				});
 			}
 			this.bodyWidth = Math.max(bodyMinWidth, bodyWidth);
 		} else {
 			flattenColumns.forEach(function(column) {
-				if (!column.width && !column.minWidth) {
-					column.realWidth = 80;
-				} else {
-					column.realWidth = column.width || column.minWidth;
-				}
+				column.realWidth = column.width || column.minWidth || 80;
 				bodyMinWidth += column.realWidth;
 			});
 			this.scrollX = bodyMinWidth > bodyWidth;
@@ -774,7 +773,7 @@
 		if (fixedColumns.length > 0) {
 			var fixedWidth = 0;
 			fixedColumns.forEach(function(column) {
-				fixedWidth += column.realWidth;
+				fixedWidth += column.realWidth || 80;
 			});
 			this.fixedWidth = fixedWidth;
 		}
@@ -782,7 +781,7 @@
 		if (rightFixedColumns.length > 0) {
 			var rightFixedWidth = 0;
 			rightFixedColumns.forEach(function(column) {
-				rightFixedWidth += column.realWidth;
+				rightFixedWidth += column.realWidth || 80;
 			});
 			this.rightFixedWidth = rightFixedWidth;
 		}
@@ -965,10 +964,15 @@
 				return createElement('col', {
 					attrs: {
 						name: column.id,
-						width: column.realWidth || column.width
+						width: column.realWidth || column.width || 80
 					}
 				}, [])
-			})]), createElement('tbody', null, [self._l(selfData, function(row, $index) {
+			}), !self.fixed && self.layout.scrollY && self.layout.gutterWidth ? createElement('col', {
+				attrs: {
+					name: 'gutter',
+					width: 0
+				}
+			}, []) : '']), createElement('tbody', null, [self._l(selfData, function(row, $index) {
 				$index = self.data.indexOf(row);
 				return [createElement('tr', {
 					style: self.rowStyle ? self.getRowStyle(row, $index) : null,
@@ -993,7 +997,7 @@
 					class: [self.getRowClass(row, $index)]
 				}, [self._l(self.columns, function(column, cellIndex) {
 					return createElement('td', {
-						class: [column.id, column.align, column.isHidden, column.getCellClass($index, cellIndex, row) || '', columnsHidden[cellIndex] ? 'is-hidden' : ''],
+						class: [column.id, column.align, column.getCellClass($index, cellIndex, row) || '', columnsHidden[cellIndex] ? 'is-hidden' : ''],
 						on: {
 							mouseenter: function(e) {
 								return self.handleCellMouseEnter(e, row)
@@ -1301,7 +1305,7 @@
 				return createElement('col', {
 					attrs: {
 						name: column.id,
-						width: column.realWidth || column.width
+						width: column.realWidth || column.width || 80
 					}
 				}, [])
 			}), !self.fixed && self.layout.scrollY && self.layout.gutterWidth ? createElement('col', {
@@ -1328,7 +1332,7 @@
 								return self.handleHeaderClick(e, column)
 							}
 						},
-						class: [column.id, column.order, column.headerAlign, column.isHidden, rowIndex === 0 && self.isCellHidden(cellIndex) ? 'is-hidden' : '', !column.children ? 'is-leaf' : '', column.labelClassName]
+						class: [column.id, column.order, column.headerAlign, rowIndex === 0 && self.isCellHidden(cellIndex) ? 'is-hidden' : '', !column.children ? 'is-leaf' : '', column.labelClassName]
 					}, [createElement('div', {
 						class: ['cell', column.filteredValue && column.filteredValue.length > 0 ? 'highlight' : '', column.labelClassName]
 					}, [column.renderHeader ? column.renderHeader.call(self._renderProxy, createElement, {
@@ -1370,7 +1374,7 @@
 				}), !self.fixed && self.layout.scrollY && self.layout.gutterWidth ? createElement('th', {
 					class: 'gutter',
 					style: {
-						width: self.layout.scrollX ? self.layout.gutterWidth + 'px' : 0
+						width: self.layout.gutterWidth + 'px'
 					}
 				}, []) : ''])
 			})])]);
@@ -1676,7 +1680,7 @@
 				return createElement('col', {
 					attrs: {
 						name: column.id,
-						width: column.realWidth || column.width
+						width: column.realWidth || column.width || 80
 					}
 				}, []);
 			}), !self.fixed && self.layout.scrollY && self.layout.gutterWidth ? createElement('col', {
@@ -1690,7 +1694,7 @@
 						colspan: column.colSpan,
 						rowspan: column.rowSpan
 					},
-					class: [column.id, column.align, column.isHidden, column.className || '', self.isCellHidden(cellIndex, self.columns) ? 'is-hidden' : '', !column.children ? 'is-leaf' : '', column.labelClassName]
+					class: [column.id, column.align, column.className || '', self.isCellHidden(cellIndex, self.columns) ? 'is-hidden' : '', !column.children ? 'is-leaf' : '', column.labelClassName]
 				}, [createElement('div', {
 					class: ['cell', column.labelClassName]
 				}, [self.summaryMethod ? self.summaryMethod({
@@ -1883,22 +1887,23 @@
 				var self = this;
 				self.store.updateColumns();
 				self.layout.update();
-				self.updateScrollY();
 				self.$nextTick(function() {
 					if (self.height) {
 						self.layout.setHeight(self.height);
 					} else if (self.shouldUpdateHeight) {
 						self.layout.updateHeight();
 					}
+					self.updateScrollY();
+					self.resizeZone();
 				});
 			}
 		},
 		created: function() {
 			var self = this;
 			self.tableId = 'vue-table_1_';
-			self.debouncedLayout = VueUtil.component.debounce(50, function() {
-				self.doLayout()
-			});
+			self.debouncedLayout = function() {
+				self.$nextTick(self.doLayout);
+			}
 		},
 		computed: {
 			bodyWrapper: function() {

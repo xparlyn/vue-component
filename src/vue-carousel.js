@@ -91,9 +91,6 @@
 					item.hover = self;
 				});
 			},
-			handleItemChange: VueUtil.component.debounce(100, function() {
-				this.updateItems();
-			}),
 			updateItems: function() {
 				this.items = this.$children.filter(function(child) {
 					return child.$options.name === 'VueCarouselItem';
