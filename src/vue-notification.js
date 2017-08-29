@@ -15,7 +15,7 @@
 		error: 'circle-cross'
 	};
 	var VueNotification = {
-		template: '<transition :name="isLeft ? \'vue-notification-fade-left\' : isTop ? \'vue-notification-fade-top\' : isBottom ? \'vue-notification-fade-bottom\' : isCenter? \'vue-notification-fade-center\' : \'vue-notification-fade\'"><div class="vue-notification" :class="[{\'vue-notification-translateX\':centerX, \'vue-notification-translateY\':centerY},customClass]" v-show="visible" :style="{ top: top ? top + \'px\' : \'auto\', bottom: bottom ? bottom + \'px\' : \'auto\', left: left ? left + \'px\' : \'auto\', right: right ? right + \'px\' : \'auto\' }" @mouseenter="clearTimer()" @mouseleave="startTimer()"><i class="vue-notification__icon" :class="[ typeClass, iconClass ]" v-if="type || iconClass"></i><div class="vue-notification__group" :class="{ \'is-with-icon\': typeClass || iconClass }"><h2 class="vue-notification__title" v-text="title" v-if="showTitle"></h2><div class="vue-notification__content" v-if="showMessage"><slot>{{ message }}</slot></div><div class="vue-notification__closeBtn vue-icon-close" @click="close"></div></div></div></transition>',
+		template: '<transition :name="isLeft ? \'vue-notification-fade-left\' : isTop ? \'vue-notification-fade-top\' : isBottom ? \'vue-notification-fade-bottom\' : isCenter? \'vue-notification-fade-center\' : \'vue-notification-fade\'"><div class="vue-notification" :class="[{\'vue-notification-translateX\':centerX, \'vue-notification-translateY\':centerY},customClass]" v-show="visible" :style="{ top: top ? top + \'px\' : \'auto\', bottom: bottom ? bottom + \'px\' : \'auto\', left: left ? left + \'px\' : \'auto\', right: right ? right + \'px\' : \'auto\' }"><i class="vue-notification__icon" :class="[ typeClass, iconClass ]" v-if="type || iconClass"></i><div class="vue-notification__group" :class="{ \'is-with-icon\': typeClass || iconClass }"><h2 class="vue-notification__title" v-text="title" v-if="showTitle"></h2><div class="vue-notification__content" v-if="showMessage"><slot>{{ message }}</slot></div><div class="vue-notification__closeBtn vue-icon-close" @click="close" v-if="duration===0"></div></div></div></transition>',
 		data: function() {
 			return {
 				visible: false,
@@ -63,19 +63,6 @@
 				this.closed = true;
 				if (typeof this.onClose === 'function') {
 					this.onClose();
-				}
-			},
-			clearTimer: function() {
-				clearTimeout(this.timer);
-			},
-			startTimer: function() {
-				var self = this;
-				if (self.duration > 0) {
-					self.timer = setTimeout(function() {
-						if (!self.closed) {
-							self.close();
-						}
-					}, self.duration);
 				}
 			}
 		},
@@ -144,7 +131,7 @@
 			instance.centerY = true;
 		}
 		if (isLeft) {
-			instance.left = 0;
+			instance.left = 8;
 			instance.isLeft = true;
 		}
 		if (isCenterX) {
@@ -152,7 +139,7 @@
 			instance.isCenter = true;
 		}
 		if (isRight) {
-			instance.right = 16;
+			instance.right = 8;
 		}
 		if (isBottom) {
 			if (isLeft) {

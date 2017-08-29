@@ -1826,6 +1826,12 @@
 			},
 			updateScrollY: function() {
 				this.layout.updateScrollY();
+				var refs = this.$refs;
+				var scrollTop = this.bodyWrapper.scrollTop;
+				if (refs.fixedBodyWrapper)
+					refs.fixedBodyWrapper.scrollTop = scrollTop;
+				if (refs.rightFixedBodyWrapper)
+					refs.rightFixedBodyWrapper.scrollTop = scrollTop;
 			},
 			bindEvents: function() {
 				var self = this;
