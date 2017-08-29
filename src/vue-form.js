@@ -25,6 +25,10 @@
 			showMessage: {
 				type: Boolean,
 				default: true
+			},
+			labelResponsive: {
+				type: Boolean,
+				default: true
 			}
 		},
 		watch: {
