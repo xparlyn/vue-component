@@ -1239,17 +1239,21 @@
 			},
 			handleMouseEnter: function(index) {
 				this.store.commit('setHoverRow', index);
+				this.table.debouncedLayout();
 			},
 			handleMouseLeave: function() {
 				this.store.commit('setHoverRow', null);
+				this.table.debouncedLayout();
 			},
 			handleContextMenu: function(event, row) {
 				var table = this.table;
 				table.$emit('row-contextmenu', row, event);
+				table.debouncedLayout();
 			},
 			handleDoubleClick: function(event, row) {
 				var table = this.table;
 				table.$emit('row-dblclick', row, event);
+				table.debouncedLayout();
 			},
 			handleClick: function(event, row) {
 				var table = this.table;
@@ -1263,9 +1267,11 @@
 				}
 				this.store.commit('setCurrentRow', row);
 				table.$emit('row-click', row, event, column);
+				table.debouncedLayout();
 			},
 			handleExpandClick: function(row) {
 				this.store.commit('toggleRowExpanded', row);
+				this.table.debouncedLayout();
 			}
 		},
 		delta: {
@@ -1827,11 +1833,10 @@
 			updateScrollY: function() {
 				this.layout.updateScrollY();
 				var refs = this.$refs;
-				var scrollTop = this.bodyWrapper.scrollTop;
 				if (refs.fixedBodyWrapper)
-					refs.fixedBodyWrapper.scrollTop = scrollTop;
+					refs.fixedBodyWrapper.scrollTop = bodyScrollTop;
 				if (refs.rightFixedBodyWrapper)
-					refs.rightFixedBodyWrapper.scrollTop = scrollTop;
+					refs.rightFixedBodyWrapper.scrollTop = bodyScrollTop;
 			},
 			bindEvents: function() {
 				var self = this;
@@ -1881,7 +1886,7 @@
 				}
 			},
 			resizeZone: function() {
-				var scrollTop = this.bodyWrapper.scrollTop;
+				var scrollTop = bodyScrollTop;
 				this.$children.forEach(function(child) {
 					if (child.updateZone && child.$options.delta.keeps !== 0) {
 						child.updateZone(scrollTop);
