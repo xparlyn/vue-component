@@ -231,7 +231,7 @@
 					}
 				},
 				render: function(createElement) {
-					return createElement('span', {class: 'vue-pagination__jump'}, [this.$t('vue.pagination.goto'), createElement('input', {class: 'vue-pagination__editor', attrs: {type: 'number', min: 1, max: this.internalPageCount, number: !0}, domProps: {value: this.$parent.internalCurrentPage}, on: {change: this.handleChange, focus: this.handleFocus}, style: {width: '30px'}}, []), this.$t('vue.pagination.pageClassifier')]);
+					return createElement('span', {class: 'vue-pagination__jump'}, [this.$t('vue.pagination.goto'), createElement('input', {class: 'vue-pagination__editor', attrs: {type: 'number', min: 1, max: this.$parent.internalPageCount, number: !0}, domProps: {value: this.$parent.internalCurrentPage}, on: {change: this.handleChange, focus: this.handleFocus}, style: {width: '30px'}}, []), this.$t('vue.pagination.pageClassifier')]);
 				}
 			},
 			Total: {
