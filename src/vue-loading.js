@@ -41,6 +41,12 @@
 				parent.appendChild(el.mask);
 				Vue.nextTick(function() {
 					el.instance.visible = true;
+					Vue.nextTick(function() {
+						if (binding.modifiers.fullscreen) {
+							el.instance.$el.tabIndex = -1;
+							el.instance.$el.focus();
+						}
+					});
 				});
 				el.domInserted = true;
 			}
@@ -88,6 +94,20 @@
 				}
 			}
 		};
+		var doKeyDown = function(e) {
+			document.querySelector('.vue-loading-mask.is-fullscreen').focus();
+			e.preventDefault();
+			return false;
+		}
+		var attachEvent = function(binding) {
+			if (binding.modifiers.fullscreen) {
+				if (binding.value) {
+					VueUtil.on(document.body, 'keydown', doKeyDown);
+				} else {
+					VueUtil.off(document.body, 'keydown', doKeyDown);
+				}
+			}
+		};
 		Vue.directive('loading', {
 			bind: function(el, binding) {
 				var mask = new VueLoading({
@@ -106,6 +126,7 @@
 			update: function(el, binding) {
 				if (binding.oldValue !== binding.value) {
 					toggleLoading(el, binding);
+					attachEvent(binding);
 				}
 			},
 			unbind: function(el, binding) {
