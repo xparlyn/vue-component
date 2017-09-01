@@ -124,7 +124,6 @@
 				var containerWidth = this.$refs.navScroll.offsetWidth;
 				var currentOffset = this.getCurrentScrollOffset();
 				if (containerWidth < navWidth) {
-					var currentOffset = this.getCurrentScrollOffset();
 					this.scrollable = this.scrollable || {};
 					this.scrollable.prev = currentOffset;
 					this.scrollable.next = currentOffset + containerWidth < navWidth;

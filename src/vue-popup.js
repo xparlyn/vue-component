@@ -76,7 +76,6 @@
 		}
 	});
 	var idSeed = 1;
-	var transitions = [];
 	var scrollBarWidth;
 	var getDOM = function(dom) {
 		if (dom.nodeType === 3) {
@@ -118,8 +117,8 @@
 	}
 	VuePopup.watch = {
 		visible: function(val) {
+			var self = this;
 			if (val) {
-				var self = this;
 				if (!self.opened) {
 					self.$nextTick(function() {
 						var dom = getDOM(self.$el);
@@ -132,7 +131,6 @@
 					});
 				}
 			} else {
-				var self = this;
 				PopupManager.closeModal(self._popupId);
 				self.$nextTick(function() {
 					if (self.opened && self.closeOnPressEscape) {
