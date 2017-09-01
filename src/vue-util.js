@@ -633,6 +633,7 @@
 		return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
 	};
 	var prevMonth = function(src) {
+		src = toDate(src);
 		var year = src.getFullYear();
 		var month = src.getMonth();
 		var date = src.getDate();
@@ -647,6 +648,7 @@
 		return new Date(src.getTime());
 	};
 	var nextMonth = function(src) {
+		src = toDate(src);
 		var year = src.getFullYear();
 		var month = src.getMonth();
 		var date = src.getDate();
@@ -947,6 +949,8 @@
 		screenfull: screenfull,
 		loadVue: loadVue,
 		isEqual: eq,
+		prevMonth: prevMonth,
+		nextMonth: nextMonth,
 		component: {
 			menumixin: menumixin,
 			emitter: emitter,
@@ -962,8 +966,6 @@
 			getFirstDayOfMonth: getFirstDayOfMonth,
 			getWeekNumber: getWeekNumber,
 			toConsumableArray: toConsumableArray,
-			prevMonth: prevMonth,
-			nextMonth: nextMonth,
 			isVNode: isVNode
 		}
 	}

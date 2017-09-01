@@ -1005,10 +1005,10 @@
 				}
 			},
 			prevMonth: function() {
-				this.date = VueUtil.component.prevMonth(this.date);
+				this.date = VueUtil.prevMonth(this.date);
 			},
 			nextMonth: function() {
-				this.date = VueUtil.component.nextMonth(this.date);
+				this.date = VueUtil.nextMonth(this.date);
 			},
 			nextYear: function() {
 				var date = this.date;
