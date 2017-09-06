@@ -157,23 +157,15 @@
 		if (options.callback) {
 			callback = options.callback;
 		}
-		if (typeof Promise !== 'undefined') {
-			return new Promise(function(resolve, reject) {
-				msgQueue.push({
-					options: VueUtil.merge({}, options, {closeOnPressEscape: false}),
-					callback: callback,
-					resolve: resolve,
-					reject: reject
-				});
-				showNextMsg();
-			});
-		} else {
+		return new Promise(function(resolve, reject) {
 			msgQueue.push({
 				options: VueUtil.merge({}, options, {closeOnPressEscape: false}),
-				callback: callback
+				callback: callback,
+				resolve: resolve,
+				reject: reject
 			});
 			showNextMsg();
-		}
+		});
 	};
 	var messageBoxAlert = function(options) {
 		return new MessageBox(VueUtil.merge({}, options, {showCancelButton: false}));
