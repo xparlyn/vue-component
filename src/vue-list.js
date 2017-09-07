@@ -23,7 +23,8 @@
 				type: Number,
 				default: 200
 			},
-			onScroll: Function
+			onScroll: Function,
+			defaultActivedIndex: Number
 		},
 		delta: {
 			start: 0,
@@ -112,6 +113,9 @@
 			delta.viewHeight = this.height*1;
 			this.updateZone(0);
 			this.$on('item-click', this.handleItemClick);
+			if (typeof this.defaultActivedIndex !== 'undefined') {
+				this.activedIndex = this.defaultActivedIndex
+			}
 		}
 	};
 	Vue.component(VueList.name, VueList);
