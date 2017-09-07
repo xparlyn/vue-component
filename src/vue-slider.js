@@ -110,12 +110,17 @@
 				if (this.dragging) {
 					this.displayTooltip();
 					var diff = 0;
+					var sliderSize = 1;
+					var parentObj = this.$parent;
+					if (parentObj.$refs.slider) {
+						sliderSize = parentObj.$refs.slider['client' + (parentObj.vertical ? 'Height' : 'Width')];
+					}
 					if (this.vertical) {
 						this.currentY = event.clientY;
-						diff = (this.startY - this.currentY) / this.$parent.sliderSize * 100;
+						diff = (this.startY - this.currentY) / sliderSize * 100;
 					} else {
 						this.currentX = event.clientX;
-						diff = (this.currentX - this.startX) / this.$parent.sliderSize * 100;
+						diff = (this.currentX - this.startX) / sliderSize * 100;
 					}
 					this.newPosition = this.startPosition + diff;
 					this.setPosition(this.newPosition);
@@ -306,17 +311,16 @@
 			},
 			onSliderClick: function(event) {
 				if (this.disabled || this.dragging) return;
+				var sliderSize = 1;
+				if (this.$refs.slider) {
+					sliderSize = this.$refs.slider['client' + (this.vertical ? 'Height' : 'Width')];
+				}
 				if (this.vertical) {
 					var sliderOffsetBottom = this.$refs.slider.getBoundingClientRect().bottom;
-					this.setPosition((sliderOffsetBottom - event.clientY) / this.sliderSize * 100);
+					this.setPosition((sliderOffsetBottom - event.clientY) / sliderSize * 100);
 				} else {
 					var sliderOffsetLeft = this.$refs.slider.getBoundingClientRect().left;
-					this.setPosition((event.clientX - sliderOffsetLeft) / this.sliderSize * 100);
-				}
-			},
-			resetSize: function() {
-				if (this.$refs.slider) {
-					this.sliderSize = this.$refs.slider['client' + (this.vertical ? 'Height' : 'Width')];
+					this.setPosition((event.clientX - sliderOffsetLeft) / sliderSize * 100);
 				}
 			}
 		},
@@ -382,11 +386,6 @@
 				}
 				this.oldValue = this.firstValue;
 			}
-			this.resetSize();
-			window.addEventListener('resize', this.resetSize);
-		},
-		beforeDestroy: function() {
-			window.removeEventListener('resize', this.resetSize);
 		}
 	};
 	Vue.component(VueSlider.name, VueSlider);
