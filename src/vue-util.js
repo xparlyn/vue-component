@@ -57,6 +57,61 @@
 		var type = typeof obj;
 		return type === 'function' || type === 'object' && !!obj;
 	};
+	var instances = {};
+	var popupManager = {
+		zIndex: 2000,
+		getInstance: function(id) {
+			return instances[id];
+		},
+		register: function(id, instance) {
+			if (id && instance) {
+				instances[id] = instance;
+			}
+		},
+		deregister: function(id) {
+			if (id) {
+				instances[id] = null;
+				delete instances[id];
+			}
+		},
+		nextZIndex: function() {
+			return popupManager.zIndex++;
+		},
+		modalStack: [],
+		openModal: function(id, zIndex) {
+			if (Vue.prototype.$isServer)
+				return;
+			if (!id || zIndex === undefined)
+				return;
+			var modalStack = this.modalStack;
+			for (var i = 0, j = modalStack.length; i < j; i++) {
+				var item = modalStack[i];
+				if (item.id === id) {
+					return;
+				}
+			}
+			this.modalStack.push({
+				id: id,
+				zIndex: zIndex
+			});
+		},
+		closeModal: function(id) {
+			var modalStack = this.modalStack;
+			if (modalStack.length > 0) {
+				var topItem = modalStack[modalStack.length - 1];
+				if (topItem.id === id) {
+					modalStack.pop();
+				} else {
+					for (var i = modalStack.length - 1; i >= 0; i--) {
+						if (modalStack[i].id === id) {
+							modalStack.splice(i, 1);
+							break;
+						}
+					}
+				}
+			}
+		}
+	};
 	var on = (function() {
 		if (!isServer && document.addEventListener) {
 			return function(element, event, handler) {
@@ -966,7 +1021,8 @@
 			getFirstDayOfMonth: getFirstDayOfMonth,
 			getWeekNumber: getWeekNumber,
 			toConsumableArray: toConsumableArray,
-			isVNode: isVNode
+			isVNode: isVNode,
+			popupManager: popupManager
 		}
 	}
 });

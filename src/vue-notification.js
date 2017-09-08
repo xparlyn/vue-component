@@ -1,12 +1,12 @@
 !(function(name, context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil', 'VuePopup'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context[name] = definition(context['Vue'], context['VueUtil'], context['VuePopup']);
+		context[name] = definition(context['Vue'], context['VueUtil']);
 		delete context[name];
 	}
-})('VueNotification', this, function(Vue, VueUtil, VuePopup) {
+})('VueNotification', this, function(Vue, VueUtil) {
 	'use strict';
 	var typeMap = {
 		success: 'circle-check',
@@ -108,7 +108,7 @@
 		top.document.body.appendChild(instance.vm.$el);
 		instance.vm.visible = true;
 		instance.dom = instance.vm.$el;
-		instance.dom.style.zIndex = VuePopup().PopupManager.nextZIndex();
+		instance.dom.style.zIndex = VueUtil.component.popupManager.nextZIndex();
 		var instancePosition = instance.position.split("-");
 		var positionX = instancePosition[1];
 		var positionY = instancePosition[0];

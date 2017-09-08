@@ -1,12 +1,12 @@
 !(function(name, context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil', 'VuePopup'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context[name] = definition(context['Vue'], context['VueUtil'], context['VuePopup']);
+		context[name] = definition(context['Vue'], context['VueUtil']);
 		delete context[name];
 	}
-})('VuePin', this, function(Vue, VueUtil, VuePopup) {
+})('VuePin', this, function(Vue, VueUtil) {
 	'use strict';
 	var root = window;
 	var getScroll = function(target, top) {
@@ -92,7 +92,7 @@
 							left: elOffset.left + 'px',
 							width: self.$el.offsetWidth + 'px',
 							position: 'fixed',
-							zIndex: VuePopup().PopupManager.nextZIndex()
+							zIndex: VueUtil.component.popupManager.nextZIndex()
 						};
 					} else {
 						self.styles = {
@@ -100,7 +100,7 @@
 							left: elOffset.left + 'px',
 							width: self.$el.offsetWidth + 'px',
 							position: 'fixed',
-							zIndex: VuePopup().PopupManager.nextZIndex()
+							zIndex: VueUtil.component.popupManager.nextZIndex()
 						};
 					}
 				} else {
@@ -130,7 +130,7 @@
 						left: elOffset.left + 'px',
 						width: this.$el.offsetWidth + 'px',
 						position: 'fixed',
-						zIndex: VuePopup().PopupManager.nextZIndex()
+						zIndex: VueUtil.component.popupManager.nextZIndex()
 					};
 					this.$emit('change', true);
 				} else if ((elOffset.top - this.offsetTop) > scrollTop && this.offsetType == 'top' && pin) {
@@ -145,7 +145,7 @@
 						left: elOffset.left + 'px',
 						width: this.$el.offsetWidth + 'px',
 						position: 'fixed',
-						zIndex: VuePopup().PopupManager.nextZIndex()
+						zIndex: VueUtil.component.popupManager.nextZIndex()
 					};
 					this.$emit('change', true);
 				} else if ((elOffset.top + this.offsetBottom + elHeight) < (scrollTop + windowHeight) && this.offsetType == 'bottom' && pin) {
