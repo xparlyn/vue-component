@@ -261,6 +261,7 @@
 				selectable: this.selectable,
 				reserveSelection: this.reserveSelection,
 				fixed: this.fixed === '' ? true : this.fixed,
+				fixedIndex: -1,
 				filterMethod: this.filterMethod,
 				filters: this.filters,
 				filterable: this.filters || this.filterMethod,

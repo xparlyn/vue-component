@@ -474,8 +474,14 @@
 		states.fixedColumns = _columns.filter(function(column) {
 			return column.fixed === true || column.fixed === 'left'
 		});
+		states.fixedColumns.sort(function(a, b) {
+			return a.fixedIndex > b.fixedIndex;
+		});
 		states.rightFixedColumns = _columns.filter(function(column) {
 			return column.fixed === 'right'
+		});
+		states.rightFixedColumns.sort(function(a, b) {
+			return a.fixedIndex < b.fixedIndex;
 		});
 		if (states.fixedColumns.length > 0 && _columns[0] && _columns[0].type === 'selection' && !_columns[0].fixed) {
 			_columns[0].fixed = true;
