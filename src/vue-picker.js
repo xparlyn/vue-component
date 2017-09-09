@@ -1,21 +1,21 @@
 !(function(name, context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil', 'VuePopper', 'VueInput'], definition);
+		define(['Vue', 'VueUtil', 'VuePopper'], definition);
 	} else {
-		context[name] = definition(context['Vue'], context['VueUtil'], context['VuePopper'], context['VueInput']);
+		context[name] = definition(context['Vue'], context['VueUtil'], context['VuePopper']);
 	}
-})('VuePicker', this, function(Vue, VueUtil, VuePopper, VueInput) {
+})('VuePicker', this, function(Vue, VueUtil, VuePopper) {
 	'use strict';
 	var NewPopper = {
 		props: {
-			appendToBody: VuePopper().props.appendToBody,
-			offset: VuePopper().props.offset,
-			boundariesPadding: VuePopper().props.boundariesPadding
+			appendToBody: VuePopper.props.appendToBody,
+			offset: VuePopper.props.offset,
+			boundariesPadding: VuePopper.props.boundariesPadding
 		},
-		methods: VuePopper().methods,
-		data: VuePopper().data,
-		beforeDestroy: VuePopper().beforeDestroy
+		methods: VuePopper.methods,
+		data: VuePopper.data,
+		beforeDestroy: VuePopper.beforeDestroy
 	};
 	var DEFAULT_FORMATS = {
 		date: 'yyyy-MM-dd',
@@ -166,9 +166,6 @@
 				default: ' - '
 			},
 			pickerOptions: {}
-		},
-		components: {
-			VueInput: VueInput()
 		},
 		directives: {
 			Clickoutside: VueUtil.component.clickoutside()
@@ -417,7 +414,5 @@
 			}
 		}
 	};
-	return function() {
-		return VuePicker;
-	}
+	return VuePicker;
 });

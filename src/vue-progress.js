@@ -4,6 +4,7 @@
 		define(['Vue'], definition);
 	} else {
 		context[name] = definition(context['Vue']);
+		delete context[name];
 	}
 })('VueProgress', this, function(Vue) {
 	'use strict';
@@ -93,7 +94,4 @@
 		}
 	};
 	Vue.component(VueProgress.name, VueProgress);
-	return function() {
-		return VueProgress;
-	}
 });

@@ -1,12 +1,12 @@
 !(function(name, context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil', 'VuePopup', 'VueButton'], definition);
+		define(['Vue', 'VueUtil', 'VuePopup'], definition);
 	} else {
-		context[name] = definition(context['Vue'], context['VueUtil'], context['VuePopup'], context['VueButton']);
+		context[name] = definition(context['Vue'], context['VueUtil'], context['VuePopup']);
 		delete context[name];
 	}
-})('VueMessageBox', this, function(Vue, VueUtil, VuePopup, VueButton) {
+})('VueMessageBox', this, function(Vue, VueUtil, VuePopup) {
 	'use strict';
 	var typeMap = {
 		success: 'circle-check',
@@ -16,10 +16,7 @@
 	};
 	var VueMessageBox = {
 		template: '<transition name="msgbox-fade" @after-leave="$emit(\'doDestroy\')"><div class="vue-message-box__wrapper" v-if="visible"><div class="vue-message-box" :class="customClass"><div class="vue-message-box__header" v-if="title !== undefined"><div class="vue-message-box__title">{{ title || $t(\'vue.messagebox.title\') }}</div></div><div class="vue-message-box__content" v-if="message !== \'\'"><div class="vue-message-box__status" :class="[ typeClass ]"></div><div class="vue-message-box__message" :style="{ \'margin-left\': typeClass ? \'50px\' : \'0\' }"><slot><p>{{ message }}</p></slot></div></div><div class="vue-message-box__btns"><vue-button :loading="cancelButtonLoading" :class="[ cancelButtonClasses ]" v-if="showCancelButton" @click.native="handleAction(\'cancel\')">{{ cancelButtonText || $t(\'vue.messagebox.cancel\') }}</vue-button><vue-button :loading="confirmButtonLoading" ref="confirm" :class="[ confirmButtonClasses ]" @click.native="handleAction(\'confirm\')">{{ confirmButtonText || $t(\'vue.messagebox.confirm\') }}</vue-button></div></div></div></transition>',
-		mixins: [VuePopup().VuePopup],
-		components: {
-			VueButton: VueButton()
-		},
+		mixins: [VuePopup],
 		computed: {
 			typeClass: function() {
 				return this.type && typeMap[this.type] ? 'vue-icon-' + typeMap[this.type] : '';

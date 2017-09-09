@@ -11,7 +11,7 @@
 	var VuePopover = {
 		template: '<span><transition :name="transition" @after-leave="doDestroy"><div class="vue-popover" :class="[popperClass, {\'no-arrow\': !visibleArrow}]" ref="popper" v-show="!disabled && showPopper" :style="{ width: popoverWidth + \'px\' }"><div class="vue-popover__title" v-if="title" v-text="title"></div><slot>{{ content }}</slot></div></transition><slot name="reference"></slot></span>',
 		name: 'VuePopover',
-		mixins: [VuePopper()],
+		mixins: [VuePopper],
 		props: {
 			openDelay: {
 				type: Number,
@@ -144,6 +144,6 @@
 		vnode.context.$refs[binding.arg].$refs.reference = el;
 	};
 	Vue.directive('popover', directive);
-	Vue.component(VuePopover.name, VuePopover);
 	VuePopover.directive = directive;
+	Vue.component(VuePopover.name, VuePopover);
 });

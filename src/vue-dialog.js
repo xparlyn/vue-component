@@ -11,7 +11,7 @@
 	var VueDialog = {
 		template: '<transition name="dialog-fade"><div class="vue-dialog__wrapper" v-show="visibledialog" @click.self="handleWrapperClick"><div class="vue-dialog" :class="[sizeClass, customClass]" ref="dialog" :style="style"><div class="vue-dialog__header"><span class="vue-dialog__title" v-if="showTitle && !$slots.header">{{title}}</span><slot name="header"></slot><div class="vue-dialog__headerbtn" v-if="showClose" ><i class="vue-dialog__close vue-icon vue-icon-close" @click=\'handleClose\'></i></div></div><div class="vue-dialog__body"><slot></slot></div><div class="vue-dialog__footer" v-if="$slots.footer"><slot name="footer"></slot></div></div></div></transition>',
 		name: 'VueDialog',
-		mixins: [VuePopup().VuePopup],
+		mixins: [VuePopup],
 		data: function(){
 			return {
 				visibledialog: false

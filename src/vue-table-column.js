@@ -1,12 +1,12 @@
 !(function(name, context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil', 'VueCheckbox', 'VueTag'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context[name] = definition(context['Vue'], context['VueUtil'], context['VueCheckbox'], context['VueTag']);
+		context[name] = definition(context['Vue'], context['VueUtil']);
 		delete context[name];
 	}
-})('VueTableColumn', this, function(Vue, VueUtil, VueCheckbox, VueTag) {
+})('VueTableColumn', this, function(Vue, VueUtil) {
 	'use strict';
 	var columnIdSeed = 1;
 	var defaults = {
@@ -198,10 +198,6 @@
 			this.row = {};
 			this.column = {};
 			this.$index = 0;
-		},
-		components: {
-			VueCheckbox: VueCheckbox(),
-			VueTag: VueTag()
 		},
 		computed: {
 			owner: function() {

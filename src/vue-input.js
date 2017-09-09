@@ -4,6 +4,7 @@
 		define(['Vue', 'VueUtil', 'Cleave'], definition);
 	} else {
 		context[name] = definition(context['Vue'], context['VueUtil'], context['Cleave']);
+		delete context[name];
 	}
 })('VueInput', this, function(Vue, VueUtil, Cleave) {
 	'use strict';
@@ -187,7 +188,4 @@
 		}
 	};
 	Vue.component(VueInput.name, VueInput);
-	return function() {
-		return VueInput;
-	}
 });

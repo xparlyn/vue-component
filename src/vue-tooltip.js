@@ -4,6 +4,7 @@
 		define(['Vue', 'VuePopper', 'VueUtil'], definition);
 	} else {
 		context[name] = definition(context['Vue'], context['VuePopper'], context['VueUtil']);
+		delete context[name];
 	}
 })('VueTooltip', this, function(Vue, VuePopper, VueUtil) {
 	'use strict';
@@ -14,7 +15,7 @@
 	};
 	var VueTooltip = {
 		name: 'VueTooltip',
-		mixins: [VuePopper()],
+		mixins: [VuePopper],
 		props: {
 			openDelay: {
 				type: Number,
@@ -130,7 +131,4 @@
 		}
 	};
 	Vue.component(VueTooltip.name, VueTooltip);
-	return function() {
-		return VueTooltip;
-	}
 });

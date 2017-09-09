@@ -1,12 +1,12 @@
 !(function(name, context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil', 'VuePopper', 'VueCheckbox', 'VueCheckboxGroup', 'VueTag', 'VueTooltip'], definition);
+		define(['Vue', 'VueUtil', 'VuePopper'], definition);
 	} else {
-		context[name] = definition(context['Vue'], context['VueUtil'], context['VuePopper'], context['VueCheckbox'], context['VueCheckboxGroup'], context['VueTag'], context['VueTooltip']);
+		context[name] = definition(context['Vue'], context['VueUtil'], context['VuePopper']);
 		delete context[name];
 	}
-})('VueTable', this, function(Vue, VueUtil, VuePopper, VueCheckbox, VueCheckboxGroup, VueTag, VueTooltip) {
+})('VueTable', this, function(Vue, VueUtil, VuePopper) {
 	'use strict';
 	var isFirefox = typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 	var SIZE, REMAIN;
@@ -795,13 +795,9 @@
 	var VueTableFilterPanel = {
 		template: '<transition name="vue-zoom-in-top" @after-leave="doDestroy"><div class="vue-table-filter" v-if="multiple" v-show="showPopper" v-clickoutside="handleOutsideClick"><div class="vue-table-filter__content"><vue-checkbox-group class="vue-table-filter__checkbox-group" v-model="filteredValue"><vue-checkbox v-for="filter in filters" :key="filter.value" :label="filter.value">{{ filter.text }}</vue-checkbox></vue-checkbox-group></div><div class="vue-table-filter__bottom"><button @click="handleConfirm" :class="{ \'is-disabled\': filteredValue.length === 0 }" :disabled="filteredValue.length === 0">{{ $t(\'vue.table.confirmFilter\') }}</button><button @click="handleReset">{{ $t(\'vue.table.resetFilter\') }}</button></div></div><div class="vue-table-filter" v-else v-show="showPopper"><ul class="vue-table-filter__list"><li class="vue-table-filter__list-item" :class="{ \'is-active\': !filterValue }" @click="handleSelect(null)">{{ $t(\'vue.table.clearFilter\') }}</li><li class="vue-table-filter__list-item" v-for="filter in filters" :key="filter.value" :label="filter.value" :class="{ \'is-active\': isActive(filter) }" @click="handleSelect(filter.value)" >{{ filter.text }}</li></ul></div></transition>',
 		name: 'VueTableFilterPanel',
-		mixins: [VuePopper()],
+		mixins: [VuePopper],
 		directives: {
 			Clickoutside: VueUtil.component.clickoutside()
-		},
-		components: {
-			VueCheckbox: VueCheckbox(),
-			VueCheckboxGroup: VueCheckboxGroup()
 		},
 		props: {
 			placement: {
@@ -928,10 +924,6 @@
 		}
 	};
 	var TableBody = {
-		components: {
-			VueCheckbox: VueCheckbox(),
-			VueTooltip: VueTooltip()
-		},
 		props: {
 			store: {
 				required: true
@@ -1410,10 +1402,6 @@
 				}
 			}
 		},
-		components: {
-			VueCheckbox: VueCheckbox(),
-			VueTag: VueTag()
-		},
 		computed: {
 			isAllSelected: function() {
 				return this.store.states.isAllSelected;
@@ -1817,8 +1805,7 @@
 		components: {
 			TableHeader: TableHeader,
 			TableBody: TableBody,
-			TableFooter: TableFooter,
-			VueCheckbox: VueCheckbox()
+			TableFooter: TableFooter
 		},
 		methods: {
 			setCurrentRow: function(row) {

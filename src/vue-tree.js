@@ -1,12 +1,12 @@
 !(function(name, context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil', 'VueCheckbox'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context[name] = definition(context['Vue'], context['VueUtil'], context['VueCheckbox']);
+		context[name] = definition(context['Vue'], context['VueUtil']);
 		delete context[name];
 	}
-})('VueTree', this, function(Vue, VueUtil, VueCheckbox) {
+})('VueTree', this, function(Vue, VueUtil) {
 	'use strict';
 	var NODE_KEY = '$treeNodeId';
 	var markNodeData = function(node, data) {
@@ -707,7 +707,6 @@
 			renderContent: Function
 		},
 		components: {
-			VueCheckbox: VueCheckbox(),
 			CollapseTransition: VueUtil.component.collapseTransition,
 			NodeContent: {
 				props: {

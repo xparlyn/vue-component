@@ -1,12 +1,12 @@
 !(function(name, context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueProgress', 'VueResource'], definition);
+		define(['Vue', 'VueResource'], definition);
 	} else {
-		context[name] = definition(context['Vue'], context['VueProgress']);
+		context[name] = definition(context['Vue']);
 		delete context[name];
 	}
-})('VueUpload', this, function(Vue, VueProgress) {
+})('VueUpload', this, function(Vue) {
 	'use strict';
 	var ajax = function(option) {
 		if (typeof this.$http === 'undefined') {
@@ -53,7 +53,6 @@
 	};
 	var UploadList = {
 		template: '<transition-group tag="ul" :class="[\'vue-upload-list\', \'vue-upload-list--\' + listType]" name="list"><li v-for="file in files" :class="[\'vue-upload-list__item\', \'is-\' + file.status]" :key="file"><img class="vue-upload-list__item-thumbnail" v-if="[\'picture-card\', \'picture\'].indexOf(listType) > -1 && file.status === \'success\'" :src="file.url" alt=""><a class="vue-upload-list__item-name" @click="handleClick(file)"><i class="vue-icon-document"></i>{{file.name}}</a><label v-show="file.status === \'success\'" class="vue-upload-list__item-status-label"><i :class="{ \'vue-icon-circle-check\': listType === \'text\', \'vue-icon-check\': [\'picture-card\', \'picture\'].indexOf(listType) > -1}"></i><i class="vue-icon-close" @click="$emit(\'remove\', file)"></i></label><span class="vue-upload-list__item-actions" v-if=" listType === \'picture-card\' && file.status === \'success\' "><span v-if=" handlePreview && listType === \'picture-card\' " @click="handlePreview(file)" class="vue-upload-list__item-preview"><i class="vue-icon-view"></i></span><span class="vue-upload-list__item-delete" @click="$emit(\'remove\', file)"><i class="vue-icon-delete2"></i></span></span><vue-progress v-if="file.status === \'uploading\'" :type="listType === \'picture-card\' ? \'circle\' : \'line\'" :stroke-width="listType === \'picture-card\' ? 6 : 2" :percentage="parsePercentage(file.percentage)"></vue-progress></li></transition-group>',
-		components: { VueProgress: VueProgress() },
 		props: {
 			files: {
 				type: Array,
@@ -337,7 +336,6 @@
 		name: 'VueUpload',
 		mixins: [migrating],
 		components: {
-			VueProgress: VueProgress(),
 			UploadList: UploadList,
 			Upload: Upload,
 			IframeUpload: IframeUpload

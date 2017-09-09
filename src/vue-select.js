@@ -1,11 +1,12 @@
 !(function(name, context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil', 'VueInput', 'VueSelectDropdown', 'VueOption', 'VueTag'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context[name] = definition(context['Vue'], context['VueUtil'], context['VueInput'], context['VueSelectDropdown'], context['VueOption'], context['VueTag']);
+		context[name] = definition(context['Vue'], context['VueUtil']);
+		delete context[name];
 	}
-})('VueSelect', this, function(Vue, VueUtil, VueInput, VueSelectDropdown, VueOption, VueTag) {
+})('VueSelect', this, function(Vue, VueUtil) {
 	'use strict';
 	var sizeMap = {
 		'large': 42,
@@ -13,7 +14,7 @@
 		'mini': 22
 	};
 	var VueSelect = {
-		template: '<div class="vue-select" v-clickoutside="handleClose"><div class="vue-select__tags" v-if="multiple" @click.stop="toggleMenu" ref="tags" :style="{ \'max-width\': inputWidth - 32 + \'px\' }"><transition-group @after-leave="resetInputHeight"><vue-tag v-for="item in selected" :key="item.value" closable :hit="item.hitState" type="primary" @close="deleteTag($event, item)" close-transition><span class="vue-select__tags-text">{{ item.currentLabel }}</span></vue-tag></transition-group><input type="text" class="vue-select__input" :class="\'is-\'+size" @focus="visible = true" :disabled="disabled" @keyup="managePlaceholder" @keydown="resetInputState" @keydown.down.prevent="navigateOptions(\'next\')" @keydown.up.prevent="navigateOptions(\'prev\')" @keydown.enter.prevent="selectOption" @keydown.esc.prevent="visible = false" @keydown.delete="deletePrevTag" v-model="query" :debounce="remote ? 300 : 0" v-if="filterable" :style="{ width: inputLength + \'px\', \'max-width\': inputWidth - 42 + \'px\' }" ref="input"></div><vue-input ref="reference" v-model="selectedLabel" type="text" :placeholder="placeholderLang" :name="name" :size="size" :disabled="disabled" :readonly="!filterable || multiple" :validate-event="false" @focus="handleFocus" @click="handleIconClick" @mousedown.native="handleMouseDown" @keyup.native="debouncedOnInputChange" @keydown.native.down.prevent="navigateOptions(\'next\')" @keydown.native.up.prevent="navigateOptions(\'prev\')" @keydown.native.enter.prevent="selectOption" @keydown.native.esc.prevent="visible = false" @keydown.native.tab="visible = false" @paste.native="debouncedOnInputChange" @mouseenter.native="inputHovering = true" @mouseleave.native="inputHovering = false" :icon="iconClass"></vue-input><transition name="vue-zoom-in-top" @after-leave="doDestroy" @after-enter="handleMenuEnter"><vue-select-menu ref="popper" v-show="visible && emptyText !== false"><ul class="vue-select-dropdown__list" :class="{ \'is-empty\': !allowCreate && filteredOptionsCount === 0 }" v-show="options.length > 0 && !loading"><vue-option :value="query" created v-if="showNewOption"></vue-option><slot></slot></ul><p class="vue-select-dropdown__empty" v-if="emptyText && !allowCreate">{{ emptyText }}</p></vue-select-menu></transition></div>',
+		template: '<div class="vue-select" v-clickoutside="handleClose"><div class="vue-select__tags" v-if="multiple" @click.stop="toggleMenu" ref="tags" :style="{ \'max-width\': inputWidth - 32 + \'px\' }"><transition-group @after-leave="resetInputHeight"><vue-tag v-for="item in selected" :key="item.value" closable :hit="item.hitState" type="primary" @close="deleteTag($event, item)" close-transition><span class="vue-select__tags-text">{{ item.currentLabel }}</span></vue-tag></transition-group><input type="text" class="vue-select__input" :class="\'is-\'+size" @focus="visible = true" :disabled="disabled" @keyup="managePlaceholder" @keydown="resetInputState" @keydown.down.prevent="navigateOptions(\'next\')" @keydown.up.prevent="navigateOptions(\'prev\')" @keydown.enter.prevent="selectOption" @keydown.esc.prevent="visible = false" @keydown.delete="deletePrevTag" v-model="query" :debounce="remote ? 300 : 0" v-if="filterable" :style="{ width: inputLength + \'px\', \'max-width\': inputWidth - 42 + \'px\' }" ref="input"></div><vue-input ref="reference" v-model="selectedLabel" type="text" :placeholder="placeholderLang" :name="name" :size="size" :disabled="disabled" :readonly="!filterable || multiple" :validate-event="false" @focus="handleFocus" @click="handleIconClick" @mousedown.native="handleMouseDown" @keyup.native="debouncedOnInputChange" @keydown.native.down.prevent="navigateOptions(\'next\')" @keydown.native.up.prevent="navigateOptions(\'prev\')" @keydown.native.enter.prevent="selectOption" @keydown.native.esc.prevent="visible = false" @keydown.native.tab="visible = false" @paste.native="debouncedOnInputChange" @mouseenter.native="inputHovering = true" @mouseleave.native="inputHovering = false" :icon="iconClass"></vue-input><transition name="vue-zoom-in-top" @after-leave="doDestroy" @after-enter="handleMenuEnter"><vue-select-dropdown ref="popper" v-show="visible && emptyText !== false"><ul class="vue-select-dropdown__list" :class="{ \'is-empty\': !allowCreate && filteredOptionsCount === 0 }" v-show="options.length > 0 && !loading"><vue-option :value="query" created v-if="showNewOption"></vue-option><slot></slot></ul><p class="vue-select-dropdown__empty" v-if="emptyText && !allowCreate">{{ emptyText }}</p></vue-select-dropdown></transition></div>',
 		mixins: [VueUtil.component.emitter],
 		name: 'VueSelect',
 		componentName: 'VueSelect',
@@ -64,12 +65,6 @@
 					return this.$t('vue.select.placeholder');
 				return this.placeholder;
 			}
-		},
-		components: {
-			VueInput: VueInput(),
-			VueSelectMenu: VueSelectDropdown(),
-			VueOption: VueOption(),
-			VueTag: VueTag()
 		},
 		directives: {
 			Clickoutside: VueUtil.component.clickoutside()
@@ -535,7 +530,4 @@
 		}
 	};
 	Vue.component(VueSelect.name, VueSelect);
-	return function() {
-		return VueSelect;
-	}
 });

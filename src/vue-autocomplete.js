@@ -1,16 +1,16 @@
 !(function(name, context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil', 'VuePopper', 'VueInput'], definition);
+		define(['Vue', 'VueUtil', 'VuePopper'], definition);
 	} else {
-		context[name] = definition(context['Vue'], context['VueUtil'], context['VuePopper'], context['VueInput']);
+		context[name] = definition(context['Vue'], context['VueUtil'], context['VuePopper']);
 		delete context[name];
 	}
-})('VueAutocomplete', this, function(Vue, VueUtil, VuePopper, VueInput) {
+})('VueAutocomplete', this, function(Vue, VueUtil, VuePopper) {
 	'use strict';
 	var VueAutocompleteSuggestions = {
 		template: '<transition name="vue-zoom-in-top" @after-leave="doDestroy"><div v-show="showPopper" class="vue-autocomplete-suggestion" :class="{ \'is-loading\': parent.loading }" :style="{ width: dropdownWidth }"><ul class="vue-autocomplete-suggestion__wrap"><li v-if="parent.loading"><i class="vue-icon-loading"></i></li><template v-for="(item, index) in suggestions" v-else><li v-if="!parent.customItem" :class="{\'highlighted\': parent.highlightedIndex === index}" @click="select(item)">{{item[props.label]}}</li><component v-else :class="{\'highlighted\': parent.highlightedIndex === index}" @click="select(item)" :is="parent.customItem" :item="item" :index="index"></component></template></ul></div></transition>',
-		mixins: [VuePopper(), VueUtil.component.emitter],
+		mixins: [VuePopper, VueUtil.component.emitter],
 		componentName: 'VueAutocompleteSuggestions',
 		data: function() {
 			return {
@@ -59,7 +59,6 @@
 		mixins: [VueUtil.component.emitter],
 		componentName: 'VueAutocomplete',
 		components: {
-			VueInput: VueInput(),
 			VueAutocompleteSuggestions: VueAutocompleteSuggestions
 		},
 		directives: {

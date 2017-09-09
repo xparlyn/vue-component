@@ -87,9 +87,5 @@
 			}
 		}
 	};
-	return function() {
-		return {
-			VuePopup: VuePopup
-		};
-	}
+	return VuePopup;
 });

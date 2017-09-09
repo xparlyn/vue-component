@@ -156,7 +156,5 @@
 			this.$options.beforeDestroy[0].call(this);
 		}
 	};
-	return function() {
-		return VuePopper;
-	}
+	return VuePopper;
 });

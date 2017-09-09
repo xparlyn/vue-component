@@ -549,7 +549,7 @@
 	};
 	var PickerDropdown = {
 		template: '<transition name="vue-zoom-in-top" @after-leave="doDestroy"><div class="vue-color-dropdown" v-show="showPopper"><div class="vue-color-dropdown__main-wrapper"><hue-slider ref="hue" :color="color" vertical style="float: right;"></hue-slider><sv-panel ref="sl" :color="color"></sv-panel></div><alpha-slider v-if="showAlpha" ref="alpha" :color="color"></alpha-slider><div class="vue-color-dropdown__btns"><span class="vue-color-dropdown__value">{{ currentColor }}</span><a href="JavaScript:" class="vue-color-dropdown__link-btn" @click="$emit(\'clear\')">{{ $t(\'vue.colorpicker.clear\') }}</a><button class="vue-color-dropdown__btn" @click="confirmValue">{{ $t(\'vue.colorpicker.confirm\') }}</button></div></div></transition>',
-		mixins: [VuePopper()],
+		mixins: [VuePopper],
 		components: {
 			SvPanel: SvPanel,
 			HueSlider: HueSlider,

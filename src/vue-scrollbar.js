@@ -4,6 +4,7 @@
 		define(['Vue', 'VueUtil'], definition);
 	} else {
 		context[name] = definition(context['Vue'], context['VueUtil']);
+		delete context[name];
 	}
 })('VueScrollbar', this, function(Vue, VueUtil) {
 	'use strict';
@@ -240,7 +241,4 @@
 		}
 	};
 	Vue.component(VueScrollbar.name, VueScrollbar);
-	return function() {
-		return VueScrollbar;
-	}
 });

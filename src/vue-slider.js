@@ -1,9 +1,9 @@
 !(function(name, context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil', 'VueTooltip'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context[name] = definition(context['Vue'], context['VueUtil'], context['VueTooltip']);
+		context[name] = definition(context['Vue'], context['VueUtil']);
 		delete context[name];
 	}
 })('VueSlider', this, function(Vue, VueUtil, VueTooltip) {
@@ -11,9 +11,6 @@
 	var VueSliderButton = {
 		template: '<div class="vue-slider__button-wrapper" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @mousedown="onButtonDown" :class="{ \'hover\': hovering, \'dragging\': dragging }" :style="wrapperStyle" ref="button"><vue-tooltip placement="top" ref="tooltip" :disabled="!showTooltip"><span slot="content">{{ formatValue }}</span><div class="vue-slider__button" :class="{ \'hover\': hovering, \'dragging\': dragging }"></div></vue-tooltip></div>',
 		name: 'VueSliderButton',
-		components: {
-			VueTooltip: VueTooltip()
-		},
 		props: {
 			value: {
 				type: Number,

@@ -113,6 +113,7 @@
 			var delta = this.$options.delta;
 			delta.end = this.remain;
 			delta.keeps = this.remain;
+			delta.total = this.$slots.default? this.$slots.default.length : this.remain;
 			delta.viewHeight = this.height*1;
 			this.updateZone(0);
 			this.activedIndex = this.defaultActivedIndex
