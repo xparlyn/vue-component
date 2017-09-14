@@ -15,7 +15,15 @@
 			return {
 				activedIndex: null,
 				remain: 0,
-				size: 0
+				size: 20,
+				delta: {
+					start: 0,
+					end: 0,
+					total: 0,
+					keeps: 0,
+					allPadding: 0,
+					paddingTop: 0
+				}
 			}
 		},
 		props: {
@@ -29,16 +37,14 @@
 				default: 0
 			}
 		},
-		delta: {
-			start: 0,
-			end: 0,
-			total: 0,
-			keeps: 0,
-			viewHeight: 0,
-			allPadding: 0,
-			paddingTop: 0
-		},
 		methods: {
+			updateList: function() {
+				var self = this;
+				self.$nextTick(function() {
+					var scrollTop = self.$refs.container.scrollTop;
+					self.updateZone(scrollTop);
+				});
+			},
 			setItemIndex: function(item) {
 				item.index = this.$slots.default.indexOf(item.$vnode);
 			},
@@ -53,7 +59,7 @@
 				}
 			},
 			updateZone: function(offset) {
-				var delta = this.$options.delta;
+				var delta = this.delta;
 				var overs = Math.floor(offset / this.size);
 				if (!offset) {
 					this.$emit('toTop');
@@ -71,7 +77,7 @@
 			},
 			filter: function(slots) {
 				if (!slots) return;
-				var delta = this.$options.delta;
+				var delta = this.delta;
 				delta.total = slots.length;
 				delta.paddingTop = this.size * delta.start;
 				delta.allPadding = this.size * (slots.length - delta.keeps);
@@ -84,16 +90,15 @@
 			}
 		},
 		render: function(createElement) {
-			var delta = this.$options.delta;
+			var delta = this.delta;
 			var showList = this.filter(this.$slots.default);
-			var viewHeight = delta.viewHeight;
 			var paddingTop = delta.paddingTop;
 			var allPadding = delta.allPadding;
 			return createElement('div', {
 				'ref': 'container',
 				'class': ['vue-list'],
 				'style': {
-					'height': viewHeight + 'px'
+					'height': this.height*1 + 'px'
 				},
 				'on': {
 					'scroll': this.handleScroll
@@ -108,13 +113,11 @@
 			]);
 		},
 		mounted: function() {
-			this.size=20;
 			this.remain = Math.round(this.height*1 / this.size);
-			var delta = this.$options.delta;
+			var delta = this.delta;
 			delta.end = this.remain;
 			delta.keeps = this.remain;
 			delta.total = this.$slots.default? this.$slots.default.length : this.remain;
-			delta.viewHeight = this.height*1;
 			this.updateZone(0);
 			this.activedIndex = this.defaultActivedIndex
 			this.$on('item-click', this.handleItemClick);
