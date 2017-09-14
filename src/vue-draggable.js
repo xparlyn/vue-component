@@ -42,7 +42,9 @@
 			this.Minwidth = parseInt(VueUtil.getStyle(el, 'minWidth'));
 			this.Minheight = parseInt(VueUtil.getStyle(el, 'minHeight'));
 			VueUtil.on(this._dragobj, 'mousedown', BindAsEventListener(this, this.Start, true));
-			VueUtil.on(this._body, 'mousedown', BindAsEventListener(this, this.Cancelbubble));
+			for(var i=0,j=this._body.length; i<j; i++){
+				VueUtil.on(this._body[i], 'mousedown', BindAsEventListener(this, this.Cancelbubble));
+			}
 			VueUtil.on(this._resize, 'mousedown', BindAsEventListener(this, this.Start, false));
 		},
 		Cancelbubble: function(e) {
@@ -100,13 +102,17 @@
 		if (Vue.prototype.$isServer) return;
 		Vue.directive('draggable', {
 			inserted: function(el, binding) {
-				var cancelObj = null;
+				var cancelObj = [];
 				var resizeObj = null;
-				var cancelSelector = el.getAttribute('draggable-cancel-selector');
-				var resizeFlg = el.getAttribute('draggable-resize');
-				if (cancelSelector) {
-					cancelObj = el.querySelector(cancelSelector);
+				var cancelSelectors = el.getAttribute('draggable-cancel-selector');
+				if (cancelSelectors) {
+					var cancelSelectorAry = cancelSelectors.split(',');
+					for(var i=0,j=cancelSelectorAry.length; i<j; i++){
+						var cancelSelector = cancelSelectorAry[i];
+						cancelObj.push(el.querySelector(cancelSelector));
+					}
 				}
+				var resizeFlg = el.getAttribute('draggable-resize');
 				if (resizeFlg) {
 					resizeObj = document.createElement('DIV');
 					var resizeStyle = {
