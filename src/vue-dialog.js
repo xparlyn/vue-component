@@ -9,7 +9,7 @@
 })('VueDialog', this, function(Vue, VuePopup, VueUtil) {
 	'use strict';
 	var VueDialog = {
-		template: '<transition name="dialog-fade"><div class="vue-dialog__wrapper" v-show="visibledialog" @click.self="handleWrapperClick"><div v-draggable draggable-cancel-selector=".vue-dialog__body, .vue-dialog__footer" class="vue-dialog" :class="[sizeClass, customClass]" ref="dialog" :style="style"><div class="vue-dialog__header"><span class="vue-dialog__title" v-if="showTitle && !$slots.header">{{title}}</span><slot name="header"></slot><div class="vue-dialog__headerbtn" v-if="showClose" ><i class="vue-dialog__close vue-icon vue-icon-close" @click=\'handleClose\'></i></div></div><div class="vue-dialog__body"><slot></slot></div><div class="vue-dialog__footer" v-if="$slots.footer"><slot name="footer"></slot></div></div></div></transition>',
+		template: '<transition name="dialog-fade"><div class="vue-dialog__wrapper" v-show="visibledialog" @click.self="handleWrapperClick"><div v-draggable draggable-cancel-selector=".vue-dialog__headerbtn, .vue-dialog__body, .vue-dialog__footer" class="vue-dialog" :class="[sizeClass, customClass]" ref="dialog" :style="style"><div class="vue-dialog__header"><span class="vue-dialog__title" v-if="showTitle && !$slots.header">{{title}}</span><slot name="header"></slot><div class="vue-dialog__headerbtn" v-if="showClose" ><i class="vue-dialog__close vue-icon vue-icon-close" @click=\'handleClose\'></i></div></div><div class="vue-dialog__body"><slot></slot></div><div class="vue-dialog__footer" v-if="$slots.footer"><slot name="footer"></slot></div></div></div></transition>',
 		name: 'VueDialog',
 		mixins: [VuePopup],
 		data: function(){

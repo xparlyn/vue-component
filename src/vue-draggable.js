@@ -42,10 +42,13 @@
 			this.Minwidth = parseInt(VueUtil.getStyle(el, 'minWidth'));
 			this.Minheight = parseInt(VueUtil.getStyle(el, 'minHeight'));
 			VueUtil.on(this._dragobj, 'mousedown', BindAsEventListener(this, this.Start, true));
-			for(var i=0,j=this._body.length; i<j; i++){
+			VueUtil.on(this._dragobj, 'touchstart', BindAsEventListener(this, this.Start, true));
+			for (var i = 0, j = this._body.length; i < j; i++) {
 				VueUtil.on(this._body[i], 'mousedown', BindAsEventListener(this, this.Cancelbubble));
+				VueUtil.on(this._body[i], 'touchstart', BindAsEventListener(this, this.Cancelbubble));
 			}
 			VueUtil.on(this._resize, 'mousedown', BindAsEventListener(this, this.Start, false));
+			VueUtil.on(this._resize, 'touchstart', BindAsEventListener(this, this.Start, false));
 		},
 		Cancelbubble: function(e) {
 			document.all ? (e.cancelBubble = true) : (e.stopPropagation())
@@ -64,9 +67,11 @@
 				x: "width",
 				y: "height"
 			}
+			var clientX = e.clientX || e.touches[0].clientX;
+			var clientY = e.clientY || e.touches[0].clientY;
 			this._isdrag = isdrag;
-			this._x = isdrag ? (e.clientX - this._dragobj.offsetLeft + this.offsetLeft) : (this._dragobj.offsetLeft || 0);
-			this._y = isdrag ? (e.clientY - this._dragobj.offsetTop + this.offsetTop) : (this._dragobj.offsetTop || 0);
+			this._x = isdrag ? (clientX - this._dragobj.offsetLeft + this.offsetLeft) : (this._dragobj.offsetLeft || 0);
+			this._y = isdrag ? (clientY - this._dragobj.offsetTop + this.offsetTop) : (this._dragobj.offsetTop || 0);
 			if (document.all) {
 				VueUtil.on(this._dragobj, "losecapture", this._fS);
 				this._dragobj.setCapture();
@@ -74,13 +79,17 @@
 				e.preventDefault();
 				VueUtil.on(window, "blur", this._fS);
 			}
-			VueUtil.on(document, 'mousemove', this._fM)
-			VueUtil.on(document, 'mouseup', this._fS)
+			VueUtil.on(document, 'mousemove', this._fM);
+			VueUtil.on(document, 'touchmove', this._fM);
+			VueUtil.on(document, 'mouseup', this._fS);
+			VueUtil.on(document, 'touchend', this._fS);
 		},
 		Move: function(e) {
 			window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
-			var i_x = e.clientX - this._x;
-			var i_y = e.clientY - this._y;
+			var clientX = e.clientX || e.touches[0].clientX;
+			var clientY = e.clientY || e.touches[0].clientY;
+			var i_x = clientX - this._x;
+			var i_y = clientY - this._y;
 			this._dragobj.style[this._Css.x] = (this._isdrag ? i_x : Math.max(i_x, this.Minwidth)) + 'px';
 			this._dragobj.style[this._Css.y] = (this._isdrag ? i_y : Math.max(i_y, this.Minheight)) + 'px'
 			if (!this._isdrag) {
@@ -89,7 +98,9 @@
 		},
 		Stop: function() {
 			VueUtil.off(document, 'mousemove', this._fM);
+			VueUtil.off(document, 'touchmove', this._fM);
 			VueUtil.off(document, 'mouseup', this._fS);
+			VueUtil.off(document, 'touchend', this._fS);
 			if (document.all) {
 				VueUtil.off(this._dragobj, "losecapture", this._fS);
 				this._dragobj.releaseCapture();
@@ -107,7 +118,7 @@
 				var cancelSelectors = el.getAttribute('draggable-cancel-selector');
 				if (cancelSelectors) {
 					var cancelSelectorAry = cancelSelectors.split(',');
-					for(var i=0,j=cancelSelectorAry.length; i<j; i++){
+					for (var i = 0, j = cancelSelectorAry.length; i < j; i++) {
 						var cancelSelector = cancelSelectorAry[i];
 						cancelObj.push(el.querySelector(cancelSelector));
 					}
@@ -127,7 +138,7 @@
 					VueUtil.merge(resizeObj.style, resizeStyle);
 					el.appendChild(resizeObj)
 				}
-				Vue.nextTick(function(){
+				Vue.nextTick(function() {
 					var displayStyle = VueUtil.getStyle(el, 'display')
 					VueUtil.setStyle(el, 'display', 'block');
 					var offsetLeft = el.offsetLeft;
@@ -135,7 +146,7 @@
 					VueUtil.setStyle(el, 'display', displayStyle);
 					VueUtil.setStyle(el, 'position', 'relative');
 					VueUtil.setStyle(el, 'zIndex', VueUtil.component.popupManager.nextZIndex());
-					new dragEl(el, cancelObj, resizeObj, offsetLeft, offsetTop);
+					new dragEl(el,cancelObj,resizeObj,offsetLeft,offsetTop);
 				});
 			}
 		});
