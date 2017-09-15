@@ -209,9 +209,10 @@
 			}
 		},
 		created: function() {
+			var slots = this.$slots.default;
 			this.customRender = this.$options.render;
 			this.$options.render = function(createElement) {
-				return createElement('div', this.$slots.default)
+				return createElement('div', slots)
 			}
 			var columnId = this.columnId = this.columnKey || ((this.$parent.tableId || (this.$parent.columnId + '_')) + 'column_' + columnIdSeed++);
 			var parent = this.$parent;

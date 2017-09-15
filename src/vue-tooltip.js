@@ -52,7 +52,7 @@
 			self.popperVM = new Vue({
 				data: {node: ''},
 				render: function(createElement) {
-					return this.node;
+					return self.node;
 				}
 			}).$mount();
 			self.debounceClose = VueUtil.component.debounce(100, function() {

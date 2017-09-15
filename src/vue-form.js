@@ -9,7 +9,7 @@
 })('VueForm', this, function(Vue) {
 	'use strict';
 	var VueForm = {
-		template: '<form class="vue-form" :class="[ labelPosition ? \'vue-form--label-\' + labelPosition : \'\', { \'vue-form--inline\': inline } ]"><slot></slot></form>',
+		template: '<div class="vue-form" :class="[ labelPosition ? \'vue-form--label-\' + labelPosition : \'\', { \'vue-form--inline\': inline } ]"><slot></slot></div>',
 		name: 'VueForm',
 		componentName: 'VueForm',
 		props: {

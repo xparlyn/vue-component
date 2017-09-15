@@ -119,6 +119,13 @@
 			}
 		},
 		methods: {
+			focus: function() {
+				if (this.type !== 'textarea') {
+					this.$refs.input.focus();
+				} else {
+					this.$refs.textarea.focus();
+				}
+			},
 			handleBlur: function(event) {
 				this.$emit('blur', event);
 				if (this.validateEvent) {
@@ -161,8 +168,8 @@
 					self.resizeTextarea();
 				});
 				if (self.type !== 'textarea' && self.cleave !== null) {
-					self.$el.querySelector('input').value = value;
-					var cleaveObj = new Cleave(self.$el.querySelector('input'), self.cleave);
+					self.$refs.input.value = value;
+					var cleaveObj = new Cleave(self.$refs.input, self.cleave);
 					self.currentValue = cleaveObj.getFormattedValue();
 					if (cleaveObj.getFormattedValue().length >= value.length && !watchFlg) {
 						self.currentValue = value;

@@ -112,10 +112,13 @@
 			}
 		},
 		methods: {
+			focus: function() {
+				this.$refs.input.focus();
+			},
 			getData: function(queryString) {
 				var self = this;
 				self.loading = true;
-				self.fetchSuggestions(queryString, function(suggestions) {
+				self.fetchSuggestions && self.fetchSuggestions(queryString, function(suggestions) {
 					self.loading = false;
 					if (Array.isArray(suggestions)) {
 						self.suggestions = suggestions;
