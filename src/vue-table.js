@@ -1332,6 +1332,9 @@
 							mousedown: function(e) {
 								return self.handleMouseDown(e, column)
 							},
+							touchstart: function(e) {
+								return self.handleMouseDown(e, column)
+							},
 							click: function(e) {
 								return self.handleHeaderClick(e, column)
 							}
@@ -1500,6 +1503,9 @@
 				var self = this;
 				if (self.$isServer)
 					return;
+				if (event.touches) {
+					self.handleMouseMove(event, column);
+				}
 				if (column.children && column.children.length > 0)
 					return;
 				if (self.draggingColumn && self.border) {
@@ -1513,7 +1519,7 @@
 					var minLeft = columnRect.left - tableLeft + 30;
 					columnEl.classList.add('noclick');
 					self.dragState = {
-						startMouseLeft: event.clientX,
+						startMouseLeft: event.clientX || event.touches[0].clientX,
 						startLeft: columnRect.right - tableLeft,
 						startColumnLeft: columnRect.left - tableLeft,
 						tableLeft: tableLeft
@@ -1527,7 +1533,7 @@
 						return false;
 					}
 					var handleMouseMove = function(event) {
-						var deltaLeft = event.clientX - self.dragState.startMouseLeft;
+						var deltaLeft = (event.clientX || event.touches[0].clientX) - self.dragState.startMouseLeft;
 						var proxyLeft = self.dragState.startLeft + deltaLeft;
 						resizeProxy.style.left = Math.max(minLeft, proxyLeft) + 'px';
 					};
@@ -1547,7 +1553,9 @@
 							self.$parent.resizeProxyVisible = false;
 						}
 						document.removeEventListener('mousemove', handleMouseMove);
+						document.removeEventListener('touchmove', handleMouseMove);
 						document.removeEventListener('mouseup', handleMouseUp);
+						document.removeEventListener('touchend', handleMouseUp);
 						document.onselectstart = null;
 						document.ondragstart = null;
 						setTimeout(function() {
@@ -1555,7 +1563,9 @@
 						}, 0);
 					};
 					document.addEventListener('mousemove', handleMouseMove);
+					document.addEventListener('touchmove', handleMouseMove);
 					document.addEventListener('mouseup', handleMouseUp);
+					document.addEventListener('touchend', handleMouseUp);
 				}
 			},
 			handleMouseMove: function(event, column) {
@@ -1570,7 +1580,7 @@
 				if (!this.dragging && this.border) {
 					var rect = target.getBoundingClientRect();
 					var bodyStyle = document.body.style;
-					if (rect.width > 12 && rect.right - event.pageX < 8) {
+					if (rect.width > 12 && rect.right - (event.pageX || event.touches[0].pageX) < 8) {
 						bodyStyle.cursor = 'col-resize';
 						this.draggingColumn = column;
 					} else if (!this.dragging) {

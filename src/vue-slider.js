@@ -9,7 +9,7 @@
 })('VueSlider', this, function(Vue, VueUtil, VueTooltip) {
 	'use strict';
 	var VueSliderButton = {
-		template: '<div class="vue-slider__button-wrapper" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @mousedown="onButtonDown" :class="{ \'hover\': hovering, \'dragging\': dragging }" :style="wrapperStyle" ref="button"><vue-tooltip placement="top" ref="tooltip" :disabled="!showTooltip"><span slot="content">{{ formatValue }}</span><div class="vue-slider__button" :class="{ \'hover\': hovering, \'dragging\': dragging }"></div></vue-tooltip></div>',
+		template: '<div class="vue-slider__button-wrapper" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" @mousedown="onButtonDown" @touchstart="onButtonDown" :class="{ \'hover\': hovering, \'dragging\': dragging }" :style="wrapperStyle" ref="button"><vue-tooltip placement="top" ref="tooltip" :disabled="!showTooltip"><span slot="content">{{ formatValue }}</span><div class="vue-slider__button" :class="{ \'hover\': hovering, \'dragging\': dragging }"></div></vue-tooltip></div>',
 		name: 'VueSliderButton',
 		props: {
 			value: {
@@ -89,17 +89,20 @@
 			onButtonDown: function(event) {
 				if (this.disabled) return;
 				event.preventDefault();
+				this.displayTooltip();
 				this.onDragStart(event);
 				window.addEventListener('mousemove', this.onDragging);
+				window.addEventListener('touchmove', this.onDragging);
 				window.addEventListener('mouseup', this.onDragEnd);
+				window.addEventListener('touchend', this.onDragEnd);
 				window.addEventListener('contextmenu', this.onDragEnd);
 			},
 			onDragStart: function(event) {
 				this.dragging = true;
 				if (this.vertical) {
-					this.startY = event.clientY;
+					this.startY = event.clientY || event.touches[0].clientY;
 				} else {
-					this.startX = event.clientX;
+					this.startX = event.clientX || event.touches[0].clientX;
 				}
 				this.startPosition = parseFloat(this.currentPosition);
 			},
@@ -113,10 +116,10 @@
 						sliderSize = parentObj.$refs.slider['client' + (parentObj.vertical ? 'Height' : 'Width')];
 					}
 					if (this.vertical) {
-						this.currentY = event.clientY;
+						this.currentY = event.clientY || event.touches[0].clientY;
 						diff = (this.startY - this.currentY) / sliderSize * 100;
 					} else {
-						this.currentX = event.clientX;
+						this.currentX = event.clientX || event.touches[0].clientX;
 						diff = (this.currentX - this.startX) / sliderSize * 100;
 					}
 					this.newPosition = this.startPosition + diff;
@@ -132,7 +135,9 @@
 						self.setPosition(self.newPosition);
 					}, 0);
 					window.removeEventListener('mousemove', self.onDragging);
+					window.removeEventListener('touchmove', self.onDragging);
 					window.removeEventListener('mouseup', self.onDragEnd);
+					window.removeEventListener('touchend', self.onDragEnd);
 					window.removeEventListener('contextmenu', self.onDragEnd);
 				}
 			},
@@ -314,10 +319,10 @@
 				}
 				if (this.vertical) {
 					var sliderOffsetBottom = this.$refs.slider.getBoundingClientRect().bottom;
-					this.setPosition((sliderOffsetBottom - event.clientY) / sliderSize * 100);
+					this.setPosition((sliderOffsetBottom - (event.clientY || event.touches[0].clientY)) / sliderSize * 100);
 				} else {
 					var sliderOffsetLeft = this.$refs.slider.getBoundingClientRect().left;
-					this.setPosition((event.clientX - sliderOffsetLeft) / sliderSize * 100);
+					this.setPosition(((event.clientX || event.touches[0].clientX) - sliderOffsetLeft) / sliderSize * 100);
 				}
 			}
 		},

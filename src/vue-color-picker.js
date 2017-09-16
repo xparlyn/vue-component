@@ -273,25 +273,25 @@
 		};
 		var upFn = function(event) {
 			document.removeEventListener('mousemove', moveFn);
+			document.removeEventListener('touchmove', moveFn);
 			document.removeEventListener('mouseup', upFn);
+			document.removeEventListener('touchend', upFn);
 			document.onselectstart = null;
 			document.ondragstart = null;
 			isDragging = false;
-			if (options.end) {
-				options.end(event);
-			}
 		};
-		element.addEventListener('mousedown', function(event) {
+		var downFn = function(event) {
 			if (isDragging) return;
 			document.onselectstart = function() { return false; };
 			document.ondragstart = function() { return false; };
 			document.addEventListener('mousemove', moveFn);
+			document.addEventListener('touchmove', moveFn);
 			document.addEventListener('mouseup', upFn);
+			document.addEventListener('touchend', upFn);
 			isDragging = true;
-			if (options.start) {
-				options.start(event);
-			}
-		});
+		};
+		element.addEventListener('mousedown', downFn);
+		element.addEventListener('touchstart', downFn);
 	};
 	var SvPanel = {
 		template: '<div class="vue-color-svpanel" :style="{backgroundColor: background}"><div class="vue-color-svpanel__white"></div><div class="vue-color-svpanel__black"></div><div class="vue-color-svpanel__cursor" :style="{top: cursorTop + \'px\', left: cursorLeft + \'px\'}"><div></div></div></div>',
@@ -328,8 +328,8 @@
 			handleDrag: function(event) {
 				var el = this.$el;
 				var rect = el.getBoundingClientRect();
-				var left = event.clientX - rect.left;
-				var top = event.clientY - rect.top;
+				var left = (event.clientX || event.touches[0].clientX) - rect.left;
+				var top = (event.clientY || event.touches[0].clientY) - rect.top;
 				left = Math.max(0, left);
 				left = Math.min(left, rect.width);
 				top = Math.max(0, top);
@@ -346,9 +346,6 @@
 			var self = this;
 			draggable(self.$el, {
 				drag: function(event) {
-					self.handleDrag(event);
-				},
-				end: function(event) {
 					self.handleDrag(event);
 				}
 			});
@@ -400,12 +397,12 @@
 				var thumb = this.$refs.thumb;
 				var hue;
 				if (!this.vertical) {
-					var left = event.clientX - rect.left;
+					var left = (event.clientX || event.touches[0].clientX) - rect.left;
 					left = Math.min(left, rect.width - thumb.offsetWidth / 2);
 					left = Math.max(thumb.offsetWidth / 2, left);
 					hue = Math.round((left - thumb.offsetWidth / 2) / (rect.width - thumb.offsetWidth) * 360);
 				} else {
-					var top = event.clientY - rect.top;
+					var top = (event.clientY || event.touches[0].clientY) - rect.top;
 					top = Math.min(top, rect.height - thumb.offsetHeight / 2);
 					top = Math.max(thumb.offsetHeight / 2, top);
 					hue = Math.round((top - thumb.offsetHeight / 2) / (rect.height - thumb.offsetHeight) * 360);
@@ -440,9 +437,6 @@
 			var thumb = _$refs.thumb;
 			var dragConfig = {
 				drag: function(event) {
-					self.handleDrag(event);
-				},
-				end: function(event) {
 					self.handleDrag(event);
 				}
 			};
@@ -479,12 +473,12 @@
 				var rect = this.$el.getBoundingClientRect();
 				var thumb = this.$refs.thumb;
 				if (!this.vertical) {
-					var left = event.clientX - rect.left;
+					var left = (event.clientX || event.touches[0].clientX) - rect.left;
 					left = Math.max(thumb.offsetWidth / 2, left);
 					left = Math.min(left, rect.width - thumb.offsetWidth / 2);
 					this.color.set('alpha', Math.round((left - thumb.offsetWidth / 2) / (rect.width - thumb.offsetWidth) * 100));
 				} else {
-					var top = event.clientY - rect.top;
+					var top = (event.clientY || event.touches[0].clientY) - rect.top;
 					top = Math.max(thumb.offsetHeight / 2, top);
 					top = Math.min(top, rect.height - thumb.offsetHeight / 2);
 					this.color.set('alpha', Math.round((top - thumb.offsetHeight / 2) / (rect.height - thumb.offsetHeight) * 100));
@@ -536,9 +530,6 @@
 			var thumb = _$refs.thumb;
 			var dragConfig = {
 				drag: function(event) {
-					self.handleDrag(event);
-				},
-				end: function(event) {
 					self.handleDrag(event);
 				}
 			};
