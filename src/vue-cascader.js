@@ -301,6 +301,9 @@
 			}
 		},
 		methods: {
+			focus: function() {
+				this.$refs.input.focus();
+			},
 			initMenu: function() {
 				this.menu = new Vue(VueCascaderMenu).$mount();
 				this.menu.options = this.options;
@@ -346,6 +349,7 @@
 				if (close) {
 					this.menuVisible = false;
 				}
+				this.$nextTick(this.focus);
 			},
 			handleInputChange: function(value) {
 				var self = this;
