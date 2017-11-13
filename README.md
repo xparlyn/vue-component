@@ -2,7 +2,7 @@
 基于Vue2的web UI工具套件
 
 [DEMO](https://xparlyn.github.io/vue-component/examples/index.html)
-![image](https://github.com/xparlyn/img/qrcode.png)
+[image](https://github.com/xparlyn/img/qrcode.png)
 # Inspired or Powered
 * [Vue](https://github.com/vuejs/vue)
 * [vuex](https://github.com/vuejs/vuex)
