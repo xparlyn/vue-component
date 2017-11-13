@@ -2,8 +2,6 @@
 基于Vue2的web UI工具套件
 
 [DEMO](https://xparlyn.github.io/vue-component/examples/index.html)
-#
-<img src="./img/qrcode.png" width="200"/>
 # Inspired or Powered
 * [Vue](https://github.com/vuejs/vue)
 * [vuex](https://github.com/vuejs/vuex)
@@ -19,3 +17,5 @@
 * [RequireJS](https://github.com/requirejs/requirejs)
 # License
 [MIT](https://opensource.org/licenses/MIT)
+#
+<img src="./img/qrcode.png" width="200"/>
