@@ -237,6 +237,9 @@
 .vue-icon-user-times:before {
 	content: "\e848";
 }
+.vue-icon-refresh:before {
+	content: "\e849";
+}
 .vue-icon-loading {
 	animation: rotating 1s linear infinite;
 }
