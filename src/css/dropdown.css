@@ -1,0 +1,17 @@
+.vue-dropdown {
+	color: #48576a;
+}
+.vue-dropdown .vue-button-group {
+	display: block;
+}
+.vue-dropdown .vue-dropdown__caret-button {
+	padding-right: 5px;
+	padding-left: 5px;
+}
+.vue-dropdown .vue-dropdown__caret-button .vue-dropdown__icon {
+	padding-left: 0;
+}
+.vue-dropdown__icon {
+	line-height: 0;
+	margin: 0 3px;
+}

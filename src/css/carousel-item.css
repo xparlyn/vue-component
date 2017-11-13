@@ -1,0 +1,27 @@
+.vue-carousel__item {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: inline-block;
+	transition: .4s ease-in-out;
+	overflow: hidden;
+	z-index: 0;
+}
+.vue-carousel__item.is-active {
+	z-index: 2;
+}
+.vue-carousel__item--card {
+	width: 50%;
+}
+.vue-carousel__item--card.is-in-stage {
+	cursor: pointer;
+	z-index: 1;
+}
+.vue-carousel__item--card.is-in-stage.is-hover .vue-carousel__mask,.vue-carousel__item--card.is-in-stage:hover .vue-carousel__mask {
+	opacity: .12;
+}
+.vue-carousel__item--card.is-active {
+	z-index: 2;
+}

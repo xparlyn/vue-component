@@ -1,0 +1,17 @@
+.vue-breadcrumb {
+	font-size: 13px;
+	line-height: 1;
+}
+.vue-breadcrumb__separator {
+	margin: 0 9px;
+	color: #bfcbd9;
+	font-weight: 600;
+}
+.vue-breadcrumb:after,
+.vue-breadcrumb:before {
+	display: table;
+	content: '';
+}
+.vue-breadcrumb:after {
+	clear: both;
+}

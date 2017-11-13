@@ -1,0 +1,23 @@
+.vue-form--inline .vue-form-item,
+.vue-form--inline .vue-form-item__content {
+	display: inline-block;
+	vertical-align: top;
+}
+.vue-form--label-left .vue-form-item__label {
+	text-align: left;
+}
+.vue-form--label-top .vue-form-item__label {
+	float: none;
+	display: inline-block;
+	padding: 0 0 10px;
+}
+.vue-form--inline .vue-form-item {
+	margin-right: 10px;
+}
+.vue-form--inline .vue-form-item__label {
+	float: none;
+	display: inline-block;
+}
+.vue-form--inline.vue-form--label-top .vue-form-item__content {
+	display: block;
+}

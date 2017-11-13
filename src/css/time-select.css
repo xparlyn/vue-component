@@ -1,0 +1,28 @@
+.time-select {
+	margin: 5px 0;
+	min-width: 0;
+}
+.time-select .vue-picker-panel__content {
+	max-height: 200px;
+	margin: 0;
+	overflow: auto;
+}
+.time-select-item {
+	padding: 8px 10px;
+	font-size: 14px;
+}
+.time-select-item.selected:not(.disabled) {
+	background-color: #409eff;
+	color: #fff;
+}
+.time-select-item.selected:not(.disabled):hover {
+	background-color: #409eff;
+}
+.time-select-item.disabled {
+	color: #d1dbe5;
+	cursor: not-allowed;
+}
+.time-select-item:hover {
+	background-color: #e4e8f1;
+	cursor: pointer;
+}

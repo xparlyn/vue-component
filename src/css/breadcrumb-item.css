@@ -1,0 +1,25 @@
+.vue-breadcrumb__item {
+	float: left;
+}
+.vue-breadcrumb__item:last-child .vue-breadcrumb__item__inner,
+.vue-breadcrumb__item:last-child .vue-breadcrumb__item__inner a,
+.vue-breadcrumb__item:last-child .vue-breadcrumb__item__inner a:hover,
+.vue-breadcrumb__item:last-child .vue-breadcrumb__item__inner:hover {
+	color: #97a8be;
+	cursor: text;
+	font-weight: 300;
+}
+.vue-breadcrumb__item:last-child .vue-breadcrumb__separator {
+	display: none;
+}
+.vue-breadcrumb__item__inner,
+.vue-breadcrumb__item__inner a {
+	transition: color .15s linear;
+	color: #48576a;
+	font-weight: 600;
+}
+.vue-breadcrumb__item__inner a:hover,
+.vue-breadcrumb__item__inner:hover {
+	color: #3a8ee6;
+	cursor: pointer;
+}

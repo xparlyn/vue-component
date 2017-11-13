@@ -1,0 +1,114 @@
+.vue-select-group {
+	margin: 0;
+	padding: 0;
+}
+.vue-select-group .vue-select-dropdown__item {
+	padding-left: 20px;
+}
+.vue-select-group__wrap {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.vue-select-group__title {
+	padding-left: 10px;
+	font-size: 12px;
+	color: #999;
+	height: 30px;
+	line-height: 30px;
+}
+.vue-select {
+	position: relative;
+}
+.vue-select:hover .vue-input__inner {
+	border-color: #8391a5;
+}
+.vue-select .vue-input__inner {
+	cursor: pointer;
+}
+.vue-select .vue-input__inner:focus {
+	border-color: #409eff;
+}
+.vue-select .vue-input .vue-input__icon {
+	transform: rotateZ(180deg);
+}
+.vue-select .vue-input .vue-input__icon.is-show-check,
+.vue-select .vue-input .vue-input__icon.is-show-close {
+	cursor: pointer;
+}
+.vue-select .vue-input .vue-input__icon.is-show-check {
+	transform: rotateZ(0);
+}
+.vue-select .vue-input .vue-input__icon.is-reverse,
+.vue-select__tags {
+	transform: rotateZ(0);
+}
+.vue-select .vue-input .vue-input__icon.is-show-close:hover {
+	color: #97a8be;
+}
+.vue-select .vue-input.is-disabled .vue-input__inner {
+	cursor: not-allowed;
+}
+.vue-select .vue-input.is-disabled .vue-input__inner:hover {
+	border-color: #d1dbe5;
+}
+.vue-select>.vue-input {
+	display: block;
+}
+.vue-select .vue-tag {
+	box-sizing: border-box;
+	margin: 0 0 -6.5px 6px;
+}
+.vue-select__input {
+	border: none;
+	outline: 0;
+	padding: 0;
+	margin-left: 10px;
+	color: #666;
+	font-size: 14px;
+	vertical-align: baseline;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	height: 28px;
+	background-color: transparent;
+}
+.vue-select__input.is-mini {
+	height: 14px;
+}
+.vue-select__close {
+	cursor: pointer;
+	position: absolute;
+	top: 8px;
+	z-index: 1000;
+	right: 25px;
+	color: #bfcbd9;
+	line-height: 18px;
+	font-size: 12px;
+}
+.vue-select__close:hover {
+	color: #97a8be;
+}
+.vue-select__tags {
+	position: absolute;
+	line-height: 36px;
+	white-space: normal;
+	z-index: 1000;
+}
+.vue-select__tags.no-reset-height {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.vue-select__tag {
+	display: inline-block;
+	height: 24px;
+	line-height: 24px;
+	font-size: 14px;
+	border-radius: 4px;
+	color: #fff;
+	background-color: #409eff;
+}
+.vue-select__tag .vue-icon-close {
+	font-size: 12px;
+}

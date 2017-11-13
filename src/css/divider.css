@@ -1,0 +1,16 @@
+.vue-divider {
+	height: 1px;
+	margin: 0;
+	padding: 0;
+	display: block;
+	border: 0;
+	background-color: rgba(0,0,0,.12);
+}
+.vue-divider__content {
+	position: relative;
+	top: -10px;
+	left: 50%;
+	background: #fff;
+	padding: 0 10px;
+	transform: translateX(-50%);
+}

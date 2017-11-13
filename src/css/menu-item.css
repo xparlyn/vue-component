@@ -1,0 +1,25 @@
+.vue-menu-item {
+	height: 56px;
+	line-height: 56px;
+	font-size: 14px;
+	color: #48576a;
+	padding: 0 20px;
+	cursor: pointer;
+	position: relative;
+	transition: border-color .2s,background-color .2s,color .2s;
+	box-sizing: border-box;
+	white-space: nowrap;
+}
+.vue-menu-item.is-active {
+	color: #409eff;
+}
+.vue-menu-item [class^=vue-icon-] {
+	vertical-align: baseline;
+	margin-right: 10px;
+}
+.vue-menu-item:first-child {
+	margin-left: 0;
+}
+.vue-menu-item:last-child {
+	margin-right: 0;
+}

@@ -1,0 +1,21 @@
+.vue-steps {
+	font-size: 0;
+}
+.vue-steps>:last-child .vue-step__line {
+	display: none;
+}
+.vue-steps.is-vertical>:last-child .vue-step__line {
+	display: inherit;
+}
+.vue-step.is-horizontal,
+.vue-step.is-vertical .vue-step__head,
+.vue-step.is-vertical .vue-step__main,
+.vue-step__line {
+	display: inline-block;
+}
+.vue-steps.is-horizontal {
+	white-space: nowrap;
+}
+.vue-steps.is-horizontal.is-center {
+	text-align: center;
+}

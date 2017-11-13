@@ -1,0 +1,95 @@
+.vue-picker-panel {
+	color: #48576a;
+	border: 1px solid #d1dbe5;
+	box-shadow: 0 2px 6px #ccc;
+	background: #fff;
+	border-radius: 2px;
+	line-height: 20px;
+	margin: 5px 0;
+}
+.vue-picker-panel__body-wrapper::after,
+.vue-picker-panel__body::after {
+	content: '';
+	display: table;
+	clear: both;
+}
+.vue-picker-panel__content {
+	position: relative;
+	margin: 15px;
+}
+.vue-picker-panel__footer {
+	border-top: 1px solid #e4e4e4;
+	padding: 4px;
+	text-align: right;
+	background-color: #fff;
+	position: relative;
+}
+.vue-picker-panel__shortcut {
+	display: block;
+	width: 100%;
+	border: 0;
+	background-color: transparent;
+	line-height: 28px;
+	font-size: 14px;
+	color: #48576a;
+	padding-left: 12px;
+	text-align: left;
+	outline: 0;
+	cursor: pointer;
+}
+.vue-picker-panel__shortcut:hover {
+	background-color: #e4e8f1;
+}
+.vue-picker-panel__shortcut.active {
+	background-color: #e6f1fe;
+	color: #409eff;
+}
+.vue-picker-panel__btn {
+	border: 1px solid #dcdcdc;
+	color: #333;
+	line-height: 24px;
+	border-radius: 2px;
+	padding: 0 20px;
+	cursor: pointer;
+	background-color: transparent;
+	outline: 0;
+	font-size: 12px;
+}
+.vue-picker-panel__btn[disabled] {
+	color: #ccc;
+	cursor: not-allowed;
+}
+.vue-picker-panel__icon-btn {
+	font-size: 10px;
+	color: #97a8be;
+	border: 0;
+	background: 0 0;
+	cursor: pointer;
+	outline: 0;
+	margin-top: 3px;
+}
+.vue-picker-panel__icon-btn:hover {
+	color: #409eff;
+}
+.vue-picker-panel__link-btn {
+	cursor: pointer;
+	color: #409eff;
+	text-decoration: none;
+	padding: 15px;
+	font-size: 12px;
+}
+.vue-picker-panel [slot=sidebar],
+.vue-picker-panel__sidebar {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 110px;
+	border-right: 1px solid #e4e4e4;
+	box-sizing: border-box;
+	padding-top: 6px;
+	background-color: #fbfdff;
+}
+.vue-picker-panel [slot=sidebar]+.vue-picker-panel__body,
+.vue-picker-panel__sidebar+.vue-picker-panel__body {
+	margin-left: 110px;
+}

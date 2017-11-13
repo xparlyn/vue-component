@@ -1,0 +1,10 @@
+.vue-radio-group {
+	display: inline-block;
+	font-size: 0;
+	line-height: 1;
+}
+.vue-radio-group .vue-radio {
+	font-size: 14px;
+	margin-left: 0;
+	margin-right: 15px;
+}

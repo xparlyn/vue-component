@@ -1,0 +1,17 @@
+.vue-loading-bar {
+	width: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 2000;
+}
+.vue-loading-bar-inner {
+	transition: width .2s linear;
+}
+.vue-loading-bar-inner-color-primary {
+	background-color: #39f;
+}
+.vue-loading-bar-inner-failed-color-error {
+	background-color: #f30;
+}
