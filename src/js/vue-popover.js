@@ -15,7 +15,7 @@
 		props: {
 			openDelay: {
 				type: Number,
-				default: 0
+				default: 150
 			},
 			trigger: {
 				type: String,
@@ -37,7 +37,8 @@
 		},
 		data: function() {
 			return {
-				popoverWidth: null
+				popoverWidth: null,
+				timer: null
 			}
 		},
 		watch: {
@@ -106,13 +107,17 @@
 			},
 			handleMouseEnter: function() {
 				var self = this;
-				var timer = setTimeout(function() {
+				clearTimeout(self.timer);
+				self.timer = setTimeout(function() {
 					self.showPopper = true;
-					clearTimeout(timer);
 				}, self.openDelay);
 			},
 			handleMouseLeave: function() {
-				this.showPopper = false;
+				var self = this;
+				clearTimeout(self.timer);
+				self.timer = setTimeout(function() {
+					self.showPopper = false;
+				}, self.openDelay);
 			},
 			handleDocumentClick: function(e) {
 				var reference = this.reference || this.$refs.reference;

@@ -6,7 +6,7 @@
 	position: fixed;
 	border: 1px solid #e6ebf5;
 	background-color: #fff;
-	box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+	box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
 	overflow: hidden;
 	transition: opacity .2s,top .2s,bottom .2s;
 }

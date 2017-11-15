@@ -17,10 +17,6 @@
 		name: 'VueTooltip',
 		mixins: [VuePopper],
 		props: {
-			openDelay: {
-				type: Number,
-				default: 0
-			},
 			disabled: Boolean,
 			effect: String,
 			popperClass: String,
@@ -106,12 +102,8 @@
 			},
 			handleShowPopper: function() {
 				var self = this;
-				if (!self.expectedState)
-					return;
-				var timer = setTimeout(function() {
-					self.showPopper = true;
-					clearTimeout(timer);
-				}, self.openDelay);
+				if (!self.expectedState) return;
+				self.showPopper = true;
 			},
 			handleClosePopper: function() {
 				if (this.enterable && this.expectedState) return;

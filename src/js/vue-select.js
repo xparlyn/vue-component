@@ -339,7 +339,9 @@
 				} else if (this.iconClass.indexOf('vue-icon-success') > -1) {
 					var value = [];
 					this.options.forEach(function(option){
-						value.push(option.value);
+						if (!option.disabled) {
+							value.push(option.value);
+						}
 					});
 					this.$emit('input', value);
 				} else {
@@ -387,7 +389,8 @@
 				self.$nextTick(function() {
 					var input = self.$refs.reference.$refs.input;
 					var icon = self.$refs.reference.$refs.icon;
-					var newHeight = Math.max(self.$refs.tags.clientHeight, sizeMap[self.size] || 36) + 'px';
+					var size = sizeMap[self.size] || 36;
+					var newHeight = (parseInt(self.$refs.tags.children[0].offsetHeight / size, 10) + 1) * size  + 'px';
 					input.style.height = newHeight;
 					icon.style.lineHeight = newHeight;
 					if (self.visible && self.emptyText !== false) {

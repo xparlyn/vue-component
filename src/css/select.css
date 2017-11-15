@@ -57,7 +57,7 @@
 }
 .vue-select .vue-tag {
 	box-sizing: border-box;
-	margin: 0 0 -6.5px 6px;
+	margin: 6px 0 6px 6px;
 }
 .vue-select__input {
 	border: none;
@@ -91,6 +91,7 @@
 }
 .vue-select__tags {
 	position: absolute;
+	height: 100%;
 	line-height: 36px;
 	white-space: normal;
 	z-index: 1000;

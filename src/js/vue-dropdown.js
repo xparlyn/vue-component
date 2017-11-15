@@ -35,7 +35,8 @@
 		},
 		data: function() {
 			return {
-				visible: false
+				visible: false,
+				timer: null
 			};
 		},
 		mounted: function() {
@@ -50,16 +51,16 @@
 		methods: {
 			show: function() {
 				var self = this;
-				var timer = setTimeout(function() {
+				clearTimeout(self.timer);
+				self.timer = setTimeout(function() {
 					self.visible = true;
-					clearTimeout(timer);
-				}, 250);
+				}, 150);
 			},
 			hide: function() {
 				var self = this;
-				var timer = setTimeout(function() {
+				clearTimeout(self.timer);
+				self.timer = setTimeout(function() {
 					self.visible = false;
-					clearTimeout(timer);
 				}, 150);
 			},
 			handleClick: function() {

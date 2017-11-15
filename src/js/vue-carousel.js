@@ -117,8 +117,7 @@
 				clearInterval(this.timer);
 			},
 			startTimer: function() {
-				if (this.interval <= 0 || !this.autoplay)
-					return;
+				if (this.interval <= 0 || !this.autoplay) return;
 				this.timer = setInterval(this.playSlides, this.interval);
 			},
 			setActiveItem: function(index) {
