@@ -718,7 +718,8 @@
 			}
 			this.fixedBodyHeight = this.scrollX ? bodyHeight - this.gutterWidth : bodyHeight;
 		}
-		this.viewportHeight = height;
+		this.viewportHeight = this.scrollX ? height - this.gutterWidth : height;
+		if (this.table.showSummary) this.viewportHeight = height;
 	}
 	TableLayout.prototype.update = function() {
 		var fit = this.fit;
@@ -933,7 +934,7 @@
 				if (((self.fixed === true || self.fixed === 'left') && self.table.fixedColumns.length > 0) || ((self.fixed === 'right') && self.table.rightFixedColumns.length > 0)) {
 					delta = self.table.$refs.tableBody.delta;
 					selfData = delta.data;
-					self.$nextTick(self.updateHoverCurrentClass);
+					self.$nextTick(self.updateCurrentClass);
 				}
 			} else {
 				selfData = delta.data = scrollFilter(self.data, delta);
@@ -1141,7 +1142,7 @@
 				delta.end = end;
 				delta.start = start;
 			},
-			updateHoverCurrentClass: function() {
+			updateCurrentClass: function() {
 				var self = this;
 				var el = self.$el;
 				if (!el) return;
@@ -1157,7 +1158,6 @@
 				for (var i=0; i<rows.length; i++) {
 					var row = rows[i];
 					row.classList.remove('current-row');
-					row.classList.remove('hover-row')
 					if (currentRow && row === currentRow) {
 						row.classList.add('current-row');
 					}
@@ -2089,7 +2089,7 @@
 			bindEvents: function() {
 				var self = this;
 				var refs = self.$refs;
-				self.bodyWrapper.addEventListener('scroll', function() {
+				var bodyScroll = function() {
 					var scrollLeft = this.scrollLeft;
 					var scrollTop = this.scrollTop;
 					if (self.bodyScroll.left !== scrollLeft) {
@@ -2100,28 +2100,61 @@
 					if (self.bodyScroll.top !== scrollTop) {
 						if (refs.tableBody && refs.tableBody.delta.keeps !== 0) {
 							refs.tableBody.updateZone(scrollTop);
-							refs.tableBody.updateHoverCurrentClass();
+							refs.tableBody.updateCurrentClass();
 						}
 						self.bodyScroll.top = scrollTop;
 						refs.fixedBodyWrapper.scrollTop = scrollTop;
 						refs.rightFixedBodyWrapper.scrollTop = scrollTop;
 					}
-				});
-				VueUtil.on(refs.headerWrapper, isFirefox ? 'DOMMouseScroll' : 'mousewheel', function(event) {
+				};
+				var scrollYMouseWheel = function(event) {
+					if (self.layout.scrollY) {
+						var wheelDelta = event.wheelDelta || -event.detail;
+						var scrollTop = self.bodyScroll.top;
+						var wheel = (parseInt(VueUtil.getStyle(self.$el.querySelector('tbody > tr'), 'height'), 10) || 40) * 3;
+						if (wheelDelta < 0) {
+							scrollTop += wheel;
+						} else {
+							scrollTop -= wheel;
+						}
+						scrollTop < 0 ? scrollTop = 0 : void 0;
+						if (refs.tableBody && refs.tableBody.delta.keeps !== 0) {
+							refs.tableBody.updateZone(scrollTop);
+							refs.tableBody.updateCurrentClass();
+						}
+						refs.bodyWrapper.scrollTop = scrollTop;
+						refs.fixedBodyWrapper.scrollTop = scrollTop;
+						refs.rightFixedBodyWrapper.scrollTop = scrollTop;
+						event.preventDefault();
+					}
+				};
+				var scrollXMouseWheel = function(event) {
 					if (self.layout.scrollX) {
 						var wheelDelta = event.wheelDelta || -event.detail;
 						var scrollLeft = self.bodyScroll.left;
 						if (wheelDelta < 0) {
-							scrollLeft += 50;
+							scrollLeft += 80;
 						} else {
-							scrollLeft -= 50;
+							scrollLeft -= 80;
 						}
-						self.bodyWrapper.scrollLeft = scrollLeft;
+						scrollLeft < 0 ? scrollLeft = 0 : void 0;
+						refs.bodyWrapper.scrollLeft = scrollLeft;
 						refs.headerWrapper.scrollLeft = scrollLeft;
 						refs.footerWrapper.scrollLeft = scrollLeft;
 						event.preventDefault();
 					}
-				});
+				};
+				var mouseWheel = isFirefox ? 'DOMMouseScroll' : 'mousewheel';
+				VueUtil.on(refs.bodyWrapper, 'scroll', bodyScroll);
+				VueUtil.on(refs.bodyWrapper, mouseWheel, scrollYMouseWheel);
+				VueUtil.on(refs.fixedBodyWrapper, mouseWheel, scrollYMouseWheel);
+				VueUtil.on(refs.rightFixedBodyWrapper, mouseWheel, scrollYMouseWheel);
+				VueUtil.on(refs.headerWrapper, mouseWheel, scrollXMouseWheel);
+				VueUtil.on(refs.fixedHeaderWrapper, mouseWheel, scrollXMouseWheel);
+				VueUtil.on(refs.rightFixedHeaderWrapper, mouseWheel, scrollXMouseWheel);
+				VueUtil.on(refs.footerWrapper, mouseWheel, scrollXMouseWheel);
+				VueUtil.on(refs.fixedFooterWrapper, mouseWheel, scrollXMouseWheel);
+				VueUtil.on(refs.rightFixedFooterWrapper, mouseWheel, scrollXMouseWheel);
 				if (self.fit) {
 					VueUtil.addResizeListener(self.$el, self.doLayout);
 				}
@@ -2131,7 +2164,7 @@
 				if (refs.tableBody && refs.tableBody.delta.keeps !== 0 && !this.fixed) {
 					var scrollTop = this.bodyScroll.top;
 					refs.tableBody.updateZone(scrollTop);
-					refs.tableBody.updateHoverCurrentClass();
+					refs.tableBody.updateCurrentClass();
 				}
 				if (refs.tableFooter && this.showSummary && !this.fixed && !noFooter) {
 					refs.tableFooter.getSum(this.store.states.data);
