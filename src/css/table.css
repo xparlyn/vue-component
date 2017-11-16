@@ -333,14 +333,11 @@
 	background-color: #fafafa;
 }
 .vue-table__body tr.hover-row>td,
-.vue-table--enable-row-hover .vue-table__body tr:hover>td,
 .vue-table--striped .vue-table__body tr:nth-child(2n).hover-row td {
 	background-color: #eef1f6;
 }
 .vue-table__body tr.current-row>td,
-.vue-table--enable-row-hover .vue-table__body tr:hover.current-row>td,
-.vue-table--striped .vue-table__body tr:nth-child(2n).current-row td,
-.vue-table--striped .vue-table__body tr:hover:nth-child(2n).current-row td {
+.vue-table--striped .vue-table__body tr:nth-child(2n).current-row td {
 	background-color: #edf7ff;
 	color: #409eff;
 }
