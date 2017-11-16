@@ -2079,7 +2079,7 @@
 						event.preventDefault();
 						var wheelDelta = event.wheelDelta || -event.detail;
 						var scrollTop = self.bodyScroll.top;
-						var wheel = (parseInt(VueUtil.getStyle(self.$el.querySelector('tbody > tr'), 'height'), 10) || 40) * 4;
+						var wheel = (parseInt(VueUtil.getStyle(self.$el.querySelector('tbody > tr'), 'height'), 10) || 40) * 2;
 						if (wheelDelta < 0) {
 							scrollTop += wheel;
 						} else {
