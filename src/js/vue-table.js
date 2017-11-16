@@ -570,7 +570,9 @@
 			var bodyWrapper = this.table.bodyWrapper;
 			if (this.table.$el && bodyWrapper) {
 				var body = bodyWrapper.querySelector('.vue-table__body');
-				this.scrollY = body.offsetHeight > bodyWrapper.offsetHeight;
+				if (body) {
+					this.scrollY = body.offsetHeight > bodyWrapper.offsetHeight;
+				}
 			}
 		}
 	};
@@ -840,7 +842,7 @@
 			var delta = self.delta;
 			if (self.fixed) {
 				selfData = [];
-				if (((self.fixed === true || self.fixed === 'left') && self.table.fixedColumns.length > 0) || ((self.fixed === 'right') && self.table.rightFixedColumns.length > 0)) {
+				if (((self.fixed === true || self.fixed === 'left') && self.leftFixedCount > 0) || ((self.fixed === 'right') && self.rightFixedCount > 0)) {
 					delta = self.table.$refs.tableBody.delta;
 					selfData = delta.data;
 					self.$nextTick(self.updateCurrentClass);
@@ -848,6 +850,7 @@
 			} else {
 				selfData = delta.data = self.scrollFilter(self.data, delta);
 			}
+			if (selfData.length === 0) return null;
 			var paddingTop = delta.paddingTop;
 			var allPadding = delta.allPadding;
 			return createElement('table', {
@@ -940,7 +943,7 @@
 			'store.states.hoverRow': function(newVal, oldVal) {
 				var self = this;
 				var el = self.$el;
-				if (!el) return;
+				if (!el.querySelector) return;
 				var oldHoverRow = el.querySelector('.hover-row');
 				oldHoverRow && oldHoverRow.classList.remove('hover-row');
 				if (newVal === null) return;
@@ -957,7 +960,7 @@
 				if (!this.highlight) return;
 				var self = this;
 				var el = self.$el;
-				if (!el) return;
+				if (!el.querySelector) return;
 				var oldCurrentRow = el.querySelector('.current-row');
 				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
 				var data = self.delta.data;
@@ -1049,7 +1052,7 @@
 				if (!this.highlight) return;
 				var self = this;
 				var el = self.$el;
-				if (!el) return;
+				if (!el.querySelector) return;
 				var oldCurrentRow = el.querySelector('.current-row');
 				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
 				var data = self.delta.data;
@@ -1191,7 +1194,7 @@
 	var TableHeader = {
 		name: 'VueTableHeader',
 		render: function(createElement) {
-			if (!this.store.table.showHeader) return null;
+			if (!this.store.table.showHeader || ((this.fixed === true || this.fixed === 'left') && this.leftFixedCount === 0) || ((this.fixed === 'right') && this.rightFixedCount === 0)) return null;
 			var self = this;
 			var originColumns = self.store.states.originColumns;
 			var columnRows = self.convertToRows(originColumns);
@@ -2030,7 +2033,7 @@
 				}
 			},
 			toggleContextMenu: function() {
-				this.showContextMenu = !this.showContextMenu;
+				if (this.contextMenu) this.showContextMenu = !this.showContextMenu;
 			},
 			setCurrentRow: function(row) {
 				this.store.commit('setCurrentRow', row);
