@@ -119,6 +119,11 @@
 			}
 		});
 	};
+	var sortData = function(data, states) {
+		var sortingColumns = states.sortingColumns;
+		if (sortingColumns.length === 0) return data;
+		return orderBy(data, sortingColumns);
+	};
 	var getColumnById = function(table, columnId) {
 		var column = null;
 		for (var i=0, j=table.columns.length; i<j; i++) {
@@ -129,11 +134,6 @@
 			}
 		}
 		return column;
-	};
-	var sortData = function(data, states) {
-		var sortingColumns = states.sortingColumns;
-		if (sortingColumns.length === 0) return data;
-		return orderBy(data, sortingColumns);
 	};
 	var toggleRowSelection = function(states, row, selected) {
 		var changed = false;
@@ -594,15 +594,15 @@
 			this.fixedBodyHeight = this.scrollX ? height - this.gutterWidth : height;
 		} else {
 			var headerHeight = this.headerHeight = headerWrapper.offsetHeight;
-			var ratio = this.table.showSummary > 0 ? 2 : 1;
-			var bodyHeight = height - ratio * headerHeight + (this.table.showSummary ? 1 : 0);
+			var ratio = this.table.showFooter > 0 ? 2 : 1;
+			var bodyHeight = height - ratio * headerHeight + (this.table.showFooter ? 1 : 0);
 			if (this.height !== null && (!isNaN(this.height) || typeof this.height === 'string')) {
 				this.bodyHeight = bodyHeight;
 			}
 			this.fixedBodyHeight = this.scrollX ? bodyHeight - this.gutterWidth : bodyHeight;
 		}
 		this.viewportHeight = this.scrollX ? height - this.gutterWidth : height;
-		if (this.table.showSummary) this.viewportHeight = height;
+		if (this.table.showFooter) this.viewportHeight = height;
 	}
 	TableLayout.prototype.update = function() {
 		var fit = this.fit;
@@ -1561,15 +1561,15 @@
 		name: 'VueTableFooter',
 		data: function() {
 			return {
-				sums: []
+				aggregates: []
 			}
 		},
 		render: function(createElement) {
-			if (!this.store.table.showSummary) return null;
+			if (!this.store.table.showFooter) return null;
 			var self = this;
-			var sums = self.sums;
+			var aggregates = self.aggregates;
 			if (self.fixed) {
-				sums = self.store.table.$refs.tableFooter.sums
+				aggregates = self.store.table.$refs.tableFooter.aggregates
 			}
 			return createElement('table', {
 				class: 'vue-table__footer',
@@ -1599,10 +1599,7 @@
 					class: [column.id, column.align, column.className || '', self.isCellHidden(cellIndex, self.columns) ? 'is-hidden' : '', !column.children ? 'is-leaf' : '', column.labelClassName]
 				}, [createElement('div', {
 					class: ['cell', column.labelClassName]
-				}, [self.summaryMethod ? self.summaryMethod({
-					columns: self.columns,
-					data: self.store.states.data
-				})[cellIndex] : sums[cellIndex]])])
+				}, [aggregates[cellIndex]])])
 			}), !self.fixed && self.layout.scrollY && self.layout.gutterWidth ? createElement('th', {
 				class: 'gutter',
 				style: {
@@ -1618,8 +1615,6 @@
 			layout: {
 				required: true
 			},
-			summaryMethod: Function,
-			sumText: String,
 			border: Boolean
 		},
 		computed: {
@@ -1653,36 +1648,76 @@
 					return (index < this.leftFixedCount) || (index >= this.columnsCount - this.rightFixedCount);
 				}
 			},
-			getSum: function(data) {
+			getAggregate: function(data) {
+				if (data.length === 0) return;
 				var self = this;
-				self.sums = [];
-				var sums = self.sums;
+				self.aggregates = [];
+				var aggregates = self.aggregates;
+				var labelMap = {
+					'sum': self.$t('vue.table.sumText'),
+					'count': self.$t('vue.table.countText'),
+					'average': self.$t('vue.table.averageText'),
+					'min': self.$t('vue.table.minText'),
+					'max': self.$t('vue.table.maxText'),
+				}
 				for (var index=0,len=self.columns.length; index<len; index++) {
 					var column = self.columns[index];
-					var values = data.map(function(item) {
-						return Number(item[column.property])
-					});
-					var precisions = [];
-					var notNumber = true;
-					values.forEach(function(value) {
-						if (!isNaN(value)) {
-							notNumber = false;
-							var decimal = ('' + value).split('.')[1];
-							precisions.push(decimal ? decimal.length : 0);
+					var aggregateType = column.aggregate.toLowerCase();
+					var aggregateLabel = labelMap[aggregateType];
+					if (!aggregateLabel && column.aggregateLabel === undefined) continue;
+					if (column.aggregateLabel !== undefined) aggregateLabel = column.aggregateLabel;
+					var resultMap = {};
+					switch (aggregateType) {
+					case 'count':
+						resultMap.count = data.length;
+						break;
+					case 'min':
+					case 'max':
+						var values = data.map(function(item) {
+							return Number(item[column.property])
+						}).filter(function(value) {
+							return !isNaN(value);
+						});
+						if (values.length > 0) {
+							resultMap.max = Math.max.apply(null, values);
+							resultMap.min = Math.min.apply(null, values);
+						} else {
+							resultMap.max = '';
+							resultMap.min = '';
 						}
-					});
-					var precision = Math.max.apply(null, precisions);
-					if (!notNumber) {
-						sums[index] = values.reduce(function(prev, curr) {
-							var value = Number(curr);
+						break;
+					case 'sum':
+					case 'average':
+						var values = data.map(function(item) {
+							return Number(item[column.property])
+						})
+						var precisions = [];
+						for (var vi=values.length-1; vi>=0; vi--) {
+							var value = values[vi];
 							if (!isNaN(value)) {
-								return parseFloat((prev + curr).toFixed(precision));
+								var decimal = ('' + value).split('.')[1];
+								precisions.push(decimal ? decimal.length : 0);
 							} else {
-								return prev;
+								values.splice(value, 1);
 							}
-						}, 0);
+						}
+						var precision = Math.max.apply(null, precisions);
+						if (values.length > 0) {
+							resultMap.sum = values.reduce(function(prev, curr) {
+								return parseFloat((prev + curr).toFixed(precision));
+							}, 0);
+							resultMap.average = parseFloat((resultMap.sum / values.length).toFixed(precision));
+						} else {
+							resultMap.sum = '';
+							resultMap.average = '';
+						}
+						break;
+					}
+					var columnAggregate = resultMap[aggregateType] || '';
+					if (!columnAggregate) {
+						aggregates[index] = aggregateLabel;
 					} else {
-						sums[index] = '';
+						aggregateLabel ? aggregates[index] = aggregateLabel + ': ' + columnAggregate : aggregates[index] = columnAggregate;
 					}
 				}
 			}
@@ -1883,7 +1918,7 @@
 		}
 	};
 	var VueTable = {
-		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border, \'vue-table--enable-row-hover\': !store.states.isComplex, \'vue-table--enable-row-transition\': true || (store.states.data || []).length !== 0 && (store.states.data || []).length < 100}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :store="store" :layout="layout" :border="border" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :context="context" :store="store" :layout="layout" :expand-class-name="expandClassName" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || $t(\'vue.table.emptyText\')}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showSummary"><table-footer ref="tableFooter" :store="store" :layout="layout" :border="border" :sum-text="sumText || $t(\'vue.table.sumText\')" :summary-method="summaryMethod" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="fixedColumns.length > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="left" :store="store" :layout="layout" :highlight="highlightCurrentRow" :row-class-name="rowClassName" :expand-class-name="expandClassName" :row-style="rowStyle" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showSummary"><table-footer fixed="left" :border="border" :sum-text="sumText || $t(\'vue.table.sumText\')" :summary-method="summaryMethod" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedColumns.length > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="right" :store="store" :layout="layout" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showSummary"><table-footer fixed="right" :border="border" :sum-text="sumText || $t(\'vue.table.sumText\')" :summary-method="summaryMethod" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedColumns.length > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-show="contextMenu" v-model="showContextMenu" :store="store"></table-context-menu></div>',
+		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border, \'vue-table--enable-row-hover\': !store.states.isComplex, \'vue-table--enable-row-transition\': true || (store.states.data || []).length !== 0 && (store.states.data || []).length < 100}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :store="store" :layout="layout" :border="border" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :context="context" :store="store" :layout="layout" :expand-class-name="expandClassName" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || $t(\'vue.table.emptyText\')}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showFooter"><table-footer ref="tableFooter" :store="store" :layout="layout" :border="border" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="fixedColumns.length > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="left" :store="store" :layout="layout" :highlight="highlightCurrentRow" :row-class-name="rowClassName" :expand-class-name="expandClassName" :row-style="rowStyle" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showFooter"><table-footer fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedColumns.length > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="right" :store="store" :layout="layout" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showFooter"><table-footer fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedColumns.length > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-show="contextMenu" v-model="showContextMenu" :store="store"></table-context-menu></div>',
 		name: 'VueTable',
 		props: {
 			data: {
@@ -1905,10 +1940,8 @@
 				type: Boolean,
 				default: true
 			},
-			showSummary: Boolean,
+			showFooter: Boolean,
 			contextMenu: Boolean,
-			sumText: String,
-			summaryMethod: Function,
 			rowClassName: [String, Function],
 			rowStyle: [Object, Function],
 			highlightCurrentRow: Boolean,
@@ -2064,8 +2097,8 @@
 					var scrollTop = this.bodyScroll.top;
 					refs.tableBody.updateZone(scrollTop);
 				}
-				if (refs.tableFooter && this.showSummary && !this.fixed) {
-					refs.tableFooter.getSum(this.store.states.data);
+				if (refs.tableFooter && this.showFooter && !this.fixed) {
+					refs.tableFooter.getAggregate(this.store.states.data);
 				}
 			},
 			doLayout: function() {
@@ -2143,7 +2176,7 @@
 			showHeader: function(val) {
 				this.$nextTick(this.doLayout);
 			},
-			showSummary: function(val) {
+			showFooter: function(val) {
 				this.$nextTick(this.doLayout);
 			},
 			lazyload: function(val) {

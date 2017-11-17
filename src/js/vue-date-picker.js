@@ -8,7 +8,6 @@
 })(this, function(Vue, VuePicker, VueUtil, VueTimePicker) {
 	'use strict';
 	var DAY_DURATION = 86400000;
-	var WEEKS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 	var clearHours = function(time) {
 		var cloneDate = new Date(time);
 		cloneDate.setHours(0, 0, 0, 0);
@@ -142,6 +141,7 @@
 				return week > 3 ? 7 - week : -week;
 			},
 			WEEKS: function() {
+				var WEEKS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 				var week = this.firstDayOfWeek;
 				return WEEKS.concat(WEEKS).slice(week, week + 7);
 			},

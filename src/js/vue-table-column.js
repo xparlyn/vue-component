@@ -178,7 +178,12 @@
 			filterMultiple: {
 				type: Boolean,
 				default: true
-			}
+			},
+			aggregate: {
+				type: String,
+				default: ''
+			},
+			aggregateLabel: String
 		},
 		data: function() {
 			return {
@@ -255,6 +260,8 @@
 				filterOpened: false,
 				filteredValue: this.filteredValue || [],
 				filterPlacement: this.filterPlacement || 'bottom',
+				aggregate: this.aggregate,
+				aggregateLabel: this.aggregateLabel,
 				getCellClass: function(rowIndex, cellIndex, rowData) {
 					var classes = [];
 					var className = this.className;

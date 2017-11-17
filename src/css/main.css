@@ -240,6 +240,39 @@
 .vue-icon-refresh:before {
 	content: "\e849";
 }
+.vue-icon-arrows-alt:before {
+	content: "\e84a";
+}
+.vue-icon-home:before {
+	content: "\e84b";
+}
+.vue-icon-attachment:before {
+	content: "\e84c";
+}
+.vue-icon-attach-file:before {
+	content: "\e84d";
+}
+.vue-icon-filter:before {
+	content: "\e84e";
+}
+.vue-icon-filter-o:before {
+	content: "\e84f";
+}
+.vue-icon-comment-o:before {
+	content: "\e850";
+}
+.vue-icon-user-o:before {
+	content: "\e851";
+}
+.vue-icon-bell-o:before {
+	content: "\e852";
+}
+.vue-icon-male:before {
+	content: "\e853";
+}
+.vue-icon-female:before {
+	content: "\e854";
+}
 .vue-icon-loading {
 	animation: rotating 1s linear infinite;
 }
