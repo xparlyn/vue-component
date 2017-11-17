@@ -91,9 +91,8 @@
 		var current = object;
 		var result = null;
 		for (var i = 0, j = paths.length; i < j; i++) {
+			if (!current) break;
 			var path = paths[i];
-			if (!current)
-				break;
 			if (i === j - 1) {
 				result = current[path];
 				break;
@@ -102,26 +101,22 @@
 		}
 		return result;
 	};
-	var orderBy = function(array, sortKey, reverse, sortMethod) {
-		if (typeof reverse === 'string') {
-			reverse = reverse === 'descending' ? -1 : 1;
-		}
-		if (!sortKey) {
-			return array;
-		}
-		var order = (reverse && reverse < 0) ? -1 : 1;
-		return array.slice().sort(sortMethod ? function(a, b) {
-			return sortMethod(a, b) ? order : -order;
-		} : function(a, b) {
-			if (sortKey !== '$key') {
-				if (typeof a === 'object' && '$value'in a)
-					a = a.$value;
-				if (typeof b === 'object' && '$value'in b)
-					b = b.$value;
+	var orderBy = function(data, sortList) {
+		return data.slice().sort(function(data1, data2) {
+			for (var i = 0, l = sortList.length; i < l; i++) {
+				var column = sortList[i];
+				var value1 = data1[column.property];
+				var value2 = data2[column.property];
+				var sortOrder = 1;
+				if (column.order === "descending") {
+					sortOrder = -1
+				}
+				if (typeof column.sortMethod === 'function') {
+					return sortMethod(value1, value2) ? order : -order;
+				} else {
+					return value1 > value2 ? sortOrder : -sortOrder;
+				}
 			}
-			a = typeof a === 'object' ? getValueByPath(a, sortKey) : a;
-			b = typeof b === 'object' ? getValueByPath(b, sortKey) : b;
-			return a === b ? 0 : a > b ? order : -order;
 		});
 	};
 	var getColumnById = function(table, columnId) {
@@ -136,11 +131,9 @@
 		return column;
 	};
 	var sortData = function(data, states) {
-		var sortingColumn = states.sortingColumn;
-		if (!sortingColumn || typeof sortingColumn.sortable === 'string') {
-			return data;
-		}
-		return orderBy(data, states.sortProp, states.sortOrder, sortingColumn.sortMethod);
+		var sortingColumns = states.sortingColumns;
+		if (sortingColumns.length === 0) return data;
+		return orderBy(data, sortingColumns);
 	};
 	var toggleRowSelection = function(states, row, selected) {
 		var changed = false;
@@ -180,9 +173,7 @@
 			_data: null,
 			filteredData: null,
 			data: null,
-			sortingColumn: null,
-			sortProp: null,
-			sortOrder: null,
+			sortingColumns: [],
 			isAllSelected: false,
 			selection: [],
 			selectable: null,
@@ -230,11 +221,7 @@
 		changeSortCondition: function(states) {
 			var self = this;
 			states.data = sortData((states.filteredData || states._data || []), states);
-			this.table.$emit('sort-change', {
-				column: self.states.sortingColumn,
-				prop: self.states.sortProp,
-				order: self.states.sortOrder
-			});
+			this.table.$emit('sort-change', self.states.sortingColumns);
 			Vue.nextTick(function() {
 				self.table.updateScrollY();
 			});
@@ -512,7 +499,7 @@
 		states.isAllSelected = isAllSelected;
 	}
 	TableStore.prototype.scheduleLayout = function() {
-		this.table.doLayout(true);
+		this.table.doLayout();
 	}
 	TableStore.prototype.updateCurrentRow = function() {
 		var states = this.states;
@@ -598,8 +585,7 @@
 		var height = this.tableHeight = this.table.$el.clientHeight;
 		var noData = !this.table.data || this.table.data.length === 0;
 		var headerWrapper = this.table.$refs.headerWrapper;
-		if (this.showHeader && !headerWrapper)
-			return;
+		if (this.showHeader && !headerWrapper) return;
 		if (!this.showHeader) {
 			this.headerHeight = 0;
 			if (this.height !== null && (!isNaN(this.height) || typeof this.height === 'string')) {
@@ -608,7 +594,7 @@
 			this.fixedBodyHeight = this.scrollX ? height - this.gutterWidth : height;
 		} else {
 			var headerHeight = this.headerHeight = headerWrapper.offsetHeight;
-			var ratio = this.table.showSummary && this.table.data && this.table.data.length > 0 ? 2 : 1;
+			var ratio = this.table.showSummary > 0 ? 2 : 1;
 			var bodyHeight = height - ratio * headerHeight + (this.table.showSummary ? 1 : 0);
 			if (this.height !== null && (!isNaN(this.height) || typeof this.height === 'string')) {
 				this.bodyHeight = bodyHeight;
@@ -625,14 +611,13 @@
 		var bodyMinWidth = 0;
 		var flexColumns = [];
 		var allColumnsWidth = 0;
-		for (var i = 0, j = columns.length; i < j; i++) {
-			var column = columns[i];
+		columns.forEach(function(column) {
 			if (typeof column.width !== 'number') {
 				flexColumns.push(column);
 				allColumnsWidth = allColumnsWidth + (column.minWidth || 80);
 			}
 			bodyMinWidth += column.width || column.minWidth || 80;
-		}
+		});
 		this.scrollX = bodyMinWidth > bodyWidth;
 		this.bodyWidth = bodyMinWidth;
 		var flexColumnLen = flexColumns.length;
@@ -642,9 +627,7 @@
 				var totalFlexWidth = bodyWidth - this.gutterWidth - bodyMinWidth;
 				var noneFirstWidth = 0;
 				var flexWidthPerPixel = totalFlexWidth / allColumnsWidth;
-				for (var i = 0; i < flexColumnLen; i++) {
-					if (i === 0)
-						continue;
+				for (var i = 1; i < flexColumnLen; i++) {
 					var column = flexColumns[i];
 					var flexWidth = Math.floor((column.minWidth || 80) * flexWidthPerPixel);
 					noneFirstWidth += flexWidth;
@@ -653,25 +636,24 @@
 				flexColumns[0].realWidth = (flexColumns[0].minWidth || 80) + totalFlexWidth - noneFirstWidth;
 			} else {
 				this.scrollX = true;
-				for (var i = 0; i < flexColumnLen; i++) {
-					var column = flexColumns[i];
+				flexColumns.forEach(function(column) {
 					column.realWidth = column.minWidth || 80;
-				}
+				});
 			}
 			this.bodyWidth = Math.max(bodyMinWidth, bodyWidth);
 		}
 		var fixedColumns = this.store.states.fixedColumns;
-		this.fixedWidth = 0;
-		for (var i = 0, l = fixedColumns.length; i < l; i++) {
-			var column = fixedColumns[i];
-			this.fixedWidth += column.realWidth || 80;
-		}
+		var fixedWidth = 0;
+		fixedColumns.forEach(function(column) {
+			fixedWidth += column.realWidth || 80;
+		});
+		this.fixedWidth = fixedWidth;
 		var rightFixedColumns = this.store.states.rightFixedColumns;
-		this.rightFixedWidth = 0;
-		for (var i = 0, l = rightFixedColumns.length; i < l; i++) {
-			var column = rightFixedColumns[i];
-			this.rightFixedWidth += column.realWidth || 80;
-		}
+		var rightFixedWidth = 0;
+		fixedColumns.forEach(function(column) {
+			rightFixedWidth += column.realWidth || 80;
+		});
+		this.rightFixedWidth = rightFixedWidth;
 	}
 	var VueTableFilterPanel = {
 		template: '<transition @after-leave="doDestroy"><div class="vue-table-filter" v-if="multiple" v-show="showPopper" v-clickoutside="handleOutsideClick"><div class="vue-table-filter__content"><vue-checkbox-group class="vue-table-filter__checkbox-group" v-model="filteredValue"><vue-checkbox v-for="filter in filters" :key="filter.value" :label="filter.value">{{filter.text}}</vue-checkbox></vue-checkbox-group></div><div class="vue-table-filter__bottom"><button @click="handleConfirm" :class="{\'is-disabled\': filteredValue.length === 0}" :disabled="filteredValue.length === 0">{{$t(\'vue.table.confirmFilter\')}}</button><button @click="handleReset">{{$t(\'vue.table.resetFilter\')}}</button></div></div><div class="vue-table-filter" v-else v-show="showPopper"><ul class="vue-table-filter__list"><li :class="[\'vue-table-filter__list-item\', {\'is-active\': !filterValue}]" @click="handleSelect(null)">{{$t(\'vue.table.clearFilter\')}}</li><li v-for="filter in filters" :key="filter.value" :label="filter.value" :class="[\'vue-table-filter__list-item\', {\'is-active\': isActive(filter)}]" @click="handleSelect(filter.value)" >{{filter.text}}</li></ul></div></transition>',
@@ -1296,12 +1278,9 @@
 			},
 			border: Boolean,
 			defaultSort: {
-				type: Object,
+				type: Array,
 				default: function() {
-					return {
-						prop: '',
-						order: ''
-					};
+					return [];
 				}
 			}
 		},
@@ -1326,22 +1305,21 @@
 			this.filterPanels = {};
 		},
 		mounted: function() {
-			if (this.defaultSort.prop) {
-				var states = this.store.states;
-				states.sortProp = this.defaultSort.prop;
-				states.sortOrder = this.defaultSort.order || 'ascending';
-				this.$nextTick(function() {
-					for (var i = 0, l = this.columns.length; i < l; i++) {
-						var column = this.columns[i];
-						if (column.property === states.sortProp) {
-							column.order = states.sortOrder;
-							states.sortingColumn = column;
-							break;
-						}
+			var self = this;
+			var sortingColumns = self.store.states.sortingColumns;
+			self.defaultSort.forEach(function(sort) {
+				for (var i = 0, l = self.columns.length; i < l; i++) {
+					var column = self.columns[i];
+					if (column.property === sort.prop) {
+						column.order = sort.order;
+						sortingColumns.push(column);
+						break;
 					}
-					if (states.sortingColumn) {
-						this.store.commit('changeSortCondition');
-					}
+				}
+			});
+			if (sortingColumns.length > 0) {
+				self.$nextTick(function() {
+					self.store.commit('changeSortCondition');
 				});
 			}
 		},
@@ -1548,7 +1526,7 @@
 			},
 			handleSortClick: function(event, column, givenOrder) {
 				event.stopPropagation();
-				var order = givenOrder || this.toggleOrder(column.order);
+				column.order = givenOrder || this.toggleOrder(column.order);
 				var target = event.target;
 				while (target && target.tagName !== 'TH') {
 					target = target.parentNode;
@@ -1559,28 +1537,15 @@
 						return;
 					}
 				}
-				if (!column.sortable)
-					return;
+				if (!column.sortable) return;
 				var states = this.store.states;
-				var sortProp = states.sortProp;
-				var sortOrder;
-				var sortingColumn = states.sortingColumn;
-				if (sortingColumn !== column) {
-					if (sortingColumn) {
-						sortingColumn.order = null;
-					}
-					states.sortingColumn = column;
-					sortProp = column.property;
+				var sortingColumns = states.sortingColumns;
+				var sortIndex = sortingColumns.indexOf(column);
+				if (sortIndex === -1) {
+					sortingColumns.push(column);
+				} else if (column.order === null) {
+					sortingColumns.splice(sortIndex, 1);
 				}
-				if (column.order === order) {
-					sortOrder = column.order = null;
-					states.sortingColumn = null;
-					sortProp = null;
-				} else {
-					sortOrder = column.order = order;
-				}
-				states.sortProp = sortProp;
-				states.sortOrder = sortOrder;
 				this.store.commit('changeSortCondition');
 			}
 		},
@@ -1655,16 +1620,7 @@
 			},
 			summaryMethod: Function,
 			sumText: String,
-			border: Boolean,
-			defaultSort: {
-				type: Object,
-				default: function() {
-					return {
-						prop: '',
-						order: ''
-					};
-				}
-			}
+			border: Boolean
 		},
 		computed: {
 			isAllSelected: function() {
@@ -1703,23 +1659,18 @@
 				var sums = self.sums;
 				for (var index=0,len=self.columns.length; index<len; index++) {
 					var column = self.columns[index];
-					if (index === 0) {
-						sums[index] = self.sumText;
-						continue;
-					}
 					var values = data.map(function(item) {
 						return Number(item[column.property])
 					});
 					var precisions = [];
 					var notNumber = true;
-					for (var i=0,j=values.length; i<j; i++){
-						var value = values[i];
+					values.forEach(function(value) {
 						if (!isNaN(value)) {
 							notNumber = false;
 							var decimal = ('' + value).split('.')[1];
 							precisions.push(decimal ? decimal.length : 0);
 						}
-					}
+					});
 					var precision = Math.max.apply(null, precisions);
 					if (!notNumber) {
 						sums[index] = values.reduce(function(prev, curr) {
@@ -1738,7 +1689,7 @@
 		}
 	};
 	var TableContextMenu = {
-		template: '<vue-dialog v-model="dialogVisible" custom-class="vue-table-context-menu" :title="$t(\'vue.table.contextMenu\')" show-close @close="closeHandle"><vue-tabs><vue-tab-pane :label="$t(\'vue.table.pin\')"><vue-form label-width="100px"><vue-form-item :label="$t(\'vue.table.leftPin\')"><vue-select clearable v-model="pinForm.leftPin" multiple @change="leftPin" @remove-tag="noPin"><vue-option v-for="(column, index) in tableColumns" :key="index" :label="column.label" :value="column" :disabled="!!column.fixed"></vue-option></vue-select></vue-form-item><vue-form-item :label="$t(\'vue.table.rightPin\')"><vue-select clearable v-model="pinForm.rightPin" multiple @change="rightPin" @remove-tag="noPin"><vue-option v-for="(column, index) in tableColumns" :key="index" :label="column.label" :value="column" :disabled="!!column.fixed"></vue-option></vue-select></vue-form-item></vue-form></vue-tab-pane><vue-tab-pane :label="$t(\'vue.table.sort\')"><vue-list :height="150" :default-selected="false"><vue-list-item v-for="(column, index) in tableColumns" :key="index"><vue-button type="text" style="padding-left:15px" @click="removeSortColumn(column)">{{column.label}}</vue-button><div style="float:right;"><vue-button style="padding:10px 0 0 0;" :style="{color: column.sortOrder === \'ascending\' ? \'#eb9e05\' : \'rgb(151, 168, 190)\'}" icon="vue-icon-caret-top" type="text" @click="sortColumn(column)"></vue-button><vue-button style="padding:10px 15px 0 0;" :style="{color: column.sortOrder === \'descending\' ? \'#eb9e05\' : \'rgb(151, 168, 190)\'}" icon="vue-icon-caret-bottom" type="text" @click="sortColumn(column, true)"></vue-button></div><vue-divider v-if="index!==tableColumns.length-1"></vue-divider></vue-list-item></vue-list><vue-form label-width="70px"><vue-form-item :label="$t(\'vue.table.sortBy\')"><vue-tag hit style="margin:5px 5px 0 0;" v-for="(column, index) in sortList" :key="index" closable type="info" @close="removeSortColumn(column)">{{column.label}}<i style="padding:5px 0 0 5px;" :class="[{\'vue-icon-caret-top\': column.sortOrder === \'ascending\'}, {\'vue-icon-caret-bottom\': column.sortOrder === \'descending\'}]"></i></vue-tag></vue-form-item></vue-form></vue-tab-pane><vue-tab-pane :label="$t(\'vue.table.filter\')"><vue-form label-width="100px" :model="filterForm"><vue-form-item :label="$t(\'vue.table.column\')"><vue-select v-model="filterForm.filterColumn"><vue-option v-for="(column, index) in tableColumns" :key="index" :label="column.label" :value="column"></vue-option></vue-select></vue-form-item><vue-form-item :label="$t(\'vue.table.conditions\')"><vue-input icon="vue-icon-search" v-model="filterForm.conditions" :on-icon-click="filterColumn" @keydown.enter.native="filterColumn" ref="filterInput"><vue-select slot="prepend" v-model="filterForm.operations" style="width:80px;font-size:21px;" @change="operationsChange"><vue-option v-for="(item, index) in operations" :key="index" :label="item" :value="item"></vue-option></vue-select></vue-input></vue-form-item></vue-form><vue-divider></vue-divider><vue-form label-width="100px"><vue-form-item :label="$t(\'vue.table.filterBy\')"><vue-tag hit style="margin:5px 5px 0 0;" v-for="(column, index) in filterList" :key="index" closable type="info" @close="removeFilterColumn(column)">{{column.label}} {{column.operations}} {{column.conditions}}</vue-tag></vue-form-item></vue-form></vue-tab-pane><vue-tab-pane :label="$t(\'vue.table.display\')"><vue-list :height="150" :default-selected="false"><vue-list-item v-for="(column, index) in tableColumns" :key="index" @select="displayColumn(column)" style="cursor:pointer;"><vue-button type="text" style="padding-left:15px">{{column.label}}</vue-button><div style="float:right;"><vue-button style="padding:10px 15px 0 0;" :style="{color: column.visible ? \'#13ce66\' : \'#a94442\'}" :icon="column.visible ? \'vue-icon-success\' : \'vue-icon-error\'" type="text"></vue-button></div><vue-divider v-if="index!==tableColumns.length-1"></vue-divider></vue-list-item></vue-list></vue-tab-pane><vue-tab-pane :label="$t(\'vue.table.exportData\')"><vue-form label-width="100px"><vue-form-item :label="$t(\'vue.table.fileName\')"><vue-input v-model="fileName"></vue-input></vue-form-item></vue-form><div style="text-align:right"><vue-button @click="exportData(false)" type="primary" icon="vue-icon-download2">{{$t(\'vue.table.exportHandleData\')}}</vue-button><vue-button @click="exportData(true)" type="primary" icon="vue-icon-download2">{{$t(\'vue.table.exportOrgData\')}}</vue-button></div></vue-tab-pane></vue-tabs></vue-dialog>',
+		template: '<vue-dialog v-model="dialogVisible" custom-class="vue-table-context-menu" :title="$t(\'vue.table.contextMenu\')" show-close @close="closeHandle"><vue-tabs><vue-tab-pane :label="$t(\'vue.table.pin\')"><vue-form label-width="100px"><vue-form-item :label="$t(\'vue.table.leftPin\')"><vue-select clearable v-model="pinForm.leftPin" multiple @change="leftPin" @remove-tag="noPin"><vue-option v-for="(column, index) in tableColumns" :key="index" :label="column.label" :value="column" :disabled="!!column.fixed"></vue-option></vue-select></vue-form-item><vue-form-item :label="$t(\'vue.table.rightPin\')"><vue-select clearable v-model="pinForm.rightPin" multiple @change="rightPin" @remove-tag="noPin"><vue-option v-for="(column, index) in tableColumns" :key="index" :label="column.label" :value="column" :disabled="!!column.fixed"></vue-option></vue-select></vue-form-item></vue-form></vue-tab-pane><vue-tab-pane :label="$t(\'vue.table.sort\')"><vue-list :height="150" :default-selected="false"><vue-list-item v-for="(column, index) in tableColumns" :key="index"><vue-button type="text" style="padding-left:15px" @click="removeSortColumn(column, true)">{{column.label}}</vue-button><div style="float:right;"><vue-button style="padding:10px 0 0 0;" :style="{color: column.order === \'ascending\' ? \'#eb9e05\' : \'rgb(151, 168, 190)\'}" icon="vue-icon-caret-top" type="text" @click="sortColumn(column)"></vue-button><vue-button style="padding:10px 15px 0 0;" :style="{color: column.order === \'descending\' ? \'#eb9e05\' : \'rgb(151, 168, 190)\'}" icon="vue-icon-caret-bottom" type="text" @click="sortColumn(column, true)"></vue-button></div><vue-divider v-if="index!==tableColumns.length-1"></vue-divider></vue-list-item></vue-list><vue-form label-width="70px"><vue-form-item :label="$t(\'vue.table.sortBy\')"><vue-tag hit style="margin:5px 5px 0 0;" v-for="(column, index) in sortList" :key="index" closable type="info" @close="removeSortColumn(column)">{{column.label}}<i style="padding:5px 0 0 5px;" :class="[{\'vue-icon-caret-top\': column.order === \'ascending\'}, {\'vue-icon-caret-bottom\': column.order === \'descending\'}]"></i></vue-tag></vue-form-item></vue-form></vue-tab-pane><vue-tab-pane :label="$t(\'vue.table.filter\')"><vue-form label-width="100px" :model="filterForm"><vue-form-item :label="$t(\'vue.table.column\')"><vue-select v-model="filterForm.filterColumn"><vue-option v-for="(column, index) in tableColumns" :key="index" :label="column.label" :value="column"></vue-option></vue-select></vue-form-item><vue-form-item :label="$t(\'vue.table.conditions\')"><vue-input icon="vue-icon-search" v-model="filterForm.conditions" :on-icon-click="filterColumn" @keydown.enter.native="filterColumn" ref="filterInput"><vue-select slot="prepend" v-model="filterForm.operations" style="width:80px;font-size:21px;" @change="operationsChange"><vue-option v-for="(item, index) in operations" :key="index" :label="item" :value="item"></vue-option></vue-select></vue-input></vue-form-item></vue-form><vue-divider></vue-divider><vue-form label-width="100px"><vue-form-item :label="$t(\'vue.table.filterBy\')"><vue-tag hit style="margin:5px 5px 0 0;" v-for="(column, index) in filterList" :key="index" closable type="info" @close="removeFilterColumn(column)">{{column.label}} {{column.operations}} {{column.conditions}}</vue-tag></vue-form-item></vue-form></vue-tab-pane><vue-tab-pane :label="$t(\'vue.table.display\')"><vue-list :height="150" :default-selected="false"><vue-list-item v-for="(column, index) in tableColumns" :key="index" @select="displayColumn(column)" style="cursor:pointer;"><vue-button type="text" style="padding-left:15px">{{column.label}}</vue-button><div style="float:right;"><vue-button style="padding:10px 15px 0 0;" :style="{color: column.visible ? \'#13ce66\' : \'#a94442\'}" :icon="column.visible ? \'vue-icon-success\' : \'vue-icon-error\'" type="text"></vue-button></div><vue-divider v-if="index!==tableColumns.length-1"></vue-divider></vue-list-item></vue-list></vue-tab-pane><vue-tab-pane :label="$t(\'vue.table.exportData\')"><vue-form label-width="100px"><vue-form-item :label="$t(\'vue.table.fileName\')"><vue-input v-model="fileName"></vue-input></vue-form-item></vue-form><div style="text-align:right"><vue-button @click="exportData(false)" type="primary" icon="vue-icon-download2">{{$t(\'vue.table.exportHandleData\')}}</vue-button><vue-button @click="exportData(true)" type="primary" icon="vue-icon-download2">{{$t(\'vue.table.exportOrgData\')}}</vue-button></div></vue-tab-pane></vue-tabs></vue-dialog>',
 		data: function() {
 			return {
 				tableColumns: [],
@@ -1801,11 +1752,10 @@
 					if (layoutFLg) this.store.scheduleLayout();
 					return;
 				}
-				for (var i=0,j=columns.length; i<j; i++) {
-					var column = columns[i];
+				columns.forEach(function(column, index) {
 					column.fixed = 'left';
-					column.fixedIndex = i;
-				}
+					column.fixedIndex = index;
+				});
 				this.store.scheduleLayout();
 			},
 			rightPin: function(columns) {
@@ -1820,42 +1770,35 @@
 					if (layoutFLg) this.store.scheduleLayout();
 					return;
 				}
-				for (var i=0,j=columns.length; i<j; i++) {
-					var column = columns[i];
+				columns.forEach(function(column, index) {
 					column.fixed = 'right';
-					column.fixedIndex = i;
-				}
+					column.fixedIndex = index;
+				});
 				this.store.scheduleLayout();
 			},
 			sortColumn: function(column, descFlg) {
+				column.sortable = true;
 				if (descFlg) {
-					column.sortOrder = "descending"
+					column.order = "descending";
 				} else {
-					column.sortOrder = "ascending"
+					column.order = "ascending";
 				}
-				var existflg = false;
-				this.sortList.forEach(function(sortObj) {
-					if (column.property === sortObj.property) {
-						sortObj.sortOrder = column.sortOrder;
-						existflg = true;
-					}
-				});
-				if (!existflg) {
+				var sortIndex = this.sortList.indexOf(column);
+				if (sortIndex === -1) {
 					this.sortList.push(column);
 				}
 				this.doSort();
 			},
-			removeSortColumn: function(column) {
+			removeSortColumn: function(column, flg) {
+				if (flg) column.sortable = !column.sortable;
 				var sortIndex = this.sortList.indexOf(column);
-				if (sortIndex === -1)
-					return;
-				column.sortOrder = "";
+				if (sortIndex === -1) return;
+				column.order = "";
 				this.sortList.splice(sortIndex, 1);
 				this.doSort();
 			},
 			doSort: function() {
-				this.store.table.multipleColumnSort(this.sortList);
-				this.$forceUpdate();
+				this.store.commit('changeSortCondition');
 			},
 			filterColumn: function() {
 				var filterColumn = this.filterForm.filterColumn;
@@ -1935,11 +1878,12 @@
 				});
 				this.pinForm.leftPin = this.store.table.fixedColumns;
 				this.pinForm.rightPin = this.store.table.rightFixedColumns
+				this.sortList = this.store.states.sortingColumns;
 			}
 		}
 	};
 	var VueTable = {
-		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border, \'vue-table--enable-row-hover\': !store.states.isComplex, \'vue-table--enable-row-transition\': true || (store.states.data || []).length !== 0 && (store.states.data || []).length < 100}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :store="store" :layout="layout" :border="border" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :context="context" :store="store" :layout="layout" :expand-class-name="expandClassName" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || $t(\'vue.table.emptyText\')}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showSummary && data && data.length > 0"><table-footer ref="tableFooter" :store="store" :layout="layout" :border="border" :sum-text="sumText || $t(\'vue.table.sumText\')" :summary-method="summaryMethod" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="fixedColumns.length > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="left" :store="store" :layout="layout" :highlight="highlightCurrentRow" :row-class-name="rowClassName" :expand-class-name="expandClassName" :row-style="rowStyle" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showSummary && data && data.length > 0"><table-footer fixed="left" :border="border" :sum-text="sumText || $t(\'vue.table.sumText\')" :summary-method="summaryMethod" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedColumns.length > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="right" :store="store" :layout="layout" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showSummary && data && data.length > 0"><table-footer fixed="right" :border="border" :sum-text="sumText || $t(\'vue.table.sumText\')" :summary-method="summaryMethod" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedColumns.length > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-show="contextMenu" v-model="showContextMenu" :store="store"></table-context-menu></div>',
+		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border, \'vue-table--enable-row-hover\': !store.states.isComplex, \'vue-table--enable-row-transition\': true || (store.states.data || []).length !== 0 && (store.states.data || []).length < 100}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :store="store" :layout="layout" :border="border" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :context="context" :store="store" :layout="layout" :expand-class-name="expandClassName" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || $t(\'vue.table.emptyText\')}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showSummary"><table-footer ref="tableFooter" :store="store" :layout="layout" :border="border" :sum-text="sumText || $t(\'vue.table.sumText\')" :summary-method="summaryMethod" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="fixedColumns.length > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="left" :store="store" :layout="layout" :highlight="highlightCurrentRow" :row-class-name="rowClassName" :expand-class-name="expandClassName" :row-style="rowStyle" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showSummary"><table-footer fixed="left" :border="border" :sum-text="sumText || $t(\'vue.table.sumText\')" :summary-method="summaryMethod" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedColumns.length > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="right" :store="store" :layout="layout" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showSummary"><table-footer fixed="right" :border="border" :sum-text="sumText || $t(\'vue.table.sumText\')" :summary-method="summaryMethod" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedColumns.length > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-show="contextMenu" v-model="showContextMenu" :store="store"></table-context-menu></div>',
 		name: 'VueTable',
 		props: {
 			data: {
@@ -1970,7 +1914,12 @@
 			highlightCurrentRow: Boolean,
 			emptyText: String,
 			defaultExpandAll: Boolean,
-			defaultSort: Object,
+			defaultSort: {
+				type: Array,
+				default: function() {
+					return [];
+				}
+			},
 			tooltipEffect: String,
 			expandClassName: [String, Function]
 		},
@@ -2012,25 +1961,8 @@
 				});
 			},
 			multipleColumnSort: function(sortList) {
-				var states = this.store.states;
-				var _data = (states.filteredData || states._data || []);
-				if (sortList.length > 0) {
-					states.data = _data.slice().sort(function(data1, data2) {
-						for (var i = 0, l = sortList.length; i < l; i++) {
-							var column = sortList[i];
-							var value1 = data1[column.property];
-							var value2 = data2[column.property];
-							var sortOrder = 1;
-							if (column.sortOrder === "descending") {
-								sortOrder = -1
-							}
-							if (value1 < value2) return -1 * sortOrder;
-							if (value1 > value2) return 1 * sortOrder;
-						}
-					});
-				} else {
-					states.data = _data;
-				}
+				this.store.states.sortingColumns = sortList || [];
+				this.store.commit('changeSortCondition');
 			},
 			toggleContextMenu: function() {
 				if (this.contextMenu) this.showContextMenu = !this.showContextMenu;
@@ -2052,10 +1984,8 @@
 			updateScrollY: function() {
 				this.layout.updateScrollY();
 				var refs = this.$refs;
-				if (refs.fixedBodyWrapper)
-					refs.fixedBodyWrapper.scrollTop = this.bodyScroll.top;
-				if (refs.rightFixedBodyWrapper)
-					refs.rightFixedBodyWrapper.scrollTop = this.bodyScroll.top;
+				refs.fixedBodyWrapper.scrollTop = this.bodyScroll.top;
+				refs.rightFixedBodyWrapper.scrollTop = this.bodyScroll.top;
 			},
 			bindEvents: function() {
 				var self = this;
@@ -2128,24 +2058,24 @@
 					VueUtil.addResizeListener(self.$el, self.doLayout);
 				}
 			},
-			resizeZone: function(noFooter) {
+			resizeZone: function() {
 				var refs = this.$refs;
 				if (refs.tableBody && refs.tableBody.delta.keeps !== 0 && !this.fixed) {
 					var scrollTop = this.bodyScroll.top;
 					refs.tableBody.updateZone(scrollTop);
 				}
-				if (refs.tableFooter && this.showSummary && !this.fixed && !noFooter) {
+				if (refs.tableFooter && this.showSummary && !this.fixed) {
 					refs.tableFooter.getSum(this.store.states.data);
 				}
 			},
-			doLayout: function(noFooter) {
+			doLayout: function() {
 				var self = this;
 				self.store.updateColumns();
 				self.layout.update();
 				self.layout.updateHeight();
 				self.$nextTick(function() {
 					self.updateScrollY();
-					self.resizeZone(noFooter);
+					self.resizeZone();
 				});
 			}
 		},
