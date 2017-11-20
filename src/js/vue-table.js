@@ -238,14 +238,12 @@
 			return result;
 		};
 		var states = this.states;
-		var _columns = (states._columns || []).slice();
+		var columns = [];
 		states.fixedColumns = [];
 		states.rightFixedColumns = [];
-		for (var i = _columns.length - 1; i >= 0; i--) {
-			var column = _columns[i];
-			if (!column.visible) {
-				_columns.splice(i, 1);
-				continue;
+		(states._columns || []).slice().forEach(function(column) {
+			if (column.visible) {
+				columns.push(column)
 			}
 			if (column.fixed === true || column.fixed === 'left') {
 				if (column.type === 'selection') {
@@ -261,18 +259,18 @@
 					states.rightFixedColumns.push(column);
 				}
 			}
-		}
+		});
 		states.fixedColumns.sort(function(a, b) {
 			return a.fixedIndex > b.fixedIndex;
 		});
 		states.rightFixedColumns.sort(function(a, b) {
 			return a.fixedIndex < b.fixedIndex;
 		});
-		if (states.fixedColumns.length > 0 && _columns[0] && _columns[0].type === 'selection' && !_columns[0].fixed) {
-			_columns[0].fixed = true;
-			states.fixedColumns.unshift(_columns[0]);
+		if (states.fixedColumns.length > 0 && columns[0] && columns[0].type === 'selection' && !columns[0].fixed) {
+			columns[0].fixed = true;
+			states.fixedColumns.unshift(columns[0]);
 		}
-		states.originColumns = [].concat(states.fixedColumns).concat(_columns.filter(function(column) {
+		states.originColumns = [].concat(states.fixedColumns).concat(columns.filter(function(column) {
 			return !column.fixed
 		})).concat(states.rightFixedColumns);
 		states.columns = doFlattenColumns(states.originColumns);
@@ -1565,33 +1563,34 @@
 					var aggregateLabel = labelMap[aggregateType];
 					if (!aggregateLabel && VueUtil.isUndef(column.aggregateLabel)) continue;
 					if (VueUtil.isDef(column.aggregateLabel)) aggregateLabel = column.aggregateLabel;
-					var resultMap = {};
-					resultMap.count = data.length;
-					var values = data.map(function(item) {
-						return Number(item[column.property])
-					})
+					var max;
+					var min;
+					var sum;
 					var precision = 0;
-					for (var vi=values.length-1; vi>=0; vi--) {
-						var value = values[vi];
+					var resultMap = {};
+					var values = [];
+					resultMap.count = data.length;
+					data.forEach(function(item) {
+						var value = Number(item[column.property]);
 						if (!isNaN(value)) {
 							var decimal = ('' + value).split('.')[1];
 							decimal && decimal.length > precision ? precision = decimal.length : void 0;
-						} else {
-							values.splice(value, 1);
+							VueUtil.isUndef(max) ? max = value : value > max ? max = value : void 0;
+							VueUtil.isUndef(min) ? min = value : value < min ? min = value : void 0;
+							VueUtil.isUndef(sum) ? sum = value : sum = sum + value;
+							values.push(value);
 						}
-					}
+					});
 					if (values.length > 0) {
-						resultMap.sum = values.reduce(function(prev, curr) {
-							return parseFloat((prev + curr).toFixed(precision));
-						}, 0);
+						resultMap.max = max;
+						resultMap.min = min;
+						resultMap.sum = parseFloat(sum.toFixed(precision));
 						resultMap.average = parseFloat((resultMap.sum / values.length).toFixed(precision));
-						resultMap.max = Math.max.apply(null, values);
-						resultMap.min = Math.min.apply(null, values);
 					} else {
-						resultMap.sum = '';
-						resultMap.average = '';
 						resultMap.max = '';
 						resultMap.min = '';
+						resultMap.sum = '';
+						resultMap.average = '';
 					}
 					var columnAggregate = resultMap[aggregateType] || '';
 					if (!columnAggregate) {
@@ -1785,7 +1784,7 @@
 		mounted: function() {
 			if (this.store) {
 				var tableColumns = this.tableColumns;
-				this.store.states.columns.forEach(function(column) {
+				this.store.states._columns.forEach(function(column) {
 					if (column.property !== 'selectionColumn'
 					 && column.property !== 'indexColumn'
 					 && column.property !== 'expandColumn') {
