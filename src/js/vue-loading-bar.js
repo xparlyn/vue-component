@@ -9,9 +9,6 @@
 })(this, function(Vue) {
 	'use strict';
 	var loadingBarInstance;
-	var color = 'primary';
-	var failedColor = 'error';
-	var height = 2;
 	var timer;
 	var LoadingBar = {
 		template: '<div :class="classes" :style="outerStyles" v-show="show"><div :class="innerClasses" :style="styles"></div></div>',
@@ -102,11 +99,7 @@
 		};
 	};
 	var getLoadingBarInstance = function() {
-		loadingBarInstance = loadingBarInstance || LoadingBar.newInstance({
-			color: color,
-			failedColor: failedColor,
-			height: height
-		});
+		loadingBarInstance = loadingBarInstance || LoadingBar.newInstance();
 		return loadingBarInstance;
 	}
 	var update = function(options) {

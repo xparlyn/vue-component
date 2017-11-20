@@ -8,17 +8,13 @@
 	}
 })(this, function(Vue, VueUtil, VuePopper) {
 	'use strict';
-	var isDragging = false;
-	var hsv2hsl = function(hue, sat, val) {
-		return [hue, (sat * val / ((hue = (2 - sat) * val) < 1 ? hue : 2 - hue)) || 0, hue / 2];
-	};
-	var isOnePointZero = function(n) {
-		return typeof n === 'string' && n.indexOf('.') !== -1 && parseFloat(n) === 1;
-	};
-	var isPercentage = function(n) {
-		return typeof n === 'string' && n.indexOf('%') !== -1;
-	};
 	var bound01 = function(value, max) {
+		var isOnePointZero = function(n) {
+			return typeof n === 'string' && n.indexOf('.') !== -1 && parseFloat(n) === 1;
+		};
+		var isPercentage = function(n) {
+			return typeof n === 'string' && n.indexOf('%') !== -1;
+		};
 		if (isOnePointZero(value)) value = '100%';
 		var processPercent = isPercentage(value);
 		value = Math.min(max, Math.max(0, parseFloat(value)));
@@ -29,45 +25,6 @@
 			return 1;
 		}
 		return (value % max) / parseFloat(max);
-	};
-	var INT_HEX_MAP = {10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F'};
-	var HEX_INT_MAP = {A: 10, B: 11, C: 12, D: 13, E: 14, F: 15};
-	var toHex = function(ref) {
-		var r = ref.r;
-		var g = ref.g;
-		var b = ref.b;
-		var hexOne = function(value) {
-			value = Math.min(Math.round(value), 255);
-			var high = Math.floor(value / 16);
-			var low = value % 16;
-			return '' + (INT_HEX_MAP[high] || high) + (INT_HEX_MAP[low] || low);
-		};
-		if (isNaN(r) || isNaN(g) || isNaN(b)) return '';
-		return '#' + hexOne(r) + hexOne(g) + hexOne(b);
-	};
-	var parseHexChannel = function(hex) {
-		if (hex.length === 2) {
-			return (HEX_INT_MAP[hex[0].toUpperCase()] || +hex[0]) * 16 + (HEX_INT_MAP[hex[1].toUpperCase()] || +hex[1]);
-		}
-		return HEX_INT_MAP[hex[1].toUpperCase()] || +hex[1];
-	};
-	var hsl2hsv = function(hue, sat, light) {
-		sat = sat / 100;
-		light = light / 100;
-		var smin = sat;
-		var lmin = Math.max(light, 0.01);
-		var sv;
-		var v;
-		light *= 2;
-		sat *= (light <= 1) ? light : 2 - light;
-		smin *= lmin <= 1 ? lmin : 2 - lmin;
-		v = (light + sat) / 2;
-		sv = light === 0 ? (2 * smin) / (lmin + smin) : (2 * sat) / (light + sat);
-		return {
-			h: hue,
-			s: sv * 100,
-			v: v * 100
-		};
 	};
 	var rgb2hsv = function(r, g, b) {
 		r = bound01(r, 255);
@@ -176,6 +133,24 @@
 				this._alpha = Math.floor(parseFloat(parts[3]) * 100);
 			}
 			if (parts.length >= 3) {
+				var hsl2hsv = function(hue, sat, light) {
+					sat = sat / 100;
+					light = light / 100;
+					var smin = sat;
+					var lmin = Math.max(light, 0.01);
+					var sv;
+					var v;
+					light *= 2;
+					sat *= (light <= 1) ? light : 2 - light;
+					smin *= lmin <= 1 ? lmin : 2 - lmin;
+					v = (light + sat) / 2;
+					sv = light === 0 ? (2 * smin) / (lmin + smin) : (2 * sat) / (light + sat);
+					return {
+						h: hue,
+						s: sv * 100,
+						v: v * 100
+					};
+				};
 				var _hsl2hsv = hsl2hsv(parts[0], parts[1], parts[2]);
 				var h = _hsl2hsv.h;
 				var s = _hsl2hsv.s;
@@ -205,6 +180,13 @@
 		} else if (value.indexOf('#') !== -1) {
 			var hex = value.replace('#', '').trim();
 			var r, g, b;
+			var parseHexChannel = function(hex) {
+				var HEX_INT_MAP = {A: 10, B: 11, C: 12, D: 13, E: 14, F: 15};
+				if (hex.length === 2) {
+					return (HEX_INT_MAP[hex[0].toUpperCase()] || +hex[0]) * 16 + (HEX_INT_MAP[hex[1].toUpperCase()] || +hex[1]);
+				}
+				return HEX_INT_MAP[hex[1].toUpperCase()] || +hex[1];
+			};
 			if (hex.length === 3) {
 				r = parseHexChannel(hex[0] + hex[0]);
 				g = parseHexChannel(hex[1] + hex[1]);
@@ -227,6 +209,9 @@
 		var _value = this._value;
 		var _alpha = this._alpha;
 		var format = this.format;
+		var hsv2hsl = function(hue, sat, val) {
+			return [hue, (sat * val / ((hue = (2 - sat) * val) < 1 ? hue : 2 - hue)) || 0, hue / 2];
+		};
 		if (this.enableAlpha) {
 			switch (format) {
 			case 'hsl':
@@ -260,12 +245,27 @@
 				this.value = 'rgb(' + r + ', ' + g + ', ' + b + ')';
 				break;
 			default:
+				var toHex = function(ref) {
+					var r = ref.r;
+					var g = ref.g;
+					var b = ref.b;
+					var INT_HEX_MAP = {10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F'};
+					var hexOne = function(value) {
+						value = Math.min(Math.round(value), 255);
+						var high = Math.floor(value / 16);
+						var low = value % 16;
+						return '' + (INT_HEX_MAP[high] || high) + (INT_HEX_MAP[low] || low);
+					};
+					if (isNaN(r) || isNaN(g) || isNaN(b)) return '';
+					return '#' + hexOne(r) + hexOne(g) + hexOne(b);
+				};
 				this.value = toHex(hsv2rgb(_hue, _saturation, _value));
 			}
 		}
 	};
 	var draggable = function(element, options) {
 		if (VueUtil.isServer) return;
+		var isDragging = false;
 		var moveFn = function(event) {
 			if (options.drag) {
 				options.drag(event);

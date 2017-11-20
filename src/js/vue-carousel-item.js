@@ -8,7 +8,6 @@
 	}
 })(this, function(Vue) {
 	'use strict';
-	var CARD_SCALE = 0.83;
 	var VueCarouselItem = {
 		template: '<div v-show="ready" :class="[\'vue-carousel__item\', {\'is-active\': active, \'vue-carousel__item--card\': $parent.type === \'card\', \'is-in-stage\': inStage, \'is-hover\': hover}]" @click="handleItemClick" :style=\'{msTransform: "translateX(" + translate + "px) scale(" + scale + ")", webkitTransform: "translateX(" + translate + "px) scale(" + scale + ")", transform: "translateX(" + translate + "px) scale(" + scale + ")"}\'><div v-if="$parent.type === \'card\'" v-show="!active" class="vue-carousel__mask"></div><slot></slot></div>',
 		name: 'VueCarouselItem',
@@ -22,7 +21,8 @@
 				scale: 1,
 				active: false,
 				ready: false,
-				inStage: false
+				inStage: false,
+				cardScale: 0.83
 			};
 		},
 		methods: {
@@ -40,11 +40,11 @@
 			},
 			calculateTranslate: function(index, activeIndex, parentWidth) {
 				if (this.inStage) {
-					return parentWidth * ((2 - CARD_SCALE) * (index - activeIndex) + 1) / 4;
+					return parentWidth * ((2 - this.cardScale) * (index - activeIndex) + 1) / 4;
 				} else if (index < activeIndex) {
-					return -(1 + CARD_SCALE) * parentWidth / 4;
+					return -(1 + this.cardScale) * parentWidth / 4;
 				} else {
-					return (3 + CARD_SCALE) * parentWidth / 4;
+					return (3 + this.cardScale) * parentWidth / 4;
 				}
 			},
 			translateItem: function(index, activeIndex) {
@@ -57,7 +57,7 @@
 					this.inStage = Math.round(Math.abs(index - activeIndex)) <= 1;
 					this.active = index === activeIndex;
 					this.translate = this.calculateTranslate(index, activeIndex, parentWidth);
-					this.scale = this.active ? 1 : CARD_SCALE;
+					this.scale = this.active ? 1 : this.cardScale;
 				} else {
 					this.active = index === activeIndex;
 					this.translate = parentWidth * (index - activeIndex);

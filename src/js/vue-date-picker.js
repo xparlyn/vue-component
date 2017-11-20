@@ -7,27 +7,6 @@
 	}
 })(this, function(Vue, VuePicker, VueUtil, VueTimePicker) {
 	'use strict';
-	var DAY_DURATION = 86400000;
-	var clearHours = function(time) {
-		var cloneDate = new Date(time);
-		cloneDate.setHours(0, 0, 0, 0);
-		return cloneDate.getTime();
-	};
-	var getStartDateOfMonth = function(year, month) {
-		var result = new Date(year, month, 1);
-		var day = result.getDay();
-		if (day === 0) {
-			result.setTime(result.getTime() - DAY_DURATION * 7);
-		} else {
-			result.setTime(result.getTime() - DAY_DURATION * day);
-		}
-		return result;
-	};
-	var getFirstDayOfMonth = function(date) {
-		var temp = VueUtil.toDate(date);
-		temp.setDate(1);
-		return temp.getDay();
-	};
 	var YearTable = {
 		template: '<table @click="handleYearTableClick" class="vue-year-table"><tbody><tr><td class="available" :style="getCellStyle(startYear + 0)"><a class="cell">{{startYear}}</a></td><td class="available" :style="getCellStyle(startYear + 1)"><a class="cell">{{startYear + 1}}</a></td><td class="available" :style="getCellStyle(startYear + 2)"><a class="cell">{{startYear + 2}}</a></td><td class="available" :style="getCellStyle(startYear + 3)"><a class="cell">{{startYear + 3}}</a></td></tr><tr><td class="available" :style="getCellStyle(startYear + 4)"><a class="cell">{{startYear + 4}}</a></td><td class="available" :style="getCellStyle(startYear + 5)"><a class="cell">{{startYear + 5}}</a></td><td class="available" :style="getCellStyle(startYear + 6)"><a class="cell">{{startYear + 6}}</a></td><td class="available" :style="getCellStyle(startYear + 7)"><a class="cell">{{startYear + 7}}</a></td></tr><tr><td class="available" :style="getCellStyle(startYear + 8)"><a class="cell">{{startYear + 8}}</a></td><td class="available" :style="getCellStyle(startYear + 9)"><a class="cell">{{startYear + 9}}</a></td><td></td><td></td></tr></tbody></table>',
 		props: {
@@ -149,9 +128,25 @@
 				return this.date.getDate();
 			},
 			startDate: function() {
+				var dayDuration = this.dayDuration;
+				var getStartDateOfMonth = function(year, month) {
+					var result = new Date(year, month, 1);
+					var day = result.getDay();
+					if (day === 0) {
+						result.setTime(result.getTime() - dayDuration * 7);
+					} else {
+						result.setTime(result.getTime() - dayDuration * day);
+					}
+					return result;
+				};
 				return getStartDateOfMonth(this.year, this.month);
 			},
 			rows: function() {
+				var getFirstDayOfMonth = function(date) {
+					var temp = VueUtil.toDate(date);
+					temp.setDate(1);
+					return temp.getDay();
+				};
 				var date = new Date(this.year,this.month,1);
 				var day = getFirstDayOfMonth(date);
 				var dateCountOfMonth = VueUtil.getDayCountOfMonth(date.getFullYear(), date.getMonth());
@@ -163,14 +158,14 @@
 				var firstDayPosition;
 				var startDate = this.startDate;
 				var disabledDate = this.disabledDate;
-				var now = clearHours(new Date());
+				var now = this.clearHours(new Date());
 				for (var i = 0; i < 6; i++) {
 					var row = rows[i];
 					if (this.showWeekNumber) {
 						if (!row[0]) {
 							row[0] = {
 								type: 'week',
-								text: VueUtil.getWeekNumber(new Date(startDate.getTime() + DAY_DURATION * (i * 7 + 1)))
+								text: VueUtil.getWeekNumber(new Date(startDate.getTime() + this.dayDuration * (i * 7 + 1)))
 							};
 						}
 					}
@@ -188,10 +183,12 @@
 						}
 						cell.type = 'normal';
 						var index = i * 7 + j;
-						var time = startDate.getTime() + DAY_DURATION * (index - offset);
-						cell.inRange = time >= clearHours(this.minDate) && time <= clearHours(this.maxDate);
-						cell.start = this.minDate && time === clearHours(this.minDate);
-						cell.end = this.maxDate && time === clearHours(this.maxDate);
+						var time = startDate.getTime() + this.dayDuration * (index - offset);
+						var minClearHoursDate = this.clearHours(this.minDate);
+						var maxClearHoursDate = this.clearHours(this.maxDate);
+						cell.inRange = time >= minClearHoursDate && time <= maxClearHoursDate;
+						cell.start = this.minDate && time === minClearHoursDate;
+						cell.end = this.maxDate && time === maxClearHoursDate;
 						var isToday = time === now;
 						if (isToday) {
 							cell.type = 'today';
@@ -274,7 +271,8 @@
 		},
 		data: function() {
 			return {
-				tableRows: [[], [], [], [], [], []]
+				tableRows: [[], [], [], [], [], []],
+				dayDuration: 86400000
 			};
 		},
 		methods: {
@@ -312,12 +310,12 @@
 			},
 			getDateOfCell: function(row, column) {
 				var startDate = this.startDate;
-				return new Date(startDate.getTime() + (row * 7 + (column - (this.showWeekNumber ? 1 : 0)) - this.offsetDay) * DAY_DURATION);
+				return new Date(startDate.getTime() + (row * 7 + (column - (this.showWeekNumber ? 1 : 0)) - this.offsetDay) * this.dayDuration);
 			},
 			getCellByDate: function(date) {
 				var startDate = this.startDate;
 				var rows = this.rows;
-				var index = (date - startDate) / DAY_DURATION;
+				var index = (date - startDate) / this.dayDuration;
 				var row = rows[Math.floor(index / 7)];
 				if (this.showWeekNumber) {
 					return row[index % 7 + 1];
@@ -342,6 +340,11 @@
 				newDate.setDate(parseInt(cell.text, 10));
 				return VueUtil.getWeekNumber(newDate) === this.week;
 			},
+			clearHours: function(time) {
+				var cloneDate = new Date(time);
+				cloneDate.setHours(0, 0, 0, 0);
+				return cloneDate.getTime();
+			},
 			markRange: function(maxDate) {
 				var startDate = this.startDate;
 				if (!maxDate) {
@@ -356,10 +359,12 @@
 							continue;
 						var cell = row[j];
 						var index = i * 7 + j + (this.showWeekNumber ? -1 : 0);
-						var time = startDate.getTime() + DAY_DURATION * (index - this.offsetDay);
-						cell.inRange = minDate && time >= clearHours(minDate) && time <= clearHours(maxDate);
-						cell.start = minDate && time === clearHours(minDate.getTime());
-						cell.end = maxDate && time === clearHours(maxDate.getTime());
+						var time = startDate.getTime() + this.dayDuration * (index - this.offsetDay);
+						var minClearHoursDate = this.clearHours(minDate);
+						var maxClearHoursDate = this.clearHours(maxDate);
+						cell.inRange = minDate && time >= minClearHoursDate && time <= maxClearHoursDate;
+						cell.start = minDate && time === minClearHoursDate;
+						cell.end = maxDate && time === maxClearHoursDate;
 					}
 				}
 			},

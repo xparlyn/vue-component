@@ -8,11 +8,6 @@
 	}
 })(this, function(Vue, VuePopper, VueUtil) {
 	'use strict';
-	var getFirstComponentChild = function(children) {
-		return children && children.filter(function(c) {
-			return c && c.tag;
-		})[0];
-	};
 	var VueTooltip = {
 		name: 'VueTooltip',
 		mixins: [VuePopper],
@@ -76,8 +71,12 @@
 					class: ['vue-tooltip__popper', 'is-' + effect, self.popperClass]
 				}, [self.$slots.content || self.content])]);
 			}
-			if (!self.$slots.default || !self.$slots.default.length)
-				return self.$slots.default;
+			if (!self.$slots.default || !self.$slots.default.length) return self.$slots.default;
+			var getFirstComponentChild = function(children) {
+				return children && children.filter(function(c) {
+					return c && c.tag;
+				})[0];
+			};
 			var vnode = getFirstComponentChild(self.$slots.default);
 			if (!vnode)
 				return vnode;

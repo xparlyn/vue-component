@@ -8,17 +8,17 @@
 	}
 })(this, function(Vue, VueUtil, VuePopup) {
 	'use strict';
-	var typeMap = {
-		success: 'success',
-		info: 'information',
-		warning: 'warning',
-		error: 'error'
-	};
 	var VueMessageBox = {
 		template: '<div><div class="vue-message-box__wrapper" v-show="visible"></div><transition name="msgbox-fade" @after-leave="doDestroy"><div :class="[\'vue-message-box\', customClass]" v-show="visible"><div class="vue-message-box__header" v-if="title !== void 0"><div class="vue-message-box__title">{{title || $t(\'vue.messagebox.title\')}}</div></div><div class="vue-message-box__content" v-if="message !== \'\'"><div :class="[\'vue-message-box__status\', typeClass]"></div><div class="vue-message-box__message" :style="{\'margin-left\': typeClass ? \'50px\' : \'0\'}"><slot><p>{{message}}</p></slot></div></div><div class="vue-message-box__btns"><vue-button :loading="cancelButtonLoading" :class="[cancelButtonClasses]" v-if="showCancelButton" @click.native="handleAction(\'cancel\')">{{cancelButtonText || $t(\'vue.messagebox.cancel\')}}</vue-button><vue-button :loading="confirmButtonLoading" ref="confirm" :class="[confirmButtonClasses]" @click.native="handleAction(\'confirm\')">{{confirmButtonText || $t(\'vue.messagebox.confirm\')}}</vue-button></div></div></transition></div>',
 		mixins: [VuePopup],
 		computed: {
 			typeClass: function() {
+				var typeMap = {
+					success: 'success',
+					info: 'information',
+					warning: 'warning',
+					error: 'error'
+				};
 				return this.type && typeMap[this.type.toLowerCase()] ? 'vue-icon-' + typeMap[this.type.toLowerCase()] : '';
 			},
 			confirmButtonClasses: function() {

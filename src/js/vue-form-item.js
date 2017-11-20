@@ -8,26 +8,6 @@
 	}
 })(this, function(Vue, VueUtil, VueValidator) {
 	'use strict';
-	var getPropByPath = function(obj, path) {
-		var tempObj = obj;
-		path = path.replace(/\[(\w+)\]/g, '.$1');
-		path = path.replace(/^\./, '');
-		var keyArr = path.split('.');
-		var i = 0;
-		for (var len = keyArr.length; i < len - 1; ++i) {
-			var key = keyArr[i];
-			if (key in tempObj) {
-				tempObj = tempObj[key];
-			} else {
-				throw new Error('please transfer a valid prop path to form item!');
-			}
-		}
-		return {
-			o: tempObj,
-			k: keyArr[i],
-			v: tempObj[keyArr[i]]
-		};
-	}
 	var VueFormItem = {
 		template: '<div :class="[\'vue-form-item\', {\'is-notify\': form.notifyMessage || form.customMessageMethod,\'is-error\': validateState === \'error\',\'is-validating\': validateState === \'validating\',\'is-required\': isRequired || required}]"><label :for="prop" class="vue-form-item__label" :style="labelStyle" v-if="label" ref="label">{{label + form.labelSuffix}}</label><div class="vue-form-item__content" :style="contentStyle" ref="content"><slot></slot><div class="vue-form-item__error" v-if="validateState === \'error\' && showMessage && form.showMessage && !form.notifyMessage && !form.customMessageMethod">{{validateMessage}}</div></div></div>',
 		name: 'VueFormItem',
@@ -90,7 +70,7 @@
 					if (path.indexOf(':') !== -1) {
 						path = path.replace(/:/, '.');
 					}
-					return getPropByPath(model, path).v;
+					return this.getPropByPath(model, path).v;
 				}
 			}
 		},
@@ -104,6 +84,26 @@
 			};
 		},
 		methods: {
+			getPropByPath: function(obj, path) {
+				var tempObj = obj;
+				path = path.replace(/\[(\w+)\]/g, '.$1');
+				path = path.replace(/^\./, '');
+				var keyArr = path.split('.');
+				var i = 0;
+				for (var len = keyArr.length; i < len - 1; ++i) {
+					var key = keyArr[i];
+					if (key in tempObj) {
+						tempObj = tempObj[key];
+					} else {
+						throw new Error('please transfer a valid prop path to form item!');
+					}
+				}
+				return {
+					o: tempObj,
+					k: keyArr[i],
+					v: tempObj[keyArr[i]]
+				};
+			},
 			labelStyleWidth: function() {
 				if (this.form.labelPosition === 'top' || (this.form.labelResponsive && VueUtil.getStyle(this.$refs.label, 'display') === 'inline-block'))
 					return '';
@@ -156,7 +156,7 @@
 				if (path.indexOf(':') !== -1) {
 					path = path.replace(/:/, '.');
 				}
-				var prop = getPropByPath(model, path);
+				var prop = this.getPropByPath(model, path);
 				if (VueUtil.isArray(value) && value.length > 0) {
 					this.validateDisabled = true;
 					prop.o[prop.k] = [];

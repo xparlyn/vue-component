@@ -7,20 +7,6 @@
 	}
 })(this, function(Vue, VuePicker, VueUtil) {
 	'use strict';
-	var MIN_TIME = VueUtil.parseDate('00:00:00', 'HH:mm:ss');
-	var MAX_TIME = VueUtil.parseDate('23:59:59', 'HH:mm:ss');
-	var isDisabled = function(minTime, maxTime) {
-		var minValue = minTime.getHours() * 3600 + minTime.getMinutes() * 60 + minTime.getSeconds();
-		var maxValue = maxTime.getHours() * 3600 + maxTime.getMinutes() * 60 + maxTime.getSeconds();
-		return minValue > maxValue;
-	};
-	var newArray = function(start, end) {
-		var result = [];
-		for (var i = start; i <= end; i++) {
-			result.push(i);
-		}
-		return result;
-	};
 	var clacTime = function(time) {
 		time = VueUtil.isArray(time) ? time : [time];
 		var minTime = time[0] || new Date();
@@ -29,26 +15,6 @@
 		var maxTime = time[1] || date;
 		if (minTime > maxTime) return clacTime();
 		return {minTime: minTime, maxTime: maxTime};
-	};
-	var getRangeHours = function(ranges) {
-		var hours = [];
-		var disabledHours = [];
-		(ranges || []).forEach(function(range) {
-			var value = range.map(function(date) {
-				return date.getHours();
-			});
-			disabledHours = disabledHours.concat(newArray(value[0], value[1]));
-		});
-		if (disabledHours.length) {
-			for (var i = 0; i < 24; i++) {
-				hours[i] = disabledHours.indexOf(i) === -1;
-			}
-		} else {
-			for (var i = 0; i < 24; i++) {
-				hours[i] = false;
-			}
-		}
-		return hours;
 	};
 	var limitRange = function(date, ranges, format) {
 		format = format || 'yyyy-MM-dd HH:mm:ss';
@@ -114,6 +80,33 @@
 		},
 		computed: {
 			hoursList: function() {
+				var getRangeHours = function(ranges) {
+					var hours = [];
+					var disabledHours = [];
+					(ranges || []).forEach(function(range) {
+						var value = range.map(function(date) {
+							return date.getHours();
+						});
+						var newArray = function(start, end) {
+							var result = [];
+							for (var i = start; i <= end; i++) {
+								result.push(i);
+							}
+							return result;
+						};
+						disabledHours = disabledHours.concat(newArray(value[0], value[1]));
+					});
+					if (disabledHours.length) {
+						for (var i = 0; i < 24; i++) {
+							hours[i] = disabledHours.indexOf(i) === -1;
+						}
+					} else {
+						for (var i = 0; i < 24; i++) {
+							hours[i] = false;
+						}
+					}
+					return hours;
+				};
 				return getRangeHours(this.selectableRange);
 			},
 			hourVue: function() {
@@ -316,6 +309,11 @@
 		props: ['value'],
 		data: function() {
 			var time = clacTime(this.$options.defaultValue);
+			var isDisabled = function(minTime, maxTime) {
+				var minValue = minTime.getHours() * 3600 + minTime.getMinutes() * 60 + minTime.getSeconds();
+				var maxValue = maxTime.getHours() * 3600 + maxTime.getMinutes() * 60 + maxTime.getSeconds();
+				return minValue > maxValue;
+			};
 			return {
 				popperClass: '',
 				minTime: time.minTime,
@@ -364,6 +362,8 @@
 			},
 			handleChange: function() {
 				if (this.minTime > this.maxTime) return;
+				var MIN_TIME = VueUtil.parseDate('00:00:00', 'HH:mm:ss');
+				var MAX_TIME = VueUtil.parseDate('23:59:59', 'HH:mm:ss');
 				MIN_TIME.setFullYear(this.minTime.getFullYear());
 				MIN_TIME.setMonth(this.minTime.getMonth(), this.minTime.getDate());
 				MAX_TIME.setFullYear(this.maxTime.getFullYear());

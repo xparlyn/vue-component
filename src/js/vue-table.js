@@ -8,63 +8,6 @@
 	}
 })(this, function(Vue, VueUtil, VuePopper) {
 	'use strict';
-	var orderBy = function(data, sortList) {
-		return data.slice().sort(function(data1, data2) {
-			for (var i = 0, l = sortList.length; i < l; i++) {
-				var column = sortList[i];
-				var value1 = data1[column.property];
-				var value2 = data2[column.property];
-				var sortOrder = 1;
-				if (column.order === "descending") {
-					sortOrder = -1
-				}
-				if (typeof column.sortMethod === 'function') {
-					return sortMethod(value1, value2) ? order : -order;
-				} else {
-					return value1 > value2 ? sortOrder : -sortOrder;
-				}
-			}
-		});
-	};
-	var sortData = function(data, states) {
-		var sortingColumns = states.sortingColumns;
-		if (sortingColumns.length === 0) return data;
-		return orderBy(data, sortingColumns);
-	};
-	var getColumnById = function(table, columnId) {
-		var column = null;
-		for (var i=0, j=table.columns.length; i<j; i++) {
-			var item = table.columns[i];
-			if (item.id === columnId) {
-				column = item;
-				break;
-			}
-		}
-		return column;
-	};
-	var toggleRowSelection = function(states, row, selected) {
-		var changed = false;
-		var selection = states.selection;
-		var index = selection.indexOf(row);
-		if (VueUtil.isUndef(selected)) {
-			if (index === -1) {
-				selection.push(row);
-				changed = true;
-			} else {
-				selection.splice(index, 1);
-				changed = true;
-			}
-		} else {
-			if (selected && index === -1) {
-				selection.push(row);
-				changed = true;
-			} else if (!selected && index > -1) {
-				selection.splice(index, 1);
-				changed = true;
-			}
-		}
-		return changed;
-	};
 	var TableStore = function(table, initialState) {
 		if (!table) {
 			throw new Error('Table is required.');
@@ -96,7 +39,7 @@
 		setData: function(states, data) {
 			var dataInstanceChanged = states._data !== data;
 			states._data = data;
-			states.data = sortData((data || []), states);
+			states.data = this.sortData((data || []), states);
 			this.updateCurrentRow();
 			if (dataInstanceChanged) {
 				this.clearSelection();
@@ -127,7 +70,7 @@
 		},
 		changeSortCondition: function(states) {
 			var self = this;
-			states.data = sortData((states.filteredData || states._data || []), states);
+			states.data = self.sortData((states.filteredData || states._data || []), states);
 			this.table.$emit('sort-change', self.states.sortingColumns);
 			Vue.nextTick(function() {
 				self.table.updateScrollY();
@@ -151,7 +94,7 @@
 				var values = filters[columnId];
 				if (!values || values.length === 0)
 					return;
-				var column = getColumnById(self.states, columnId);
+				var column = self.getColumnById(columnId);
 				if (column) {
 					if (column.filterMethod) {
 						data = data.filter(function(row) {
@@ -170,7 +113,7 @@
 				}
 			});
 			states.filteredData = data;
-			states.data = sortData(data, states);
+			states.data = self.sortData(data, states);
 			if (!silent) {
 				self.table.$emit('filter-change', filters);
 			}
@@ -227,7 +170,7 @@
 			}
 		},
 		rowSelectedChanged: function(states, row) {
-			var changed = toggleRowSelection(states, row);
+			var changed = this.toggleRowSelection(row);
 			var selection = states.selection;
 			if (changed) {
 				var table = this.table;
@@ -262,13 +205,14 @@
 			var value = !states.isAllSelected;
 			var selection = this.states.selection;
 			var selectionChanged = false;
+			var self = this;
 			data.forEach(function(item, index) {
 				if (states.selectable) {
-					if (states.selectable.call(null, item, index) && toggleRowSelection(states, item, value)) {
+					if (states.selectable.call(null, item, index) && self.toggleRowSelection(item, value)) {
 						selectionChanged = true;
 					}
 				} else {
-					if (toggleRowSelection(states, item, value)) {
+					if (self.toggleRowSelection(item, value)) {
 						selectionChanged = true;
 					}
 				}
@@ -334,6 +278,41 @@
 		states.columns = doFlattenColumns(states.originColumns);
 		states.isComplex = states.fixedColumns.length > 0 || states.rightFixedColumns.length > 0;
 	}
+	TableStore.prototype.sortData = function(data, states) {
+		var sortingColumns = states.sortingColumns;
+		if (sortingColumns.length === 0) return data;
+		var orderBy = function(data, sortList) {
+			return data.slice().sort(function(data1, data2) {
+				for (var i = 0, l = sortList.length; i < l; i++) {
+					var column = sortList[i];
+					var value1 = data1[column.property];
+					var value2 = data2[column.property];
+					var sortOrder = 1;
+					if (column.order === "descending") {
+						sortOrder = -1
+					}
+					if (typeof column.sortMethod === 'function') {
+						return sortMethod(value1, value2) ? order : -order;
+					} else {
+						return value1 > value2 ? sortOrder : -sortOrder;
+					}
+				}
+			});
+		};
+		return orderBy(data, sortingColumns);
+	}
+	TableStore.prototype.getColumnById = function(columnId) {
+		var column = null;
+		var table = this.table;
+		for (var i=0, j=table.columns.length; i<j; i++) {
+			var item = table.columns[i];
+			if (item.id === columnId) {
+				column = item;
+				break;
+			}
+		}
+		return column;
+	}
 	TableStore.prototype.isSelected = function(row) {
 		return (this.states.selection || []).indexOf(row) !== -1;
 	}
@@ -347,10 +326,27 @@
 		}
 	}
 	TableStore.prototype.toggleRowSelection = function(row, selected) {
-		var changed = toggleRowSelection(this.states, row, selected);
-		if (changed) {
-			this.table.$emit('selection-change', this.states.selection);
+		var changed = false;
+		var selection = this.states.selection;
+		var index = selection.indexOf(row);
+		if (VueUtil.isUndef(selected)) {
+			if (index === -1) {
+				selection.push(row);
+				changed = true;
+			} else {
+				selection.splice(index, 1);
+				changed = true;
+			}
+		} else {
+			if (selected && index === -1) {
+				selection.push(row);
+				changed = true;
+			} else if (!selected && index > -1) {
+				selection.splice(index, 1);
+				changed = true;
+			}
 		}
+		return changed;
 	}
 	TableStore.prototype.cleanSelection = function() {
 		var selection = this.states.selection || [];
@@ -811,7 +807,7 @@
 					},
 				}, []) : '']), self.store.states.expandRows.indexOf(row) > -1 ? createElement('tr', null, [createElement('td', {
 					attrs: {
-						colspan: self.columns.length
+						colspan: self.columnsCount
 					},
 					class: ['vue-table__expanded-cell', self.getExpandClass(row, $index)]
 				}, [self.table.renderExpanded ? self.table.renderExpanded(createElement, {
@@ -840,7 +836,7 @@
 				if (self.fixed) {
 					data = self.table.$refs.tableBody.delta.data;
 				}
-				var storeData = self.store.states.data;
+				var storeData = self.data;
 				var rows = el.querySelectorAll('tbody > tr');
 				var newRow = rows[data.indexOf(storeData[newVal])];
 				newRow && newRow.classList.add('hover-row');
@@ -971,10 +967,10 @@
 				}
 				return null;
 			},
-			getColumnByCell: function(table, cell) {
+			getColumnByCell: function(cell) {
 				var matches = (cell.className || '').match(/vue-table_[^\s]+/gm);
 				if (matches) {
-					return getColumnById(table, matches[0]);
+					return this.store.getColumnById(matches[0]);
 				}
 				return null;
 			},
@@ -1009,7 +1005,7 @@
 				var table = this.table;
 				var cell = this.getCell(event);
 				if (cell) {
-					var column = this.getColumnByCell(table, cell);
+					var column = this.getColumnByCell(cell);
 					var hoverState = table.hoverState = {cell: cell, column: column, row: row};
 					table.$emit('cell-mouse-enter', hoverState.row, hoverState.column, hoverState.cell, event);
 				}
@@ -1046,19 +1042,17 @@
 				this.store.commit('setHoverRow', null);
 			},
 			handleContextMenu: function(event, row) {
-				var table = this.table;
-				table.$emit('row-contextmenu', row, event);
+				this.table.$emit('row-contextmenu', row, event);
 			},
 			handleDoubleClick: function(event, row) {
-				var table = this.table;
-				table.$emit('row-dblclick', row, event);
+				this.table.$emit('row-dblclick', row, event);
 			},
 			handleClick: function(event, row) {
 				var table = this.table;
 				var cell = this.getCell(event);
 				var column;
 				if (cell) {
-					column = this.getColumnByCell(table, cell);
+					column = this.getColumnByCell(cell);
 					if (column) {
 						table.$emit('cell-click', row, column, cell, event);
 					}
@@ -1192,9 +1186,6 @@
 			}
 		},
 		computed: {
-			isAllSelected: function() {
-				return this.store.states.isAllSelected;
-			},
 			columnsCount: function() {
 				return this.store.states.columns.length;
 			},
@@ -1311,7 +1302,6 @@
 				event.stopPropagation();
 				var target = event.target;
 				var cell = target.parentNode;
-				var table = this.$parent;
 				var filterPanel = this.filterPanels[column.id];
 				if (filterPanel && column.filterOpened) {
 					filterPanel.showPopper = false;
@@ -1323,7 +1313,7 @@
 					if (column.filterPlacement) {
 						filterPanel.placement = column.filterPlacement;
 					}
-					filterPanel.table = table;
+					filterPanel.table = this.$parent;
 					filterPanel.cell = cell;
 					filterPanel.column = column;
 					!VueUtil.isServer && filterPanel.$mount(document.createElement('div'));
@@ -1351,7 +1341,6 @@
 				if (self.draggingColumn && self.border) {
 					self.dragging = true;
 					self.$parent.resizeProxyVisible = true;
-					var table = self.$parent;
 					var tableEl = self.$parent.$el;
 					var tableLeft = tableEl.getBoundingClientRect().left;
 					var columnEl = self.$el.querySelector('th.' + column.id);
@@ -1384,7 +1373,7 @@
 							var startColumnLeft = self.dragState.startColumnLeft;
 							var columnWidth = finalLeft - startColumnLeft;
 							column.width = column.realWidth = columnWidth;
-							table.$emit('header-dragend', column.width, startLeft - startColumnLeft, column, event);
+							self.$parent.$emit('header-dragend', column.width, startLeft - startColumnLeft, column, event);
 							document.body.style.cursor = '';
 							self.dragging = false;
 							self.draggingColumn = null;
@@ -1532,9 +1521,6 @@
 			}
 		},
 		computed: {
-			isAllSelected: function() {
-				return this.store.states.isAllSelected;
-			},
 			columnsCount: function() {
 				return this.store.states.columns.length;
 			},
@@ -1969,7 +1955,9 @@
 				this.store.commit('setCurrentRow', row);
 			},
 			toggleRowSelection: function(row, selected) {
-				this.store.toggleRowSelection(row, selected);
+				if (this.store.toggleRowSelection(row, selected)) {
+					this.$emit('selection-change', this.store.states.selection);
+				}
 				this.store.updateAllSelected();
 			},
 			clearSelection: function() {

@@ -9,21 +9,6 @@
 })(this, function(Vue, VueUtil) {
 	'use strict';
 	var NODE_KEY = '$treeNodeId';
-	var markNodeData = function(node, data) {
-		if (data[NODE_KEY])
-			return;
-		Object.defineProperty(data, NODE_KEY, {
-			value: node.id,
-			enumerable: false,
-			configurable: false,
-			writable: false
-		});
-	};
-	var getNodeKey = function(key, data) {
-		if (!key)
-			return data[NODE_KEY];
-		return data[key];
-	};
 	var getChildState = function(node) {
 		var all = true;
 		var none = true;
@@ -158,6 +143,15 @@
 	Node.prototype.setData = function(data) {
 		var self = this;
 		if (!VueUtil.isArray(data)) {
+			var markNodeData = function(node, data) {
+				if (data[NODE_KEY]) return;
+				Object.defineProperty(data, NODE_KEY, {
+					value: node.id,
+					enumerable: false,
+					configurable: false,
+					writable: false
+				});
+			};
 			markNodeData(self, data);
 		}
 		self.data = data;
@@ -475,9 +469,13 @@
 		}
 	};
 	TreeStore.prototype.getNode = function(data) {
-		var self = this;
-		var key = typeof data !== 'object' ? data : getNodeKey(self.key, data);
-		return self.nodesMap[key];
+		var getNodeKey = function(key, data) {
+			if (!key)
+				return data[NODE_KEY];
+			return data[key];
+		};
+		var key = typeof data !== 'object' ? data : getNodeKey(this.key, data);
+		return this.nodesMap[key];
 	};
 	TreeStore.prototype.insertBefore = function(data, refData) {
 		var self = this;

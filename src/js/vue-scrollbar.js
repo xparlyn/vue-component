@@ -8,40 +8,6 @@
 	}
 })(this, function(Vue, VueUtil) {
 	'use strict';
-	var BAR_MAP = {
-		vertical: {
-			offset: 'offsetHeight',
-			scroll: 'scrollTop',
-			scrollSize: 'scrollHeight',
-			size: 'height',
-			key: 'vertical',
-			axis: 'Y',
-			client: 'clientY',
-			direction: 'top'
-		},
-		horizontal: {
-			offset: 'offsetWidth',
-			scroll: 'scrollLeft',
-			scrollSize: 'scrollWidth',
-			size: 'width',
-			key: 'horizontal',
-			axis: 'X',
-			client: 'clientX',
-			direction: 'left'
-		}
-	};
-	var renderThumbStyle = function(obj) {
-		var move = obj.move;
-		var size = obj.size;
-		var bar = obj.bar;
-		var style = {};
-		var translate = "translate" + bar.axis + "(" + move + "%)";
-		style[bar.size] = size;
-		style.transform = translate;
-		style.msTransform = translate;
-		style.webkitTransform = translate;
-		return style;
-	};
 	var Bar = {
 		name: 'Bar',
 		props: {
@@ -51,6 +17,28 @@
 		},
 		computed: {
 			bar: function() {
+				var BAR_MAP = {
+					vertical: {
+						offset: 'offsetHeight',
+						scroll: 'scrollTop',
+						scrollSize: 'scrollHeight',
+						size: 'height',
+						key: 'vertical',
+						axis: 'Y',
+						client: 'clientY',
+						direction: 'top'
+					},
+					horizontal: {
+						offset: 'offsetWidth',
+						scroll: 'scrollLeft',
+						scrollSize: 'scrollWidth',
+						size: 'width',
+						key: 'horizontal',
+						axis: 'X',
+						client: 'clientX',
+						direction: 'left'
+					}
+				};
 				return BAR_MAP[this.vertical ? 'vertical' : 'horizontal'];
 			},
 			wrap: function() {
@@ -62,6 +50,18 @@
 			var move = self.move;
 			var size = self.size;
 			var bar = self.bar;
+			var renderThumbStyle = function(obj) {
+				var move = obj.move;
+				var size = obj.size;
+				var bar = obj.bar;
+				var style = {};
+				var translate = "translate" + bar.axis + "(" + move + "%)";
+				style[bar.size] = size;
+				style.transform = translate;
+				style.msTransform = translate;
+				style.webkitTransform = translate;
+				return style;
+			};
 			return createElement("div", {
 				class: ["vue-scrollbar__bar", "is-" + bar.key],
 				on: {

@@ -12,7 +12,6 @@
 			default: 'Validation Error'
 		};
 	};
-	var defaultMessages = newMessages();
 	var _extends = Object.assign || function(target) {
 		for (var i = 1; i < arguments.length; i++) {
 			var source = arguments[i];
@@ -467,7 +466,7 @@
 	};
 	var Schema = function(descriptor) {
 		this.rules = null;
-		this._messages = defaultMessages;
+		this._messages = newMessages();
 		this.define(descriptor);
 	};
 	Schema.prototype = {
@@ -537,9 +536,6 @@
 			}
 			if (options.messages) {
 				var messages = this.messages();
-				if (messages === defaultMessages) {
-					messages = newMessages();
-				}
 				deepMerge(messages, options.messages);
 				options.messages = messages;
 			} else {
@@ -685,6 +681,6 @@
 		}
 		validators[type] = validator;
 	}
-	Schema.messages = defaultMessages;
+	Schema.messages = newMessages();
 	return Schema;
 });
