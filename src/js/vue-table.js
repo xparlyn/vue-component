@@ -1527,7 +1527,7 @@
 		watch: {
 			'$parent.emptyLabel': function() {
 				if (this.$parent.showFooter && !this.fixed) {
-					this.aggregates = this.getAggregate(this.store.states.data);
+					this.aggregates = this.getAggregate(this.columns, this.store.states.data);
 				}
 			}
 		},
@@ -1562,7 +1562,7 @@
 					return (index < this.leftFixedCount) || (index >= this.columnsCount - this.rightFixedCount);
 				}
 			},
-			getAggregate: function(data) {
+			getAggregate: function(columns, data) {
 				if (data.length === 0) return;
 				var self = this;
 				var aggregates = [];
@@ -1573,8 +1573,8 @@
 					'min': self.$t('vue.table.minText'),
 					'max': self.$t('vue.table.maxText'),
 				};
-				for (var index=0,len=self.columns.length; index<len; index++) {
-					var column = self.columns[index];
+				for (var index=0,len=columns.length; index<len; index++) {
+					var column = columns[index];
 					var aggregateType = column.aggregate.toLowerCase();
 					var aggregateLabel = labelMap[aggregateType];
 					if (!aggregateLabel && VueUtil.isUndef(column.aggregateLabel)) continue;
@@ -1867,11 +1867,11 @@
 				} else {
 					params.fileName = 'table.csv';
 				}
-				var columns = this.columns;
 				if (VueUtil.isUndef(params.original)) params.original = true;
+				var columns = params.original ? this.store.states._columns : this.columns;
 				var datas = params.original ? this.store.states._data : this.store.states.data;
 				var footer = [];
-				if (this.showFooter) footer = this.$refs.tableFooter.getAggregate(datas);
+				if (this.showFooter) footer = this.$refs.tableFooter.getAggregate(columns, datas);
 				var appendLine = function(content, row, options) {
 					var separator = options.separator;
 					var quoted = options.quoted
@@ -2063,7 +2063,7 @@
 					refs.tableBody.updateZone(scrollTop);
 				}
 				if (refs.tableFooter && this.showFooter && !this.fixed) {
-					refs.tableFooter.aggregates = refs.tableFooter.getAggregate(this.store.states.data);
+					refs.tableFooter.aggregates = refs.tableFooter.getAggregate(this.columns, this.store.states.data);
 				}
 			},
 			doLayout: function() {
