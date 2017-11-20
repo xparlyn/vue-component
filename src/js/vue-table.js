@@ -8,99 +8,6 @@
 	}
 })(this, function(Vue, VueUtil, VuePopper) {
 	'use strict';
-	var appendLine = function(content, row, options) {
-		var separator = options.separator;
-		var quoted = options.quoted
-		var line = row.map(function(data) {
-			if (!quoted) return data;
-			data = typeof data === 'string' ? data.replace(/"/g, '"') : data;
-			return '"' + data + '"';
-		});
-		content.push(line.join(separator));
-	};
-	var tableDataToCsv = function(columns, datas, options, noHeader) {
-		if (typeof noHeader === 'undefined') noHeader = false;
-		options = Object.assign({}, {separator: ',', quoted: false}, options);
-		var columnOrder;
-		var content = [];
-		var column = [];
-		if (columns) {
-			columnOrder = columns.map(function(v) {
-				if (typeof v === 'string') return v;
-				if (!noHeader) {
-					column.push(typeof v.label !== 'undefined' ? v.label : v.property);
-				}
-				return v.property;
-			});
-			if (column.length > 0) appendLine(content, column, options);
-		} else {
-			columnOrder = [];
-			datas.forEach(function(v) {
-				if (!VueUtil.isArray(v)) {
-					columnOrder = columnOrder.concat(Object.keys(v));
-				}
-			});
-			if (columnOrder.length > 0) {
-				columnOrder = columnOrder.filter(function(value, index, self) {return self.indexOf(value) === index;});
-				if (!noHeader) appendLine(content, columnOrder, options);
-			}
-		}
-		if (VueUtil.isArray(datas)) {
-			datas.forEach(function(row) {
-				if (!VueUtil.isArray(row)) {
-					row = columnOrder.map(function(k) {return typeof row[k] !== 'undefined' ? row[k] : '';});
-				}
-				appendLine(content, row, options);
-			});
-		}
-		return content.join('\r\n');
-	};
-	var getDownloadUrl = function(text) {
-		var BOM = '\uFEFF';
-		if (window.Blob && window.URL && window.URL.createObjectURL) {
-			var csvData = new Blob([BOM + text], {type: 'text/csv'});
-			return URL.createObjectURL(csvData);
-		} else {
-			return 'data:attachment/csv;charset=utf-8,' + BOM + encodeURIComponent(text);
-		}
-	};
-	var exportFile = function(fileName, text) {
-		if (navigator.msSaveBlob) {
-			var BOM = '\uFEFF';
-			var csvData = new Blob([BOM + text], {type: 'text/csv'});
-			navigator.msSaveBlob(csvData, fileName);
-		} else {
-			try {
-				var link = document.createElement('a');
-				link.download = fileName;
-				link.href = getDownloadUrl(text);
-				document.body.appendChild(link);
-				link.click();
-				document.body.removeChild(link);
-			} catch (e) {
-				Vue.notify({
-					message: Vue.t('vue.screenfull.canot'),
-					type: "warning"
-				});
-			}
-		}
-	};
-	var getValueByPath = function(object, prop) {
-		prop = prop || '';
-		var paths = prop.split('.');
-		var current = object;
-		var result = null;
-		for (var i = 0, j = paths.length; i < j; i++) {
-			if (!current) break;
-			var path = paths[i];
-			if (i === j - 1) {
-				result = current[path];
-				break;
-			}
-			current = current[path];
-		}
-		return result;
-	};
 	var orderBy = function(data, sortList) {
 		return data.slice().sort(function(data1, data2) {
 			for (var i = 0, l = sortList.length; i < l; i++) {
@@ -139,7 +46,7 @@
 		var changed = false;
 		var selection = states.selection;
 		var index = selection.indexOf(row);
-		if (typeof selected === 'undefined') {
+		if (VueUtil.isUndef(selected)) {
 			if (index === -1) {
 				selection.push(row);
 				changed = true;
@@ -292,7 +199,7 @@
 				if (!array)
 					array = parent.children = [];
 			}
-			if (typeof index !== 'undefined') {
+			if (VueUtil.isDef(index)) {
 				array.splice(index, 0, column);
 			} else {
 				array.push(column);
@@ -331,7 +238,7 @@
 		},
 		toggleRowExpanded: function(states, row, expanded) {
 			var expandRows = states.expandRows;
-			if (typeof expanded !== 'undefined') {
+			if (VueUtil.isDef(expanded)) {
 				var index = expandRows.indexOf(row);
 				if (expanded) {
 					if (index === -1)
@@ -702,7 +609,7 @@
 			},
 			handleSelect: function(filterValue) {
 				this.filterValue = filterValue;
-				if ((typeof filterValue !== 'undefined') && (filterValue !== null)) {
+				if (VueUtil.isDef(filterValue)) {
 					this.confirmFilter(this.filteredValue);
 				} else {
 					this.confirmFilter([]);
@@ -747,7 +654,7 @@
 				},
 				set: function(value) {
 					if (this.filteredValue) {
-						if ((typeof value !== 'undefined') && (value !== null)) {
+						if (VueUtil.isDef(value)) {
 							this.filteredValue.splice(0, 1, value);
 						} else {
 							this.filteredValue.splice(0, 1);
@@ -1000,9 +907,9 @@
 				delta.total = slots.length;
 				delta.paddingTop = delta.size * delta.start;
 				delta.allPadding = delta.size * (slots.length - delta.keeps);
-				delta.paddingTop < 0 ? delta.paddingTop = 0 : undefined;
-				delta.allPadding < 0 ? delta.allPadding = 0 : undefined;
-				delta.allPadding < delta.paddingTop ? delta.allPadding = delta.paddingTop : undefined;
+				delta.paddingTop < 0 ? delta.paddingTop = 0 : void 0;
+				delta.allPadding < 0 ? delta.allPadding = 0 : void 0;
+				delta.allPadding < delta.paddingTop ? delta.allPadding = delta.paddingTop : void 0;
 				var result = [];
 				for (var i = delta.start, j = delta.end; i < j; i++) {
 					result.push(slots[i]);
@@ -1567,9 +1474,9 @@
 		render: function(createElement) {
 			if (!this.store.table.showFooter) return null;
 			var self = this;
-			var aggregates = self.aggregates;
+			var aggregates = self.aggregates || [];
 			if (self.fixed) {
-				aggregates = self.store.table.$refs.tableFooter.aggregates
+				aggregates = self.store.table.$refs.tableFooter.aggregates || [];
 			}
 			return createElement('table', {
 				class: 'vue-table__footer',
@@ -1617,6 +1524,13 @@
 			},
 			border: Boolean
 		},
+		watch: {
+			'$parent.emptyLabel': function() {
+				if (this.$parent.showFooter && !this.fixed) {
+					this.aggregates = this.getAggregate(this.store.states.data);
+				}
+			}
+		},
 		computed: {
 			isAllSelected: function() {
 				return this.store.states.isAllSelected;
@@ -1651,67 +1565,47 @@
 			getAggregate: function(data) {
 				if (data.length === 0) return;
 				var self = this;
-				self.aggregates = [];
-				var aggregates = self.aggregates;
+				var aggregates = [];
 				var labelMap = {
 					'sum': self.$t('vue.table.sumText'),
 					'count': self.$t('vue.table.countText'),
 					'average': self.$t('vue.table.averageText'),
 					'min': self.$t('vue.table.minText'),
 					'max': self.$t('vue.table.maxText'),
-				}
+				};
 				for (var index=0,len=self.columns.length; index<len; index++) {
 					var column = self.columns[index];
 					var aggregateType = column.aggregate.toLowerCase();
 					var aggregateLabel = labelMap[aggregateType];
-					if (!aggregateLabel && column.aggregateLabel === undefined) continue;
-					if (column.aggregateLabel !== undefined) aggregateLabel = column.aggregateLabel;
+					if (!aggregateLabel && VueUtil.isUndef(column.aggregateLabel)) continue;
+					if (VueUtil.isDef(column.aggregateLabel)) aggregateLabel = column.aggregateLabel;
 					var resultMap = {};
-					switch (aggregateType) {
-					case 'count':
-						resultMap.count = data.length;
-						break;
-					case 'min':
-					case 'max':
-						var values = data.map(function(item) {
-							return Number(item[column.property])
-						}).filter(function(value) {
-							return !isNaN(value);
-						});
-						if (values.length > 0) {
-							resultMap.max = Math.max.apply(null, values);
-							resultMap.min = Math.min.apply(null, values);
+					resultMap.count = data.length;
+					var values = data.map(function(item) {
+						return Number(item[column.property])
+					})
+					var precision = 0;
+					for (var vi=values.length-1; vi>=0; vi--) {
+						var value = values[vi];
+						if (!isNaN(value)) {
+							var decimal = ('' + value).split('.')[1];
+							decimal && decimal.length > precision ? precision = decimal.length : void 0;
 						} else {
-							resultMap.max = '';
-							resultMap.min = '';
+							values.splice(value, 1);
 						}
-						break;
-					case 'sum':
-					case 'average':
-						var values = data.map(function(item) {
-							return Number(item[column.property])
-						})
-						var precisions = [];
-						for (var vi=values.length-1; vi>=0; vi--) {
-							var value = values[vi];
-							if (!isNaN(value)) {
-								var decimal = ('' + value).split('.')[1];
-								precisions.push(decimal ? decimal.length : 0);
-							} else {
-								values.splice(value, 1);
-							}
-						}
-						var precision = Math.max.apply(null, precisions);
-						if (values.length > 0) {
-							resultMap.sum = values.reduce(function(prev, curr) {
-								return parseFloat((prev + curr).toFixed(precision));
-							}, 0);
-							resultMap.average = parseFloat((resultMap.sum / values.length).toFixed(precision));
-						} else {
-							resultMap.sum = '';
-							resultMap.average = '';
-						}
-						break;
+					}
+					if (values.length > 0) {
+						resultMap.sum = values.reduce(function(prev, curr) {
+							return parseFloat((prev + curr).toFixed(precision));
+						}, 0);
+						resultMap.average = parseFloat((resultMap.sum / values.length).toFixed(precision));
+						resultMap.max = Math.max.apply(null, values);
+						resultMap.min = Math.min.apply(null, values);
+					} else {
+						resultMap.sum = '';
+						resultMap.average = '';
+						resultMap.max = '';
+						resultMap.min = '';
 					}
 					var columnAggregate = resultMap[aggregateType] || '';
 					if (!columnAggregate) {
@@ -1720,6 +1614,7 @@
 						aggregateLabel ? aggregates[index] = aggregateLabel + ': ' + columnAggregate : aggregates[index] = columnAggregate;
 					}
 				}
+				return aggregates;
 			}
 		}
 	};
@@ -1918,7 +1813,7 @@
 		}
 	};
 	var VueTable = {
-		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border, \'vue-table--enable-row-hover\': !store.states.isComplex, \'vue-table--enable-row-transition\': true || (store.states.data || []).length !== 0 && (store.states.data || []).length < 100}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :store="store" :layout="layout" :border="border" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :context="context" :store="store" :layout="layout" :expand-class-name="expandClassName" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || $t(\'vue.table.emptyText\')}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showFooter"><table-footer ref="tableFooter" :store="store" :layout="layout" :border="border" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="fixedColumns.length > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="left" :store="store" :layout="layout" :highlight="highlightCurrentRow" :row-class-name="rowClassName" :expand-class-name="expandClassName" :row-style="rowStyle" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showFooter"><table-footer fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedColumns.length > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="right" :store="store" :layout="layout" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showFooter"><table-footer fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedColumns.length > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-show="contextMenu" v-model="showContextMenu" :store="store"></table-context-menu></div>',
+		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border, \'vue-table--enable-row-hover\': !store.states.isComplex, \'vue-table--enable-row-transition\': true || (store.states.data || []).length !== 0 && (store.states.data || []).length < 100}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :store="store" :layout="layout" :border="border" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :context="context" :store="store" :layout="layout" :expand-class-name="expandClassName" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || emptyLabel}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showFooter"><table-footer ref="tableFooter" :store="store" :layout="layout" :border="border" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="fixedColumns.length > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="left" :store="store" :layout="layout" :highlight="highlightCurrentRow" :row-class-name="rowClassName" :expand-class-name="expandClassName" :row-style="rowStyle" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showFooter"><table-footer fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedColumns.length > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="right" :store="store" :layout="layout" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showFooter"><table-footer fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedColumns.length > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-show="contextMenu" v-model="showContextMenu" :store="store"></table-context-menu></div>',
 		name: 'VueTable',
 		props: {
 			data: {
@@ -1972,19 +1867,89 @@
 				} else {
 					params.fileName = 'table.csv';
 				}
-				var columns = [];
-				var datas = [];
-				if (params.columns && params.data) {
-					columns = params.columns;
-					datas = params.data;
-				} else {
-					columns = this.columns;
-					if (!('original'in params)) params.original = true;
-					datas = params.original ? this.store.states._data : this.store.states.data;
-				}
-				var noHeader = false;
-				if ('noHeader'in params) noHeader = params.noHeader;
-				var data = tableDataToCsv(columns, datas, params, noHeader);
+				var columns = this.columns;
+				if (VueUtil.isUndef(params.original)) params.original = true;
+				var datas = params.original ? this.store.states._data : this.store.states.data;
+				var footer = [];
+				if (this.showFooter) footer = this.$refs.tableFooter.getAggregate(datas);
+				var appendLine = function(content, row, options) {
+					var separator = options.separator;
+					var quoted = options.quoted
+					var line = row.map(function(data) {
+						if (!quoted) return data;
+						data = typeof data === 'string' ? data.replace(/"/g, '"') : data;
+						return '"' + data + '"';
+					});
+					content.push(line.join(separator));
+				};
+				var tableDataToCsv = function(columns, datas, footer, options) {
+					options = Object.assign({}, {separator: ',', quoted: false}, options);
+					var columnOrder;
+					var content = [];
+					var column = [];
+					if (columns) {
+						columnOrder = columns.map(function(v) {
+							if (typeof v === 'string') return v;
+							column.push(VueUtil.isDef(v.label) ? v.label : v.property);
+							return v.property;
+						});
+						if (column.length > 0) appendLine(content, column, options);
+					} else {
+						columnOrder = [];
+						datas.forEach(function(v) {
+							if (!VueUtil.isArray(v)) {
+								columnOrder = columnOrder.concat(Object.keys(v));
+							}
+						});
+						if (columnOrder.length > 0) {
+							columnOrder = columnOrder.filter(function(value, index, self) {return self.indexOf(value) === index;});
+							appendLine(content, columnOrder, options);
+						}
+					}
+					if (VueUtil.isArray(datas)) {
+						datas.forEach(function(row) {
+							if (!VueUtil.isArray(row)) {
+								row = columnOrder.map(function(k) {return VueUtil.isDef(row[k]) ? row[k] : '';});
+							}
+							appendLine(content, row, options);
+						});
+					}
+					if (VueUtil.isArray(footer)) {
+						appendLine(content, footer, options);
+					}
+					return content.join('\r\n');
+				};
+				var data = tableDataToCsv(columns, datas, footer, params);
+				var getDownloadUrl = function(text) {
+					var BOM = '\uFEFF';
+					if (window.Blob && window.URL && window.URL.createObjectURL) {
+						var csvData = new Blob([BOM + text], {type: 'text/csv'});
+						return URL.createObjectURL(csvData);
+					} else {
+						return 'data:attachment/csv;charset=utf-8,' + BOM + encodeURIComponent(text);
+					}
+				};
+				var exportFile = function(fileName, text) {
+					if (navigator.msSaveBlob) {
+						var BOM = '\uFEFF';
+						var csvData = new Blob([BOM + text], {type: 'text/csv'});
+						navigator.msSaveBlob(csvData, fileName);
+					} else {
+						try {
+							var link = document.createElement('a');
+							link.download = fileName;
+							link.href = getDownloadUrl(text);
+							document.body.appendChild(link);
+							link.click();
+							document.body.removeChild(link);
+						} catch (e) {
+							Vue.notify({
+								message: Vue.t('vue.screenfull.canot'),
+								type: "warning"
+							});
+						}
+					}
+				};
 				exportFile(params.fileName, data);
 			},
 			columnFilter: function(column, value) {
@@ -2098,7 +2063,7 @@
 					refs.tableBody.updateZone(scrollTop);
 				}
 				if (refs.tableFooter && this.showFooter && !this.fixed) {
-					refs.tableFooter.getAggregate(this.store.states.data);
+					refs.tableFooter.aggregates = refs.tableFooter.getAggregate(this.store.states.data);
 				}
 			},
 			doLayout: function() {
@@ -2116,6 +2081,9 @@
 			this.tableId = 'vue-table_';
 		},
 		computed: {
+			emptyLabel: function() {
+				return this.$t('vue.table.emptyText')
+			},
 			bodyWrapper: function() {
 				return this.$refs.bodyWrapper;
 			},

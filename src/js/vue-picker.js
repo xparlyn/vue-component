@@ -62,8 +62,7 @@
 				return '' + value;
 			},
 			parser: function(text) {
-				if (text === undefined || text === '')
-					return null;
+				if (VueUtil.isUndef(text) || text === '') return null;
 				return text;
 			}
 		},
@@ -249,7 +248,7 @@
 				return 'day';
 			},
 			haveTrigger: function() {
-				if (typeof this.showTrigger !== 'undefined') {
+				if (VueUtil.isDef(this.showTrigger)) {
 					return this.showTrigger;
 				}
 				return HAVE_TRIGGER_TYPES.indexOf(this.type) !== -1;

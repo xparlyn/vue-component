@@ -259,15 +259,15 @@
 				this.$emit('pick');
 			},
 			handleChange: function(date) {
-				if (date.hours !== undefined) {
+				if (VueUtil.isDef(date.hours)) {
 					this.currentDate.setHours(date.hours);
 					this.hours = this.currentDate.getHours();
 				}
-				if (date.minutes !== undefined) {
+				if (VueUtil.isDef(date.minutes)) {
 					this.currentDate.setMinutes(date.minutes);
 					this.minutes = this.currentDate.getMinutes();
 				}
-				if (date.seconds !== undefined) {
+				if (VueUtil.isDef(date.seconds)) {
 					this.currentDate.setSeconds(date.seconds);
 					this.seconds = this.currentDate.getSeconds();
 				}
@@ -373,30 +373,30 @@
 				this.handleConfirm(true);
 			},
 			handleMaxChange: function(date) {
-				if (date.hours !== undefined) {
+				if (VueUtil.isDef(date.hours)) {
 					this.maxTime.setHours(date.hours);
 					this.maxHours = this.maxTime.getHours();
 				}
-				if (date.minutes !== undefined) {
+				if (VueUtil.isDef(date.minutes)) {
 					this.maxTime.setMinutes(date.minutes);
 					this.maxMinutes = this.maxTime.getMinutes();
 				}
-				if (date.seconds !== undefined) {
+				if (VueUtil.isDef(date.seconds)) {
 					this.maxTime.setSeconds(date.seconds);
 					this.maxSeconds = this.maxTime.getSeconds();
 				}
 				this.handleChange();
 			},
 			handleMinChange: function(date) {
-				if (date.hours !== undefined) {
+				if (VueUtil.isDef(date.hours)) {
 					this.minTime.setHours(date.hours);
 					this.minHours = this.minTime.getHours();
 				}
-				if (date.minutes !== undefined) {
+				if (VueUtil.isDef(date.minutes)) {
 					this.minTime.setMinutes(date.minutes);
 					this.minMinutes = this.minTime.getMinutes();
 				}
-				if (date.seconds !== undefined) {
+				if (VueUtil.isDef(date.seconds)) {
 					this.minTime.setSeconds(date.seconds);
 					this.minSeconds = this.minTime.getSeconds();
 				}

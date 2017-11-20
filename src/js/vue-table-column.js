@@ -217,14 +217,14 @@
 			this.isSubColumn = owner !== parent;
 			var type = this.type;
 			var width = this.width;
-			if (width !== undefined) {
+			if (VueUtil.isDef(width)) {
 				width = parseInt(width, 10);
 				if (isNaN(width)) {
 					width = null;
 				}
 			}
 			var minWidth = this.minWidth;
-			if (minWidth !== undefined) {
+			if (VueUtil.isDef(minWidth)) {
 				minWidth = parseInt(minWidth, 10);
 				if (isNaN(minWidth)) {
 					minWidth = 80;

@@ -8,6 +8,12 @@
 })(this, function() {
 	'use strict';
 	var root = window;
+	var isUndef = function(v) {
+		return v === undefined || v === null
+	};
+	var isDef = function(v) {
+		return v !== undefined && v !== null
+	};
 	var DEFAULTS = {
 		placement: 'bottom',
 		gpuAcceleration: true,
@@ -25,7 +31,7 @@
 	function Popper(reference, popper, options) {
 		this._reference = reference.jquery ? reference[0] : reference;
 		this.state = {};
-		var isNotDefined = typeof popper === 'undefined' || popper === null;
+		var isNotDefined = isUndef(popper);
 		var isConfig = popper && Object.prototype.toString.call(popper) === '[object Object]';
 		if (isNotDefined || isConfig) {
 			this._popper = this.parse(isConfig ? popper : {});
@@ -252,7 +258,7 @@
 	}
 	Popper.prototype.runModifiers = function(data, modifiers, ends) {
 		var modifiersToRun = modifiers.slice();
-		if (ends !== undefined) {
+		if (isDef(ends)) {
 			modifiersToRun = this._options.modifiers.slice(0, getArrayKeyIndex(this._options.modifiers, ends));
 		}
 		modifiersToRun.forEach(function(modifier) {
@@ -622,9 +628,7 @@
 		var prefixes = ['', 'ms', 'webkit', 'moz', 'o'];
 		for (var i = 0; i < prefixes.length; i++) {
 			var toCheck = prefixes[i] ? prefixes[i] + property.charAt(0).toUpperCase() + property.slice(1) : property;
-			if (typeof root.document.body.style[toCheck] !== 'undefined') {
-				return toCheck;
-			}
+			if (isDef(root.document.body.style[toCheck])) return toCheck;
 		}
 		return null;
 	}
@@ -634,21 +638,19 @@
 			configurable: true,
 			writable: true,
 			value: function(target) {
-				if (target === undefined || target === null) {
+				if (isUndef(target)) {
 					throw new TypeError('Cannot convert first argument to object');
 				}
 				var to = Object(target);
 				for (var i = 1; i < arguments.length; i++) {
 					var nextSource = arguments[i];
-					if (nextSource === undefined || nextSource === null) {
-						continue;
-					}
+					if (isUndef(nextSource)) continue;
 					nextSource = Object(nextSource);
 					var keysArray = Object.keys(nextSource);
 					for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
 						var nextKey = keysArray[nextIndex];
 						var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
-						if (desc !== undefined && desc.enumerable) {
+						if (isDef(desc)&& desc.enumerable) {
 							to[nextKey] = nextSource[nextKey];
 						}
 					}

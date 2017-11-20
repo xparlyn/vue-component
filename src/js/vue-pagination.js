@@ -262,12 +262,12 @@
 						resetValue = this.internalPageCount;
 					}
 				}
-				if (resetValue === undefined && isNaN(value)) {
+				if (VueUtil.isUndef(resetValue) && isNaN(value)) {
 					resetValue = 1;
 				} else if (resetValue === 0) {
 					resetValue = 1;
 				}
-				return resetValue === undefined ? value : resetValue;
+				return VueUtil.isUndef(resetValue) ? value : resetValue;
 			}
 		},
 		computed: {
@@ -301,7 +301,7 @@
 				} else {
 					newVal = self.getValidCurrentPage(newVal);
 				}
-				if (newVal !== undefined) {
+				if (VueUtil.isDef(newVal)) {
 					self.$nextTick(function() {
 						self.internalCurrentPage = newVal;
 						if (oldVal !== newVal) {

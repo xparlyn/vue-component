@@ -60,10 +60,8 @@
 				clientX = e.touches[0].clientX;
 				clientY = e.touches[0].clientY;
 			}
-			if (typeof clientX === 'undefined' || typeof clientY === 'undefined') return;
-			if (!isdrag) {
-				this.Cancelbubble(e);
-			}
+			if (VueUtil.isUndef(clientX) || VueUtil.isUndef(clientY)) return;
+			if (!isdrag) this.Cancelbubble(e);
 			this._Css = isdrag ? {
 				x: "left",
 				y: "top"
@@ -91,7 +89,7 @@
 				clientX = e.touches[0].clientX;
 				clientY = e.touches[0].clientY;
 			}
-			if (typeof clientX === 'undefined' || typeof clientY === 'undefined') return;
+			if (VueUtil.isUndef(clientX) || VueUtil.isUndef(clientY)) return;
 			window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
 			var i_x = clientX - this._x;
 			var i_y = clientY - this._y;

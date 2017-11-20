@@ -22,13 +22,13 @@
 		computed: {
 			model: {
 				get: function() {
-					return this.isGroup ? this.store : this.value !== undefined ? this.value : this.selfModel;
+					return this.isGroup ? this.store : VueUtil.isDef(this.value) ? this.value : this.selfModel;
 				},
 				set: function(val) {
 					if (this.isGroup) {
 						var isLimitExceeded = false;
-						(this._checkboxGroup.min !== undefined && val.length < this._checkboxGroup.min && (isLimitExceeded = true));
-						(this._checkboxGroup.max !== undefined && val.length > this._checkboxGroup.max && (isLimitExceeded = true));
+						(VueUtil.isDef(this._checkboxGroup.min) && val.length < this._checkboxGroup.min && (isLimitExceeded = true));
+						(VueUtil.isDef(this._checkboxGroup.max) && val.length > this._checkboxGroup.max && (isLimitExceeded = true));
 						isLimitExceeded === false && this.dispatch('VueCheckboxGroup', 'input', [val]);
 					} else {
 						this.$emit('input', val);
@@ -41,7 +41,7 @@
 					return this.model;
 				} else if (VueUtil.isArray(this.model)) {
 					return this.model.indexOf(this.label) > -1;
-				} else if (this.model !== null && this.model !== undefined) {
+				} else if (VueUtil.isDef(this.model)) {
 					return this.model === this.trueLabel;
 				}
 			},

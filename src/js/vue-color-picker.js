@@ -327,7 +327,7 @@
 				this.background = 'hsl(' + this.color.get('hue') + ', 100%, 50%)';
 			},
 			handleDrag: function(event) {
-				if (typeof event.clientX === 'undefined' && event.touches.length === 0) return;
+				if (VueUtil.isUndef(event.clientX) && event.touches.length === 0) return;
 				var el = this.$el;
 				var rect = el.getBoundingClientRect();
 				var left = (event.clientX || event.touches[0].clientX) - rect.left;
@@ -401,7 +401,7 @@
 				}
 			},
 			handleDrag: function(event) {
-				if (typeof event.clientX === 'undefined' && event.touches.length === 0) return;
+				if (VueUtil.isUndef(event.clientX) && event.touches.length === 0) return;
 				var rect = this.$el.getBoundingClientRect();
 				var thumb = this.$refs.thumb;
 				var hue;
@@ -485,7 +485,7 @@
 				}
 			},
 			handleDrag: function(event) {
-				if (typeof event.clientX === 'undefined' && event.touches.length === 0) return;
+				if (VueUtil.isUndef(event.clientX) && event.touches.length === 0) return;
 				var rect = this.$el.getBoundingClientRect();
 				var thumb = this.$refs.thumb;
 				if (!this.vertical) {

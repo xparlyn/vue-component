@@ -25,11 +25,11 @@
 						var criteria = this.clearable && !this.disabled && this.inputHovering;
 						return criteria ? 'vue-icon-success is-show-check' : (this.remote && this.filterable ? '' : 'vue-icon-arrow-up is-reverse');
 					} else {
-						var criteria = this.clearable && !this.disabled && this.inputHovering && this.value !== undefined && this.value.length>0;
+						var criteria = this.clearable && !this.disabled && this.inputHovering && VueUtil.isDef(this.value) && this.value.length>0;
 						return criteria ? 'vue-icon-error is-show-close' : (this.remote && this.filterable ? '' : 'vue-icon-arrow-up');
 					}
 				} else {
-					var criteria = this.clearable && !this.disabled && this.inputHovering && this.value !== undefined && this.value !== '';
+					var criteria = this.clearable && !this.disabled && this.inputHovering && VueUtil.isDef(this.value) && this.value !== '';
 					return criteria ? 'vue-icon-error is-show-close' : (this.remote && this.filterable ? '' : 'vue-icon-arrow-up');
 				}
 			},

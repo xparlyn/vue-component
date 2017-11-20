@@ -90,7 +90,7 @@
 			return config(data, node);
 		} else if (typeof config === 'string') {
 			return data[config];
-		} else if (typeof config === 'undefined') {
+		} else if (VueUtil.isUndef(config)) {
 			return '';
 		}
 	};
@@ -126,7 +126,7 @@
 		}
 		store.registerNode(this);
 		var props = store.props;
-		if (props && typeof props.isLeaf !== 'undefined') {
+		if (props && VueUtil.isDef(props.isLeaf)) {
 			var isLeaf = getPropertyFromData(this, 'isLeaf');
 			if (typeof isLeaf === 'boolean') {
 				this.isLeafByUser = isLeaf;
@@ -202,7 +202,7 @@
 			child = new Node(child);
 		}
 		child.level = self.level + 1;
-		if (typeof index === 'undefined' || index < 0) {
+		if (VueUtil.isUndef(index) || index < 0) {
 			self.childNodes.push(child);
 		} else {
 			self.childNodes.splice(index, 0, child);
@@ -291,7 +291,7 @@
 	};
 	Node.prototype.updateLeafState = function() {
 		var self = this;
-		if (self.store.lazy === true && self.loaded !== true && typeof self.isLeafByUser !== 'undefined') {
+		if (self.store.lazy === true && self.loaded !== true && VueUtil.isDef(self.isLeafByUser)) {
 			self.isLeaf = selfk.isLeafByUser;
 			return;
 		}
@@ -355,7 +355,7 @@
 		if (props) {
 			children = props.children || 'children';
 		}
-		if (data[children] === undefined) {
+		if (VueUtil.isUndef(data[children])) {
 			data[children] = null;
 		}
 		return data[children];
@@ -554,7 +554,7 @@
 	};
 	TreeStore.prototype.getCheckedNodes = function() {
 		var self = this;
-		var leafOnly = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+		var leafOnly = arguments.length > 0 && VueUtil.isDef(arguments[0]) ? arguments[0] : false;
 		var checkedNodes = [];
 		var traverse = function(node) {
 			var childNodes = node.root ? node.root.childNodes : node.childNodes;
@@ -570,7 +570,7 @@
 	};
 	TreeStore.prototype.getCheckedKeys = function() {
 		var self = this;
-		var leafOnly = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+		var leafOnly = arguments.length > 0 && VueUtil.isDef(arguments[0]) ? arguments[0] : false;
 		var key = self.key;
 		var allNodes = self._getAllNodes();
 		var keys = [];
@@ -596,7 +596,7 @@
 	};
 	TreeStore.prototype._setCheckedKeys = function(key) {
 		var self = this;
-		var leafOnly = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+		var leafOnly = arguments.length > 1 && VueUtil.isDef(arguments[1]) ? arguments[1] : false;
 		var checkedKeys = arguments[2];
 		var allNodes = self._getAllNodes().sort(function(a, b){return b.level - a.level});
 		var cache = Object.create(null);
@@ -639,7 +639,7 @@
 	};
 	TreeStore.prototype.setCheckedNodes = function(array) {
 		var self = this;
-		var leafOnly = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+		var leafOnly = arguments.length > 1 && VueUtil.isDef(arguments[1]) ? arguments[1] : false;
 		var key = self.key;
 		var checkedKeys = {};
 		array.forEach(function(item) {
@@ -649,7 +649,7 @@
 	};
 	TreeStore.prototype.setCheckedKeys = function(keys, leafonly) {
 		var self = this;
-		var leafOnly = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+		var leafOnly = arguments.length > 1 && VueUtil.isDef(arguments[1]) ? arguments[1] : false;
 		self.defaultCheckedKeys = keys;
 		var key = self.key;
 		var checkedKeys = {};

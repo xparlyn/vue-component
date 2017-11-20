@@ -64,7 +64,7 @@
 					if (typeof this.beforeClose === 'function') {
 						var self = this;
 						var done = function(resolve) {
-							if (resolve === undefined) resolve = true;
+							if (VueUtil.isUndef(resolve)) resolve = true;
 							if (resolve) {
 								self.$nextTick(function() {
 									self.visibleaside = val;

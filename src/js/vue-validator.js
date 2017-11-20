@@ -28,7 +28,7 @@
 		return type === 'string' || type === 'url' || type === 'hex' || type === 'email' || type === 'pattern';
 	};
 	var isEmptyValue = function(value, type) {
-		if (value === undefined || value === null) {
+		if (VueUtil.isUndef(value)) {
 			return true;
 		}
 		if (type === 'array' && VueUtil.isArray(value) && !value.length) {
@@ -249,7 +249,7 @@
 				return typeof (value) === 'string' && !!value.match(pattern.hex);
 			},
 		};
-		if (rule.required && value === undefined) {
+		if (rule.required && VueUtil.isUndef(value)) {
 			rulesRequired(rule, value, source, errors, options);
 			return;
 		}
@@ -301,7 +301,7 @@
 				return callback();
 			}
 			rules.required(rule, value, source, errors, options);
-			if (value !== undefined) {
+			if (VueUtil.isDef(value)) {
 				rules.type(rule, value, source, errors, options);
 			}
 		}
@@ -398,7 +398,7 @@
 				return callback();
 			}
 			rules.required(rule, value, source, errors, options);
-			if (value !== undefined) {
+			if (VueUtil.isDef(value)) {
 				rules.type(rule, value, source, errors, options);
 			}
 		}
@@ -412,7 +412,7 @@
 				return callback();
 			}
 			rules.required(rule, value, source, errors, options);
-			if (value !== undefined) {
+			if (VueUtil.isDef(value)) {
 				rules.type(rule, value, source, errors, options);
 				rules.range(rule, value, source, errors, options);
 			}
@@ -427,7 +427,7 @@
 				return callback();
 			}
 			rules.required(rule, value, source, errors, options);
-			if (value !== undefined) {
+			if (VueUtil.isDef(value)) {
 				rules.type(rule, value, source, errors, options);
 			}
 		}
@@ -596,7 +596,7 @@
 					});
 				}
 				function cb() {
-					var errors = arguments.length > 0 && undefined !== arguments[0] ? arguments[0] : [];
+					var errors = arguments.length > 0 && VueUtil.isDef(arguments[0]) ? arguments[0] : [];
 					if (!VueUtil.isArray(errors)) {
 						errors = [errors];
 					}
@@ -656,7 +656,7 @@
 			});
 		},
 		getType: function(rule) {
-			if (rule.type === undefined && (rule.pattern instanceof RegExp)) {
+			if (VueUtil.isUndef(rule.type) && (rule.pattern instanceof RegExp)) {
 				rule.type = 'pattern';
 			}
 			if (typeof (rule.validator) !== 'function' && (rule.type && !validators.hasOwnProperty(rule.type))) {

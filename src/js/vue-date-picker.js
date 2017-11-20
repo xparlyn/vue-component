@@ -614,10 +614,9 @@
 				this.resetDate();
 			},
 			handleYearPick: function(year, close) {
-				if (typeof close === 'undefined') close = true;
+				if (VueUtil.isUndef(close)) close = true;
 				this.year = year;
-				if (!close)
-					return;
+				if (!close) return;
 				this.date.setFullYear(year);
 				if (this.selectionMode === 'year') {
 					this.$emit('pick', new Date(year));
@@ -959,10 +958,8 @@
 				}
 			},
 			handleRangePick: function(val, close) {
-				if (typeof close === 'undefined') close = true;
-				if (this.maxDate === val.maxDate && this.minDate === val.minDate) {
-					return;
-				}
+				if (VueUtil.isUndef(close)) close = true;
+				if (this.maxDate === val.maxDate && this.minDate === val.minDate) return;
 				this.onPick && this.onPick(val);
 				this.maxDate = val.maxDate;
 				this.minDate = val.minDate;

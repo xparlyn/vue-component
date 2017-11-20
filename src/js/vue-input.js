@@ -160,7 +160,7 @@
 				this.$emit('click', event);
 			},
 			setCurrentValue: function(value, watchFlg) {
-				if (typeof value === "undefined") value = "";
+				if (VueUtil.isUndef(value)) value = "";
 				var self = this;
 				if (value === self.currentValue && !watchFlg)
 					return;

@@ -9,9 +9,7 @@
 })(this, function(Vue, VueUtil) {
 	'use strict';
 	var ajax = function(option) {
-		if (typeof this.$http === 'undefined') {
-			return;
-		}
+		if (VueUtil.isUndef(this.$http)) return;
 		var httpOption = {};
 		httpOption.headers = option.headers;
 		httpOption.progress = function progress(e) {
@@ -385,7 +383,7 @@
 			IframeUpload: IframeUpload
 		},
 		provide: {
-			uploader: undefined
+			uploader: void 0
 		},
 		props: {
 			action: {
@@ -597,7 +595,7 @@
 				ref: 'upload-inner'
 			};
 			var trigger = this.$slots.trigger || this.$slots.default;
-			var uploadComponent = (typeof FormData !== 'undefined' || VueUtil.isServer)
+			var uploadComponent = (VueUtil.isDef(FormData) || VueUtil.isServer)
 					? createElement('upload', uploadData, [trigger])
 					: createElement('iframeUpload', uploadData, [trigger]);
 			return createElement('div', null, ['picture-card' === this.listType ? uploadList : '', this.$slots.trigger ? [uploadComponent, this.$slots.default]: uploadComponent, this.$slots.tip, 'picture-card' !== this.listType ? uploadList : '']);

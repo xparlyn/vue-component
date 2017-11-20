@@ -30,12 +30,12 @@
 		var from = function(arrayLike) {
 			var C = this;
 			var items = Object(arrayLike);
-			if (arrayLike == null) {
+			if (VueUtil.isUndef(arrayLike)) {
 				throw new TypeError("Array.from requires an array-like object - not null or undefined");
 			}
-			var mapFn = arguments.length > 1 ? arguments[1] : void undefined;
+			var mapFn = arguments.length > 1 ? arguments[1] : void 0;
 			var T;
-			if (typeof mapFn !== 'undefined') {
+			if (VueUtil.isDef(mapFn)) {
 				if (!isCallable(mapFn)) {
 					throw new TypeError('Array.from: when provided, the second argument must be a function');
 				}
@@ -50,7 +50,7 @@
 			while (k < len) {
 				kValue = items[k];
 				if (mapFn) {
-					A[k] = typeof T === 'undefined' ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
+					A[k] = VueUtil.isUndef(T) ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
 				} else {
 					A[k] = kValue;
 				}
@@ -281,9 +281,7 @@
 			},
 			onDragAdd: function(evt) {
 				var element = evt.item._underlying_vm_;
-				if (element === undefined) {
-					return;
-				}
+				if (VueUtil.isUndef(element)) return;
 				VueUtil.removeNode(evt.item);
 				var newIndex = this.getVmIndex(evt.newIndex);
 				this.spliceList(newIndex, 0, element);

@@ -14,6 +14,12 @@
 	var isArray = Array.isArray || function(obj) {
 		return toString.call(obj) === '[object Array]';
 	};
+	var isUndef = function(v) {
+		return v === undefined || v === null
+	};
+	var isDef = function(v) {
+		return v !== undefined && v !== null
+	};
 	var trim = function(string) {
 		if (typeof string !== 'string') string = '';
 		return string.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '');
@@ -166,7 +172,7 @@
 		openModal: function(id, zIndex) {
 			if (isServer)
 				return;
-			if (!id || zIndex === undefined)
+			if (!id || isUndef(zIndex))
 				return;
 			var modalStack = this.modalStack;
 			for (var i = 0, j = modalStack.length; i < j; i++) {
@@ -202,7 +208,7 @@
 			var source = arguments[i] || {};
 			for (var prop in source) {
 				var value = source[prop];
-				if (value !== undefined) {
+				if (isDef(value)) {
 					target[prop] = value;
 				}
 			}
@@ -230,16 +236,16 @@
 	var animationStartEvent = 'animationstart';
 	var DOM_PREFIXES = 'Webkit Moz O ms'.split(' ');
 	var START_EVENTS = 'webkitAnimationStart animationstart oAnimationStart MSAnimationStart'.split(' ');
-	var attachEvent = typeof window === 'undefined' ? {} : document.attachEvent;
-	if (!attachEvent && window !== 'undefined') {
+	var attachEvent = isUndef(window) ? {} : document.attachEvent;
+	if (!attachEvent && isDef(window)) {
 		var testElement = document.createElement('fakeelement');
-		if (testElement.style.animationName !== undefined) {
+		if (isDef(testElement.style.animationName)) {
 			animation = true;
 		}
 		if (animation === false) {
 			var prefix = '';
 			for (var i = 0, j = DOM_PREFIXES.length; i < j; i++) {
-				if (testElement.style[DOM_PREFIXES[i] + 'AnimationName'] !== undefined) {
+				if (isDef(testElement.style[DOM_PREFIXES[i] + 'AnimationName'])) {
 					prefix = DOM_PREFIXES[i];
 					keyFramePrefix = '-' + prefix.toLowerCase() + '-';
 					animationStartEvent = START_EVENTS[i];
@@ -250,7 +256,7 @@
 		}
 	}
 	var createStyles = function() {
-		if (!stylesCreated && window !== 'undefined') {
+		if (!stylesCreated && isDef(window)) {
 			var animationKeyframes = '@' + keyFramePrefix + 'keyframes ' + RESIZE_ANIMATION_NAME + ' {from {opacity: 0;} to {opacity: 0;}} ';
 			var animationStyle = keyFramePrefix + 'animation: 1ms ' + RESIZE_ANIMATION_NAME + ';';
 			var css = animationKeyframes + '\n .resize-triggers {' + animationStyle + ' visibility: hidden; opacity: 0;}\n .resize-triggers, .resize-triggers > div, .contract-trigger:before {content: " "; display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden;}\n .resize-triggers > div {background: #eee; overflow: auto;}\n .contract-trigger:before {width: 200%; height: 200%;}';
@@ -279,8 +285,7 @@
 		expand.scrollTop = expand.scrollHeight;
 	};
 	var requestFrame = (function() {
-		if (typeof window === 'undefined')
-			return;
+		if (isUndef(window)) return;
 		var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || function(fn) {
 			return window.setTimeout(fn, 20);
 		}
@@ -289,8 +294,7 @@
 		}
 	})();
 	var cancelFrame = (function() {
-		if (typeof window === 'undefined')
-			return;
+		if (isUndef(window)) return;
 		var cancel = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame || window.clearTimeout;
 		return function(id) {
 			return cancel(id);
@@ -315,8 +319,7 @@
 		});
 	};
 	var addResizeListener = function(element, fn) {
-		if (window === 'undefined')
-			return;
+		if (isUndef(window)) return;
 		if (attachEvent) {
 			element.attachEvent('onresize', fn);
 		} else {
@@ -356,7 +359,7 @@
 		}
 	};
 	var isDate = function(date) {
-		if (date === null || date === undefined) return false;
+		if (isUndef(date)) return false;
 		if (isNaN(new Date(date).getTime())) return false;
 		return true;
 	};
@@ -454,7 +457,7 @@
 		node && node.parentElement && node.parentElement.removeChild(node);
 	};
 	var insertNodeAt = function(fatherNode, node, position) {
-		if (typeof position === 'undefined') position = 0;
+		if (isUndef(position)) position = 0;
 		var refNode = (position === 0) ? fatherNode.children[0] : fatherNode.children[position - 1].nextSibling
 		fatherNode.insertBefore(node, refNode)
 	};
@@ -777,6 +780,8 @@
 		isArray: isArray,
 		isServer: isServer,
 		isVNode: isVNode,
+		isUndef: isUndef,
+		isDef: isDef,
 		getDayCountOfMonth: getDayCountOfMonth,
 		getWeekNumber: getWeekNumber,
 		addTouchStart: addTouchStart,

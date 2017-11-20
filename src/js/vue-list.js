@@ -83,9 +83,9 @@
 				delta.total = slots.length;
 				delta.paddingTop = this.size * delta.start;
 				delta.allPadding = this.size * (slots.length - delta.keeps);
-				delta.paddingTop < 0 ? delta.paddingTop = 0 : undefined;
-				delta.allPadding < 0 ? delta.allPadding = 0 : undefined;
-				delta.allPadding < delta.paddingTop ? delta.allPadding = delta.paddingTop : undefined;
+				delta.paddingTop < 0 ? delta.paddingTop = 0 : void 0;
+				delta.allPadding < 0 ? delta.allPadding = 0 : void 0;
+				delta.allPadding < delta.paddingTop ? delta.allPadding = delta.paddingTop : void 0;
 				var result = [];
 				for (var i = delta.start, j = delta.end; i < j; i++) {
 					result.push(slots[i]);
