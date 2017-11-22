@@ -698,17 +698,10 @@
 			var selfData = [];
 			var delta = self.delta;
 			var columns = self.store.states.columns;
-			var rowHeight;
 			var storeData = self.store.states.data;
 			if (self.fixed) {
-				if (self.fixed === true || self.fixed === 'left') {
-					columns = self.store.states.fixedColumns;
-				}
-				if (this.fixed === 'right') {
-					columns = self.store.states.rightFixedColumns;
-				}
-				if (columns.length > 0) {
-					rowHeight = parseInt(VueUtil.getStyle(this.$parent.$el.querySelector('tbody > tr'), 'height'), 10) || 40;
+				if (((self.fixed === true || self.fixed === 'left') && self.store.states.fixedColumns.length > 0)
+				 || (self.fixed === 'right' && self.store.states.rightFixedColumns.length > 0)) {
 					delta = self.$parent.$refs.tableBody.delta;
 					selfData = delta.data;
 					self.$nextTick(self.updateCurrentClass);
@@ -745,7 +738,7 @@
 			}, []) : '']), createElement('tbody', null, [self._l(selfData, function(row, $index) {
 				$index = storeData.indexOf(row);
 				return [createElement('tr', {
-					style: [self.rowStyle ? self.getRowStyle(row, $index) : null, {'height': self.fixed ? rowHeight + 'px' : ''}],
+					style: self.rowStyle ? self.getRowStyle(row, $index) : null,
 					key: $index,
 					on: {
 						dblclick: function(e) {
@@ -767,7 +760,7 @@
 					class: [self.getRowClass(row, $index)]
 				}, [self._l(columns, function(column, cellIndex) {
 					return createElement('td', {
-						class: [column.id, column.align, column.getCellClass($index, cellIndex, row) || '', !self.fixed && self.$parent.isCellHidden(cellIndex) ? 'is-hidden' : ''],
+						class: [column.id, column.align, column.getCellClass($index, cellIndex, row) || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : ''],
 						on: {
 							mouseenter: function(e) {
 								return self.handleCellMouseEnter(e, row)
@@ -1026,20 +1019,11 @@
 	var TableHeader = {
 		name: 'VueTableHeader',
 		render: function(createElement) {
-			if (!this.store.table.showHeader) return null;
+			if (!this.store.table.showHeader
+			 || ((this.fixed === true || this.fixed === 'left') && this.store.states.fixedColumns.length === 0)
+			 || (this.fixed === 'right' && this.store.states.rightFixedColumns.length === 0)) return null;
 			var self = this;
 			var columns = self.store.states.columns;
-			var rowHeight;
-			if (self.fixed) {
-				if (self.fixed === true || self.fixed === 'left') {
-					columns = self.store.states.fixedColumns;
-				}
-				if (self.fixed === 'right') {
-					columns = self.store.states.rightFixedColumns;
-				}
-				if (columns.length === 0) return null;
-				rowHeight = parseInt(VueUtil.getStyle(self.$parent.$el.querySelector('thead > tr'), 'height'), 10) || 40;
-			}
 			var columnRows = self.convertToRows(columns);
 			return createElement('table', {
 				class: 'vue-table__header',
@@ -1061,7 +1045,7 @@
 					width: self.layout.gutterWidth
 				}
 			}, []) : '']), createElement('thead', null, [self._l(columnRows, function(columns, rowIndex) {
-				return createElement('tr', {style: {'height': self.fixed ? rowHeight + 'px' : ''}}, [self._l(columns, function(column, cellIndex) {
+				return createElement('tr', null, [self._l(columns, function(column, cellIndex) {
 					return createElement('th', {
 						attrs: {
 							colspan: column.colspanNum
@@ -1081,7 +1065,7 @@
 								return self.handleHeaderClick(e, column)
 							}
 						},
-						class: [column.id, column.order, column.headerAlign, rowIndex === 0 && !self.fixed && self.$parent.isCellHidden(cellIndex) ? 'is-hidden' : '', 'is-leaf', column.labelClassName]
+						class: [column.id, column.order, column.headerAlign, rowIndex === 0 && self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : '', 'is-leaf', column.labelClassName]
 					}, [createElement('div', {
 						class: ['cell', column.filteredValue && column.filteredValue.length > 0 ? 'highlight' : ''],
 						style: {'width': column.renderHeader ? '100%' : '', 'padding': column.renderHeader ? 0 : ''},
@@ -1326,20 +1310,11 @@
 	var TableFooter = {
 		name: 'VueTableFooter',
 		render: function(createElement) {
-			if (!this.store.table.showFooter) return null;
+			if (!this.store.table.showFooter
+			 || ((this.fixed === true || this.fixed === 'left') && this.store.states.fixedColumns.length === 0)
+			 || (this.fixed === 'right' && this.store.states.rightFixedColumns.length === 0)) return null;
 			var self = this;
 			var columns = self.store.states.columns;
-			var rowHeight;
-			if (self.fixed) {
-				if (self.fixed === true || self.fixed === 'left') {
-					columns = self.store.states.fixedColumns;
-				}
-				if (self.fixed === 'right') {
-					columns = self.store.states.rightFixedColumns;
-				}
-				if (columns.length === 0) return null;
-				rowHeight = parseInt(VueUtil.getStyle(self.$parent.$el.querySelector('tfoot > tr'), 'height'), 10) || 40;
-			}
 			return createElement('table', {
 				class: 'vue-table__footer',
 				attrs: {
@@ -1359,13 +1334,13 @@
 					name: 'gutter',
 					width: self.layout.gutterWidth
 				}
-			}, []) : '']), createElement('tfoot', null, [createElement('tr', {style: {'height' : self.fixed ? rowHeight + 'px' : ''}}, [self._l(columns, function(column, cellIndex) {
+			}, []) : '']), createElement('tfoot', null, [createElement('tr', null, [self._l(columns, function(column, cellIndex) {
 				return createElement('th', {
 					attrs: {
 						colspan: column.colSpan,
 						rowspan: column.rowSpan
 					},
-					class: [column.id, column.align, column.className || '', !self.fixed && self.$parent.isCellHidden(cellIndex) ? 'is-hidden' : '', 'is-leaf', column.labelClassName]
+					class: [column.id, column.align, column.className || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : '', 'is-leaf', column.labelClassName]
 				}, [createElement('div', {
 					class: ['cell', column.labelClassName]
 				}, [column.aggregateValue])])
@@ -1840,7 +1815,13 @@
 				refs.fixedBodyWrapper.scrollTop = this.bodyScroll.top;
 				refs.rightFixedBodyWrapper.scrollTop = this.bodyScroll.top;
 			},
-			isCellHidden: function(index) {
+			isCellHidden: function(index, fixed) {
+				if (fixed === true || fixed === 'left') {
+					return index >= this.leftFixedCount;
+				}
+				if (fixed === 'right') {
+					return index < this.store.states.columns.length - this.rightFixedCount
+				}
 				return (index < this.leftFixedCount) || (index >= this.store.states.columns.length - this.rightFixedCount);
 			},
 			bindEvents: function() {
