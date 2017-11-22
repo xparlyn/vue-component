@@ -267,10 +267,10 @@
 .vue-icon-bell-o:before {
 	content: "\e852";
 }
-.vue-icon-male:before {
+.vue-icon-sort-asc:before {
 	content: "\e853";
 }
-.vue-icon-female:before {
+.vue-icon-sort-desc:before {
 	content: "\e854";
 }
 .vue-icon-loading {

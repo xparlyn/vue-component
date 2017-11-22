@@ -4,7 +4,7 @@
 	padding: 0;
 	display: block;
 	border: 0;
-	background-color: rgba(0,0,0,.12);
+	background-color: #dfe6ec!important;
 }
 .vue-divider__content {
 	position: relative;

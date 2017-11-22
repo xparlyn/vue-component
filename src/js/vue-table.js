@@ -9,13 +9,9 @@
 })(this, function(Vue, VueUtil, VuePopper) {
 	'use strict';
 	var TableStore = function(table, initialState) {
-		if (!table) {
-			throw new Error('Table is required.');
-		}
 		this.table = table;
 		this.states = {
 			_columns: [],
-			originColumns: [],
 			columns: [],
 			fixedColumns: [],
 			rightFixedColumns: [],
@@ -135,13 +131,8 @@
 				table.resizeZone();
 			});
 		},
-		insertColumn: function(states, column, index, parent) {
+		insertColumn: function(states, column, index) {
 			var array = states._columns;
-			if (parent) {
-				array = parent.children;
-				if (!array)
-					array = parent.children = [];
-			}
 			if (VueUtil.isDef(index)) {
 				array.splice(index, 0, column);
 			} else {
@@ -226,17 +217,6 @@
 		}
 	};
 	TableStore.prototype.updateColumns = function() {
-		var doFlattenColumns = function(columns) {
-			var result = [];
-			columns.forEach(function(column) {
-				if (column.children) {
-					result.push.apply(result, doFlattenColumns(column.children));
-				} else {
-					result.push(column);
-				}
-			});
-			return result;
-		};
 		var states = this.states;
 		var columns = [];
 		states.fixedColumns = [];
@@ -270,10 +250,9 @@
 			columns[0].fixed = true;
 			states.fixedColumns.unshift(columns[0]);
 		}
-		states.originColumns = [].concat(states.fixedColumns).concat(columns.filter(function(column) {
+		states.columns = [].concat(states.fixedColumns).concat(columns.filter(function(column) {
 			return !column.fixed
 		})).concat(states.rightFixedColumns);
-		states.columns = doFlattenColumns(states.originColumns);
 		states.isComplex = states.fixedColumns.length > 0 || states.rightFixedColumns.length > 0;
 	}
 	TableStore.prototype.sortData = function(data, states) {
@@ -301,9 +280,9 @@
 	}
 	TableStore.prototype.getColumnById = function(columnId) {
 		var column = null;
-		var table = this.table;
-		for (var i=0, j=table.columns.length; i<j; i++) {
-			var item = table.columns[i];
+		var columns = this.states.columns;
+		for (var i=0, j=columns.length; i<j; i++) {
+			var item = columns[i];
 			if (item.id === columnId) {
 				column = item;
 				break;
@@ -429,7 +408,6 @@
 	var TableLayout = function(options) {
 		this.table = null;
 		this.store = null;
-		this.columns = null;
 		this.fit = true;
 		this.showHeader = true;
 		this.height = null;
@@ -445,17 +423,11 @@
 		this.fixedBodyHeight = null;
 		this.gutterWidth = VueUtil.component.scrollBarWidth();
 		VueUtil.merge(this, options);
-		if (!this.table) {
-			throw new Error('table is required for Table Layout');
-		}
-		if (!this.store) {
-			throw new Error('store is required for Table Layout');
-		}
 		this.updateScrollY = function() {
 			var height = this.height;
 			if (typeof height !== 'string' && typeof height !== 'number')
 				return;
-			var bodyWrapper = this.table.bodyWrapper;
+			var bodyWrapper = this.table.$refs.bodyWrapper;
 			if (this.table.$el && bodyWrapper) {
 				var body = bodyWrapper.querySelector('.vue-table__body');
 				if (body) {
@@ -495,8 +467,13 @@
 			this.fixedBodyHeight = this.scrollX ? height - this.gutterWidth : height;
 		} else {
 			var headerHeight = this.headerHeight = headerWrapper.offsetHeight;
-			var ratio = this.table.showFooter > 0 ? 2 : 1;
-			var bodyHeight = height - ratio * headerHeight + (this.table.showFooter ? 1 : 0);
+			var footerHeight = 0;
+			var footerWrapper = this.table.$refs.footerWrapper;
+			if (this.table.showFooter && footerWrapper) {
+				footerHeight = footerWrapper.offsetHeight - 1;
+			}
+			var hfHeight = headerHeight + footerHeight;
+			var bodyHeight = height - hfHeight;
 			if (this.height !== null && (!isNaN(this.height) || typeof this.height === 'string')) {
 				this.bodyHeight = bodyHeight;
 			}
@@ -507,7 +484,7 @@
 	}
 	TableLayout.prototype.update = function() {
 		var fit = this.fit;
-		var columns = this.table.columns;
+		var columns = this.store.states.columns;
 		var bodyWidth = this.table.$el.clientWidth;
 		var bodyMinWidth = 0;
 		var flexColumns = [];
@@ -680,7 +657,7 @@
 			var self = this;
 			self.popperElm = self.$el;
 			self.referenceElm = self.cell;
-			self.table.bodyWrapper.addEventListener('scroll', function() {
+			self.table.$refs.bodyWrapper.addEventListener('scroll', function() {
 				self.updatePopper();
 			});
 			self.$watch('showPopper', function(value) {
@@ -718,20 +695,26 @@
 		},
 		render: function(createElement) {
 			var self = this;
-			var columnsHidden = self.columns.map(function(column, index) {
-				return self.isColumnHidden(index);
-			});
-			var selfData;
+			var selfData = [];
 			var delta = self.delta;
+			var columns = self.store.states.columns;
+			var rowHeight;
+			var storeData = self.store.states.data;
 			if (self.fixed) {
-				selfData = [];
-				if (((self.fixed === true || self.fixed === 'left') && self.leftFixedCount > 0) || ((self.fixed === 'right') && self.rightFixedCount > 0)) {
-					delta = self.table.$refs.tableBody.delta;
+				if (self.fixed === true || self.fixed === 'left') {
+					columns = self.store.states.fixedColumns;
+				}
+				if (this.fixed === 'right') {
+					columns = self.store.states.rightFixedColumns;
+				}
+				if (columns.length > 0) {
+					rowHeight = parseInt(VueUtil.getStyle(this.$parent.$el.querySelector('tbody > tr'), 'height'), 10) || 40;
+					delta = self.$parent.$refs.tableBody.delta;
 					selfData = delta.data;
 					self.$nextTick(self.updateCurrentClass);
 				}
 			} else {
-				selfData = delta.data = self.scrollFilter(self.data, delta);
+				selfData = delta.data = self.scrollFilter(storeData, delta);
 			}
 			if (selfData.length === 0) return null;
 			var paddingTop = delta.paddingTop;
@@ -747,7 +730,7 @@
 					'padding-top': paddingTop + 'px',
 					'padding-bottom': allPadding - paddingTop + 'px'
 				}
-			}, [createElement('colgroup', null, [self._l(self.columns, function(column) {
+			}, [createElement('colgroup', null, [self._l(columns, function(column) {
 				return createElement('col', {
 					attrs: {
 						name: column.id,
@@ -760,9 +743,9 @@
 					width: 0
 				}
 			}, []) : '']), createElement('tbody', null, [self._l(selfData, function(row, $index) {
-				$index = self.data.indexOf(row);
+				$index = storeData.indexOf(row);
 				return [createElement('tr', {
-					style: self.rowStyle ? self.getRowStyle(row, $index) : null,
+					style: [self.rowStyle ? self.getRowStyle(row, $index) : null, {'height': self.fixed ? rowHeight + 'px' : ''}],
 					key: $index,
 					on: {
 						dblclick: function(e) {
@@ -782,9 +765,9 @@
 						}
 					},
 					class: [self.getRowClass(row, $index)]
-				}, [self._l(self.columns, function(column, cellIndex) {
+				}, [self._l(columns, function(column, cellIndex) {
 					return createElement('td', {
-						class: [column.id, column.align, column.getCellClass($index, cellIndex, row) || '', columnsHidden[cellIndex] ? 'is-hidden' : ''],
+						class: [column.id, column.align, column.getCellClass($index, cellIndex, row) || '', !self.fixed && self.$parent.isCellHidden(cellIndex) ? 'is-hidden' : ''],
 						on: {
 							mouseenter: function(e) {
 								return self.handleCellMouseEnter(e, row)
@@ -796,26 +779,23 @@
 						column: column,
 						$index: $index,
 						store: self.store,
-						_self: self.context || self.table.$vnode.context
+						_self: self.context || self.$parent.$vnode.context
 					})])
 				}), !self.fixed && self.layout.scrollY && self.layout.gutterWidth ? createElement('td', {
-					class: 'gutter',
-					style: {
-						width: 0
-					},
+					class: 'gutter'
 				}, []) : '']), self.store.states.expandRows.indexOf(row) > -1 ? createElement('tr', null, [createElement('td', {
 					attrs: {
-						colspan: self.columnsCount
+						colspan: columns.length
 					},
 					class: ['vue-table__expanded-cell', self.getExpandClass(row, $index)]
-				}, [self.table.renderExpanded ? self.table.renderExpanded(createElement, {
+				}, [self.$parent.renderExpanded ? self.$parent.renderExpanded(createElement, {
 					row: row,
 					$index: $index,
 					store: self.store
 				}) : ''])]) : '']
 			}).concat(self._self.$parent.$slots.append).concat(createElement('vue-tooltip', {
 				attrs: {
-					effect: self.table.tooltipEffect,
+					effect: self.$parent.tooltipEffect,
 					placement: "top",
 					content: self.tooltipContent
 				},
@@ -832,9 +812,9 @@
 				if (newVal === null) return;
 				var data = self.delta.data;
 				if (self.fixed) {
-					data = self.table.$refs.tableBody.delta.data;
+					data = self.$parent.$refs.tableBody.delta.data;
 				}
-				var storeData = self.data;
+				var storeData = self.store.states.data;
 				var rows = el.querySelectorAll('tbody > tr');
 				var newRow = rows[data.indexOf(storeData[newVal])];
 				newRow && newRow.classList.add('hover-row');
@@ -848,31 +828,11 @@
 				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
 				var data = self.delta.data;
 				if (self.fixed) {
-					data = self.table.$refs.tableBody.delta.data;
+					data = self.$parent.$refs.tableBody.delta.data;
 				}
 				var rows = el.querySelectorAll('tbody > tr');
 				var currentRow = rows[data.indexOf(newVal)];
 				currentRow && currentRow.classList.add('current-row');
-			}
-		},
-		computed: {
-			table: function() {
-				return this.$parent;
-			},
-			data: function() {
-				return this.store.states.data;
-			},
-			columnsCount: function() {
-				return this.store.states.columns.length;
-			},
-			leftFixedCount: function() {
-				return this.store.states.fixedColumns.length;
-			},
-			rightFixedCount: function() {
-				return this.store.states.rightFixedColumns.length;
-			},
-			columns: function() {
-				return this.store.states.columns;
 			}
 		},
 		data: function() {
@@ -912,8 +872,8 @@
 			},
 			updateZone: function(offset) {
 				var delta = this.delta;
-				delta.size = parseInt(VueUtil.getStyle(this.table.$el.querySelector('tbody > tr'), 'height'), 10) || 40;
-				delta.remain = Math.round(this.table.height * 1 / delta.size);
+				delta.size = parseInt(VueUtil.getStyle(this.$parent.$el.querySelector('tbody > tr'), 'height'), 10) || 40;
+				delta.remain = Math.round(this.$parent.height * 1 / delta.size);
 				delta.keeps = delta.remain;
 				if (delta.total <= delta.keeps) return;
 				var overs = Math.floor(offset / delta.size);
@@ -940,20 +900,11 @@
 				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
 				var data = self.delta.data;
 				if (self.fixed) {
-					data = self.table.$refs.tableBody.delta.data;
+					data = self.$parent.$refs.tableBody.delta.data;
 				}
 				var rows = el.querySelectorAll('tbody > tr');
 				var currentRow = rows[data.indexOf(self.store.states.currentRow)];
 				currentRow && currentRow.classList.add('current-row');
-			},
-			isColumnHidden: function(index) {
-				if (this.fixed === true || this.fixed === 'left') {
-					return index >= this.leftFixedCount;
-				} else if (this.fixed === 'right') {
-					return index < this.columnsCount - this.rightFixedCount;
-				} else {
-					return (index < this.leftFixedCount) || (index >= this.columnsCount - this.rightFixedCount);
-				}
 			},
 			getCell: function(event) {
 				var cell = event.target;
@@ -1000,7 +951,7 @@
 				return classes.join(' ');
 			},
 			handleCellMouseEnter: function(event, row) {
-				var table = this.table;
+				var table = this.$parent;
 				var cell = this.getCell(event);
 				if (cell) {
 					var column = this.getColumnByCell(cell);
@@ -1030,8 +981,8 @@
 				var cell = this.getCell(event);
 				if (!cell)
 					return;
-				var oldHoverState = this.table.hoverState;
-				this.table.$emit('cell-mouse-leave', oldHoverState.row, oldHoverState.column, oldHoverState.cell, event);
+				var oldHoverState = this.$parent.hoverState;
+				this.$parent.$emit('cell-mouse-leave', oldHoverState.row, oldHoverState.column, oldHoverState.cell, event);
 			},
 			handleMouseEnter: function(index) {
 				this.store.commit('setHoverRow', index);
@@ -1040,13 +991,13 @@
 				this.store.commit('setHoverRow', null);
 			},
 			handleContextMenu: function(event, row) {
-				this.table.$emit('row-contextmenu', row, event);
+				this.$parent.$emit('row-contextmenu', row, event);
 			},
 			handleDoubleClick: function(event, row) {
-				this.table.$emit('row-dblclick', row, event);
+				this.$parent.$emit('row-dblclick', row, event);
 			},
 			handleClick: function(event, row) {
-				var table = this.table;
+				var table = this.$parent;
 				var cell = this.getCell(event);
 				var column;
 				if (cell) {
@@ -1063,7 +1014,7 @@
 			}
 		},
 		mounted: function() {
-			var table = this.table;
+			var table = this.$parent;
 			if (table.height && table.lazyload && !this.fixed) {
 				var delta = this.delta;
 				delta.remain = Math.round(table.height * 1 / delta.size);
@@ -1075,10 +1026,21 @@
 	var TableHeader = {
 		name: 'VueTableHeader',
 		render: function(createElement) {
-			if (!this.store.table.showHeader || ((this.fixed === true || this.fixed === 'left') && this.leftFixedCount === 0) || ((this.fixed === 'right') && this.rightFixedCount === 0)) return null;
+			if (!this.store.table.showHeader) return null;
 			var self = this;
-			var originColumns = self.store.states.originColumns;
-			var columnRows = self.convertToRows(originColumns);
+			var columns = self.store.states.columns;
+			var rowHeight;
+			if (self.fixed) {
+				if (self.fixed === true || self.fixed === 'left') {
+					columns = self.store.states.fixedColumns;
+				}
+				if (self.fixed === 'right') {
+					columns = self.store.states.rightFixedColumns;
+				}
+				if (columns.length === 0) return null;
+				rowHeight = parseInt(VueUtil.getStyle(self.$parent.$el.querySelector('thead > tr'), 'height'), 10) || 40;
+			}
+			var columnRows = self.convertToRows(columns);
 			return createElement('table', {
 				class: 'vue-table__header',
 				attrs: {
@@ -1086,7 +1048,7 @@
 					cellpadding: '0',
 					border: '0'
 				}
-			}, [createElement('colgroup', null, [self._l(self.columns, function(column) {
+			}, [createElement('colgroup', null, [self._l(columns, function(column) {
 				return createElement('col', {
 					attrs: {
 						name: column.id,
@@ -1099,11 +1061,10 @@
 					width: self.layout.gutterWidth
 				}
 			}, []) : '']), createElement('thead', null, [self._l(columnRows, function(columns, rowIndex) {
-				return createElement('tr', null, [self._l(columns, function(column, cellIndex) {
+				return createElement('tr', {style: {'height': self.fixed ? rowHeight + 'px' : ''}}, [self._l(columns, function(column, cellIndex) {
 					return createElement('th', {
 						attrs: {
-							colspan: column.colSpan,
-							rowspan: column.rowSpan
+							colspan: column.colspanNum
 						},
 						on: {
 							mousemove: function(e) {
@@ -1120,36 +1081,21 @@
 								return self.handleHeaderClick(e, column)
 							}
 						},
-						class: [column.id, column.order, column.headerAlign, rowIndex === 0 && self.isCellHidden(cellIndex) ? 'is-hidden' : '', !column.children ? 'is-leaf' : '', column.labelClassName]
+						class: [column.id, column.order, column.headerAlign, rowIndex === 0 && !self.fixed && self.$parent.isCellHidden(cellIndex) ? 'is-hidden' : '', 'is-leaf', column.labelClassName]
 					}, [createElement('div', {
-						class: ['cell', column.filteredValue && column.filteredValue.length > 0 ? 'highlight' : '', column.labelClassName]
-					}, [column.renderHeader ? column.renderHeader.call(self._renderProxy, createElement, {
-						column: column,
-						$index: cellIndex,
-						store: self.store,
-						_self: self.$parent.$vnode.context
-					}) : column.label, column.sortable ? createElement('span', {
-						class: 'caret-wrapper',
+						class: ['cell', column.filteredValue && column.filteredValue.length > 0 ? 'highlight' : ''],
+						style: {'width': column.renderHeader ? '100%' : '', 'padding': column.renderHeader ? 0 : ''},
+					}, [column.renderHeader ? column.renderHeader.call(self._renderProxy, createElement) : column.label,
+						column.sortable && !column.renderHeader ? createElement('span', {
+						class: 'vue-table__sort-wrapper',
 						on: {
 							click: function(e) {
 								return self.handleSortClick(e, column);
 							}
 						}
 					}, [createElement('i', {
-						class: 'sort-caret ascending',
-						on: {
-							click: function(e) {
-								return self.handleSortClick(e, column, 'ascending');
-							}
-						}
-					}, []), createElement('i', {
-						class: 'sort-caret descending',
-						on: {
-							click: function(e) {
-								return self.handleSortClick(e, column, 'descending');
-							}
-						}
-					}, [])]) : '', column.filterable ? createElement('span', {
+						class: [column.order === 'descending' ? 'vue-icon-sort-desc' : 'vue-icon-sort-asc'],
+					}, [])]) : '', column.filterable && !column.renderHeader ? createElement('span', {
 						class: 'vue-table__column-filter-trigger',
 						on: {
 							click: function(e) {
@@ -1160,10 +1106,7 @@
 						class: ['vue-icon-arrow-down', column.filterOpened ? 'vue-icon-arrow-up' : '']
 					}, [])]) : ''])])
 				}), !self.fixed && self.layout.scrollY && self.layout.gutterWidth ? createElement('th', {
-					class: 'gutter',
-					style: {
-						width: self.layout.gutterWidth + 'px'
-					}
+					class: 'gutter'
 				}, []) : ''])
 			})])]);
 		},
@@ -1183,20 +1126,6 @@
 				}
 			}
 		},
-		computed: {
-			columnsCount: function() {
-				return this.store.states.columns.length;
-			},
-			leftFixedCount: function() {
-				return this.store.states.fixedColumns.length;
-			},
-			rightFixedCount: function() {
-				return this.store.states.rightFixedColumns.length;
-			},
-			columns: function() {
-				return this.store.states.columns;
-			}
-		},
 		created: function() {
 			this.filterPanels = {};
 		},
@@ -1204,8 +1133,9 @@
 			var self = this;
 			var sortingColumns = self.store.states.sortingColumns;
 			self.defaultSort.forEach(function(sort) {
-				for (var i = 0, l = self.columns.length; i < l; i++) {
-					var column = self.columns[i];
+				var columns = self.store.states.columns;
+				for (var i = 0, l = columns.length; i < l; i++) {
+					var column = columns[i];
 					if (column.property === sort.prop) {
 						column.order = sort.order;
 						sortingColumns.push(column);
@@ -1228,70 +1158,21 @@
 			}
 		},
 		methods: {
-			getAllColumns: function(columns) {
-				var self = this;
-				var result = [];
-				columns.forEach(function(column) {
-					if (column.children) {
-						result.push(column);
-						result.push.apply(result, self.getAllColumns(column.children));
+			convertToRows: function(columns) {
+				var rows = [[]];
+				var colspan = 1;
+				for (var i=columns.length-1; i>=0; i--) {
+					var column = columns[i];
+					if (!column.colspan) {
+						column.colspanNum = colspan
+						rows[0].push(column);
+						colspan = 1;
 					} else {
-						result.push(column);
+						colspan++;
 					}
-				});
-				return result;
-			},
-			convertToRows: function(originColumns) {
-				var maxLevel = 1;
-				var traverse = function(column, parent) {
-					if (parent) {
-						column.level = parent.level + 1;
-						if (maxLevel < column.level) {
-							maxLevel = column.level;
-						}
-					}
-					if (column.children) {
-						var childrenMax = 1;
-						var colSpan = 0;
-						column.children.forEach(function(subColumn) {
-							var temp = traverse(subColumn, column);
-							if (temp > childrenMax) {
-								childrenMax = temp;
-							}
-							colSpan += subColumn.colSpan;
-						});
-						column.colSpan = colSpan;
-					} else {
-						column.colSpan = 1;
-					}
-				};
-				originColumns.forEach(function(column) {
-					column.level = 1;
-					traverse(column);
-				});
-				var rows = [];
-				for (var i = 0; i < maxLevel; i++) {
-					rows.push([]);
 				}
-				var allColumns = this.getAllColumns(originColumns);
-				allColumns.forEach(function(column) {
-					if (!column.children) {
-						column.rowSpan = maxLevel - column.level + 1;
-					} else {
-						column.rowSpan = 1;
-					}
-					rows[column.level - 1].push(column);
-				});
+				rows[0].reverse();
 				return rows;
-			},
-			isCellHidden: function(index) {
-				if (this.fixed === true || this.fixed === 'left') {
-					return index >= this.leftFixedCount;
-				} else if (this.fixed === 'right') {
-					return index < this.columnsCount - this.rightFixedCount;
-				} else {
-					return (index < this.leftFixedCount) || (index >= this.columnsCount - this.rightFixedCount);
-				}
 			},
 			toggleAllSelection: function() {
 				this.store.commit('toggleAllSelection');
@@ -1321,11 +1202,6 @@
 				});
 			},
 			handleHeaderClick: function(event, column) {
-				if (!column.filters && column.sortable) {
-					this.handleSortClick(event, column);
-				} else if (column.filters && !column.sortable) {
-					this.handleFilterClick(event, column);
-				}
 				this.$parent.$emit('header-click', column, event);
 			},
 			handleMouseDown: function(event, column) {
@@ -1334,8 +1210,6 @@
 				if (event.touches) {
 					self.handleMouseMove(event, column);
 				}
-				if (column.children && column.children.length > 0)
-					return;
 				if (self.draggingColumn && self.border) {
 					self.dragging = true;
 					self.$parent.resizeProxyVisible = true;
@@ -1391,8 +1265,6 @@
 				}
 			},
 			handleMouseMove: function(event, column) {
-				if (column.children && column.children.length > 0)
-					return;
 				var target = event.target;
 				while (target && target.tagName !== 'TH') {
 					target = target.parentNode;
@@ -1453,17 +1325,20 @@
 	};
 	var TableFooter = {
 		name: 'VueTableFooter',
-		data: function() {
-			return {
-				aggregates: []
-			}
-		},
 		render: function(createElement) {
 			if (!this.store.table.showFooter) return null;
 			var self = this;
-			var aggregates = self.aggregates || [];
+			var columns = self.store.states.columns;
+			var rowHeight;
 			if (self.fixed) {
-				aggregates = self.store.table.$refs.tableFooter.aggregates || [];
+				if (self.fixed === true || self.fixed === 'left') {
+					columns = self.store.states.fixedColumns;
+				}
+				if (self.fixed === 'right') {
+					columns = self.store.states.rightFixedColumns;
+				}
+				if (columns.length === 0) return null;
+				rowHeight = parseInt(VueUtil.getStyle(self.$parent.$el.querySelector('tfoot > tr'), 'height'), 10) || 40;
 			}
 			return createElement('table', {
 				class: 'vue-table__footer',
@@ -1472,7 +1347,7 @@
 					cellpadding: '0',
 					border: '0'
 				}
-			}, [createElement('colgroup', null, [self._l(self.columns, function(column) {
+			}, [createElement('colgroup', null, [self._l(columns, function(column) {
 				return createElement('col', {
 					attrs: {
 						name: column.id,
@@ -1484,21 +1359,18 @@
 					name: 'gutter',
 					width: self.layout.gutterWidth
 				}
-			}, []) : '']), createElement('tbody', null, [createElement('tr', null, [self._l(self.columns, function(column, cellIndex) {
+			}, []) : '']), createElement('tfoot', null, [createElement('tr', {style: {'height' : self.fixed ? rowHeight + 'px' : ''}}, [self._l(columns, function(column, cellIndex) {
 				return createElement('th', {
 					attrs: {
 						colspan: column.colSpan,
 						rowspan: column.rowSpan
 					},
-					class: [column.id, column.align, column.className || '', self.isCellHidden(cellIndex, self.columns) ? 'is-hidden' : '', !column.children ? 'is-leaf' : '', column.labelClassName]
+					class: [column.id, column.align, column.className || '', !self.fixed && self.$parent.isCellHidden(cellIndex) ? 'is-hidden' : '', 'is-leaf', column.labelClassName]
 				}, [createElement('div', {
 					class: ['cell', column.labelClassName]
-				}, [aggregates[cellIndex]])])
+				}, [column.aggregateValue])])
 			}), !self.fixed && self.layout.scrollY && self.layout.gutterWidth ? createElement('th', {
-				class: 'gutter',
-				style: {
-					width: self.layout.gutterWidth + 'px'
-				}
+				class: 'gutter'
 			}, []) : ''])])]);
 		},
 		props: {
@@ -1514,38 +1386,11 @@
 		watch: {
 			'$parent.emptyLabel': function() {
 				if (this.$parent.showFooter && !this.fixed) {
-					this.aggregates = this.getAggregate(this.columns, this.store.states.data);
+					this.getAggregate(this.store.states.columns, this.store.states.data);
 				}
-			}
-		},
-		computed: {
-			columnsCount: function() {
-				return this.store.states.columns.length;
-			},
-			leftFixedCount: function() {
-				return this.store.states.fixedColumns.length;
-			},
-			rightFixedCount: function() {
-				return this.store.states.rightFixedColumns.length;
-			},
-			columns: function() {
-				return this.store.states.columns;
 			}
 		},
 		methods: {
-			isCellHidden: function(index, columns) {
-				if (this.fixed === true || this.fixed === 'left') {
-					return index >= this.leftFixedCount;
-				} else if (this.fixed === 'right') {
-					var before = 0;
-					for (var i = 0; i < index; i++) {
-						before += columns[i].colSpan;
-					}
-					return before < this.columnsCount - this.rightFixedCount;
-				} else {
-					return (index < this.leftFixedCount) || (index >= this.columnsCount - this.rightFixedCount);
-				}
-			},
 			getAggregate: function(columns, data) {
 				if (data.length === 0) return;
 				var self = this;
@@ -1598,6 +1443,7 @@
 					} else {
 						aggregateLabel ? aggregates[index] = aggregateLabel + ': ' + columnAggregate : aggregates[index] = columnAggregate;
 					}
+					column.aggregateValue = aggregates[index];
 				}
 				return aggregates;
 			}
@@ -1808,18 +1654,19 @@
 				this.store.states._columns.forEach(function(column) {
 					if (column.property !== 'selectionColumn'
 					 && column.property !== 'indexColumn'
-					 && column.property !== 'expandColumn') {
+					 && column.property !== 'expandColumn'
+					 && !column.colspan) {
 						tableColumns.push(column)
 					}
 				});
-				this.pinForm.leftPin = this.store.table.fixedColumns;
-				this.pinForm.rightPin = this.store.table.rightFixedColumns
+				this.pinForm.leftPin = this.store.states.fixedColumns;
+				this.pinForm.rightPin = this.store.states.rightFixedColumns
 				this.sortList = this.store.states.sortingColumns;
 			}
 		}
 	};
 	var VueTable = {
-		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border, \'vue-table--enable-row-hover\': !store.states.isComplex, \'vue-table--enable-row-transition\': true || (store.states.data || []).length !== 0 && (store.states.data || []).length < 100}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :store="store" :layout="layout" :border="border" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :context="context" :store="store" :layout="layout" :expand-class-name="expandClassName" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || emptyLabel}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showFooter"><table-footer ref="tableFooter" :store="store" :layout="layout" :border="border" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="fixedColumns.length > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="left" :store="store" :layout="layout" :highlight="highlightCurrentRow" :row-class-name="rowClassName" :expand-class-name="expandClassName" :row-style="rowStyle" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showFooter"><table-footer fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedColumns.length > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="right" :store="store" :layout="layout" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showFooter"><table-footer fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedColumns.length > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-show="contextMenu" v-model="showContextMenu" :store="store"></table-context-menu></div>',
+		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border, \'vue-table--enable-row-hover\': !store.states.isComplex, \'vue-table--enable-row-transition\': true || (store.states.data || []).length !== 0 && (store.states.data || []).length < 100}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :store="store" :layout="layout" :border="border" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :context="context" :store="store" :layout="layout" :expand-class-name="expandClassName" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || emptyLabel}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showFooter"><table-footer ref="tableFooter" :store="store" :layout="layout" :border="border" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="leftFixedCount > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="left" :store="store" :layout="layout" :highlight="highlightCurrentRow" :row-class-name="rowClassName" :expand-class-name="expandClassName" :row-style="rowStyle" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showFooter"><table-footer fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedCount > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body fixed="right" :store="store" :layout="layout" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showFooter"><table-footer fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedCount > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-show="contextMenu" v-model="showContextMenu" :store="store"></table-context-menu></div>',
 		name: 'VueTable',
 		props: {
 			data: {
@@ -1874,7 +1721,7 @@
 					params.fileName = 'table.csv';
 				}
 				if (VueUtil.isUndef(params.original)) params.original = true;
-				var columns = params.original ? this.store.states._columns : this.columns;
+				var columns = params.original ? this.store.states._columns : this.store.states.columns;
 				var datas = params.original ? this.store.states._data : this.store.states.data;
 				var footer = [];
 				if (this.showFooter) footer = this.$refs.tableFooter.getAggregate(columns, datas);
@@ -1993,6 +1840,9 @@
 				refs.fixedBodyWrapper.scrollTop = this.bodyScroll.top;
 				refs.rightFixedBodyWrapper.scrollTop = this.bodyScroll.top;
 			},
+			isCellHidden: function(index) {
+				return (index < this.leftFixedCount) || (index >= this.store.states.columns.length - this.rightFixedCount);
+			},
 			bindEvents: function() {
 				var self = this;
 				var refs = self.$refs;
@@ -2071,7 +1921,7 @@
 					refs.tableBody.updateZone(scrollTop);
 				}
 				if (refs.tableFooter && this.showFooter && !this.fixed) {
-					refs.tableFooter.aggregates = refs.tableFooter.getAggregate(this.columns, this.store.states.data);
+					refs.tableFooter.getAggregate(this.store.states.columns, this.store.states.data);
 				}
 			},
 			doLayout: function() {
@@ -2092,28 +1942,17 @@
 			emptyLabel: function() {
 				return this.$t('vue.table.emptyText')
 			},
-			bodyWrapper: function() {
-				return this.$refs.bodyWrapper;
+			leftFixedCount: function() {
+				return this.store.states.fixedColumns.length;
 			},
-			selection: function() {
-				return this.store.selection;
-			},
-			columns: function() {
-				return this.store.states.columns;
-			},
-			fixedColumns: function() {
-				return this.store.states.fixedColumns;
-			},
-			rightFixedColumns: function() {
-				return this.store.states.rightFixedColumns;
+			rightFixedCount: function() {
+				return this.store.states.rightFixedColumns.length;
 			},
 			bodyHeight: function() {
 				var style = {};
-				if (this.height) {
-					style = {
-						height: this.layout.bodyHeight ? this.layout.bodyHeight + 'px' : ''
-					};
-				}
+				style = {
+					height: this.layout.bodyHeight ? this.layout.bodyHeight + 'px' : ''
+				};
 				return style;
 			},
 			bodyWidth: function() {
@@ -2169,9 +2008,10 @@
 				}
 			}
 		},
-		destroyed: function() {
-			if (this.windowResizeListener)
-				VueUtil.removeResizeListener(this.$el, this.windowResizeListener);
+		beforeDestroy: function() {
+			if (this.fit) {
+				VueUtil.addResizeListener(this.$el, this.doLayout);
+			}
 		},
 		mounted: function() {
 			var self = this;
@@ -2193,12 +2033,11 @@
 			});
 		},
 		data: function() {
-			var self = this;
-			var store = new TableStore(self, {defaultExpandAll: self.defaultExpandAll});
+			var store = new TableStore(this, {defaultExpandAll: self.defaultExpandAll});
 			var layout = new TableLayout({
 				store: store,
-				table: self,
-				fit: self.fit,
+				table: this,
+				fit: this.fit,
 				showHeader: self.showHeader
 			});
 			return {

@@ -68,7 +68,7 @@
 		},
 		index: {
 			property: 'indexColumn',
-			renderHeader: function(createElement, data) {
+			renderHeader: function(createElement) {
 				return '#';
 			},
 			renderCell: function(createElement, data) {
@@ -79,7 +79,7 @@
 		},
 		expand: {
 			property: 'expandColumn',
-			renderHeader: function(createElement, data) {
+			renderHeader: function(createElement) {
 				return '';
 			},
 			renderCell: function(createElement, data, proxy) {
@@ -149,7 +149,6 @@
 			prop: String,
 			width: {},
 			minWidth: {},
-			renderHeader: Function,
 			sortable: {
 				type: [String, Boolean],
 				default: false
@@ -183,13 +182,8 @@
 				type: String,
 				default: ''
 			},
-			aggregateLabel: String
-		},
-		data: function() {
-			return {
-				isSubColumn: false,
-				columns: []
-			};
+			aggregateLabel: String,
+			colspan: Boolean
 		},
 		beforeCreate: function() {
 			this.row = {};
@@ -214,7 +208,6 @@
 			var columnId = this.columnId = ((this.$parent.tableId || (this.$parent.columnId + '_')) + 'column_' + columnIdSeed++);
 			var parent = this.$parent;
 			var owner = this.owner;
-			this.isSubColumn = owner !== parent;
 			var type = this.type;
 			var width = this.width;
 			if (VueUtil.isDef(width)) {
@@ -262,6 +255,7 @@
 				filterPlacement: this.filterPlacement || 'bottom',
 				aggregate: this.aggregate,
 				aggregateLabel: this.aggregateLabel,
+				colspan: this.colspan,
 				getCellClass: function(rowIndex, cellIndex, rowData) {
 					var classes = [];
 					var className = this.className;
@@ -276,7 +270,17 @@
 			VueUtil.merge(column, forced[type] || {});
 			this.columnConfig = column;
 			var renderCell = column.renderCell;
+			var renderHeader = column.renderHeader;
 			var self = this;
+			column.renderHeader = function() {
+				if (self.$scopedSlots.header) {
+					column.renderHeader = function() {
+						return self.$scopedSlots.header();
+					};
+				} else {
+					column.renderHeader = renderHeader;
+				}
+			};
 			if (type === 'expand') {
 				owner.renderExpanded = function(createElement, data) {
 					return self.$scopedSlots.default ? self.$scopedSlots.default(data) : self.$slots.default;
@@ -312,7 +316,7 @@
 				[renderCell(createElement, data)]) : createElement('div', {
 					class: 'cell'
 				}, [renderCell(createElement, data)]);
-			}
+			};
 		},
 		destroyed: function() {
 			if (!this.$parent)
@@ -392,12 +396,8 @@
 			var owner = this.owner;
 			var parent = this.$parent;
 			var columnIndex;
-			if (!this.isSubColumn) {
-				columnIndex = [].indexOf.call(parent.$refs.hiddenColumns.children, this.$el);
-			} else {
-				columnIndex = [].indexOf.call(parent.$el.children, this.$el);
-			}
-			owner.store.commit('insertColumn', this.columnConfig, columnIndex, this.isSubColumn ? parent.columnConfig : null);
+			columnIndex = [].indexOf.call(parent.$refs.hiddenColumns.children, this.$el);
+			owner.store.commit('insertColumn', this.columnConfig, columnIndex);
 		}
 	};
 	Vue.component(VueTableColumn.name, VueTableColumn);

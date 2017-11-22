@@ -81,7 +81,6 @@
 	width: 1px;
 	height: 100%;
 }
-.vue-table .caret-wrapper,
 .vue-table th>.cell {
 	position: relative;
 	display: inline-block;
@@ -117,14 +116,18 @@
 .vue-table th>.cell.highlight {
 	color: #409eff;
 }
-.vue-table .caret-wrapper {
-	cursor: pointer;
+.vue-table__sort-wrapper {
+	display: inline-block;
+	line-height: 34px;
 	margin-left: 5px;
-	margin-top: -2px;
-	width: 16px;
-	height: 34px;
-	overflow: visible;
-	overflow: initial;
+	cursor: pointer;
+}
+.vue-table__sort-wrapper i {
+	color: #97a8be;
+}
+.ascending .vue-table__sort-wrapper i,
+.descending .vue-table__sort-wrapper i {
+	color: #1f2d3d;
 }
 .vue-table .cell,
 .vue-table__footer-wrapper,
@@ -204,12 +207,6 @@
 	font-size: 12px;
 	transition: transform .2s ease-in-out;
 	height: 40px;
-}
-.vue-table__fixed-header-wrapper thead div,
-.vue-table__footer-wrapper thead div,
-.vue-table__header-wrapper thead div {
-	color: #1f2d3d;
-	background-color: #eef1f6;
 }
 .vue-table__header-wrapper tbody td {
 	background-color: #fbfdff;
@@ -307,7 +304,8 @@
 .vue-table__footer-wrapper {
 	margin-top: -1px;
 }
-.vue-table__footer-wrapper th {
+.vue-table__footer-wrapper th,
+.vue-table__fixed-footer-wrapper th {
 	border-top: 1px solid #dfe6ec;
 }
 .vue-table__fixed-footer-wrapper {
