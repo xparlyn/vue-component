@@ -68,13 +68,13 @@
 				var ret;
 				switch (this.status) {
 					case 'success':
-						ret = '#13ce66';
+						ret = '#67c23a';
 						break;
 					case 'exception':
-						ret = '#ff4949';
+						ret = '#fb5555';
 						break;
 					default:
-						ret = '#20a0ff';
+						ret = '#409eff';
 				}
 				return ret;
 			},
@@ -86,7 +86,7 @@
 				}
 			},
 			progressTextSize: function() {
-				return this.type === 'line' ? 12 + this.strokeWidth * 0.4 : this.width * 0.111111 + 2 ;
+				return this.type === 'line' ? 12 + this.strokeWidth * 0.4 : this.width * 0.25 + 6;
 			}
 		}
 	};

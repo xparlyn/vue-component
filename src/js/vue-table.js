@@ -551,7 +551,7 @@
 		this.fixedWidth = fixedWidth;
 		var rightFixedColumns = this.store.states.rightFixedColumns;
 		var rightFixedWidth = 0;
-		fixedColumns.forEach(function(column) {
+		rightFixedColumns.forEach(function(column) {
 			rightFixedWidth += column.realWidth || 80;
 		});
 		this.rightFixedWidth = rightFixedWidth;
