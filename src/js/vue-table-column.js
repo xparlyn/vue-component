@@ -161,7 +161,6 @@
 			context: {},
 			align: String,
 			headerAlign: String,
-			showTooltipWhenOverflow: Boolean,
 			showOverflowTooltip: Boolean,
 			fixed: [Boolean, String],
 			formatter: Function,
@@ -241,7 +240,7 @@
 				sortable: this.sortable === '' ? true : this.sortable,
 				sortMethod: this.sortMethod,
 				resizable: this.resizable,
-				showOverflowTooltip: this.showOverflowTooltip || this.showTooltipWhenOverflow,
+				showOverflowTooltip: this.showOverflowTooltip,
 				formatter: this.formatter,
 				selectable: this.selectable,
 				fixed: this.fixed === '' ? true : this.fixed,
@@ -311,8 +310,8 @@
 				if (!renderCell) {
 					renderCell = DEFAULT_RENDER_CELL;
 				}
-				return self.showOverflowTooltip || self.showTooltipWhenOverflow ? createElement('div',
-				{'class': 'cell vue-tooltip', style: 'width:' + (data.column.realWidth || data.column.width) + 'px'},
+				return self.showOverflowTooltip ? createElement('div',
+				{'class': 'cell vue-tooltip'},
 				[renderCell(createElement, data)]) : createElement('div', {
 					class: 'cell'
 				}, [renderCell(createElement, data)]);

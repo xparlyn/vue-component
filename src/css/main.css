@@ -286,7 +286,7 @@
 	0% {
 		transform: rotateZ(0);
 	}
-	100% {
+	to {
 		transform: rotateZ(360deg);
 	}
 }

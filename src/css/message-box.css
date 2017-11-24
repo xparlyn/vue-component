@@ -120,7 +120,7 @@
 		top: 0;
 		opacity:0;
 	}
-	100% {
+	to {
 		top: 1;
 		opacity:1;
 	}
@@ -130,7 +130,7 @@
 		top: 1;
 		opacity:1;
 	}
-	100% {
+	to {
 		top: 0;
 		opacity:0;
 	}
