@@ -85,12 +85,12 @@
 	left: 0;
 	background-color: #fff;
 	opacity: .24;
-	transition: .2s;
+	transition: .3s;
 }
 .vue-carousel__arrow,
 .vue-carousel__button {
 	margin: 0;
-	transition: .2s;
+	transition: .3s;
 	cursor: pointer;
 	outline: 0;
 }

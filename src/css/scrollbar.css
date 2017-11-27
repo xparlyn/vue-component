@@ -6,7 +6,6 @@
 .vue-scrollbar:focus .vue-scrollbar__bar,
 .vue-scrollbar:hover .vue-scrollbar__bar {
 	opacity: 1;
-	transition: opacity 340ms ease-out;
 }
 .vue-scrollbar__wrap {
 	overflow: scroll;
@@ -23,7 +22,6 @@
 	cursor: pointer;
 	border-radius: inherit;
 	background-color: rgba(151,168,190,.3);
-	transition: .2s background-color;
 }
 .vue-scrollbar__thumb:hover {
 	background-color: rgba(151,168,190,.5);
@@ -35,7 +33,6 @@
 	z-index: 1;
 	border-radius: 4px;
 	opacity: 0;
-	transition: opacity 120ms ease-out;
 }
 .vue-scrollbar__bar.is-horizontal {
 	height: 6px;

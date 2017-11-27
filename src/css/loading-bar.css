@@ -7,7 +7,7 @@
 	z-index: 2000;
 }
 .vue-loading-bar-inner {
-	transition: width .2s linear;
+	transition: width .3s linear;
 }
 .vue-loading-bar-inner-color-primary {
 	background-color: #39f;

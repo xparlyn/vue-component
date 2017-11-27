@@ -18,7 +18,7 @@
 }
 .vue-collapse-item__header__arrow {
 	margin-right: 8px;
-	transition: transform .2s;
+	transition: transform .3s;
 	cursor: pointer;
 }
 .vue-collapse-item__wrap {

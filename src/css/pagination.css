@@ -123,7 +123,6 @@
 	padding: 4px 2px;
 	width: 30px;
 	margin: 0 6px;
-	transition: border .2s;
 }
 .vue-pager,
 .vue-pager li {

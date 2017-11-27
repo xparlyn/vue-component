@@ -118,5 +118,5 @@
 }
 .tooltip-fade-enter-active,
 .tooltip-fade-leave-active {
-	transition: opacity .2s linear;
+	transition: opacity .3s linear;
 }

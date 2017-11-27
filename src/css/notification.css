@@ -8,7 +8,7 @@
 	background-color: #fff;
 	box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
 	overflow: hidden;
-	transition: opacity .2s,top .2s,bottom .2s;
+	transition: opacity .3s,top .3s,bottom .3s;
 }
 .vue-notification-translateX {
 	left: 50%!important;
@@ -18,10 +18,10 @@
 	top: 40%!important;
 }
 .notify-right-enter-active {
-	animation: notify-right-in .2s;
+	animation: notify-right-in .3s;
 }
 .notify-right-leave-active {
-	animation: notify-right-out .2s;
+	animation: notify-right-out .3s;
 }
 @keyframes notify-right-in {
 	0% {
@@ -44,10 +44,10 @@
 	}
 }
 .notify-left-enter-active {
-	animation: notify-left-in .2s;
+	animation: notify-left-in .3s;
 }
 .notify-left-leave-active {
-	animation: notify-left-out .2s;
+	animation: notify-left-out .3s;
 }
 @keyframes notify-left-in {
 	0% {
@@ -70,10 +70,10 @@
 	}
 }
 .notify-top-enter-active {
-	animation: notify-top-in .2s;
+	animation: notify-top-in .3s;
 }
 .notify-top-leave-active {
-	animation: notify-top-out .2s;
+	animation: notify-top-out .3s;
 }
 @keyframes notify-top-in {
 	0% {
@@ -96,10 +96,10 @@
 	}
 }
 .notify-bottom-enter-active {
-	animation: notify-bottom-in .2s;
+	animation: notify-bottom-in .3s;
 }
 .notify-bottom-leave-active {
-	animation: notify-bottom-out .2s;
+	animation: notify-bottom-out .3s;
 }
 @keyframes notify-bottom-in {
 	0% {
@@ -122,10 +122,10 @@
 	}
 }
 .notify-center-enter-active {
-	animation: notify-center-in .2s;
+	animation: notify-center-in .3s;
 }
 .notify-center-leave-active {
-	animation: notify-center-out .2s;
+	animation: notify-center-out .3s;
 } 
 @keyframes notify-center-in {
 	0% {

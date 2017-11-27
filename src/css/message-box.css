@@ -110,10 +110,10 @@
 	color: #fb5555;
 }
 .msgbox-fade-enter-active {
-	animation: msgbox-fade-in .1s
+	animation: msgbox-fade-in .3s
 }
 .msgbox-fade-leave-active {
-	animation: msgbox-fade-out .1s
+	animation: msgbox-fade-out .3s
 }
 @keyframes msgbox-fade-in {
 	0% {

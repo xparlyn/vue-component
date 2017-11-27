@@ -6,7 +6,6 @@
 	padding: 0 20px;
 	cursor: pointer;
 	position: relative;
-	transition: border-color .2s,background-color .2s,color .2s;
 	box-sizing: border-box;
 	white-space: nowrap;
 }

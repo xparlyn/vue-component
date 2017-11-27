@@ -47,7 +47,6 @@
 	line-height: 1;
 	outline: 0;
 	padding: 3px 10px;
-	transition: border-color .2s cubic-bezier(.645,.045,.355,1);
 	width: 100%;
 }
 .vue-input__inner::-webkit-input-placeholder {
@@ -74,7 +73,6 @@
 	top: 0;
 	text-align: center;
 	color: #bfcbd9;
-	transition: all .2s;
 	line-height: 36px;
 	font-size: 14px;
 }
@@ -195,7 +193,6 @@
 	background-color: #fff;
 	border: 1px solid #bfcbd9;
 	border-radius: 4px;
-	transition: border-color .2s cubic-bezier(.645,.045,.355,1);
 }
 .vue-textarea__inner::-webkit-input-placeholder {
 	color: #97a8be;

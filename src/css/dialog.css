@@ -72,7 +72,7 @@
 	animation: dialog-fade-in .5s;
 }
 .dialog-fade-leave-active {
-	animation: dialog-fade-out .2s;
+	animation: dialog-fade-out .3s;
 }
 @keyframes dialog-fade-in {
 	0% {

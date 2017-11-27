@@ -205,7 +205,6 @@
 	cursor: pointer;
 	color: #666;
 	font-size: 12px;
-	transition: transform .2s ease-in-out;
 	height: 40px;
 }
 .vue-table__header-wrapper .vue-table__header .vue-table__column {
@@ -347,9 +346,6 @@
 }
 .vue-table__column-filter-trigger i {
 	color: #97a8be;
-}
-.vue-table--enable-row-transition .vue-table__body .vue-table__cell {
-	transition: background-color .25s ease;
 }
 .vue-table__body .vue-table__cell {
 	background-color: #fff;

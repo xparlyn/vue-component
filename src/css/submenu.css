@@ -5,7 +5,6 @@
 	color: #48576a;
 	padding: 0 20px;
 	cursor: pointer;
-	transition: border-color .2s,background-color .2s,color .2s;
 	box-sizing: border-box;
 	white-space: nowrap;
 	position: relative;
@@ -37,6 +36,6 @@
 	top: 50%;
 	right: 20px;
 	margin-top: -7px;
-	transition: transform .2s;
+	transition: transform .3s;
 	font-size: 12px;
 }

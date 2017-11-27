@@ -95,7 +95,6 @@
 	display: block;
 }
 .vue-upload-list__item {
-	transition: all .5s cubic-bezier(.55,0,.1,1);
 	font-size: 14px;
 	color: #48576a;
 	line-height: 1.8;
@@ -160,7 +159,6 @@
 	display: block;
 	margin-right: 40px;
 	padding-left: 4px;
-	transition: color .2s;
 }
 .vue-upload-list__item-name [class^=vue-icon] {
 	color: #97a8be;
@@ -246,7 +244,6 @@
 	opacity: 0;
 	font-size: 20px;
 	background-color: rgba(0,0,0,.5);
-	transition: opacity .2s;
 }
 .vue-upload-cover:after,
 .vue-upload-list--picture-card .vue-upload-list__item-actions:after {
@@ -353,112 +350,6 @@
 .vue-upload-list--picture .vue-progress {
 	position: relative;
 	top: -7px;
-}
-.vue-upload-cover {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-	z-index: 10;
-	cursor: default;
-}
-.vue-upload-cover img {
-	display: block;
-	width: 100%;
-	height: 100%;
-}
-.vue-upload-cover+.vue-upload__inner {
-	opacity: 0;
-	position: relative;
-	z-index: 1;
-}
-.vue-upload-cover__label {
-	position: absolute;
-	right: -15px;
-	top: -6px;
-	width: 40px;
-	height: 24px;
-	background: #67c23a;
-	text-align: center;
-	transform: rotate(45deg);
-	box-shadow: 0 0 1pc 1px rgba(0,0,0,.2);
-}
-.vue-upload-cover__label i {
-	font-size: 12px;
-	margin-top: 11px;
-	transform: rotate(-45deg) scale(.8);
-	color: #fff;
-}
-.vue-upload-cover__progress {
-	display: inline-block;
-	vertical-align: middle;
-	position: static;
-	width: 243px;
-}
-.vue-upload-cover__progress+.vue-upload__inner {
-	opacity: 0;
-}
-.vue-upload-cover__content {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-}
-.vue-upload-cover__interact {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0,0,0,.72);
-	text-align: center;
-}
-.vue-upload-cover__interact .btn {
-	display: inline-block;
-	color: #fff;
-	font-size: 14px;
-	cursor: pointer;
-	vertical-align: middle;
-	transition: transform .2s cubic-bezier(.23,1,.32,1) .1s,opacity .2s cubic-bezier(.23,1,.32,1) .1s;
-	margin-top: 60px;
-}
-.vue-upload-cover__interact .btn span {
-	opacity: 0;
-	transition: opacity .15s linear;
-}
-.vue-upload-cover__interact .btn:not(:first-child) {
-	margin-left: 35px;
-}
-.vue-upload-cover__interact .btn:hover {
-	transform: translateY(-13px);
-}
-.vue-upload-cover__interact .btn:hover span {
-	opacity: 1;
-}
-.vue-upload-cover__interact .btn i {
-	color: #fff;
-	display: block;
-	font-size: 24px;
-	line-height: inherit;
-	margin: 0 auto 5px;
-}
-.vue-upload-cover__title {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	background-color: #fff;
-	height: 36px;
-	width: 100%;
-	font-weight: 400;
-	text-align: left;
-	padding: 0 10px;
-	margin: 0;
-	line-height: 36px;
-	font-size: 14px;
-	color: #48576a;
 }
 .vue-upload.is-disabled,
 .vue-upload.is-disabled .vue-upload-dragger {

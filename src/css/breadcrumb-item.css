@@ -14,7 +14,6 @@
 }
 .vue-breadcrumb__item__inner,
 .vue-breadcrumb__item__inner a {
-	transition: color .15s linear;
 	color: #48576a;
 	font-weight: 600;
 }
