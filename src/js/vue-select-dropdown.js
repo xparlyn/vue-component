@@ -40,8 +40,12 @@
 			}
 		},
 		watch: {
-			'$parent.inputWidth': function() {
-				this.minWidth = this.$parent.$el.getBoundingClientRect().width + 'px';
+			'$parent.visible': function(val) {
+				if (val) {
+					var clientRect = this.$parent.$el.getBoundingClientRect();
+					this.minWidth = clientRect.width + 'px';
+					this.top = clientRect.bottom + 'px';
+				}
 			}
 		},
 		mounted: function() {
