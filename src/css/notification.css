@@ -8,7 +8,7 @@
 	background-color: #fff;
 	box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
 	overflow: hidden;
-	transition: opacity .3s,top .3s,bottom .3s;
+	transition: .3s;
 }
 .vue-notification-translateX {
 	left: 50%!important;

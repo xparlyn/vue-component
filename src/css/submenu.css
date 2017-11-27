@@ -36,6 +36,6 @@
 	top: 50%;
 	right: 20px;
 	margin-top: -7px;
-	transition: transform .3s;
+	transition: .3s;
 	font-size: 12px;
 }

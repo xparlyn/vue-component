@@ -294,5 +294,5 @@
 	display: none;
 }
 .collapse-transition {
-	transition: .3s height ease-in-out,.3s padding-top ease-in-out,.3s padding-bottom ease-in-out;
+	transition: height .3s,padding-top .3s,padding-bottom .3s;
 }

@@ -14,7 +14,7 @@
 	height: 3px;
 	background-color: #409eff;
 	z-index: 1;
-	transition: transform .3s cubic-bezier(.645,.045,.355,1);
+	transition: .3s;
 	list-style: none;
 }
 .vue-tabs__new-tab {
@@ -29,7 +29,6 @@
 	font-size: 12px;
 	color: #d3dce6;
 	cursor: pointer;
-	transition: all .3s;
 }
 .vue-tabs__new-tab .vue-icon-plus {
 	transform: scale(.8,.8);
@@ -65,7 +64,6 @@
 .vue-tabs__nav {
 	white-space: nowrap;
 	position: relative;
-	transition: transform .3s;
 	float: left;
 }
 .vue-tabs__item {
@@ -82,7 +80,7 @@
 .vue-tabs__item .vue-icon-close {
 	border-radius: 50%;
 	text-align: center;
-	transition: all .3s cubic-bezier(.645,.045,.355,1);
+	transition: .3s;
 	margin-left: 5px;
 }
 .vue-tabs__item .vue-icon-close:before {
@@ -129,7 +127,7 @@
 }
 .vue-tabs--card>.vue-tabs__header .vue-tabs__item {
 	border: 1px solid transparent;
-	transition: all .3s cubic-bezier(.645,.045,.355,1);
+	transition: .3s;
 }
 .vue-tabs--card>.vue-tabs__header .vue-tabs__item.is-closable:hover {
 	padding-right: 9px;
@@ -161,7 +159,7 @@
 	margin: 0;
 }
 .vue-tabs--border-card>.vue-tabs__header .vue-tabs__item {
-	transition: all .3s cubic-bezier(.645,.045,.355,1);
+	transition: .3s;
 	border: 1px solid transparent;
 	border-top: 0;
 	margin-right: -1px;
