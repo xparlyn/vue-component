@@ -19,8 +19,9 @@
 	cursor: pointer;
 	z-index: 1;
 }
-.vue-carousel__item--card.is-in-stage.is-hover .vue-carousel__mask,.vue-carousel__item--card.is-in-stage:hover .vue-carousel__mask {
-	opacity: .12;
+.vue-carousel__item--card.is-in-stage.is-hover .vue-carousel__mask,
+.vue-carousel__item--card.is-in-stage:hover .vue-carousel__mask {
+	opacity: .15;
 }
 .vue-carousel__item--card.is-active {
 	z-index: 2;

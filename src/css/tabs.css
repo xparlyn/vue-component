@@ -14,7 +14,7 @@
 	height: 3px;
 	background-color: #409eff;
 	z-index: 1;
-	transition: .3s;
+	transition: transform .3s;
 	list-style: none;
 }
 .vue-tabs__new-tab {

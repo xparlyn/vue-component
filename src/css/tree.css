@@ -58,7 +58,7 @@
 	border-left-color: #97a8be;
 	border-left-width: 7px;
 	transform: rotate(0);
-	transition: .3s;
+	transition: transform .3s;
 }
 .vue-tree-node__expand-icon:hover {
 	border-left-color: #999;

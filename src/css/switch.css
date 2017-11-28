@@ -82,7 +82,7 @@
 	left: 0;
 	position: absolute;
 	border-radius: 100%;
-	transition: .3s;
+	transition: transform .3s;
 	width: 16px;
 	height: 16px;
 	z-index: 20;

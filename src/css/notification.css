@@ -8,7 +8,7 @@
 	background-color: #fff;
 	box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
 	overflow: hidden;
-	transition: .3s;
+	transition: top .3s,bottom .3s;
 }
 .vue-notification-translateX {
 	left: 50%!important;
@@ -26,21 +26,17 @@
 @keyframes notify-right-in {
 	0% {
 		transform: translateX(100%);
-		opacity: 0;
 	}
 	to {
 		transform: translateX(0);
-		opacity: 1;
 	}
 }
 @keyframes notify-right-out {
 	0% {
 		transform: translateX(0);
-		opacity: 1;
 	}
 	to {
 		transform: translateX(100%);
-		opacity: 0;
 	}
 }
 .notify-left-enter-active {
@@ -52,21 +48,17 @@
 @keyframes notify-left-in {
 	0% {
 		transform: translateX(-100%);
-		opacity: 0;
 	}
 	to {
 		transform: translateX(0);
-		opacity: 1;
 	}
 }
 @keyframes notify-left-out {
 	0% {
 		transform: translateX(0);
-		opacity: 1;
 	}
 	to {
 		transform: translateX(-100%);
-		opacity: 0;
 	}
 }
 .notify-top-enter-active {
@@ -77,21 +69,17 @@
 }
 @keyframes notify-top-in {
 	0% {
-		opacity: 0;
 		top: 0;
 	}
 	to {
-		opacity: 1;
 		top: 1;
 	}
 }
 @keyframes notify-top-out {
 	0% {
-		opacity: 1;
 		top: 1;
 	}
 	to {
-		opacity: 0;
 		top: 0;
 	}
 }
@@ -103,21 +91,17 @@
 }
 @keyframes notify-bottom-in {
 	0% {
-		opacity: 0;
 		bottom: 0;
 	}
 	to {
-		opacity: 1;
 		bottom: 1;
 	}
 }
 @keyframes notify-bottom-out {
 	0% {
-		opacity: 1;
 		bottom: 1;
 	}
 	to {
-		opacity: 0;
 		bottom: 0;
 	}
 }
