@@ -57,6 +57,7 @@
 	font-size: 14px;
 	color: #8391a5;
 	position: relative;
+	transition: .3s;
 }
 .vue-tabs__item .vue-icon-close {
 	border-radius: 50%;
