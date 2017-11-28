@@ -8,48 +8,7 @@
 	}
 })(this, function(Vue, VueUtil) {
 	'use strict';
-	var VueTabBar = {
-		template: '<div class="vue-tabs__active-bar" :style="barStyle"></div>',
-		props: {
-			tabs: Array
-		},
-		computed: {
-			barStyle: {
-				cache: false,
-				get: function() {
-					var self = this;
-					if (!self.$parent.$refs.tabs)
-						return {};
-					var style = {};
-					var offset = 0;
-					var tabWidth = 0;
-					self.tabs.every(function(tab, index) {
-						var $el = self.$parent.$refs.tabs[index];
-						if (!$el) {
-							return false;
-						}
-						if (!tab.active) {
-							offset += $el.clientWidth;
-							return true;
-						} else {
-							tabWidth = $el.clientWidth;
-							return false;
-						}
-					});
-					var transform = 'translateX(' + offset + 'px)';
-					style.width = tabWidth + 'px';
-					style.transform = transform;
-					style.msTransform = transform;
-					style.webkitTransform = transform;
-					return style;
-				}
-			}
-		}
-	};
 	var VueTabNav = {
-		components: {
-			TabBar: VueTabBar
-		},
 		props: {
 			panes: Array,
 			currentName: String,
@@ -74,25 +33,23 @@
 		},
 		methods: {
 			scrollPrev: function() {
-				var containerWidth = this.$refs.navScroll.offsetWidth;
 				var currentOffset = this.getCurrentScrollOffset();
-				if (!currentOffset)
-					return;
-				var newOffset = currentOffset > containerWidth ? currentOffset - containerWidth : 0;
+				if (!currentOffset) return;
+				var tabWidth = this.$refs.tabs[0].offsetWidth;
+				var newOffset = currentOffset > tabWidth ? currentOffset - tabWidth : 0;
 				this.setOffset(newOffset);
 			},
 			scrollNext: function() {
 				var navWidth = this.$refs.nav.offsetWidth;
 				var containerWidth = this.$refs.navScroll.offsetWidth;
 				var currentOffset = this.getCurrentScrollOffset();
-				if (navWidth - currentOffset <= containerWidth)
-					return;
-				var newOffset = navWidth - currentOffset > containerWidth * 2 ? currentOffset + containerWidth : (navWidth - containerWidth);
+				if (navWidth - currentOffset <= containerWidth) return;
+				var tabWidth = this.$refs.tabs[0].offsetWidth;
+				var newOffset = navWidth - currentOffset > tabWidth ? currentOffset + tabWidth : (navWidth - tabWidth);
 				this.setOffset(newOffset);
 			},
 			scrollToActiveTab: function() {
-				if (!this.scrollable)
-					return;
+				if (!this.scrollable) return;
 				var nav = this.$refs.nav;
 				var activeTab = this.$el.querySelector('.is-active');
 				var navScroll = this.$refs.navScroll;
@@ -136,6 +93,17 @@
 						if (currentOffset > 0) {
 							this.setOffset(0);
 						}
+					}
+				}
+			},
+			scrollYMouseWheel: function(event) {
+				if (this.scrollable) {
+					event.preventDefault();
+					var wheelDelta = event.wheelDelta || -event.detail;
+					if (wheelDelta < 0) {
+						this.scrollNext();
+					} else {
+						this.scrollPrev();
 					}
 				}
 			}
@@ -199,18 +167,20 @@
 					'class': 'vue-tabs__nav',
 					ref: 'nav',
 					style: navStyle
-				}, [!type ? createElement('tab-bar', {
-					attrs: {
-						tabs: panes
-					}
-				}, []) : null, tabs])])]);
+				}, [tabs])])]);
+		},
+		computed: {
+			mouseWheel: function() {
+				return VueUtil.getSystemInfo().browser.toLowerCase() === 'firefox' ? 'DOMMouseScroll' : 'mousewheel';
+			}
 		},
 		mounted: function() {
+			VueUtil.on(this.$refs.navScroll, this.mouseWheel, this.scrollYMouseWheel);
 			VueUtil.addResizeListener(this.$el, this.update);
 		},
 		beforeDestroy: function() {
-			if (this.$el && this.update)
-				VueUtil.removeResizeListener(this.$el, this.update);
+			if (this.$el && this.update) VueUtil.removeResizeListener(this.$el, this.update);
+			VueUtil.off(this.$refs.navScroll, this.mouseWheel, this.scrollYMouseWheel);
 		}
 	};
 	var VueTabs = {
@@ -289,14 +259,16 @@
 			var editable = this.editable;
 			var addable = this.addable;
 			var tabBottom = this.tabBottom;
-			var newButton = editable || addable ? createElement('span', {
+			var newButton = editable || addable ? createElement('vue-button', {
 				'class': 'vue-tabs__new-tab',
+				attrs: {
+					type: 'text',
+					icon: 'vue-icon-plus'
+				},
 				on: {
 					'click': handleTabAdd
 				}
-			}, [createElement('i', {
-				'class': 'vue-icon-plus'
-			}, [])]) : null;
+			}, []) : null;
 			var navData = {
 				props: {
 					currentName: currentName,
