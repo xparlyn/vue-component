@@ -206,6 +206,7 @@
 	color: #666;
 	font-size: 12px;
 	height: 40px;
+	transition: transform .3s;
 }
 .vue-table__header-wrapper .vue-table__header .vue-table__column {
 	color: #1f2d3d;

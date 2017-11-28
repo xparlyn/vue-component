@@ -118,11 +118,9 @@
 @keyframes msgbox-fade-in {
 	0% {
 		top: 0;
-		opacity:0;
 	}
 	to {
 		top: 1;
-		opacity:1;
 	}
 }
 @keyframes msgbox-fade-out {

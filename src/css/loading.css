@@ -16,16 +16,13 @@
 .vue-loading-mask.is-fullscreen {
 	position: fixed;
 }
-.vue-loading-mask.is-fullscreen .vue-loading-spinner {
-	margin-top: -25px;
-}
 .vue-loading-mask.is-fullscreen .vue-loading-spinner .circular {
 	width: 50px;
 	height: 50px;
 }
 .vue-loading-spinner {
 	top: 50%;
-	margin-top: -21px;
+	transform: translateY(-50%);
 	width: 100%;
 	text-align: center;
 	position: absolute;

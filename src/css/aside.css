@@ -84,7 +84,7 @@
 }
 @keyframes aside-right-in {
 	0% {
-		transform: translateX(100%);
+		transform: translateX(110%);
 	}
 	to {
 		transform: translateX(0);
@@ -93,16 +93,14 @@
 @keyframes aside-right-out {
 	0% {
 		transform: translateX(0);
-		opacity: 1;
 	}
 	to {
-		transform: translateX(100%);
-		opacity: 0;
+		transform: translateX(110%);
 	}
 }
 @keyframes aside-left-in {
 	0% {
-		transform: translateX(-100%);
+		transform: translateX(-110%);
 	}
 	to {
 		transform: translateX(0);
@@ -111,10 +109,8 @@
 @keyframes aside-left-out {
 	0% {
 		transform: translateX(0);
-		opacity: 1;
 	}
 	to {
-		transform: translateX(-100%);
-		opacity: 0;
+		transform: translateX(-110%);
 	}
 }
