@@ -56,7 +56,7 @@
 .vue-date-table td.current:not(.disabled),
 .vue-date-table td.end-date,
 .vue-date-table td.start-date {
-	background-color: rgba(64, 158, 255, 1)!important;
+	background-color: #409eff;
 	color: #fff;
 }
 .vue-date-table td.disabled {

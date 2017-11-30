@@ -80,22 +80,17 @@
 		template: '<table cellspacing="0" cellpadding="0" @click="handleClick" @mousemove="handleMouseMove" :class="[\'vue-date-table\', {\'is-week-mode\': selectionMode === \'week\'}]"><tbody><tr><th v-if="showWeekNumber">{{$t(\'vue.datepicker.week\')}}</th><th v-for="week in WEEKS">{{$t(\'vue.datepicker.weeks.\'+week)}}</th></tr><tr v-for="row in rows" :class="[\'vue-date-table__row\', {current: isWeekActive(row[1])}]"><td v-for="cell in row" :class="getCellClasses(cell)" v-text="cell.text"></td></tr></tbody></table>',
 		props: {
 			firstDayOfWeek: {
-				default: 7,
+				default: 0,
 				type: Number,
 				validator: function(val) {
-					return val >= 1 && val <= 7
+					return val >= 0 && val <= 6
 				}
 			},
 			date: {},
 			year: {},
 			month: {},
 			week: {},
-			events: {
-				type: Array,
-				default: function() {
-					return [];
-				}
-			},
+			events: Array,
 			selectionMode: {
 				default: 'day'
 			},
@@ -117,7 +112,7 @@
 		computed: {
 			offsetDay: function() {
 				var week = this.firstDayOfWeek;
-				return week > 3 ? 7 - week : -week;
+				return week > 2 ? 6 - week : -week;
 			},
 			WEEKS: function() {
 				var WEEKS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
@@ -128,30 +123,13 @@
 				return this.date.getDate();
 			},
 			startDate: function() {
-				var dayDuration = this.dayDuration;
-				var getStartDateOfMonth = function(year, month) {
-					var result = new Date(year, month, 1);
-					var day = result.getDay();
-					if (day === 0) {
-						result.setTime(result.getTime() - dayDuration * 7);
-					} else {
-						result.setTime(result.getTime() - dayDuration * day);
-					}
-					return result;
-				};
-				return getStartDateOfMonth(this.year, this.month);
+				return VueUtil.getStartDateOfMonth(this.year, this.month);
 			},
 			rows: function() {
-				var getFirstDayOfMonth = function(date) {
-					var temp = VueUtil.toDate(date);
-					temp.setDate(1);
-					return temp.getDay();
-				};
 				var date = new Date(this.year,this.month,1);
-				var day = getFirstDayOfMonth(date);
+				var day = VueUtil.getFirstDayOfMonth(date);
 				var dateCountOfMonth = VueUtil.getDayCountOfMonth(date.getFullYear(), date.getMonth());
 				var dateCountOfLastMonth = VueUtil.getDayCountOfMonth(date.getFullYear(), (date.getMonth() === 0 ? 11 : date.getMonth() - 1));
-				day = (day === 0 ? 7 : day);
 				var offset = this.offsetDay;
 				var rows = this.tableRows;
 				var count = 1;
@@ -220,8 +198,10 @@
 							if (this.events && this.events.length>0) {
 								var cellDate = new Date(this.year, this.month, cell.text);
 								this.events.forEach(function(event){
-									if (event.date
-									 && VueUtil.formatDate(event.date) === VueUtil.formatDate(cellDate)) {
+									var st = VueUtil.toDate(event.start).getTime();
+									var ed = VueUtil.toDate(event.end ? event.end : st).getTime();
+									var de = VueUtil.toDate(VueUtil.formatDate(cellDate)).getTime();
+									if (de >= st && de <= ed) {
 										cell.event = true;
 									}
 								});
@@ -539,25 +519,18 @@
 				this.currentView = 'year';
 			},
 			prevMonth: function() {
-				this.month--;
-				if (this.month < 0) {
-					this.month = 11;
-					this.year--;
-				}
+				this.date = VueUtil.addDate(this.date, -1 , 'month');
+				this.resetDate();
 			},
 			nextMonth: function() {
-				this.month++;
-				if (this.month > 11) {
-					this.month = 0;
-					this.year++;
-				}
+				this.date = VueUtil.addDate(this.date, 1 , 'month');
+				this.resetDate();
 			},
 			nextYear: function() {
 				if (this.currentView === 'year') {
 					this.$refs.yearTable.nextTenYear();
 				} else {
-					this.year++;
-					this.date.setFullYear(this.year);
+					this.date = VueUtil.addDate(this.date, 1 , 'year');
 					this.resetDate();
 				}
 			},
@@ -565,8 +538,7 @@
 				if (this.currentView === 'year') {
 					this.$refs.yearTable.prevTenYear();
 				} else {
-					this.year--;
-					this.date.setFullYear(this.year);
+					this.date = VueUtil.addDate(this.date, -1 , 'year');
 					this.resetDate();
 				}
 			},
@@ -676,7 +648,7 @@
 				visible: false,
 				currentView: 'date',
 				disabledDate: '',
-				firstDayOfWeek: 7,
+				firstDayOfWeek: 0,
 				year: null,
 				month: null,
 				week: null,
@@ -833,7 +805,7 @@
 				value: '',
 				visible: '',
 				disabledDate: '',
-				firstDayOfWeek: 7,
+				firstDayOfWeek: 0,
 				minTimePickerVisible: false,
 				maxTimePickerVisible: false,
 				width: 0
@@ -1041,12 +1013,6 @@
 			}
 		}
 	};
-	var getPanel = function(type) {
-		if (type === 'daterange' || type === 'datetimerange') {
-			return DateRangePanel;
-		}
-		return DatePanel;
-	};
 	var VueDatePicker = {
 		mixins: [VuePicker],
 		name: 'VueDatePicker',
@@ -1056,25 +1022,35 @@
 				default: 'date'
 			}
 		},
+		methods: {
+			getPanel: function(type) {
+				if (type === 'daterange' || type === 'datetimerange') {
+					return DateRangePanel;
+				}
+				return DatePanel;
+			}
+		},
 		watch: {
 			type: function(type) {
 				if (this.picker) {
 					this.unmountPicker();
-					this.panel = getPanel(type);
+					this.panel = this.getPanel(type);
 					this.mountPicker();
 				} else {
-					this.panel = getPanel(type);
+					this.panel = this.getPanel(type);
 				}
 			}
 		},
 		created: function() {
-			this.panel = getPanel(this.type);
+			this.panel = this.getPanel(this.type);
 		}
 	};
 	Vue.component(VueDatePicker.name, VueDatePicker);
 	return function() {
 		return {
-			DatePanel: DatePanel
+			DatePanel: DatePanel,
+			YearTable: YearTable,
+			MonthTable: MonthTable
 		}
 	}
 });

@@ -387,12 +387,28 @@
 		}
 		return 31;
 	};
+	var getFirstDayOfMonth = function(date) {
+		var temp = toDate(date);
+		temp.setDate(1);
+		return temp.getDay();
+	};
 	var getWeekNumber = function(src) {
 		var date = toDate(src);
 		date.setHours(0, 0, 0, 0);
 		date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
 		var week1 = new Date(date.getFullYear(), 0, 4);
 		return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+	};
+	var getStartDateOfMonth = function(year, month) {
+		var DAY_DURATION = 86400000;
+		var result = new Date(year,month,1);
+		var day = result.getDay();
+		if (day === 0) {
+			result.setTime(result.getTime() - DAY_DURATION * 7);
+		} else {
+			result.setTime(result.getTime() - DAY_DURATION * day);
+		}
+		return result;
 	};
 	var addDate = function(src, num, type) {
 		src = toDate(src);
@@ -416,8 +432,13 @@
 					num = -num;
 				}
 				for (var i=0; i<num; i++) {
-					year = month === 11 ? year + addMonth : year;
-					month = month === 11 ? 0 : month + addMonth;
+					if (addMonth > 0) {
+						year = month === 11 ? year + addMonth : year;
+						month = month === 11 ? 0 : month + addMonth;
+					} else {
+						year = month === 0 ? year + addMonth : year;
+						month = month === 0 ? 11 : month + addMonth;
+					}
 				}
 				var newMonthDayCount = getDayCountOfMonth(year, month);
 				if (newMonthDayCount < date) {
@@ -784,6 +805,8 @@
 		isDef: isDef,
 		getDayCountOfMonth: getDayCountOfMonth,
 		getWeekNumber: getWeekNumber,
+		getFirstDayOfMonth: getFirstDayOfMonth,
+		getStartDateOfMonth: getStartDateOfMonth,
 		addTouchStart: addTouchStart,
 		addTouchMove: addTouchMove,
 		addTouchEnd: addTouchEnd,

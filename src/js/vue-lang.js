@@ -18,6 +18,7 @@
 				datepicker: {
 					now: '此刻',
 					today: '今天',
+					thisMonth: '本月',
 					cancel: '取消',
 					clear: '清空',
 					confirm: '确定',
@@ -134,6 +135,7 @@
 				datepicker: {
 					now: '現在',
 					today: '今日',
+					thisMonth: '今月',
 					cancel: 'キャンセル',
 					clear: 'クリア',
 					confirm: 'はい',
@@ -250,6 +252,7 @@
 				datepicker: {
 					now: 'Now',
 					today: 'Today',
+					thisMonth: 'This Month',
 					cancel: 'Cancel',
 					clear: 'Clear',
 					confirm: 'OK',
