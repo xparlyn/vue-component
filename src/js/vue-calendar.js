@@ -18,7 +18,7 @@
 			var event = self.event;
 			var start = VueUtil.toDate(event.start);
 			var end = VueUtil.toDate(event.end);
-			var showTitile = (self.date.getDay() === self.firstDay || VueUtil.formatDate(start) === VueUtil.formatDate(self.date))
+			var showTitile = (self.date.getDay() === self.firstDay || VueUtil.formatDate(start) === VueUtil.formatDate(self.date));
 			var eventClass = [];
 			var customClass = event.customClass;
 			if (VueUtil.isDef(customClass)) {
@@ -38,14 +38,34 @@
 				eventClass.push('is-opacity');
 			}
 			eventClass = eventClass.join(' ');
-			return createElement('p', {
+			var eventItem = createElement('div', {
 				class: ['vue-full-calendar__event-item', eventClass],
 				on: {
 					click: function(e) {
 						self.$emit('click', event, e);
 					}
 				},
-			}, [showTitile ? event.title : null]);
+			}, []);
+			if (showTitile) {
+				var dateCount = Math.round((end.getTime() - self.date.getTime()) / 86400000) + 1;
+				var lastDayCount = 7 - self.date.getDay();
+				var defaultWidth = (self.$parent.eventLimit + 2) * 20;
+				lastDayCount > dateCount ? defaultWidth = defaultWidth * dateCount : defaultWidth = defaultWidth * lastDayCount;
+				if (eventClass.indexOf('is-start') !== -1) defaultWidth = defaultWidth - 4;
+				eventItem = createElement('div', null, [createElement('div', {
+					class: ['vue-full-calendar__event-item', eventClass],
+					style: {'position': 'absolute', 'width': defaultWidth + 'px'},
+					on: {
+						click: function(e) {
+							self.$emit('click', event, e);
+						}
+					},
+				}, [event.title]), createElement('div', {
+					class: ['vue-full-calendar__event-item', 'is-opacity'],
+				}, [])]);
+			}
+			return eventItem;
+			
 		}
 	};
 	var FcHeader = {
@@ -93,7 +113,7 @@
 		}
 	};
 	var FullCalendar = {
-		template: '<div class="vue-full-calendar" :style="compStyle"><fc-header :current-month="currentMonth" :first-day="firstDay" @change="emitChangeMonth"></fc-header><div class="vue-full-calendar-body"><div class="vue-full-calendar__weeks"><div class="vue-full-calendar__week" v-for="(week, weekIndex) in WEEKS" :key="weekIndex">{{ $t(\'vue.datepicker.weeks.\'+week) }}</div></div><div class="vue-full-calendar__dates"><div class="vue-full-calendar__dates-events"><div class="vue-full-calendar__events-week" v-for="(week,weekIndex) in currentDates" :key="weekIndex"><div v-for="(day, dayIndex) in week" :style="eventDayStyle" :key="dayIndex" :class="[\'vue-full-calendar__events-day\', {\'today\': day.isToday}]" @click="dayclick(day.date, $event)"><p class="day-number">{{day.monthDay}}</p><div class="vue-full-calendar__event-box"><event-card :event="event" :date="day.date" :firstDay="firstDay" v-for="(event, eventIndex) in day.events" :key="eventIndex" v-show="event.cellIndex <= eventLimit" @click="eventclick"></event-card><vue-popover trigger="click" v-if="day.events.length > eventLimit && showMore" :title="moreTitle(selectDay.date)"><div class="vue-full-calendar__more-events"><ul class="events-list"><li v-for="(event, eventIndex) in selectDay.events" :key="eventIndex" v-show="event.isShow" :class="[\'vue-full-calendar__event-item\', event.customClass]" @click="eventclick(event, $event)">{{event.title}}</li></ul></div><p slot="reference" class="more-link" @click="moreclick(day)">+ {{day.events[day.events.length -1].cellIndex - eventLimit}}</p></vue-popover><p v-if="day.events.length > eventLimit && !showMore" class="more-link">+ {{day.events[day.events.length -1].cellIndex - eventLimit}}</p></div></div></div></div></div></div></div>',
+		template: '<div class="vue-full-calendar" :style="compStyle"><fc-header :current-month="currentMonth" :first-day="firstDay" @change="emitChangeMonth"></fc-header><div class="vue-full-calendar-body"><div class="vue-full-calendar__weeks"><div class="vue-full-calendar__week" v-for="(week, weekIndex) in WEEKS" :key="weekIndex">{{ $t(\'vue.datepicker.weeks.\'+week) }}</div></div><div class="vue-full-calendar__dates"><div class="vue-full-calendar__dates-events"><div class="vue-full-calendar__events-week" v-for="(week,weekIndex) in currentDates" :key="weekIndex"><div v-for="(day, dayIndex) in week" :style="eventDayStyle" :key="dayIndex" :class="[\'vue-full-calendar__events-day\', {\'today\': day.isToday}]" @click="dayclick(day.date, $event)"><div class="day-number">{{day.monthDay}}</div><div class="vue-full-calendar__event-box"><event-card :event="event" :date="day.date" :firstDay="firstDay" v-for="(event, eventIndex) in day.events" :key="eventIndex" v-show="event.cellIndex <= eventLimit" @click="eventclick"></event-card><vue-popover trigger="click" v-if="day.events.length > eventLimit && showMore" :title="moreTitle(selectDay.date)"><div class="vue-full-calendar__more-events"><ul class="events-list"><li v-for="(event, eventIndex) in selectDay.events" :key="eventIndex" v-show="event.isShow" :class="[\'vue-full-calendar__event-item\', event.customClass]" @click="eventclick(event, $event)">{{event.title}}</li></ul></div><div slot="reference" class="more-link" @click="moreclick(day)">+ {{day.events[day.events.length -1].cellIndex - eventLimit}}</div></vue-popover><div v-if="day.events.length > eventLimit && !showMore" class="more-link">+ {{day.events[day.events.length -1].cellIndex - eventLimit}}</div></div></div></div></div></div></div></div>',
 		props: {
 			events: Array,
 			eventLimit: Number,
@@ -181,10 +201,10 @@
 					if (!b.cellIndex) return -1;
 					return a.cellIndex - b.cellIndex
 				});
-				for (var i=0,j=thisDayEvents.length; i<j; i++) {
+				for (var i=0; i<thisDayEvents.length; i++) {
 					thisDayEvents[i].cellIndex = thisDayEvents[i].cellIndex || (i + 1);
 					thisDayEvents[i].isShow = true;
-					if (thisDayEvents[i].cellIndex === i + 1 || i > 2) continue;
+					if (thisDayEvents[i].cellIndex === i + 1 || i > this.eventLimit) continue;
 					var formatDate = VueUtil.formatDate(date);
 					thisDayEvents.splice(i, 0, {
 						cellIndex: i + 1,
@@ -224,7 +244,7 @@
 			eventclick: function(event, jsEvent) {
 				if (!event.isShow) return;
 				jsEvent.stopPropagation();
-				this.$emit('eventclick', event);
+				this.$emit('eventclick', event, jsEvent);
 			}
 		}
 	};
@@ -323,8 +343,8 @@
 			dayclick: function(day, events) {
 				this.$emit('dayclick', day, events);
 			},
-			eventclick: function(event) {
-				this.$emit('eventclick', event);
+			eventclick: function(event, jsEvent) {
+				this.$emit('eventclick', event, jsEvent);
 			}
 		}
 	};

@@ -42,7 +42,7 @@
 						change: this.toggleAllSelection
 					},
 					attrs: {
-						value: this.isAllSelected
+						value: this.store.states.isAllSelected
 					}
 				}, []);
 			},
