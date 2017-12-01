@@ -372,6 +372,7 @@
 		return DateUtil.format(date, format || 'yyyy-MM-dd');
 	};
 	var parseDate = function(string, format) {
+		string = formatDate(string, format);
 		return DateUtil.parse(string, format || 'yyyy-MM-dd');
 	};
 	var getDayCountOfMonth = function(year, month) {

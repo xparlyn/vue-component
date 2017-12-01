@@ -198,9 +198,9 @@
 							if (this.events && this.events.length>0) {
 								var cellDate = new Date(this.year, this.month, cell.text);
 								this.events.forEach(function(event){
-									var st = VueUtil.toDate(VueUtil.formatDate(event.start)).getTime();
-									var ed = VueUtil.toDate(VueUtil.formatDate(event.end ? event.end : st)).getTime();
-									var de = VueUtil.toDate(VueUtil.formatDate(cellDate)).getTime();
+									var st = VueUtil.parseDate(event.start).getTime();
+									var ed = VueUtil.parseDate(event.end ? event.end : st).getTime();
+									var de = VueUtil.parseDate(cellDate).getTime();
 									if (de >= st && de <= ed) {
 										cell.event = true;
 									}

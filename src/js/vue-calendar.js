@@ -22,8 +22,8 @@
 			if (this.defaultWidth === 0) return;
 			var self = this;
 			var event = self.event;
-			var start = VueUtil.toDate(VueUtil.formatDate(event.start));
-			var end = VueUtil.toDate(VueUtil.formatDate(event.end));
+			var start = VueUtil.parseDate(event.start);
+			var end = VueUtil.parseDate(event.end);
 			var showTitile = (self.date.getDay() === self.firstDay || VueUtil.formatDate(start) === VueUtil.formatDate(self.date));
 			var eventClass = [];
 			var customClass = event.customClass;
@@ -260,9 +260,9 @@
 				var cellIndexArr = [];
 				var events = [].concat(this.events);
 				var thisDayEvents = events.filter(function(day) {
-					var st = VueUtil.toDate(VueUtil.formatDate(day.start)).getTime();
-					var ed = VueUtil.toDate(VueUtil.formatDate(day.end ? day.end : st)).getTime();
-					var de = VueUtil.toDate(VueUtil.formatDate(date)).getTime();
+					var st = VueUtil.parseDate(day.start).getTime();
+					var ed = VueUtil.parseDate(day.end ? day.end : st).getTime();
+					var de = VueUtil.parseDate(date).getTime();
 					return (de >= st && de <= ed);
 				});
 				thisDayEvents.sort(function(a, b) {
@@ -288,9 +288,9 @@
 				var findEvents = [];
 				if (events && events.length>0) {
 					events.forEach(function(event){
-						var st = VueUtil.toDate(VueUtil.formatDate(event.start)).getTime();
-						var ed = VueUtil.toDate(VueUtil.formatDate(event.end ? event.end : st)).getTime();
-						var de = VueUtil.toDate(VueUtil.formatDate(date)).getTime();
+						var st = VueUtil.parseDate(event.start).getTime();
+						var ed = VueUtil.parseDate(event.end ? event.end : st).getTime();
+						var de = VueUtil.parseDate(date).getTime();
 						if (de >= st && de <= ed) {
 							findEvents.push(event);
 						}
@@ -379,9 +379,9 @@
 					if (events && events.length>0) {
 						var findEvents = [];
 						events.forEach(function(event){
-							var st = VueUtil.toDate(VueUtil.formatDate(event.start)).getTime();
-							var ed = VueUtil.toDate(VueUtil.formatDate(event.end ? event.end : st)).getTime();
-							var de = VueUtil.toDate(VueUtil.formatDate(date)).getTime();
+							var st = VueUtil.parseDate(event.start).getTime();
+							var ed = VueUtil.parseDate(event.end ? event.end : st).getTime();
+							var de = VueUtil.parseDate(date).getTime();
 							if (de >= st && de <= ed) {
 								findEvents.push(event);
 							}
