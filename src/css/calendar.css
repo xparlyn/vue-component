@@ -35,8 +35,8 @@
 	display: flex;
 }
 .vue-full-calendar__events-day {
-	cursor: pointer;
 	flex: 1;
+	background-color: #fff;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	border-right: 1px solid #e0e0e0;
@@ -45,18 +45,22 @@
 .vue-full-calendar__events-day.today {
 	background-color: #fbeccd;
 }
-.vue-full-calendar__events-day:hover {
+.vue-full-calendar__events-day.hover {
 	background-color: #e4e8f1;
 }
 .vue-full-calendar__events-day.current {
 	background-color: #409eff;
 }
 .vue-full-calendar__events-day .day-number {
+	cursor: pointer;
 	color: rgba(0, 0, 0, .5);
 	text-align: right;
 	margin: 1px 10px;
 }
-.vue-full-calendar__events-day.current  .day-number{
+.vue-full-calendar__events-day.hover .day-number{
+	color: #000;
+}
+.vue-full-calendar__events-day.current .day-number{
 	color: #fff;
 }
 .vue-full-calendar__event-item {
@@ -77,8 +81,12 @@
 .vue-full-calendar__event-item.is-end {
 	margin-right: 4px;
 }
+.vue-full-calendar__event-item.hover {
+	background-color: #e4e8f1;
+}
 .vue-full-calendar__event-item.is-opacity {
 	opacity: 0;
+	cursor: default;
 }
 .vue-full-calendar__event-box .more-link {
 	cursor: pointer;
@@ -86,6 +94,9 @@
 	color: rgba(0, 0, 0, .5);
 	font-size: 10px;
 	float: right;
+}
+.vue-full-calendar__event-box .more-link:hover{
+	color: #000;
 }
 .vue-full-calendar__more-events {
 	overflow: hidden;
@@ -113,6 +124,6 @@
 	cursor: pointer;
 	color: #409eff;
 	text-decoration: none;
-	font-size: 12px;
+	font-size: 14px;
 	padding-right: 10px;
 }
