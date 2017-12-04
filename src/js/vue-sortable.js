@@ -5,12 +5,13 @@
 	} else {
 		context.VueSortable = definition(context.Vue, context.Sortable, context.VueUtil);
 		delete context.VueSortable;
+		delete context.Sortable;
 	}
 })(this, function(Vue, Sortable, VueUtil) {
 	'use strict';
 	var arrayfrom = function(arr) {
 		var isCallable = function(fn) {
-			return typeof fn === 'function' || Object.prototype.toString.call(fn) === '[object Function]';
+			return typeof fn === 'function' || VueUtil.objType(fn) === '[object Function]';
 		};
 		var toInteger = function(value) {
 			var number = Number(value);

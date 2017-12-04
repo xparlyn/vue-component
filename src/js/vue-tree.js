@@ -602,7 +602,7 @@
 		allNodes.forEach(function(node){return node.setChecked(false, false)});
 		for (var i = 0, j = allNodes.length; i < j; i++) {
 			var node = allNodes[i];
-			var nodeKey = node.data[key].toString();
+			var nodeKey = node.data[key]+'';
 			var checked = keys.indexOf(nodeKey) > -1;
 			if (!checked) {
 				if (node.checked && !cache[nodeKey]) {

@@ -44,7 +44,7 @@
 			default:
 				partInteger = partInteger.replace(/(\d)(?=(\d{3})+$)/g, '$1' + owner.delimiter);
 			}
-			return partInteger.toString() + (owner.numeralDecimalScale > 0 ? partDecimal.toString() : '');
+			return partInteger + (owner.numeralDecimalScale > 0 ? partDecimal+'' : '');
 		}
 	};
 	var DateFormatter = function(datePattern) {
@@ -324,7 +324,7 @@
 			target.prefixLength = target.prefix.length;
 			target.rawValueTrimPrefix = !!opts.rawValueTrimPrefix;
 			target.copyDelimiter = !!opts.copyDelimiter;
-			target.initValue = opts.initValue === undefined ? '' : opts.initValue.toString();
+			target.initValue = opts.initValue === undefined ? '' : opts.initValue+'';
 			target.delimiter = (opts.delimiter || opts.delimiter === '') ? opts.delimiter : (opts.date ? '/' : (opts.numeral ? ',' : ' '));
 			target.delimiters = opts.delimiters || [];
 			target.blocks = opts.blocks || [];
@@ -521,7 +521,7 @@
 		setRawValue: function(value) {
 			var owner = this;
 			var pps = owner.properties;
-			value = value !== undefined ? value.toString() : '';
+			value = value !== undefined ? value+'' : '';
 			if (pps.numeral) {
 				value = value.replace('.', pps.numeralDecimalMark);
 			}

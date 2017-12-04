@@ -5,6 +5,7 @@
 	} else {
 		context.VueFormItem = definition(context.Vue, context.VueUtil, context.VueValidator);
 		delete context.VueFormItem;
+		delete context.VueValidator;
 	}
 })(this, function(Vue, VueUtil, VueValidator) {
 	'use strict';

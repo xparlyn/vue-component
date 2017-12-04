@@ -656,7 +656,7 @@
 				rule.type = 'pattern';
 			}
 			if (typeof (rule.validator) !== 'function' && (rule.type && !validators.hasOwnProperty(rule.type))) {
-				throw new Error('Unknown rule type ' + rule.type.toString());
+				throw new Error('Unknown rule type ' + rule.type);
 			}
 			return rule.type || 'string';
 		},

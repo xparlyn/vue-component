@@ -4,6 +4,8 @@
 	} else {
 		context.VueCalendar = definition(context.Vue, context.VueUtil, context.VueDatePicker);
 		delete context.VueCalendar;
+		delete context.VueDatePicker;
+		delete context.VuePicker;
 	}
 })(this, function (Vue, VueUtil, VueDatePicker) {
 	'use strict';

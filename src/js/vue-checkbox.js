@@ -37,7 +37,7 @@
 				}
 			},
 			isChecked: function() {
-				if ({}.toString.call(this.model) === '[object Boolean]') {
+				if (VueUtil.objType(this.model) === '[object Boolean]') {
 					return this.model;
 				} else if (VueUtil.isArray(this.model)) {
 					return this.model.indexOf(this.label) > -1;

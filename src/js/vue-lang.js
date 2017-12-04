@@ -5,6 +5,8 @@
 	} else {
 		context.VueLang = definition(context.Vue, context.VueUtil);
 		delete context.VueLang;
+		delete context.VuePopper;
+		delete context.VuePopup;
 	}
 })(this, function(Vue, VueUtil) {
 	'use strict';

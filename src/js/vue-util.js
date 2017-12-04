@@ -4,6 +4,11 @@
 		define(['Vue', 'SystemInfo', 'DateUtil', 'Screenfull', 'VueI18n', 'VueResource'], definition);
 	} else {
 		context.VueUtil = definition(context.Vue, context.SystemInfo, context.DateUtil, context.Screenfull);
+		delete context.SystemInfo;
+		delete context.DateUtil;
+		delete context.Screenfull;
+		delete context.VueResource;
+		delete context.VueI18n;
 	}
 })(this, function(Vue, SystemInfo, DateUtil, Screenfull) {
 	'use strict';
@@ -11,8 +16,14 @@
 	var isVNode = function(node) {
 		return typeof node === 'object' && Object.prototype.hasOwnProperty.call(node, 'componentOptions');
 	};
+	var objType = function(obj) {
+		return Object.prototype.toString.call(obj);
+	}
 	var isArray = Array.isArray || function(obj) {
-		return toString.call(obj) === '[object Array]';
+		return obj && objType(obj) === '[object Array]';
+	};
+	var isFunction = function(obj) {
+		return obj && objType(obj) === '[object Function]';
 	};
 	var isUndef = function(v) {
 		return v === undefined || v === null
@@ -799,7 +810,9 @@
 		screenfull: screenfull,
 		prevMonth: prevMonth,
 		nextMonth: nextMonth,
+		objType: objType,
 		isArray: isArray,
+		isFunction: isFunction,
 		isServer: isServer,
 		isVNode: isVNode,
 		isUndef: isUndef,

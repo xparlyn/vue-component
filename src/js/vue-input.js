@@ -5,6 +5,7 @@
 	} else {
 		context.VueInput = definition(context.Vue, context.VueUtil, context.Cleave);
 		delete context.VueInput;
+		delete context.Cleave;
 	}
 })(this, function(Vue, VueUtil, Cleave) {
 	'use strict';

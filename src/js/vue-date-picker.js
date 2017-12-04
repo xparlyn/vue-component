@@ -4,6 +4,7 @@
 		define(['Vue', 'VuePicker', 'VueUtil', 'VueTimePicker'], definition);
 	} else {
 		context.VueDatePicker = definition(context.Vue, context.VuePicker, context.VueUtil, context.VueTimePicker);
+		delete context.VueTimePicker;
 	}
 })(this, function(Vue, VuePicker, VueUtil, VueTimePicker) {
 	'use strict';

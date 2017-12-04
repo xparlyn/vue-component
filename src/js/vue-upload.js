@@ -160,7 +160,7 @@
 				var before = self.beforeUpload(rawFile);
 				if (before && before.then) {
 					before.then(function(processedFile) {
-						if (Object.prototype.toString.call(processedFile) === '[object File]') {
+						if (VueUtil.objType(processedFile) === '[object File]') {
 							self.post(processedFile);
 						} else {
 							self.post(rawFile);

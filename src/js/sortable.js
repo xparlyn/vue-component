@@ -103,7 +103,7 @@
 	} catch (err) {}
 	function Sortable(el, options) {
 		if (!(el && el.nodeType && el.nodeType === 1)) {
-			throw 'Sortable: ' + el + ' must be HTMLElement, and not ' + {}.toString.call(el);
+			throw 'Sortable: ' + el + ' must be HTMLElement, and not ' + Object.prototype.toString.call(el);
 		}
 		this.el = el;
 		this.options = options = _extend({}, options);
@@ -846,7 +846,7 @@
 		while (i--) {
 			sum += str.charCodeAt(i);
 		}
-		return sum.toString(36);
+		return sum+'';
 	}
 	function _index(el, selector) {
 		var index = 0;
