@@ -20,15 +20,7 @@
 		},
 		props: {
 			props: Object,
-			suggestions: Array,
-			options: {
-				default: function() {
-					return {
-						forceAbsolute: true,
-						gpuAcceleration: false
-					};
-				}
-			}
+			suggestions: Array
 		},
 		methods: {
 			select: function(item) {

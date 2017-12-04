@@ -14,20 +14,7 @@
 		componentName: 'VueSelectDropdown',
 		mixins: [VuePopper],
 		props: {
-			placement: {
-				default: 'bottom-start'
-			},
-			boundariesPadding: {
-				default: 0
-			},
-			options: {
-				default: function() {
-					return {
-						forceAbsolute: true,
-						gpuAcceleration: false
-					};
-				}
-			}
+			placement: 'bottom-start'
 		},
 		data: function() {
 			return {
@@ -44,7 +31,6 @@
 				if (val) {
 					var clientRect = this.$parent.$el.getBoundingClientRect();
 					this.minWidth = clientRect.width + 'px';
-					this.top = clientRect.bottom + 'px';
 				}
 			}
 		},
