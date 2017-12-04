@@ -36,9 +36,9 @@
 	}
 	var getOuterSizes = function(element) {
 		var _display = element.style.display
-		  , _visibility = element.style.visibility;
-		element.style.display = 'block';
+		var _visibility = element.style.visibility;
 		element.style.visibility = 'hidden';
+		element.style.display = 'block';
 		var calcWidthToForceRepaint = element.offsetWidth;
 		var styles = getComputedStyle(element);
 		var x = parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
@@ -262,12 +262,9 @@
 			return 'absolute';
 		}
 		var isFixed = function(element) {
-			if (element === document.body) {
-				return false;
-			}
-			if (getStyleComputedProperty(element, 'position') === 'fixed') {
-				return true;
-			}
+			if (element === document.body) return false;
+			var elementPosition = getStyleComputedProperty(element, 'position');
+			if (elementPosition === 'fixed' || elementPosition === 'relative') return true;
 			return element.parentNode ? isFixed(element.parentNode) : element;
 		};
 		var isParentFixed = isFixed(reference);
@@ -706,24 +703,15 @@
 				if (VueUtil.isServer) return;
 				var self = this;
 				self.currentPlacement = self.currentPlacement || self.placement;
-				if (!/^(top|bottom|left|right)(-start|-end)?$/g.test(self.currentPlacement)) {
-					return;
-				}
+				if (!/^(top|bottom|left|right)(-start|-end)?$/g.test(self.currentPlacement)) return;
 				var options = self.options || {};
 				var popper = self.popperElm = self.popperElm || self.popper || self.$refs.popper;
 				var reference = self.referenceElm = self.referenceElm || self.reference || self.$refs.reference;
-				if (!reference && self.$slots.reference && self.$slots.reference[0]) {
-					reference = self.referenceElm = self.$slots.reference[0].elm;
-				}
-				if (!popper || !reference)
-					return;
-				if (self.visibleArrow)
-					self.appendArrow(popper);
-				if (self.appendToBody)
-					document.body.appendChild(self.popperElm);
-				if (self.popperJS && self.popperJS.destroy) {
-					self.popperJS.destroy();
-				}
+				if (!reference && self.$slots.reference && self.$slots.reference[0]) reference = self.referenceElm = self.$slots.reference[0].elm;
+				if (!popper || !reference) return;
+				if (self.visibleArrow) self.appendArrow(popper);
+				if (self.appendToBody) document.body.appendChild(self.popperElm);
+				if (self.popperJS && self.popperJS.destroy) self.popperJS.destroy();
 				options.placement = self.currentPlacement;
 				options.offset = self.offset;
 				self.popperJS = new Popper(reference,popper,options);
@@ -747,9 +735,7 @@
 				this.popperJS = null;
 			},
 			destroyPopper: function() {
-				if (this.popperJS) {
-					this.resetTransformOrigin();
-				}
+				if (this.popperJS) this.resetTransformOrigin();
 			},
 			resetTransformOrigin: function() {
 				var placementMap = {
@@ -764,9 +750,7 @@
 			},
 			appendArrow: function(element) {
 				var hash;
-				if (this.appended) {
-					return;
-				}
+				if (this.appended) return;
 				this.appended = true;
 				for (var item in element.attributes) {
 					if (/^_v-/.test(element.attributes[item].name)) {
@@ -775,9 +759,7 @@
 					}
 				}
 				var arrow = document.createElement('div');
-				if (hash) {
-					arrow.setAttribute(hash, '');
-				}
+				if (hash) arrow.setAttribute(hash, '');
 				arrow.setAttribute('x-arrow', '');
 				arrow.className = 'popper__arrow';
 				element.appendChild(arrow);
