@@ -17,5 +17,3 @@
 * [RequireJS](https://github.com/requirejs/requirejs)
 # License
 [MIT](https://opensource.org/licenses/MIT)
-#
-<img src="./img/qrcode.png" width="200"/>
