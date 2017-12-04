@@ -14,7 +14,10 @@
 		componentName: 'VueSelectDropdown',
 		mixins: [VuePopper],
 		props: {
-			placement: 'bottom-start'
+			placement: {
+				type: String,
+				default: 'bottom-start'
+			}
 		},
 		data: function() {
 			return {
