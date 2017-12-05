@@ -9,7 +9,7 @@
 })(this, function(Vue, VuePopup, VueUtil) {
 	'use strict';
 	var VueDialog = {
-		template: '<div><div :class="[\'vue-dialog__wrapper\', {\'is-clear\': clearModal}]" v-show="visibledialog&&size!==\'full\'" @click.self="handleWrapperClick"></div><transition name="dialog-fade"><div v-draggable v-show="visibledialog" :draggable-cancel-selector="draggableCancelSelector" :class="[\'vue-dialog\', sizeClass, customClass]" ref="dialog" :style="style"><div class="vue-dialog__header"><span class="vue-dialog__title" v-if="showTitle && !$slots.header">{{title}}</span><slot name="header"></slot><div class="vue-dialog__headerbtn" v-if="showClose"><i class="vue-dialog__close vue-icon vue-icon-close" @click=\'handleClose\'></i></div></div><div class="vue-dialog__body"><slot></slot></div><div class="vue-dialog__footer" v-if="$slots.footer"><slot name="footer"></slot></div></div></transition></div>',
+		template: '<div><div :class="[\'vue-dialog__wrapper\', {\'is-cleanness\': cleannessModal}]" v-show="visibledialog&&size!==\'full\'" @click.self="handleWrapperClick"></div><transition name="dialog-fade"><div v-draggable v-show="visibledialog" :draggable-cancel-selector="draggableCancelSelector" :class="[\'vue-dialog\', sizeClass, customClass]" ref="dialog" :style="style"><div class="vue-dialog__header"><span class="vue-dialog__title" v-if="showTitle && !$slots.header">{{title}}</span><slot name="header"></slot><div class="vue-dialog__headerbtn" v-if="showClose"><i class="vue-dialog__close vue-icon vue-icon-close" @click=\'handleClose\'></i></div></div><div class="vue-dialog__body"><slot></slot></div><div class="vue-dialog__footer" v-if="$slots.footer"><slot name="footer"></slot></div></div></transition></div>',
 		name: 'VueDialog',
 		mixins: [VuePopup],
 		data: function(){
@@ -40,7 +40,7 @@
 				type: String,
 				default: '15%'
 			},
-			clearModal: Boolean,
+			cleannessModal: Boolean,
 			beforeClose: Function
 		},
 		watch: {

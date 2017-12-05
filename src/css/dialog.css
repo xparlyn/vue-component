@@ -35,7 +35,7 @@
 	overflow: hidden;
 	background-color: rgba(0,0,0,.3);
 }
-.vue-dialog__wrapper.is-clear {
+.vue-dialog__wrapper.is-cleanness {
 	background-color: rgba(0,0,0,0);
 }
 .vue-dropdown {
