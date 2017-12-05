@@ -35,30 +35,15 @@
 .vue-loading-spinner .circular {
 	width: 42px;
 	height: 42px;
-	animation: loading-rotate 2s linear infinite;
+	animation: loading-rotate 1s linear infinite;
 }
 .vue-loading-spinner .path {
-	animation: loading-dash 2s linear infinite;
+	stroke-dasharray: 90,150;
 	stroke-width: 2;
 	stroke: #409eff;
-	stroke-linecap: round;
 }
 @keyframes loading-rotate {
 	to {
 		transform: rotate(360deg);
-	}
-}
-@keyframes loading-dash {
-	0% {
-		stroke-dasharray: 1,200;
-		stroke-dashoffset: 0;
-	}
-	50% {
-		stroke-dasharray: 90,150;
-		stroke-dashoffset: -40px;
-	}
-	to {
-		stroke-dasharray: 90,150;
-		stroke-dashoffset: -120px;
 	}
 }

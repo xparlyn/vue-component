@@ -244,9 +244,9 @@
 				continue;
 			}
 			if (VueUtil.isDef(column.aggregateLabel)) aggregateLabel = column.aggregateLabel;
-			var max;
-			var min;
-			var sum;
+			var max = null;
+			var min = null;
+			var sum = null;
 			var precision = 0;
 			var valueCount = 0;
 			resultMap.count = data.length;
@@ -923,10 +923,11 @@
 			updateZone: function(offset) {
 				var delta = this.delta;
 				delta.size = parseInt(VueUtil.getStyle(this.$parent.$el.querySelector('.vue-table__body .vue-table__row'), 'height'), 10) || 40;
-				delta.remain = Math.round(this.$parent.height * 1 / delta.size);
+				delta.remain = Math.floor(this.$parent.height * 1 / delta.size) + 10;
 				delta.keeps = delta.remain;
 				if (delta.total <= delta.keeps) return;
-				var overs = Math.floor(offset / delta.size);
+				var overs = Math.floor(offset / delta.size) - 5;
+				overs < 0 ? overs = 0 : void 0;
 				var start = overs ? overs : 0;
 				var end = overs ? (overs + delta.keeps) : delta.keeps;
 				if (overs + delta.keeps >= delta.total) {
@@ -1063,7 +1064,7 @@
 			var table = this.$parent;
 			if (table.height && table.lazyload && !this.fixed) {
 				var delta = this.delta;
-				delta.remain = Math.round(table.height * 1 / delta.size);
+				delta.remain = Math.floor(table.height * 1 / delta.size) + 10;
 				delta.end = delta.remain;
 				delta.keeps = delta.remain;
 			}
@@ -1943,6 +1944,8 @@
 				VueUtil.on(refs.rightFixedFooterWrapper, mouseWheel, scrollXMouseWheel);
 				if (self.fit) {
 					VueUtil.addResizeListener(self.$el, self.doLayout);
+				} else {
+					self.doLayout();
 				}
 			},
 			resizeZone: function() {
@@ -1960,8 +1963,8 @@
 				var self = this;
 				self.store.updateColumns();
 				self.layout.update();
-				self.layout.updateHeight();
 				self.$nextTick(function() {
+					self.layout.updateHeight();
 					self.updateScrollY();
 					self.resizeZone();
 				});
@@ -2021,28 +2024,28 @@
 				}
 			},
 			showHeader: function(val) {
-				this.$nextTick(this.doLayout);
+				this.doLayout();
 			},
 			showFooter: function(val) {
-				this.$nextTick(this.doLayout);
+				this.doLayout();
 			},
 			lazyload: function(val) {
 				if (this.height) {
 					var delta = this.$refs.tableBody.delta;
 					if (val) {
 						delta.size = parseInt(VueUtil.getStyle(this.$el.querySelector('.vue-table__body .vue-table__row'), 'height'), 10) || 40;
-						delta.remain = Math.round(this.height * 1 / delta.size);
+						delta.remain = Math.floor(this.height * 1 / delta.size) + 10;
 						delta.keeps = delta.remain;
 					} else {
 						delta.size = delta.remain = delta.keeps = 0;
 					}
-					this.$nextTick(this.doLayout);
+					this.doLayout();
 				}
 			}
 		},
 		beforeDestroy: function() {
 			if (this.fit) {
-				VueUtil.addResizeListener(this.$el, this.doLayout);
+				VueUtil.removeResizeListener(this.$el, this.doLayout);
 			}
 		},
 		mounted: function() {
@@ -2059,7 +2062,6 @@
 					});
 				}
 			});
-			self.doLayout();
 			self.$nextTick(function() {
 				self.bindEvents();
 			});

@@ -29,7 +29,7 @@
 			var showTitile = (self.date.getDay() === self.firstDay || VueUtil.formatDate(start) === VueUtil.formatDate(self.date));
 			var eventItem = createElement('div', {class: ['vue-full-calendar__event-item', 'is-opacity']}, []);
 			if (showTitile) {
-				var dateCount = Math.round((end.getTime() - self.date.getTime()) / 86400000) + 1;
+				var dateCount = Math.floor((end.getTime() - self.date.getTime()) / 86400000) + 1;
 				var lastDayCount = 7 - self.date.getDay();
 				var defaultWidth = self.defaultWidth;
 				var isEnd = false;

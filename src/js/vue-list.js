@@ -15,7 +15,6 @@
 			return {
 				activedIndex: null,
 				remain: 0,
-				size: 20,
 				delta: {
 					start: 0,
 					end: 0,
@@ -23,6 +22,8 @@
 					keeps: 0,
 					allPadding: 0,
 					paddingTop: 0,
+					remain: 0,
+					size: 20,
 					setFlg: false
 				}
 			}
@@ -50,25 +51,19 @@
 				this.activedIndex = itemObj.index;
 			},
 			handleScroll: function(e) {
-				var scrollTop = this.$refs.container.scrollTop;
+				var scrollTop = this.$el.scrollTop;
 				this.updateZone(scrollTop);
-				if (this.onScroll) {
-					this.onScroll(e, scrollTop);
-				}
+				this.$emit('scroll', e, scrollTop)
 			},
 			updateZone: function(offset) {
 				var delta = this.delta;
 				if (delta.total <= delta.keeps) return;
-				var overs = Math.floor(offset / this.size);
-				if (!offset) {
-					this.$emit('toTop');
-				}
+				var overs = Math.floor(offset / delta.size);
 				var start = overs ? overs : 0;
 				var end = overs ? (overs + delta.keeps) : delta.keeps;
 				if (overs + delta.keeps >= delta.total) {
 					end = delta.total;
 					start = delta.total - delta.keeps;
-					this.$emit('toBottom');
 				}
 				delta.end = end;
 				delta.start = start;
@@ -81,8 +76,8 @@
 					return slots;
 				}
 				delta.total = slots.length;
-				delta.paddingTop = this.size * delta.start;
-				delta.allPadding = this.size * (slots.length - delta.keeps);
+				delta.paddingTop = delta.size * delta.start;
+				delta.allPadding = delta.size * (delta.total - delta.keeps);
 				delta.paddingTop < 0 ? delta.paddingTop = 0 : void 0;
 				delta.allPadding < 0 ? delta.allPadding = 0 : void 0;
 				delta.allPadding < delta.paddingTop ? delta.allPadding = delta.paddingTop : void 0;
@@ -95,10 +90,10 @@
 			init: function() {
 				var slots = this.$slots.default;
 				var delta = this.delta;
-				this.remain = Math.round(this.height*1 / this.size);
-				delta.end = this.remain;
-				delta.keeps = this.remain;
-				if (slots && slots.length <= this.remain) {
+				delta.remain = Math.floor(this.height*1 / delta.size);
+				delta.end = delta.remain;
+				delta.keeps = delta.remain;
+				if (slots && slots.length <= delta.remain) {
 					delta.end = slots.length;
 					delta.keeps = slots.length;
 				}
@@ -116,7 +111,6 @@
 			var paddingTop = delta.paddingTop;
 			var allPadding = delta.allPadding;
 			return createElement('div', {
-				'ref': 'container',
 				'class': ['vue-list'],
 				'style': {
 					'height': this.height*1 + 'px'
