@@ -481,7 +481,7 @@
 		this.viewportHeight = null;
 		this.bodyHeight = null;
 		this.fixedBodyHeight = null;
-		this.gutterWidth = VueUtil.component.scrollBarWidth();
+		this.gutterWidth = VueUtil.scrollBarWidth();
 		VueUtil.merge(this, options);
 		this.updateScrollY = function() {
 			var height = this.height;

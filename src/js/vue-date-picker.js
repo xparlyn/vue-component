@@ -990,10 +990,10 @@
 				}
 			},
 			prevMonth: function() {
-				this.date = VueUtil.prevMonth(this.date);
+				this.date = VueUtil.addDate(this.date, -1, 'month');
 			},
 			nextMonth: function() {
-				this.date = VueUtil.nextMonth(this.date);
+				this.date = VueUtil.addDate(this.date, 1, 'month');
 			},
 			nextYear: function() {
 				var date = this.date;

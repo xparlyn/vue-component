@@ -152,7 +152,7 @@
 		},
 		render: function(createElement) {
 			var self = this;
-			var gutter = VueUtil.component.scrollBarWidth();
+			var gutter = VueUtil.scrollBarWidth();
 			var style = self.wrapStyle;
 			if (gutter) {
 				var gutterWith = "-" + gutter + "px";

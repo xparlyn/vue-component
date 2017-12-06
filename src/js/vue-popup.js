@@ -22,7 +22,6 @@
 		}
 	});
 	var idSeed = 1;
-	var scrollBarWidth;
 	var getDOM = function(dom) {
 		if (dom.nodeType === 3) {
 			dom = dom.nextElementSibling || dom.nextSibling;

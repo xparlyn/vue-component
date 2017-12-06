@@ -75,56 +75,17 @@
 		on(el, event, listener);
 	};
 	var hasClass = function(el, clazz) {
-		if (!el || !clazz)
-			return false;
-		if (clazz.indexOf(' ') !== -1)
-			throw new Error('className should not contain space.');
-		if (el.classList) {
-			return el.classList.contains(clazz);
-		} else {
-			return (' ' + el.className + ' ').indexOf(' ' + clazz + ' ') > -1;
-		}
+		return (new RegExp('(\\s|^)' + clazz + '(\\s|$)')).test(el.className);
 	};
 	var addClass = function(el, clazz) {
-		if (!el)
-			return;
-		var curClass = el.className;
-		var classes = (clazz || '').split(' ');
-		for (var i = 0, j = classes.length; i < j; i++) {
-			var _className = classes[i];
-			if (!_className)
-				continue;
-			if (el.classList) {
-				el.classList.add(_className);
-			} else {
-				if (!hasClass(el, _className)) {
-					curClass += ' ' + _className;
-				}
-			}
-		}
-		if (!el.classList) {
-			el.className = curClass;
+		if (!hasClass(el, clazz)) {
+			el.className += ' ' + clazz;
 		}
 	};
 	var removeClass = function(el, clazz) {
-		if (!el || !clazz)
-			return;
-		var classes = clazz.split(' ');
-		var curClass = ' ' + el.className + ' ';
-		for (var i = 0, j = classes.length; i < j; i++) {
-			var clsName = classes[i];
-			if (!clsName)
-				continue;
-			if (el.classList) {
-				el.classList.remove(clsName);
-			} else {
-				if (hasClass(el, clsName)) {
-					curClass = curClass.replace(' ' + clsName + ' ', ' ');
-				}
-			}
-		}
-		if (!el.classList) {
-			el.className = trim(curClass);
+		if (hasClass(el, clazz)) {
+			var reg = new RegExp('(\\s|^)' + clazz + '(\\s|$)');
+			el.className = el.className.replace(reg, ' ');
 		}
 	};
 	var camelCase = function(name) {
@@ -159,21 +120,51 @@
 			element.style[styleName] = value;
 		}
 	};
-	var instances = {};
+	var getCookie = function(name) {
+		var arr = document.cookie.replace(/\s/g, "").split(';');
+		for (var i=0, j=arr.length; i < j; i++) {
+			var tempArr = arr[i].split('=');
+			if (tempArr[0] === name) 
+				return decodeURIComponent(tempArr[1]);
+		}
+		return '';
+	};
+	var setCookie = function(name, value, days) {
+		var date = new Date
+		date.setDate(date.getDate() + days);
+		document.cookie = name + '=' + value + ';expires=' + date;
+	};
+	var removeCookie = function(name) {
+		setCookie(name, '1', -1);
+	};
+	var setTimeouter = function(countdown, callback) {
+		var timer = null;
+		var wrapper = function() {
+			var self = this;
+			var args = arguments;
+			if (isDef(timer)) clearTimeout(timer);
+			timer = setTimeout(function(){
+				callback.apply(self, args);
+				clearTimeout(timer);
+			}, countdown);
+		};
+		return wrapper;
+	};
 	var popupManager = {
+		instances: {},
 		zIndex: 2000,
 		getInstance: function(id) {
-			return instances[id];
+			return popupManager.instances[id];
 		},
 		register: function(id, instance) {
 			if (id && instance) {
-				instances[id] = instance;
+				popupManager.instances[id] = instance;
 			}
 		},
 		deregister: function(id) {
 			if (id) {
-				instances[id] = null;
-				delete instances[id];
+				popupManager.instances[id] = null;
+				delete popupManager.instances[id];
 			}
 		},
 		nextZIndex: function() {
@@ -181,16 +172,12 @@
 		},
 		modalStack: [],
 		openModal: function(id, zIndex) {
-			if (isServer)
-				return;
-			if (!id || isUndef(zIndex))
-				return;
+			if (isServer) return;
+			if (!id || isUndef(zIndex)) return;
 			var modalStack = this.modalStack;
 			for (var i = 0, j = modalStack.length; i < j; i++) {
 				var item = modalStack[i];
-				if (item.id === id) {
-					return;
-				}
+				if (item.id === id) return;
 			}
 			this.modalStack.push({
 				id: id,
@@ -240,100 +227,88 @@
 		}
 		return [];
 	};
-	var stylesCreated = false;
-	var animation = false;
-	var RESIZE_ANIMATION_NAME = 'resizeanim';
-	var keyFramePrefix = '';
-	var animationStartEvent = 'animationstart';
-	var DOM_PREFIXES = 'Webkit Moz O ms'.split(' ');
-	var START_EVENTS = 'webkitAnimationStart animationstart oAnimationStart MSAnimationStart'.split(' ');
-	var attachEvent = isUndef(window) ? {} : document.attachEvent;
-	if (!attachEvent && isDef(window)) {
-		var testElement = document.createElement('fakeelement');
-		if (isDef(testElement.style.animationName)) {
-			animation = true;
-		}
-		if (animation === false) {
-			var prefix = '';
-			for (var i = 0, j = DOM_PREFIXES.length; i < j; i++) {
-				if (isDef(testElement.style[DOM_PREFIXES[i] + 'AnimationName'])) {
-					prefix = DOM_PREFIXES[i];
-					keyFramePrefix = '-' + prefix.toLowerCase() + '-';
-					animationStartEvent = START_EVENTS[i];
-					animation = true;
-					break;
+	var addResizeListener = function(element, fn) {
+		if (isServer) return;
+		if (document.addEventListener) {
+			var stylesCreated = false;
+			var animation = false;
+			var RESIZE_ANIMATION_NAME = 'resizeanim';
+			var keyFramePrefix = '';
+			var animationStartEvent = 'animationstart';
+			var DOM_PREFIXES = 'Webkit Moz O ms'.split(' ');
+			var START_EVENTS = 'webkitAnimationStart animationstart oAnimationStart MSAnimationStart'.split(' ');
+			var testElement = document.createElement('fakeelement');
+			if (isDef(testElement.style.animationName)) {
+				animation = true;
+			}
+			if (animation === false) {
+				var prefix = '';
+				for (var i = 0, j = DOM_PREFIXES.length; i < j; i++) {
+					if (isDef(testElement.style[DOM_PREFIXES[i] + 'AnimationName'])) {
+						prefix = DOM_PREFIXES[i];
+						keyFramePrefix = '-' + prefix.toLowerCase() + '-';
+						animationStartEvent = START_EVENTS[i];
+						animation = true;
+						break;
+					}
 				}
 			}
-		}
-	}
-	var createStyles = function() {
-		if (!stylesCreated && isDef(window)) {
-			var animationKeyframes = '@' + keyFramePrefix + 'keyframes ' + RESIZE_ANIMATION_NAME + ' {from {opacity: 0;} to {opacity: 0;}} ';
-			var animationStyle = keyFramePrefix + 'animation: 1ms ' + RESIZE_ANIMATION_NAME + ';';
-			var css = animationKeyframes + '\n .resize-triggers {' + animationStyle + ' visibility: hidden; opacity: 0;}\n .resize-triggers, .resize-triggers > div, .contract-trigger:before {content: " "; display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden;}\n .resize-triggers > div {background: #eee; overflow: auto;}\n .contract-trigger:before {width: 200%; height: 200%;}';
-			var head = document.head || document.getElementsByTagName('head')[0];
-			var style = document.createElement('style');
-			style.type = 'text/css';
-			if (style.styleSheet) {
-				style.styleSheet.cssText = css;
-			} else {
-				style.appendChild(document.createTextNode(css));
-			}
-			head.appendChild(style);
-			stylesCreated = true;
-		}
-	};
-	var resetTrigger = function(element) {
-		var trigger = element.__resizeTrigger__;
-		var expand = trigger.firstElementChild;
-		var contract = trigger.lastElementChild;
-		var expandChild = expand.firstElementChild;
-		contract.scrollLeft = contract.scrollWidth;
-		contract.scrollTop = contract.scrollHeight;
-		expandChild.style.width = expand.offsetWidth + 1 + 'px';
-		expandChild.style.height = expand.offsetHeight + 1 + 'px';
-		expand.scrollLeft = expand.scrollWidth;
-		expand.scrollTop = expand.scrollHeight;
-	};
-	var requestFrame = (function() {
-		if (isUndef(window)) return;
-		var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || function(fn) {
-			return window.setTimeout(fn, 20);
-		}
-		return function(fn) {
-			return raf(fn);
-		}
-	})();
-	var cancelFrame = (function() {
-		if (isUndef(window)) return;
-		var cancel = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame || window.clearTimeout;
-		return function(id) {
-			return cancel(id);
-		}
-	})();
-	var checkTriggers = function(element) {
-		return element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height;
-	};
-	var scrollListener = function(event) {
-		var self = this;
-		resetTrigger(self);
-		if (self.__resizeRAF__)
-			cancelFrame(self.__resizeRAF__);
-		self.__resizeRAF__ = requestFrame(function() {
-			if (checkTriggers(self)) {
-				self.__resizeLast__.width = self.offsetWidth;
-				self.__resizeLast__.height = self.offsetHeight;
-				self.__resizeListeners__.forEach(function(fn) {
-					fn.call(self, event);
+			var createStyles = function() {
+				if (!stylesCreated && isDef(window)) {
+					var animationKeyframes = '@' + keyFramePrefix + 'keyframes ' + RESIZE_ANIMATION_NAME + ' {from {opacity: 0;} to {opacity: 0;}} ';
+					var animationStyle = keyFramePrefix + 'animation: 1ms ' + RESIZE_ANIMATION_NAME + ';';
+					var css = animationKeyframes + '\n .resize-triggers {' + animationStyle + ' visibility: hidden; opacity: 0;}\n .resize-triggers, .resize-triggers > div, .contract-trigger:before {content: " "; display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden;}\n .resize-triggers > div {background: #eee; overflow: auto;}\n .contract-trigger:before {width: 200%; height: 200%;}';
+					var head = document.head || document.getElementsByTagName('head')[0];
+					var style = document.createElement('style');
+					style.type = 'text/css';
+					if (style.styleSheet) {
+						style.styleSheet.cssText = css;
+					} else {
+						style.appendChild(document.createTextNode(css));
+					}
+					head.appendChild(style);
+					stylesCreated = true;
+				}
+			};
+			var resetTrigger = setTimeouter(0, function(element) {
+				var trigger = element.__resizeTrigger__;
+				var expand = trigger.firstElementChild;
+				var contract = trigger.lastElementChild;
+				var expandChild = expand.firstElementChild;
+				contract.scrollLeft = contract.scrollWidth;
+				contract.scrollTop = contract.scrollHeight;
+				expandChild.style.width = expand.offsetWidth + 1 + 'px';
+				expandChild.style.height = expand.offsetHeight + 1 + 'px';
+				expand.scrollLeft = expand.scrollWidth;
+				expand.scrollTop = expand.scrollHeight;
+			});
+			var requestFrame = (function() {
+				return function(fn) {
+					return setTimeout(fn, 20);
+				}
+			})();
+			var cancelFrame = (function() {
+				return function(id) {
+					return clearTimeout(id);
+				}
+			})();
+			var checkTriggers = function(element) {
+				return element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height;
+			};
+			var scrollListener = setTimeouter(0, function(event) {
+				var self = this;
+				resetTrigger(self);
+				if (self.__resizeRAF__) cancelFrame(self.__resizeRAF__);
+				self.__resizeRAF__ = requestFrame(function() {
+					if (checkTriggers(self)) {
+						self.__resizeLast__.width = self.offsetWidth;
+						self.__resizeLast__.height = self.offsetHeight;
+						self.__resizeListeners__.forEach(function(fn) {
+							fn.call(self, event);
+						});
+					}
 				});
-			}
-		});
-	};
-	var addResizeListener = function(element, fn) {
-		if (isUndef(window)) return;
-		if (attachEvent) {
-			element.attachEvent('onresize', fn);
-		} else {
+			});
 			if (!element.__resizeTrigger__) {
 				if (getComputedStyle(element).position === 'static') {
 					element.style.position = 'relative';
@@ -356,17 +331,19 @@
 				}
 			}
 			element.__resizeListeners__.push(fn);
+		} else {
+			element.attachEvent('onresize', fn);
 		}
 	};
 	var removeResizeListener = function(element, fn) {
-		if (attachEvent) {
-			element.detachEvent('onresize', fn);
-		} else {
+		if (document.addEventListener) {
 			element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
 			if (!element.__resizeListeners__.length) {
 				element.removeEventListener('scroll', scrollListener);
 				element.__resizeTrigger__ = !element.removeChild(element.__resizeTrigger__);
 			}
+		} else {
+			element.detachEvent('onresize', fn);
 		}
 	};
 	var isDate = function(date) {
@@ -468,12 +445,6 @@
 		}
 		return result;
 	};
-	var prevMonth = function(src) {
-		return addDate(src, -1, 'month');
-	};
-	var nextMonth = function(src) {
-		return addDate(src, 1, 'month');
-	};
 	var setLang = function(lang) {
 		if (lang) {
 			Vue.config.lang = lang;
@@ -551,29 +522,8 @@
 			off(el, 'touchend', fn);
 		}
 	};
-	var setTimeouter = function(countdown, callback) {
-		var wrapper = function() {
-			var self = this;
-			var args = arguments;
-			var timer = setTimeout(function(){
-				callback.apply(self, args);
-				clearTimeout(timer);
-			}, countdown)
-		};
-		return wrapper;
-	};
 	var getSystemInfo = function() {
 		return SystemInfo;
-	}
-	var broadcast = function(componentName, eventName, params) {
-		this.$children.forEach(function(child) {
-			var name = child.$options.componentName;
-			if (name === componentName) {
-				child.$emit.apply(child, [eventName].concat(params));
-			} else {
-				broadcast.apply(child, [componentName, eventName].concat([params]));
-			}
-		});
 	};
 	var emitter = {
 		methods: {
@@ -591,6 +541,16 @@
 				}
 			},
 			broadcast: function(componentName, eventName, params) {
+				var broadcast = function(componentName, eventName, params) {
+					this.$children.forEach(function(child) {
+						var name = child.$options.componentName;
+						if (name === componentName) {
+							child.$emit.apply(child, [eventName].concat(params));
+						} else {
+							broadcast.apply(child, [componentName, eventName].concat([params]));
+						}
+					});
+				};
 				broadcast.call(this, componentName, eventName, params);
 			}
 		}
@@ -720,14 +680,14 @@
 			return createElement('transition', data, children);
 		}
 	};
-	var nodeList = [];
-	var CTX = '@@clickoutsideContext';
-	var clickOutSideFn = function(e) {
-		nodeList.forEach(function(node) {
-			node[CTX].documentHandler(e)
-		});
-	};
 	var clickoutside = function() {
+		var nodeList = [];
+		var CTX = '@@clickoutsideContext';
+		var clickOutSideFn = function(e) {
+			nodeList.forEach(function(node) {
+				node[CTX].documentHandler(e)
+			});
+		};
 		if (!isServer) {
 			on(document, 'click', clickOutSideFn);
 		}
@@ -792,6 +752,9 @@
 		removeClass: removeClass,
 		getStyle: getStyle,
 		setStyle: setStyle,
+		getCookie: getCookie,
+		setCookie: setCookie,
+		removeCookie: removeCookie,
 		merge: merge,
 		mergeArray: mergeArray,
 		addResizeListener: addResizeListener,
@@ -808,8 +771,6 @@
 		insertNodeAt: insertNodeAt,
 		arrayToObject: arrayToObject,
 		screenfull: screenfull,
-		prevMonth: prevMonth,
-		nextMonth: nextMonth,
 		objType: objType,
 		isArray: isArray,
 		isFunction: isFunction,
@@ -829,12 +790,12 @@
 		removeTouchEnd: removeTouchEnd,
 		setTimeouter: setTimeouter,
 		getSystemInfo: getSystemInfo,
+		scrollBarWidth: scrollBarWidth,
 		component: {
 			menumixin: menumixin,
 			emitter: emitter,
 			collapseTransition: collapseTransition,
 			clickoutside: clickoutside,
-			scrollBarWidth: scrollBarWidth,
 			popupManager: popupManager
 		}
 	}
