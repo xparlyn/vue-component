@@ -328,7 +328,7 @@
 	var removeResizeListener = function(element, fn) {
 		if (isUndef(fn)) fn = element;
 		element = document.body;
-		if (document.removeEventListener && element.__resizeListeners__.indexOf(fn)) {
+		if (document.removeEventListener) {
 			element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
 		} else {
 			element.detachEvent('onresize', fn);
