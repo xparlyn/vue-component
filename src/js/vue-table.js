@@ -1943,9 +1943,7 @@
 				VueUtil.on(refs.fixedFooterWrapper, mouseWheel, scrollXMouseWheel);
 				VueUtil.on(refs.rightFixedFooterWrapper, mouseWheel, scrollXMouseWheel);
 				if (self.fit) {
-					VueUtil.addResizeListener(self.$el, self.doLayout);
-				} else {
-					self.doLayout();
+					VueUtil.addResizeListener(self.doLayout);
 				}
 			},
 			resizeZone: function() {
@@ -2045,7 +2043,7 @@
 		},
 		beforeDestroy: function() {
 			if (this.fit) {
-				VueUtil.removeResizeListener(this.$el, this.doLayout);
+				VueUtil.removeResizeListener(this.doLayout);
 			}
 		},
 		mounted: function() {
@@ -2062,6 +2060,7 @@
 					});
 				}
 			});
+			self.doLayout();
 			self.$nextTick(function() {
 				self.bindEvents();
 			});

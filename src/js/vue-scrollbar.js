@@ -223,11 +223,11 @@
 		mounted: function() {
 			if (this.native) return;
 			this.$nextTick(this.update);
-			!this.noresize && this.$refs.resize && VueUtil.addResizeListener(this.$refs.resize, this.update);
+			!this.noresize && this.$refs.resize && VueUtil.addResizeListener(this.update);
 		},
 		destroyed: function() {
 			if (this.native) return;
-			!this.noresize && this.$refs.resize && VueUtil.removeResizeListener(this.$refs.resize, this.update);
+			!this.noresize && this.$refs.resize && VueUtil.removeResizeListener(this.update);
 		}
 	};
 	Vue.component(VueScrollbar.name, VueScrollbar);

@@ -176,10 +176,10 @@
 		},
 		mounted: function() {
 			VueUtil.on(this.$refs.navScroll, this.mouseWheel, this.scrollYMouseWheel);
-			VueUtil.addResizeListener(this.$el, this.update);
+			VueUtil.addResizeListener(this.update);
 		},
 		beforeDestroy: function() {
-			if (this.$el && this.update) VueUtil.removeResizeListener(this.$el, this.update);
+			if (this.$el && this.update) VueUtil.removeResizeListener(this.update);
 			VueUtil.off(this.$refs.navScroll, this.mouseWheel, this.scrollYMouseWheel);
 		}
 	};

@@ -209,13 +209,13 @@
 				}
 			}
 			if (self.$refs.label) {
-				VueUtil.addResizeListener(document.body, self.resetLabelWidth);
+				VueUtil.addResizeListener(self.resetLabelWidth);
 			}
 		},
 		beforeDestroy: function() {
 			this.dispatch('VueForm', 'vue.form.removeField', [this]);
 			if (this.$refs.label) {
-				VueUtil.removeResizeListener(document.body, this.resetLabelWidth);
+				VueUtil.removeResizeListener(this.resetLabelWidth);
 			}
 		}
 	};

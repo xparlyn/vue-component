@@ -229,6 +229,8 @@
 	};
 	var addResizeListener = function(element, fn) {
 		if (isServer) return;
+		if (isUndef(fn)) fn = element;
+		element = document.body;
 		if (document.addEventListener) {
 			var stylesCreated = false;
 			var animation = false;
@@ -270,7 +272,7 @@
 					stylesCreated = true;
 				}
 			};
-			var resetTrigger = throttle(0, function(element) {
+			var resetTrigger = function(element) {
 				var trigger = element.__resizeTrigger__;
 				var expand = trigger.firstElementChild;
 				var contract = trigger.lastElementChild;
@@ -281,34 +283,21 @@
 				expandChild.style.height = expand.offsetHeight + 1 + 'px';
 				expand.scrollLeft = expand.scrollWidth;
 				expand.scrollTop = expand.scrollHeight;
-			});
-			var requestFrame = (function() {
-				return function(fn) {
-					return setTimeout(fn, 20);
-				}
-			})();
-			var cancelFrame = (function() {
-				return function(id) {
-					return clearTimeout(id);
-				}
-			})();
-			var checkTriggers = function(element) {
-				return element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height;
 			};
-			var scrollListener = throttle(0, function(event) {
-				var self = this;
-				resetTrigger(self);
-				if (self.__resizeRAF__) cancelFrame(self.__resizeRAF__);
-				self.__resizeRAF__ = requestFrame(function() {
-					if (checkTriggers(self)) {
-						self.__resizeLast__.width = self.offsetWidth;
-						self.__resizeLast__.height = self.offsetHeight;
-						self.__resizeListeners__.forEach(function(fn) {
-							fn.call(self, event);
-						});
-					}
-				});
-			});
+			var resizeListeners = function(element, event) {
+				if (element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height) {
+					element.__resizeLast__.width = element.offsetWidth;
+					element.__resizeLast__.height = element.offsetHeight;
+					element.__resizeListeners__.forEach(function(fn) {
+						fn = throttle(20, fn);
+						fn.call(element, event);
+					});
+				}
+			};
+			var scrollListener = function(event) {
+				resetTrigger(this);
+				resizeListeners(this, event);
+			};
 			if (!element.__resizeTrigger__) {
 				if (getComputedStyle(element).position === 'static') {
 					element.style.position = 'relative';
@@ -320,14 +309,15 @@
 				resizeTrigger.className = 'resize-triggers';
 				resizeTrigger.innerHTML = '<div class="expand-trigger"><div></div></div><div class="contract-trigger"></div>';
 				element.appendChild(resizeTrigger);
-				resetTrigger(element);
 				element.addEventListener('scroll', scrollListener, true);
 				if (animationStartEvent) {
-					resizeTrigger.addEventListener(animationStartEvent, function(event) {
+					var resizeStart = function(event) {
 						if (event.animationName === RESIZE_ANIMATION_NAME) {
 							resetTrigger(element);
+							resizeTrigger.removeEventListener(animationStartEvent, resizeStart);
 						}
-					});
+					}
+					resizeTrigger.addEventListener(animationStartEvent, resizeStart);
 				}
 			}
 			element.__resizeListeners__.push(fn);
@@ -336,12 +326,10 @@
 		}
 	};
 	var removeResizeListener = function(element, fn) {
-		if (document.addEventListener) {
+		if (isUndef(fn)) fn = element;
+		element = document.body;
+		if (document.removeEventListener && element.__resizeListeners__.indexOf(fn)) {
 			element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
-			if (!element.__resizeListeners__.length) {
-				element.removeEventListener('scroll', scrollListener);
-				element.__resizeTrigger__ = !element.removeChild(element.__resizeTrigger__);
-			}
 		} else {
 			element.detachEvent('onresize', fn);
 		}

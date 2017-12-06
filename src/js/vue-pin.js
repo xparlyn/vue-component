@@ -106,14 +106,14 @@
 				} else {
 					self.scrollParent = getScrollParent(self.$el);
 					VueUtil.on(self.scrollParent,'scroll', self.handleScroll);
-					VueUtil.addResizeListener(self.$el, self.handleScroll);
+					VueUtil.addResizeListener(self.handleScroll);
 				}
 			});
 		},
 		beforeDestroy: function() {
 			if (!this.fixed) {
 				VueUtil.off(this.scrollParent, 'scroll', this.handleScroll);
-				VueUtil.removeResizeListener(this.$el, this.handleScroll);
+				VueUtil.removeResizeListener(this.handleScroll);
 			}
 		},
 		methods: {
