@@ -439,7 +439,7 @@
 		},
 		created: function() {
 			var self = this;
-			self.debouncedInputChange = VueUtil.setTimeouter(self.debounce, function(value) {
+			self.debouncedInputChange = VueUtil.throttle(self.debounce, function(value) {
 				self.handleInputChange(value);
 			});
 		},

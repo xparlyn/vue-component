@@ -137,7 +137,7 @@
 	var removeCookie = function(name) {
 		setCookie(name, '1', -1);
 	};
-	var setTimeouter = function(countdown, callback) {
+	var throttle = function(delay, callback) {
 		var timer = null;
 		var wrapper = function() {
 			var self = this;
@@ -146,7 +146,7 @@
 			timer = setTimeout(function(){
 				callback.apply(self, args);
 				clearTimeout(timer);
-			}, countdown);
+			}, delay);
 		};
 		return wrapper;
 	};
@@ -270,7 +270,7 @@
 					stylesCreated = true;
 				}
 			};
-			var resetTrigger = setTimeouter(0, function(element) {
+			var resetTrigger = throttle(0, function(element) {
 				var trigger = element.__resizeTrigger__;
 				var expand = trigger.firstElementChild;
 				var contract = trigger.lastElementChild;
@@ -295,7 +295,7 @@
 			var checkTriggers = function(element) {
 				return element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height;
 			};
-			var scrollListener = setTimeouter(0, function(event) {
+			var scrollListener = throttle(0, function(event) {
 				var self = this;
 				resetTrigger(self);
 				if (self.__resizeRAF__) cancelFrame(self.__resizeRAF__);
@@ -788,7 +788,7 @@
 		removeTouchStart: removeTouchStart,
 		removeTouchMove: removeTouchMove,
 		removeTouchEnd: removeTouchEnd,
-		setTimeouter: setTimeouter,
+		throttle: throttle,
 		getSystemInfo: getSystemInfo,
 		scrollBarWidth: scrollBarWidth,
 		component: {

@@ -540,7 +540,7 @@
 				self.$emit('input', '');
 			}
 			self.setSelected();
-			self.debouncedOnInputChange = VueUtil.setTimeouter(self.debounce, function() {
+			self.debouncedOnInputChange = VueUtil.throttle(self.debounce, function() {
 				self.onInputChange();
 			});
 			self.$on('handleOptionClick', self.handleOptionSelect);

@@ -1008,7 +1008,7 @@
 				var cellChild = event.target.querySelector('.cell');
 				if (VueUtil.hasClass(cellChild, 'vue-tooltip') && cellChild.scrollWidth > cellChild.offsetWidth) {
 					var tooltip = this.$refs.tooltip;
-					var activateTooltip = VueUtil.setTimeouter(50, function(tooltip) {
+					var activateTooltip = VueUtil.throttle(50, function(tooltip) {
 						return tooltip.handleShowPopper();
 					});
 					this.tooltipContent = cell.innerText;
