@@ -1943,7 +1943,7 @@
 				VueUtil.on(refs.fixedFooterWrapper, mouseWheel, scrollXMouseWheel);
 				VueUtil.on(refs.rightFixedFooterWrapper, mouseWheel, scrollXMouseWheel);
 				if (self.fit) {
-					VueUtil.addResizeListener(self.doLayout);
+					VueUtil.addResizeListener(self.$el, self.doLayout);
 				}
 			},
 			resizeZone: function() {
@@ -2043,7 +2043,7 @@
 		},
 		beforeDestroy: function() {
 			if (this.fit) {
-				VueUtil.removeResizeListener(this.doLayout);
+				VueUtil.removeResizeListener(this.$el, this.doLayout);
 			}
 		},
 		mounted: function() {

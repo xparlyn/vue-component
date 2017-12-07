@@ -229,10 +229,12 @@
 	};
 	var addResizeListener = function(element, fn) {
 		if (isServer) return;
-		if (isUndef(fn)) fn = element;
-		element = document.body;
+		if (isUndef(fn)) {
+			fn = element;
+			element = document.body;
+		}
 		if (document.addEventListener) {
-			if (!element.__resizeTrigger__) {
+			if (!isArray(element.__resizeListeners__)) {
 				var stylesCreated = false;
 				var animation = false;
 				var RESIZE_ANIMATION_NAME = 'resizeanim';
@@ -325,8 +327,10 @@
 		}
 	};
 	var removeResizeListener = function(element, fn) {
-		if (isUndef(fn)) fn = element;
-		element = document.body;
+		if (isUndef(fn)) {
+			fn = element;
+			element = document.body;
+		}
 		if (document.removeEventListener) {
 			if (isArray(element.__resizeListeners__)) {
 				element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
