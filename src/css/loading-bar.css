@@ -4,14 +4,13 @@
 	top: 0;
 	left: 0;
 	right: 0;
-	z-index: 2000;
 }
 .vue-loading-bar-inner {
 	transition: width .3s linear;
 }
 .vue-loading-bar-inner-color-primary {
-	background-color: #39f;
+	background-color: #409eff;
 }
 .vue-loading-bar-inner-failed-color-error {
-	background-color: #f30;
+	background-color: #fb5555;
 }
