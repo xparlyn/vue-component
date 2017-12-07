@@ -232,73 +232,72 @@
 		if (isUndef(fn)) fn = element;
 		element = document.body;
 		if (document.addEventListener) {
-			var stylesCreated = false;
-			var animation = false;
-			var RESIZE_ANIMATION_NAME = 'resizeanim';
-			var keyFramePrefix = '';
-			var animationStartEvent = 'animationstart';
-			var DOM_PREFIXES = 'Webkit Moz O ms'.split(' ');
-			var START_EVENTS = 'webkitAnimationStart animationstart oAnimationStart MSAnimationStart'.split(' ');
-			var testElement = document.createElement('fakeelement');
-			if (isDef(testElement.style.animationName)) {
-				animation = true;
-			}
-			if (animation === false) {
-				var prefix = '';
-				for (var i = 0, j = DOM_PREFIXES.length; i < j; i++) {
-					if (isDef(testElement.style[DOM_PREFIXES[i] + 'AnimationName'])) {
-						prefix = DOM_PREFIXES[i];
-						keyFramePrefix = '-' + prefix.toLowerCase() + '-';
-						animationStartEvent = START_EVENTS[i];
-						animation = true;
-						break;
-					}
-				}
-			}
-			var createStyles = function() {
-				if (!stylesCreated && isDef(window)) {
-					var animationKeyframes = '@' + keyFramePrefix + 'keyframes ' + RESIZE_ANIMATION_NAME + ' {from {opacity: 0;} to {opacity: 0;}} ';
-					var animationStyle = keyFramePrefix + 'animation: 1ms ' + RESIZE_ANIMATION_NAME + ';';
-					var css = animationKeyframes + '\n .resize-triggers {' + animationStyle + ' visibility: hidden; opacity: 0;}\n .resize-triggers, .resize-triggers > div, .contract-trigger:before {content: " "; display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden;}\n .resize-triggers > div {background: #eee; overflow: auto;}\n .contract-trigger:before {width: 200%; height: 200%;}';
-					var head = document.head || document.getElementsByTagName('head')[0];
-					var style = document.createElement('style');
-					style.type = 'text/css';
-					if (style.styleSheet) {
-						style.styleSheet.cssText = css;
-					} else {
-						style.appendChild(document.createTextNode(css));
-					}
-					head.appendChild(style);
-					stylesCreated = true;
-				}
-			};
-			var resetTrigger = function(element) {
-				var trigger = element.__resizeTrigger__;
-				var expand = trigger.firstElementChild;
-				var contract = trigger.lastElementChild;
-				var expandChild = expand.firstElementChild;
-				contract.scrollLeft = contract.scrollWidth;
-				contract.scrollTop = contract.scrollHeight;
-				expandChild.style.width = expand.offsetWidth + 1 + 'px';
-				expandChild.style.height = expand.offsetHeight + 1 + 'px';
-				expand.scrollLeft = expand.scrollWidth;
-				expand.scrollTop = expand.scrollHeight;
-			};
-			var resizeListeners = function(element, event) {
-				if (element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height) {
-					element.__resizeLast__.width = element.offsetWidth;
-					element.__resizeLast__.height = element.offsetHeight;
-					element.__resizeListeners__.forEach(function(fn) {
-						fn = throttle(20, fn);
-						fn.call(element, event);
-					});
-				}
-			};
-			var scrollListener = function(event) {
-				resetTrigger(this);
-				resizeListeners(this, event);
-			};
 			if (!element.__resizeTrigger__) {
+				var stylesCreated = false;
+				var animation = false;
+				var RESIZE_ANIMATION_NAME = 'resizeanim';
+				var keyFramePrefix = '';
+				var animationStartEvent = 'animationstart';
+				var DOM_PREFIXES = 'Webkit Moz O ms'.split(' ');
+				var START_EVENTS = 'webkitAnimationStart animationstart oAnimationStart MSAnimationStart'.split(' ');
+				var testElement = document.createElement('fakeelement');
+				if (isDef(testElement.style.animationName)) {
+					animation = true;
+				}
+				if (animation === false) {
+					var prefix = '';
+					for (var i = 0, j = DOM_PREFIXES.length; i < j; i++) {
+						if (isDef(testElement.style[DOM_PREFIXES[i] + 'AnimationName'])) {
+							prefix = DOM_PREFIXES[i];
+							keyFramePrefix = '-' + prefix.toLowerCase() + '-';
+							animationStartEvent = START_EVENTS[i];
+							animation = true;
+							break;
+						}
+					}
+				}
+				var createStyles = function() {
+					if (!stylesCreated && isDef(window)) {
+						var animationKeyframes = '@' + keyFramePrefix + 'keyframes ' + RESIZE_ANIMATION_NAME + ' {from {opacity: 0;} to {opacity: 0;}} ';
+						var animationStyle = keyFramePrefix + 'animation: 1ms ' + RESIZE_ANIMATION_NAME + ';';
+						var css = animationKeyframes + '\n .resize-triggers {' + animationStyle + ' visibility: hidden; opacity: 0;}\n .resize-triggers, .resize-triggers > div, .contract-trigger:before {content: " "; display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden;}\n .resize-triggers > div {background: #eee; overflow: auto;}\n .contract-trigger:before {width: 200%; height: 200%;}';
+						var head = document.head || document.getElementsByTagName('head')[0];
+						var style = document.createElement('style');
+						style.type = 'text/css';
+						if (style.styleSheet) {
+							style.styleSheet.cssText = css;
+						} else {
+							style.appendChild(document.createTextNode(css));
+						}
+						head.appendChild(style);
+						stylesCreated = true;
+					}
+				};
+				var resetTrigger = function(element) {
+					var trigger = element.__resizeTrigger__;
+					var expand = trigger.firstElementChild;
+					var contract = trigger.lastElementChild;
+					var expandChild = expand.firstElementChild;
+					contract.scrollLeft = contract.scrollWidth;
+					contract.scrollTop = contract.scrollHeight;
+					expandChild.style.width = expand.offsetWidth + 1 + 'px';
+					expandChild.style.height = expand.offsetHeight + 1 + 'px';
+					expand.scrollLeft = expand.scrollWidth;
+					expand.scrollTop = expand.scrollHeight;
+				};
+				var resizeListeners = throttle(20, function(element, event) {
+					if (element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height) {
+						element.__resizeLast__.width = element.offsetWidth;
+						element.__resizeLast__.height = element.offsetHeight;
+						element.__resizeListeners__.forEach(function(fn) {
+							fn.call(element, event);
+						});
+					}
+				});
+				var scrollListener = function(event) {
+					resetTrigger(this);
+					resizeListeners(this, event);
+				};
 				if (getComputedStyle(element).position === 'static') {
 					element.style.position = 'relative';
 				}
@@ -329,7 +328,9 @@
 		if (isUndef(fn)) fn = element;
 		element = document.body;
 		if (document.removeEventListener) {
-			element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
+			if (isArray(element.__resizeListeners__)) {
+				element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
+			}
 		} else {
 			element.detachEvent('onresize', fn);
 		}
