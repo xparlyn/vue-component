@@ -11,6 +11,6 @@
 .vue-loading-bar-inner-color-primary {
 	background-color: #409eff;
 }
-.vue-loading-bar-inner-failed-color-error {
+.vue-loading-bar-inner-color-error {
 	background-color: #fb5555;
 }

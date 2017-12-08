@@ -9,26 +9,18 @@
 })(this, function(Vue, VueUtil) {
 	'use strict';
 	var loadingBarInstance = null;
-	var timer = null;
+	var intervaler = null;
 	var LoadingBar = {
-		template: '<div class="vue-loading-bar" v-show="show"><div :class="innerClasses" :style="styles"></div></div>',
+		template: '<div class="vue-loading-bar"><div :class="innerClasses" :style="styles"></div></div>',
 		data: function() {
 			return {
 				percent: 0,
-				status: 'success',
-				show: false
+				status: ''
 			};
-		},
-		watch: {
-			'show': function(val) {
-				if (val) {
-					this.$el.style.zIndex = VueUtil.component.popupManager.nextZIndex();
-				}
-			}
 		},
 		computed: {
 			innerClasses: function() {
-				return ['vue-loading-bar-inner', 'vue-loading-bar-inner-color-primary', {'vue-loading-bar-inner-failed-color-error': this.status === 'error'}];
+				return ['vue-loading-bar-inner', 'vue-loading-bar-inner-color-primary', {'vue-loading-bar-inner-color-error': this.status === 'error'}];
 			},
 			styles: function() {
 				var style = {
@@ -47,71 +39,59 @@
 		document.body.appendChild(div);
 		var loading_bar = new Vue({
 			el: div,
-			components: {LoadingBar: LoadingBar}
+			components: {LoadingBar: LoadingBar},
+			mounted: function() {
+				this.$el.style.zIndex = VueUtil.component.popupManager.nextZIndex();
+			}
 		}).$children[0];
 		return {
 			update: function(options) {
-				if ('percent' in options) {
-					loading_bar.percent = options.percent;
-				}
-				if (options.status) {
-					loading_bar.status = options.status;
-				}
-				if ('show' in options) {
-					loading_bar.show = options.show;
-				}
+				if (VueUtil.isDef(options.percent)) loading_bar.percent = options.percent;
+				if (VueUtil.isDef(options.status)) loading_bar.status = options.status;
 			},
 			destroy: function() {
 				loading_bar.$destroy();
 			}
 		};
 	};
-	var update = function(options) {
-		VueUtil.isUndef(loadingBarInstance) ? loadingBarInstance = newInstance() : void 0;
+	var updateInstance = function(options) {
+		if (VueUtil.isUndef(loadingBarInstance)) loadingBarInstance = newInstance();
 		loadingBarInstance.update(options);
 	};
-	var hide = function() {
+	var destroyInstance = function() {
 		var closeTimer = setTimeout(function() {
-			update({show: false});
-			update({percent: 0});
 			loadingBarInstance.destroy();
 			loadingBarInstance = null;
 			clearTimeout(closeTimer);
-		}, 500);
-	};
-	var clearTimer = function() {
-		if (VueUtil.isDef(timer)) {
-			clearInterval(timer);
-			timer = null;
-		}
+		}, 1500);
 	};
 	var VueLoadingBar = {
 		start: function() {
 			if (VueUtil.isDef(loadingBarInstance)) return;
 			var percent = 0;
-			update({percent: percent, show: true});
-			timer = setInterval(function() {
+			updateInstance({percent: percent});
+			intervaler = setInterval(function() {
 				percent += 5;
 				if (percent > 95) {
-					clearTimer();
+					clearInterval(intervaler);
 					percent = 95;
 				}
-				update({percent: percent, show: true});
+				updateInstance({percent: percent});
 			}, 200);
 		},
 		update: function(percent) {
-			clearTimer();
-			update({percent: percent, show: true});
+			clearInterval(intervaler);
+			updateInstance({percent: percent});
 		},
 		finish: function() {
-			clearTimer();
-			update({percent: 100, show: true});
-			hide();
+			clearInterval(intervaler);
+			updateInstance({percent: 100});
+			destroyInstance();
 		},
 		error: function() {
-			clearTimer();
-			update({percent: 100, status: 'error', show: true});
-			hide();
+			clearInterval(intervaler);
+			updateInstance({percent: 100, status: 'error'});
+			destroyInstance();
 		}
 	}
 	Vue.loadingBar = VueLoadingBar;
