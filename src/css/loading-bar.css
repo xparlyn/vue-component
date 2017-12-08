@@ -6,11 +6,13 @@
 	right: 0;
 }
 .vue-loading-bar-inner {
-	transition: width .3s linear;
+	transition: width .2s linear;
 }
 .vue-loading-bar-inner-color-primary {
 	background-color: #409eff;
+	box-shadow: 0 0 10px 3px rgba(64, 158, 255, 0.7);
 }
 .vue-loading-bar-inner-color-error {
 	background-color: #fb5555;
+	box-shadow: 0 0 10px 3px rgba(251, 85, 85, 0.7);
 }

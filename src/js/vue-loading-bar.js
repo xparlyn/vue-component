@@ -63,7 +63,7 @@
 			loadingBarInstance.destroy();
 			loadingBarInstance = null;
 			clearTimeout(closeTimer);
-		}, 1500);
+		}, 1000);
 	};
 	var VueLoadingBar = {
 		start: function() {
@@ -71,10 +71,10 @@
 			var percent = 0;
 			updateInstance({percent: percent});
 			intervaler = setInterval(function() {
-				percent += 5;
+				percent += 6;
 				if (percent > 95) {
 					clearInterval(intervaler);
-					percent = 95;
+					percent = 96;
 				}
 				updateInstance({percent: percent});
 			}, 200);

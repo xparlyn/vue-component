@@ -142,7 +142,7 @@
 		var wrapper = function() {
 			var self = this;
 			var args = arguments;
-			if (isDef(timer)) clearTimeout(timer);
+			clearTimeout(timer);
 			timer = setTimeout(function(){
 				callback.apply(self, args);
 				clearTimeout(timer);
