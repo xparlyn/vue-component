@@ -43,7 +43,6 @@
 					el.instance.visible = true;
 					Vue.nextTick(function() {
 						if (binding.modifiers.fullscreen) {
-							el.instance.$el.tabIndex = -1;
 							el.instance.$el.focus();
 						}
 					});
@@ -98,7 +97,7 @@
 			document.querySelector('.vue-loading-mask.is-fullscreen').focus();
 			e.preventDefault();
 			return false;
-		}
+		};
 		var attachEvent = function(binding) {
 			if (binding.modifiers.fullscreen) {
 				if (binding.value) {

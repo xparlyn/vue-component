@@ -58,13 +58,10 @@
 		if (VueUtil.isUndef(loadingBarInstance)) loadingBarInstance = newInstance();
 		loadingBarInstance.update(options);
 	};
-	var destroyInstance = function() {
-		var closeTimer = setTimeout(function() {
-			loadingBarInstance.destroy();
-			loadingBarInstance = null;
-			clearTimeout(closeTimer);
-		}, 1000);
-	};
+	var destroyInstance = VueUtil.throttle(1000, function() {
+		loadingBarInstance.destroy();
+		loadingBarInstance = null;
+	});
 	var VueLoadingBar = {
 		start: function() {
 			if (VueUtil.isDef(loadingBarInstance)) return;
