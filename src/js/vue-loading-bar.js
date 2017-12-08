@@ -59,8 +59,10 @@
 		loadingBarInstance.update(options);
 	};
 	var destroyInstance = VueUtil.throttle(1000, function() {
-		loadingBarInstance.destroy();
-		loadingBarInstance = null;
+		if (VueUtil.isDef(loadingBarInstance)) {
+			loadingBarInstance.destroy();
+			loadingBarInstance = null;
+		}
 	});
 	var VueLoadingBar = {
 		start: function() {

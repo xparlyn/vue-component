@@ -1,4 +1,7 @@
 @charset 'UTF-8';
+* {
+	box-sizing: border-box;
+}
 @font-face {
 	font-family: component;
 	src: url(./fonts/component.woff) format('woff'),url(./fonts/component.ttf) format('truetype');
@@ -18,8 +21,8 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
-* {
-	box-sizing: border-box;
+[v-cloak] {
+	display: none;
 }
 .vue-icon-arrow-down:before {
 	content: "\e800";
@@ -285,6 +288,34 @@
 .vue-icon--left {
 	margin-right: 10px;
 }
+.collapse-transition {
+	transition: height .3s,padding-top .3s,padding-bottom .3s;
+}
+.resize-triggers {
+	animation: 1ms resizeanim;
+	visibility: hidden;
+	opacity: 0;
+}
+.resize-triggers,
+.resize-triggers > div,
+.contract-trigger:before {
+	content: " ";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+}
+.resize-triggers > div {
+	background: #eee;
+	overflow: auto;
+}
+.contract-trigger:before {
+	width: 200%;
+	height: 200%;
+}
 @keyframes rotating {
 	0% {
 		transform: rotateZ(0);
@@ -293,9 +324,11 @@
 		transform: rotateZ(360deg);
 	}
 }
-[v-cloak] {
-	display: none;
-}
-.collapse-transition {
-	transition: height .3s,padding-top .3s,padding-bottom .3s;
+@keyframes resizeanim {
+	0% {
+		opacity: 0;
+	}
+	to {
+		opacity: 0;
+	}
 }

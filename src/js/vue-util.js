@@ -235,46 +235,6 @@
 		}
 		if (document.addEventListener) {
 			if (!isArray(element.__resizeListeners__)) {
-				var stylesCreated = false;
-				var animation = false;
-				var RESIZE_ANIMATION_NAME = 'resizeanim';
-				var keyFramePrefix = '';
-				var animationStartEvent = 'animationstart';
-				var DOM_PREFIXES = 'Webkit Moz O ms'.split(' ');
-				var START_EVENTS = 'webkitAnimationStart animationstart oAnimationStart MSAnimationStart'.split(' ');
-				var testElement = document.createElement('fakeelement');
-				if (isDef(testElement.style.animationName)) {
-					animation = true;
-				}
-				if (animation === false) {
-					var prefix = '';
-					for (var i = 0, j = DOM_PREFIXES.length; i < j; i++) {
-						if (isDef(testElement.style[DOM_PREFIXES[i] + 'AnimationName'])) {
-							prefix = DOM_PREFIXES[i];
-							keyFramePrefix = '-' + prefix.toLowerCase() + '-';
-							animationStartEvent = START_EVENTS[i];
-							animation = true;
-							break;
-						}
-					}
-				}
-				var createStyles = function() {
-					if (!stylesCreated && isDef(window)) {
-						var animationKeyframes = '@' + keyFramePrefix + 'keyframes ' + RESIZE_ANIMATION_NAME + ' {from {opacity: 0;} to {opacity: 0;}} ';
-						var animationStyle = keyFramePrefix + 'animation: 1ms ' + RESIZE_ANIMATION_NAME + ';';
-						var css = animationKeyframes + '\n .resize-triggers {' + animationStyle + ' visibility: hidden; opacity: 0;}\n .resize-triggers, .resize-triggers > div, .contract-trigger:before {content: " "; display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden;}\n .resize-triggers > div {background: #eee; overflow: auto;}\n .contract-trigger:before {width: 200%; height: 200%;}';
-						var head = document.head || document.getElementsByTagName('head')[0];
-						var style = document.createElement('style');
-						style.type = 'text/css';
-						if (style.styleSheet) {
-							style.styleSheet.cssText = css;
-						} else {
-							style.appendChild(document.createTextNode(css));
-						}
-						head.appendChild(style);
-						stylesCreated = true;
-					}
-				};
 				var resetTrigger = function(element) {
 					var trigger = element.__resizeTrigger__;
 					var expand = trigger.firstElementChild;
@@ -297,29 +257,25 @@
 					}
 				});
 				var scrollListener = function(event) {
-					resetTrigger(this);
-					resizeListeners(this, event);
+					resetTrigger(element);
+					resizeListeners(element, event);
+				};
+				var resizeStart = function(event) {
+					if (event.animationName === 'resizeanim') {
+						resetTrigger(element);
+					}
 				};
 				if (getComputedStyle(element).position === 'static') {
 					element.style.position = 'relative';
 				}
-				createStyles();
-				element.__resizeLast__ = {};
-				element.__resizeListeners__ = [];
 				var resizeTrigger = element.__resizeTrigger__ = document.createElement('div');
 				resizeTrigger.className = 'resize-triggers';
 				resizeTrigger.innerHTML = '<div class="expand-trigger"><div></div></div><div class="contract-trigger"></div>';
+				resizeTrigger.addEventListener('animationstart', resizeStart);
+				element.__resizeLast__ = {};
+				element.__resizeListeners__ = [];
 				element.appendChild(resizeTrigger);
 				element.addEventListener('scroll', scrollListener, true);
-				if (animationStartEvent) {
-					var resizeStart = function(event) {
-						if (event.animationName === RESIZE_ANIMATION_NAME) {
-							resetTrigger(element);
-							resizeTrigger.removeEventListener(animationStartEvent, resizeStart);
-						}
-					}
-					resizeTrigger.addEventListener(animationStartEvent, resizeStart);
-				}
 			}
 			element.__resizeListeners__.push(fn);
 		} else {
