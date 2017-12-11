@@ -10,9 +10,6 @@
 })(this, function(Vue, Sortable, VueUtil) {
 	'use strict';
 	var arrayfrom = function(arr) {
-		var isCallable = function(fn) {
-			return typeof fn === 'function' || VueUtil.objType(fn) === '[object Function]';
-		};
 		var toInteger = function(value) {
 			var number = Number(value);
 			if (isNaN(number)) {
@@ -37,7 +34,7 @@
 			var mapFn = arguments.length > 1 ? arguments[1] : void 0;
 			var T;
 			if (VueUtil.isDef(mapFn)) {
-				if (!isCallable(mapFn)) {
+				if (!VueUtil.isFunction(mapFn)) {
 					throw new TypeError('Array.from: when provided, the second argument must be a function');
 				}
 				if (arguments.length > 2) {
@@ -346,13 +343,8 @@
 				var relatedContext = this.getRelatedContextFromMoveEvent(evt);
 				var draggedContext = this.context;
 				var futureIndex = this.computeFutureIndex(relatedContext, evt);
-				VueUtil.merge(draggedContext, {
-					futureIndex: futureIndex
-				});
-				VueUtil.merge(evt, {
-					relatedContext: relatedContext,
-					draggedContext: draggedContext
-				});
+				VueUtil.merge(draggedContext, {futureIndex: futureIndex});
+				VueUtil.merge(evt, {relatedContext: relatedContext, draggedContext: draggedContext});
 				return onMove(evt);
 			},
 			onDragEnd: function(evt) {

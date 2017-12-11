@@ -12,260 +12,35 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil, Screenfull) {
 	'use strict';
-	var isVNode = function(node) {
-		return typeof node === 'object' && Object.prototype.hasOwnProperty.call(node, 'componentOptions');
-	};
-	var objType = function(obj) {
-		return Object.prototype.toString.call(obj);
-	}
-	var isArray = Array.isArray || function(obj) {
-		return obj && objType(obj) === '[object Array]';
-	};
-	var isFunction = function(obj) {
-		return obj && objType(obj) === '[object Function]';
-	};
 	var isUndef = function(v) {
 		return v === undefined || v === null
 	};
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
-	var trim = function(string) {
-		if (typeof string !== 'string') string = '';
-		return string.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '');
+	var objType = function(obj) {
+		return Object.prototype.toString.call(obj);
 	};
-	var on = (function() {
-		return function(element, event, handler) {
-			if (element && event && handler) {
-				element.addEventListener(event, handler, false);
-			}
-		}
-	})();
-	var off = (function() {
-		return function(element, event, handler) {
-			if (element && event) {
-				element.removeEventListener(event, handler, false);
-			}
-		}
-	})();
-	var once = function(el, event, fn) {
-		var listener = function() {
-			if (fn) {
-				fn.apply(this, arguments);
-			}
-			off(el, event, listener);
-		};
-		on(el, event, listener);
+	var isString = function(obj) {
+		return isDef(obj) && objType(obj) === '[object String]';
 	};
-	var hasClass = function(el, clazz) {
-		return (new RegExp('(\\s|^)' + clazz + '(\\s|$)')).test(el.className);
+	var isNumber = function(obj) {
+		return isDef(obj) && objType(obj) === '[object Number]';
 	};
-	var addClass = function(el, clazz) {
-		if (!hasClass(el, clazz)) {
-			el.className += ' ' + clazz;
-		}
+	var isBoolean = function(obj) {
+		return isDef(obj) && objType(obj) === '[object Boolean]';
 	};
-	var removeClass = function(el, clazz) {
-		if (hasClass(el, clazz)) {
-			var reg = new RegExp('(\\s|^)' + clazz + '(\\s|$)');
-			el.className = el.className.replace(reg, ' ');
-		}
+	var isFile = function(obj) {
+		return isDef(obj) && objType(obj) === '[object File]';
 	};
-	var camelCase = function(name) {
-		return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
-			return offset ? letter.toUpperCase() : letter;
-		}).replace(/^moz([A-Z])/, 'Moz$1');
+	var isObject = function(obj) {
+		return isDef(obj) && objType(obj) === '[object Object]';
 	};
-	var getStyle = function(element, styleName) {
-		if (!element || !styleName) return null;
-		styleName = camelCase(styleName);
-		if (styleName === 'float') {
-			styleName = 'cssFloat';
-		}
-		try {
-			var computed = document.defaultView.getComputedStyle(element, '');
-			return element.style[styleName] || computed ? computed[styleName] : null;
-		} catch (e) {
-			return element.style[styleName];
-		}
+	var isArray = Array.isArray || function(obj) {
+		return isDef(obj) && objType(obj) === '[object Array]';
 	};
-	var setStyle = function(element, styleName, value) {
-		if (!element || !styleName) return;
-		if (typeof styleName === 'object') {
-			for (var prop in styleName) {
-				if (styleName.hasOwnProperty(prop)) {
-					setStyle(element, prop, styleName[prop]);
-				}
-			}
-		} else {
-			styleName = camelCase(styleName);
-			element.style[styleName] = value;
-		}
-	};
-	var getCookie = function(name) {
-		var arr = document.cookie.replace(/\s/g, "").split(';');
-		for (var i=0, j=arr.length; i < j; i++) {
-			var tempArr = arr[i].split('=');
-			if (tempArr[0] === name) 
-				return decodeURIComponent(tempArr[1]);
-		}
-		return '';
-	};
-	var setCookie = function(name, value, days) {
-		var date = new Date
-		date.setDate(date.getDate() + days);
-		document.cookie = name + '=' + value + ';expires=' + date;
-	};
-	var removeCookie = function(name) {
-		setCookie(name, '1', -1);
-	};
-	var throttle = function(delay, callback) {
-		var timer = null;
-		var wrapper = function() {
-			var self = this;
-			var args = arguments;
-			clearTimeout(timer);
-			timer = setTimeout(function(){
-				callback.apply(self, args);
-				clearTimeout(timer);
-			}, delay);
-		};
-		return wrapper;
-	};
-	var popupManager = {
-		instances: {},
-		zIndex: 2000,
-		getInstance: function(id) {
-			return popupManager.instances[id];
-		},
-		register: function(id, instance) {
-			if (id && instance) {
-				popupManager.instances[id] = instance;
-			}
-		},
-		deregister: function(id) {
-			if (id) {
-				popupManager.instances[id] = null;
-				delete popupManager.instances[id];
-			}
-		},
-		nextZIndex: function() {
-			return popupManager.zIndex++;
-		},
-		modalStack: [],
-		openModal: function(id, zIndex) {
-			if (!id || isUndef(zIndex)) return;
-			var modalStack = this.modalStack;
-			for (var i = 0, j = modalStack.length; i < j; i++) {
-				var item = modalStack[i];
-				if (item.id === id) return;
-			}
-			this.modalStack.push({
-				id: id,
-				zIndex: zIndex
-			});
-		},
-		closeModal: function(id) {
-			var modalStack = this.modalStack;
-			if (modalStack.length > 0) {
-				var topItem = modalStack[modalStack.length - 1];
-				if (topItem.id === id) {
-					modalStack.pop();
-				} else {
-					for (var i = modalStack.length - 1; i >= 0; i--) {
-						if (modalStack[i].id === id) {
-							modalStack.splice(i, 1);
-							break;
-						}
-					}
-				}
-			}
-		}
-	};
-	var merge = function(target) {
-		for (var i = 1, j = arguments.length; i < j; i++) {
-			var source = arguments[i] || {};
-			for (var prop in source) {
-				var value = source[prop];
-				if (isDef(value)) {
-					target[prop] = value;
-				}
-			}
-		}
-		return target;
-	};
-	var mergeArray = function(arr) {
-		if (isArray(arr)) {
-			for (var i = 0, arr2 = Array(arr.length), j = arr.length; i < j; i++) {
-				var arrObj = arr[i];
-				if (typeof arrObj === 'object') {
-					arr2[i] = merge({}, arrObj);
-				} else {
-					arr2[i] = arrObj;
-				}
-			}
-			return arr2;
-		}
-		return [];
-	};
-	var addResizeListener = function(element, fn) {
-		if (isUndef(fn)) {
-			fn = element;
-			element = document.body;
-		}
-		if (!isArray(element.__resizeListeners__)) {
-			var resetTrigger = function(element) {
-				var trigger = element.__resizeTrigger__;
-				var expand = trigger.firstElementChild;
-				var contract = trigger.lastElementChild;
-				var expandChild = expand.firstElementChild;
-				contract.scrollLeft = contract.scrollWidth;
-				contract.scrollTop = contract.scrollHeight;
-				expandChild.style.width = expand.offsetWidth + 1 + 'px';
-				expandChild.style.height = expand.offsetHeight + 1 + 'px';
-				expand.scrollLeft = expand.scrollWidth;
-				expand.scrollTop = expand.scrollHeight;
-			};
-			var resizeListeners = throttle(20, function(element, event) {
-				if (element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height) {
-					element.__resizeLast__.width = element.offsetWidth;
-					element.__resizeLast__.height = element.offsetHeight;
-					element.__resizeListeners__.forEach(function(fn) {
-						fn.call(element, event);
-					});
-				}
-			});
-			var scrollListener = function(event) {
-				resetTrigger(element);
-				resizeListeners(element, event);
-			};
-			var resizeStart = function(event) {
-				if (event.animationName === 'resizeanim') {
-					resetTrigger(element);
-				}
-			};
-			if (getComputedStyle(element).position === 'static') {
-				element.style.position = 'relative';
-			}
-			var resizeTrigger = element.__resizeTrigger__ = document.createElement('div');
-			resizeTrigger.className = 'resize-triggers';
-			resizeTrigger.innerHTML = '<div class="expand-trigger"><div></div></div><div class="contract-trigger"></div>';
-			resizeTrigger.addEventListener('animationstart', resizeStart);
-			element.__resizeLast__ = {};
-			element.__resizeListeners__ = [];
-			element.appendChild(resizeTrigger);
-			element.addEventListener('scroll', scrollListener, true);
-		}
-		element.__resizeListeners__.push(fn);
-	};
-	var removeResizeListener = function(element, fn) {
-		if (isUndef(fn)) {
-			fn = element;
-			element = document.body;
-		}
-		if (isArray(element.__resizeListeners__)) {
-			element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
-		}
+	var isFunction = function(obj) {
+		return isDef(obj) && objType(obj) === '[object Function]';
 	};
 	var isDate = function(date) {
 		if (isUndef(date)) return false;
@@ -366,6 +141,192 @@
 		}
 		return result;
 	};
+	var isVNode = function(node) {
+		return isObject(node) && node.hasOwnProperty('componentOptions');
+	};
+	var trim = function(string) {
+		if (typeof string !== 'string') string = '';
+		return string.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '');
+	};
+	var merge = function(target) {
+		for (var i = 1, j = arguments.length; i < j; i++) {
+			var source = arguments[i] || {};
+			for (var prop in source) {
+				if (Object.prototype.hasOwnProperty.call(source, prop) && (isDef(source[prop]))) {
+					if (isObject(target[prop]) && isObject(source[prop])) {
+						target[prop] = merge({}, target[prop], source[prop]);
+					} else {
+						target[prop] = source[prop];
+					}
+				}
+			}
+		}
+		return target;
+	};
+	var arrayToObject = function(arr) {
+		var res = {};
+		for (var i = 0, j = arr.length; i < j; i++) {
+			res = merge(res, arr[i]);
+		}
+		return res;
+	};
+	var on = (function() {
+		return function(element, event, handler, useCapture) {
+			if (element && event && handler) {
+				element.addEventListener(event, handler, useCapture);
+			}
+		}
+	})();
+	var off = (function() {
+		return function(element, event, handler, useCapture) {
+			if (element && event) {
+				element.removeEventListener(event, handler, useCapture);
+			}
+		}
+	})();
+	var once = function(el, event, fn) {
+		var listener = function() {
+			if (fn) {
+				fn.apply(this, arguments);
+			}
+			off(el, event, listener);
+		};
+		on(el, event, listener);
+	};
+	var hasClass = function(el, clazz) {
+		return (new RegExp('(\\s|^)' + clazz + '(\\s|$)')).test(el.className);
+	};
+	var addClass = function(el, clazz) {
+		if (!hasClass(el, clazz)) {
+			el.className += ' ' + clazz;
+		}
+	};
+	var removeClass = function(el, clazz) {
+		if (hasClass(el, clazz)) {
+			var reg = new RegExp('(\\s|^)' + clazz + '(\\s|$)');
+			el.className = el.className.replace(reg, ' ');
+		}
+	};
+	var camelCase = function(name) {
+		return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
+			return offset ? letter.toUpperCase() : letter;
+		}).replace(/^moz([A-Z])/, 'Moz$1');
+	};
+	var getStyle = function(element, styleName) {
+		if (!element || !styleName) return null;
+		styleName = camelCase(styleName);
+		if (styleName === 'float') {
+			styleName = 'cssFloat';
+		}
+		try {
+			var computed = document.defaultView.getComputedStyle(element, '');
+			return element.style[styleName] || computed ? computed[styleName] : null;
+		} catch (e) {
+			return element.style[styleName];
+		}
+	};
+	var setStyle = function(element, styleName, value) {
+		if (!element || !styleName) return;
+		if (typeof styleName === 'object') {
+			for (var prop in styleName) {
+				if (styleName.hasOwnProperty(prop)) {
+					setStyle(element, prop, styleName[prop]);
+				}
+			}
+		} else {
+			styleName = camelCase(styleName);
+			element.style[styleName] = value;
+		}
+	};
+	var getCookie = function(name) {
+		var arr = document.cookie.replace(/\s/g, "").split(';');
+		for (var i=0, j=arr.length; i < j; i++) {
+			var tempArr = arr[i].split('=');
+			if (tempArr[0] === name) 
+				return decodeURIComponent(tempArr[1]);
+		}
+		return '';
+	};
+	var setCookie = function(name, value, days) {
+		var date = new Date
+		date.setDate(date.getDate() + days);
+		document.cookie = name + '=' + value + ';expires=' + date;
+	};
+	var removeCookie = function(name) {
+		setCookie(name, '1', -1);
+	};
+	var throttle = function(delay, callback) {
+		var timer = null;
+		var wrapper = function() {
+			var self = this;
+			var args = arguments;
+			clearTimeout(timer);
+			timer = setTimeout(function(){
+				callback.apply(self, args);
+				clearTimeout(timer);
+			}, delay);
+		};
+		return wrapper;
+	};
+	var addResizeListener = function(element, fn) {
+		if (isUndef(fn)) {
+			fn = element;
+			element = document.body;
+		}
+		if (!isArray(element.__resizeListeners__)) {
+			var resetTrigger = function(element) {
+				var trigger = element.__resizeTrigger__;
+				var expand = trigger.firstElementChild;
+				var contract = trigger.lastElementChild;
+				var expandChild = expand.firstElementChild;
+				contract.scrollLeft = contract.scrollWidth;
+				contract.scrollTop = contract.scrollHeight;
+				expandChild.style.width = expand.offsetWidth + 1 + 'px';
+				expandChild.style.height = expand.offsetHeight + 1 + 'px';
+				expand.scrollLeft = expand.scrollWidth;
+				expand.scrollTop = expand.scrollHeight;
+			};
+			var resizeListeners = throttle(20, function(element, event) {
+				if (element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height) {
+					element.__resizeLast__.width = element.offsetWidth;
+					element.__resizeLast__.height = element.offsetHeight;
+					element.__resizeListeners__.forEach(function(fn) {
+						fn.call(element, event);
+					});
+				}
+			});
+			var scrollListener = function(event) {
+				resetTrigger(element);
+				resizeListeners(element, event);
+			};
+			var resizeStart = function(event) {
+				if (event.animationName === 'resizeanim') {
+					resetTrigger(element);
+				}
+			};
+			if (getComputedStyle(element).position === 'static') {
+				element.style.position = 'relative';
+			}
+			var resizeTrigger = element.__resizeTrigger__ = document.createElement('div');
+			resizeTrigger.className = 'resize-triggers';
+			resizeTrigger.innerHTML = '<div class="expand-trigger"><div></div></div><div class="contract-trigger"></div>';
+			on(resizeTrigger, 'animationstart', resizeStart);
+			element.__resizeLast__ = {};
+			element.__resizeListeners__ = [];
+			element.appendChild(resizeTrigger);
+			on(element, 'scroll', scrollListener, true);
+		}
+		element.__resizeListeners__.push(fn);
+	};
+	var removeResizeListener = function(element, fn) {
+		if (isUndef(fn)) {
+			fn = element;
+			element = document.body;
+		}
+		if (isArray(element.__resizeListeners__)) {
+			element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
+		}
+	};
 	var setLang = function(lang) {
 		if (lang) {
 			Vue.config.lang = lang;
@@ -386,17 +347,22 @@
 		var refNode = (position === 0) ? fatherNode.children[0] : fatherNode.children[position - 1].nextSibling
 		fatherNode.insertBefore(node, refNode)
 	};
-	var arrayToObject = function(arr) {
-		var res = {};
-		for (var i = 0, j = arr.length; i < j; i++) {
-			var arrObj = arr[i];
-			if (arrObj) {
-				for (var key in arrObj) {
-					res[key] = arrObj[key];
-				}
-			}
-		}
-		return res;
+	var scrollBarWidth = function() {
+		var outer = document.createElement('div');
+		outer.className = 'vue-scrollbar__wrap';
+		outer.style.visibility = 'hidden';
+		outer.style.width = '100px';
+		outer.style.position = 'absolute';
+		outer.style.top = '-9999px';
+		document.body.appendChild(outer);
+		var widthNoScroll = outer.offsetWidth;
+		outer.style.overflow = 'scroll';
+		var inner = document.createElement('div');
+		inner.style.width = '100%';
+		outer.appendChild(inner);
+		var widthWithScroll = inner.offsetWidth;
+		outer.parentNode.removeChild(outer);
+		return widthNoScroll - widthWithScroll;
 	};
 	var screenfull = function() {
 		if (!Screenfull.enabled) {
@@ -409,42 +375,80 @@
 	};
 	var addTouchStart = function(el, fn) {
 		on(el, 'mousedown', fn);
-		if ('ontouchstart' in window) {
-			on(el, 'touchstart', fn);
-		}
+		on(el, 'touchstart', fn);
 	};
 	var removeTouchStart = function(el, fn) {
 		off(el, 'mousedown', fn);
-		if ('ontouchstart' in window) {
-			off(el, 'touchstart', fn);
-		}
+		off(el, 'touchstart', fn);
 	};
 	var addTouchMove = function(el, fn) {
 		on(el, 'mousemove', fn);
-		if ('ontouchstart' in window) {
-			on(el, 'touchmove', fn);
-		}
+		on(el, 'touchmove', fn);
 	};
 	var removeTouchMove = function(el, fn) {
 		off(el, 'mousemove', fn);
-		if ('ontouchstart' in window) {
-			off(el, 'touchmove', fn);
-		}
+		off(el, 'touchmove', fn);
 	};
 	var addTouchEnd = function(el, fn) {
 		on(el, 'mouseup', fn);
-		if ('ontouchstart' in window) {
-			on(el, 'touchend', fn);
-		}
+		on(el, 'touchend', fn);
 	};
 	var removeTouchEnd = function(el, fn) {
 		off(el, 'mouseup', fn);
-		if ('ontouchstart' in window) {
-			off(el, 'touchend', fn);
-		}
+		off(el, 'touchend', fn);
 	};
 	var getSystemInfo = function() {
 		return SystemInfo;
+	};
+	var popupManager = {
+		instances: {},
+		zIndex: 2000,
+		getInstance: function(id) {
+			return popupManager.instances[id];
+		},
+		register: function(id, instance) {
+			if (id && instance) {
+				popupManager.instances[id] = instance;
+			}
+		},
+		deregister: function(id) {
+			if (id) {
+				popupManager.instances[id] = null;
+				delete popupManager.instances[id];
+			}
+		},
+		nextZIndex: function() {
+			return popupManager.zIndex++;
+		},
+		modalStack: [],
+		openModal: function(id, zIndex) {
+			if (!id || isUndef(zIndex)) return;
+			var modalStack = this.modalStack;
+			for (var i = 0, j = modalStack.length; i < j; i++) {
+				var item = modalStack[i];
+				if (item.id === id) return;
+			}
+			this.modalStack.push({
+				id: id,
+				zIndex: zIndex
+			});
+		},
+		closeModal: function(id) {
+			var modalStack = this.modalStack;
+			if (modalStack.length > 0) {
+				var topItem = modalStack[modalStack.length - 1];
+				if (topItem.id === id) {
+					modalStack.pop();
+				} else {
+					for (var i = modalStack.length - 1; i >= 0; i--) {
+						if (modalStack[i].id === id) {
+							modalStack.splice(i, 1);
+							break;
+						}
+					}
+				}
+			}
+		}
 	};
 	var emitter = {
 		methods: {
@@ -643,28 +647,33 @@
 			}
 		}
 	};
-	var scrollBarWidth = function() {
-		var outer = document.createElement('div');
-		outer.className = 'vue-scrollbar__wrap';
-		outer.style.visibility = 'hidden';
-		outer.style.width = '100px';
-		outer.style.position = 'absolute';
-		outer.style.top = '-9999px';
-		document.body.appendChild(outer);
-		var widthNoScroll = outer.offsetWidth;
-		outer.style.overflow = 'scroll';
-		var inner = document.createElement('div');
-		inner.style.width = '100%';
-		outer.appendChild(inner);
-		var widthWithScroll = inner.offsetWidth;
-		outer.parentNode.removeChild(outer);
-		return widthNoScroll - widthWithScroll;
-	};
 	return {
+		isUndef: isUndef,
+		isDef: isDef,
+		objType: objType,
+		isString: isString,
+		isNumber: isNumber,
+		isBoolean: isBoolean,
+		isFile: isFile,
+		isObject: isObject,
+		isArray: isArray,
+		isFunction: isFunction,
+		isDate: isDate,
+		toDate: toDate,
+		formatDate: formatDate,
+		parseDate: parseDate,
+		getDayCountOfMonth: getDayCountOfMonth,
+		getFirstDayOfMonth: getFirstDayOfMonth,
+		getWeekNumber: getWeekNumber,
+		getStartDateOfMonth: getStartDateOfMonth,
+		addDate: addDate,
+		isVNode: isVNode,
+		trim: trim,
+		merge: merge,
+		arrayToObject: arrayToObject,
 		on: on,
 		off: off,
 		once: once,
-		trim: trim,
 		hasClass: hasClass,
 		addClass: addClass,
 		removeClass: removeClass,
@@ -673,41 +682,23 @@
 		getCookie: getCookie,
 		setCookie: setCookie,
 		removeCookie: removeCookie,
-		merge: merge,
-		mergeArray: mergeArray,
+		throttle: throttle,
 		addResizeListener: addResizeListener,
 		removeResizeListener: removeResizeListener,
-		parseDate: parseDate,
-		formatDate: formatDate,
-		isDate: isDate,
-		toDate: toDate,
-		addDate: addDate,
-		noLog: noLog,
 		setLang: setLang,
 		setLocale: setLocale,
+		noLog: noLog,
 		removeNode: removeNode,
 		insertNodeAt: insertNodeAt,
-		arrayToObject: arrayToObject,
+		scrollBarWidth: scrollBarWidth,
 		screenfull: screenfull,
-		objType: objType,
-		isArray: isArray,
-		isFunction: isFunction,
-		isVNode: isVNode,
-		isUndef: isUndef,
-		isDef: isDef,
-		getDayCountOfMonth: getDayCountOfMonth,
-		getWeekNumber: getWeekNumber,
-		getFirstDayOfMonth: getFirstDayOfMonth,
-		getStartDateOfMonth: getStartDateOfMonth,
 		addTouchStart: addTouchStart,
 		addTouchMove: addTouchMove,
 		addTouchEnd: addTouchEnd,
 		removeTouchStart: removeTouchStart,
 		removeTouchMove: removeTouchMove,
 		removeTouchEnd: removeTouchEnd,
-		throttle: throttle,
 		getSystemInfo: getSystemInfo,
-		scrollBarWidth: scrollBarWidth,
 		nextZIndex: popupManager.nextZIndex,
 		component: {
 			menumixin: menumixin,

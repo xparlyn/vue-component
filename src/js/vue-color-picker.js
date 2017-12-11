@@ -95,7 +95,7 @@
 		this.doOnChange();
 	};
 	Color.prototype.set = function(prop, value) {
-		if (arguments.length === 1 && typeof prop === 'object') {
+		if (arguments.length === 1 && VueUtil.isObject(prop)) {
 			for (var p in prop) {
 				if (prop.hasOwnProperty(p)) {
 					this.set(p, prop[p]);

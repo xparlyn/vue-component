@@ -189,10 +189,7 @@
 		if (!child)
 			throw new Error('insertChild error: child is required.');
 		if (!(child instanceof Node)) {
-			VueUtil.merge(child, {
-				parent: self,
-				store: self.store
-			});
+			VueUtil.merge(child, {parent: self, store: self.store});
 			child = new Node(child);
 		}
 		child.level = self.level + 1;
@@ -474,7 +471,7 @@
 				return data[NODE_KEY];
 			return data[key];
 		};
-		var key = typeof data !== 'object' ? data : getNodeKey(this.key, data);
+		var key = VueUtil.isObject(data) ? getNodeKey(this.key, data) : data;
 		return this.nodesMap[key];
 	};
 	TreeStore.prototype.insertBefore = function(data, refData) {

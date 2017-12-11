@@ -50,10 +50,10 @@
 			}
 		},
 		onchange: function (callback) {
-			doc.addEventListener(fn.fullscreenchange, callback, false);
+			doc.addEventListener(fn.fullscreenchange, callback);
 		},
 		onerror: function (callback) {
-			doc.addEventListener(fn.fullscreenerror, callback, false);
+			doc.addEventListener(fn.fullscreenerror, callback);
 		},
 		raw: fn
 	};

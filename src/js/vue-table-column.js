@@ -295,7 +295,7 @@
 				if (self.$vnode.data.inlineTemplate) {
 					renderCell = function() {
 						data.self = self.context || data.self;
-						if (typeof data.self === 'object') {
+						if (VueUtil.isObject(data.self)) {
 							VueUtil.merge(data, data.self);
 						}
 						data._staticTrees = self._staticTrees;

@@ -1,12 +1,12 @@
 (function(context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context.VueCol = definition(context.Vue);
+		context.VueCol = definition(context.Vue, context.VueUtil);
 		delete context.VueCol;
 	}
-})(this, function(Vue) {
+})(this, function(Vue, VueUtil) {
 	'use strict';
 	var VueCol = {
 		name: 'VueCol',
@@ -47,7 +47,7 @@
 			['xs', 'sm', 'md', 'lg'].forEach(function(size) {
 				if (typeof self[size] === 'number') {
 					classList.push('vue-col-' + size + '-' + self[size]);
-				} else if (typeof self[size] === 'object') {
+				} else if (VueUtil.isObject(self[size])) {
 					var props = self[size];
 					Object.keys(props).forEach(function(prop) {
 						classList.push(prop !== 'span' ? 'vue-col-' + size + '-' + prop + '-' + props[prop] : 'vue-col-' + size + '-' + props[prop]);

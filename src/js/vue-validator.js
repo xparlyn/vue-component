@@ -12,17 +12,6 @@
 			default: 'Validation Error'
 		};
 	};
-	var _extends = Object.assign || function(target) {
-		for (var i = 1; i < arguments.length; i++) {
-			var source = arguments[i];
-			for (var key in source) {
-				if (Object.prototype.hasOwnProperty.call(source, key)) {
-					target[key] = source[key];
-				}
-			}
-		}
-		return target;
-	}
 	var isNativeStringType = function(type) {
 		return type === 'string' || type === 'url' || type === 'hex' || type === 'email' || type === 'pattern';
 	};
@@ -122,21 +111,6 @@
 			};
 		}
 	};
-	var deepMerge = function(target, source) {
-		if (source) {
-			for (var s in source) {
-				if (source.hasOwnProperty(s)) {
-					var value = source[s];
-					if (typeof value === 'object' && typeof target[s] === 'object') {
-						target[s] = _extends({}, target[s], value);
-					} else {
-						target[s] = value;
-					}
-				}
-			}
-		}
-		return target;
-	};
 	var rulesEnumerable = function(rule, value, source, errors, options) {
 		var ENUM = 'enum';
 		rule[ENUM] = VueUtil.isArray(rule[ENUM]) ? rule[ENUM] : [];
@@ -230,22 +204,22 @@
 				if (isNaN(value)) {
 					return false;
 				}
-				return typeof (value) === 'number';
+				return VueUtil.isNumber(value);
 			},
 			object: function(value) {
-				return typeof (value) === 'object' && !types.array(value);
+				return VueUtil.isObject(value);
 			},
 			method: function(value) {
-				return typeof (value) === 'function';
+				return VueUtil.isFunction(value);
 			},
 			email: function(value) {
-				return typeof (value) === 'string' && !!value.match(pattern.email) && value.length < 255;
+				return VueUtil.isString(value) && !!value.match(pattern.email) && value.length < 255;
 			},
 			url: function(value) {
-				return typeof (value) === 'string' && !!value.match(pattern.url);
+				return VueUtil.isString(value) && !!value.match(pattern.url);
 			},
 			hex: function(value) {
-				return typeof (value) === 'string' && !!value.match(pattern.hex);
+				return VueUtil.isString(value) && !!value.match(pattern.hex);
 			},
 		};
 		if (rule.required && VueUtil.isUndef(value)) {
@@ -471,16 +445,13 @@
 	};
 	Schema.prototype = {
 		messages: function(messages) {
-			if (messages) {
-				this._messages = deepMerge(newMessages(), messages);
-			}
-			return this._messages;
+			return VueUtil.merge(this._messages, messages);
 		},
 		define: function(rules) {
 			if (!rules) {
 				throw new Error('No rules');
 			}
-			if (typeof rules !== 'object' || VueUtil.isArray(rules)) {
+			if (!VueUtil.isObject(rules)) {
 				throw new Error('Rules must be an object');
 			}
 			this.rules = {};
@@ -534,13 +505,7 @@
 				}
 				callback(errors, fields);
 			}
-			if (options.messages) {
-				var messages = this.messages();
-				deepMerge(messages, options.messages);
-				options.messages = messages;
-			} else {
-				options.messages = this.messages();
-			}
+			options.messages = VueUtil.merge(this.messages(), options.messages);
 			var self = this;
 			var arr;
 			var value;
@@ -553,7 +518,7 @@
 					var rule = r;
 					if (typeof (rule.transform) === 'function') {
 						if (source === source_) {
-							source = _extends({}, source);
+							source = VueUtil.merge({}, source);
 						}
 						value = source[z] = rule.transform(value);
 					}
@@ -562,7 +527,7 @@
 							validator: rule,
 						};
 					} else {
-						rule = _extends({}, rule);
+						rule = VueUtil.merge({}, rule);
 					}
 					rule.validator = self.getValidationMethod(rule);
 					rule.field = z;
@@ -583,11 +548,11 @@
 			var errorFields = {};
 			asyncMap(series, options, function(data, doIt) {
 				var rule = data.rule;
-				var deep = (rule.type === 'object' || rule.type === 'array') && (typeof (rule.fields) === 'object' || typeof (rule.defaultField) === 'object');
+				var deep = (VueUtil.isObject(rule.type) || VueUtil.isArray(rule.type)) && (VueUtil.isObject(rule.fields) || VueUtil.isObject(rule.defaultField));
 				deep = deep && (rule.required || (!rule.required && data.value));
 				rule.field = data.field;
 				function addFullfield(key, schema) {
-					return _extends({}, schema, {
+					return VueUtil.merge({}, schema, {
 						fullField: rule.fullField + '.' + key
 					});
 				}
@@ -625,7 +590,7 @@
 								}
 							}
 						}
-						fieldsSchema = _extends({}, fieldsSchema, data.rule.fields);
+						fieldsSchema = VueUtil.merge({}, fieldsSchema, data.rule.fields);
 						for (var f in fieldsSchema) {
 							if (fieldsSchema.hasOwnProperty(f)) {
 								var fieldSchema = VueUtil.isArray(fieldsSchema[f]) ? fieldsSchema[f] : [fieldsSchema[f]];

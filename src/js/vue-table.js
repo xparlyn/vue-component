@@ -1719,7 +1719,7 @@
 		},
 		methods: {
 			exportCsv: function(params) {
-				if (typeof params !== 'object') params = {};
+				if (!VueUtil.isObject(params)) params = {};
 				if (params.fileName) {
 					if (params.fileName.indexOf('.csv') === -1) {
 						params.fileName += '.csv';
@@ -1747,7 +1747,7 @@
 					content.push(line.join(separator));
 				};
 				var tableDataToCsv = function(columns, datas, footer, options) {
-					options = Object.assign({}, {separator: ',', quoted: false}, options);
+					options = VueUtil.merge({}, {separator: ',', quoted: false}, options);
 					var columnOrder;
 					var content = [];
 					var column = [];

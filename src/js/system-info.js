@@ -65,7 +65,7 @@
 		'Tablet': ua.indexOf('Tablet') > -1 || ua.indexOf('Pad') > -1 || ua.indexOf('Nexus 7') > -1
 	};
 	if (match['Mobile']) {
-		match['Mobile'] = !(u.indexOf('iPad') > -1);
+		match['Mobile'] = !(ua.indexOf('iPad') > -1);
 	} else if (win.showModalDialog && win.chrome) {
 		match['360'] = true;
 	}

@@ -7,33 +7,6 @@
 	}
 })(this, function(Vue, VueUtil) {
 	'use strict';
-	if (!Object.assign) {
-		Object.defineProperty(Object, 'assign', {
-			enumerable: false,
-			configurable: true,
-			writable: true,
-			value: function(target) {
-				if (VueUtil.isUndef(target)) {
-					throw new TypeError('Cannot convert first argument to object');
-				}
-				var to = Object(target);
-				for (var i = 1; i < arguments.length; i++) {
-					var nextSource = arguments[i];
-					if (VueUtil.isUndef(nextSource)) continue;
-					nextSource = Object(nextSource);
-					var keysArray = Object.keys(nextSource);
-					for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
-						var nextKey = keysArray[nextIndex];
-						var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
-						if (VueUtil.isDef(desc)&& desc.enumerable) {
-							to[nextKey] = nextSource[nextKey];
-						}
-					}
-				}
-				return to;
-			}
-		});
-	}
 	var getOuterSizes = function(element) {
 		var _display = element.style.display
 		var _visibility = element.style.visibility;
@@ -52,7 +25,7 @@
 		return result;
 	};
 	var getPopperClientRect = function(popperOffsets) {
-		var offsets = Object.assign({}, popperOffsets);
+		var offsets = VueUtil.merge({}, popperOffsets);
 		offsets.right = offsets.left + offsets.width;
 		offsets.bottom = offsets.top + offsets.height;
 		return offsets;
@@ -141,13 +114,13 @@
 		this._reference = reference.jquery ? reference[0] : reference;
 		this.state = {};
 		var isNotDefined = VueUtil.isUndef(popper);
-		var isConfig = popper && VueUtil.objType(popper) === '[object Object]';
+		var isConfig = VueUtil.isObject(popper);
 		if (isNotDefined || isConfig) {
 			this._popper = this.parse(isConfig ? popper : {});
 		} else {
 			this._popper = popper.jquery ? popper[0] : popper;
 		}
-		this._options = Object.assign({}, DEFAULTS, options);
+		this._options = VueUtil.merge({}, DEFAULTS, options);
 		this._options.modifiers = this._options.modifiers.map(function(modifier) {
 			if (this._options.modifiersIgnored.indexOf(modifier) !== -1)
 				return;
@@ -211,7 +184,7 @@
 			arrowClassNames: ['popper__arrow'],
 			arrowAttributes: ['x-arrow']
 		};
-		config = Object.assign({}, defaultConfig, config);
+		config = VueUtil.merge({}, defaultConfig, config);
 		var d = document;
 		var popper = d.createElement(config.tagName);
 		addClassNames(popper, config.classNames);
@@ -439,7 +412,7 @@
 			styles.left = left;
 			styles.top = top;
 		}
-		Object.assign(styles, data.styles);
+		VueUtil.merge(styles, data.styles);
 		setStyle(this._popper, styles);
 		this._popper.setAttribute('x-placement', data.placement);
 		if (this.isModifierRequired(this.modifiers.applyStyle, this.modifiers.arrow) && data.offsets.arrow) {
@@ -473,7 +446,7 @@
 				}
 			};
 			var axis = ['bottom', 'top'].indexOf(basePlacement) !== -1 ? 'x' : 'y';
-			data.offsets.popper = Object.assign(popper, shiftOffsets[axis][shiftVariation]);
+			data.offsets.popper = VueUtil.merge(popper, shiftOffsets[axis][shiftVariation]);
 		}
 		return data;
 	}
@@ -519,7 +492,7 @@
 			}
 		};
 		order.forEach(function(direction) {
-			data.offsets.popper = Object.assign(popper, check[direction]());
+			data.offsets.popper = VueUtil.merge(popper, check[direction]());
 		});
 		return data;
 	}
