@@ -83,9 +83,9 @@
 				var getRangeHours = function(ranges) {
 					var hours = [];
 					var disabledHours = [];
-					(ranges || []).forEach(function(range) {
+					VueUtil.isArray(ranges) && ranges.forEach(function(range) {
 						var value = range.map(function(date) {
-							return date.getHours();
+							return VueUtil.toDate(date).getHours();
 						});
 						var newArray = function(start, end) {
 							var result = [];

@@ -232,7 +232,7 @@
 			if (!types[ruleType](value)) {
 				errors.push(options.messages.default);
 			}
-		} else if (ruleType && typeof (value) !== rule.type) {
+		} else if (ruleType && typeof (value) !== ruleType) {
 			errors.push(options.messages.default);
 		}
 	};

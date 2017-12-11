@@ -52,12 +52,13 @@
 	};
 	var formatDate = function(date, format) {
 		date = toDate(date);
-		if (!date) return '';
+		if (isUndef(date)) return null;
 		return DateUtil.format(date, format || 'yyyy-MM-dd');
 	};
 	var parseDate = function(string, format) {
-		string = formatDate(string, format);
-		return DateUtil.parse(string, format || 'yyyy-MM-dd');
+		var str = formatDate(string, format);
+		if (isUndef(str)) str = string;
+		return DateUtil.parse(str, format || 'yyyy-MM-dd');
 	};
 	var getDayCountOfMonth = function(year, month) {
 		if (month === 3 || month === 5 || month === 8 || month === 10) {
