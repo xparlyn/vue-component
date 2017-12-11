@@ -86,11 +86,11 @@
 				var triggerElm;
 				if (this.rootMenu.mode === 'horizontal' && this.rootMenu.menuTrigger === 'hover') {
 					triggerElm = this.$el;
-					triggerElm.addEventListener('mouseenter', this.handleMouseenter);
-					triggerElm.addEventListener('mouseleave', this.handleMouseleave);
+					VueUtil.on(triggerElm, 'mouseenter', this.handleMouseenter);
+					VueUtil.on(triggerElm, 'mouseleave', this.handleMouseleave);
 				} else {
 					triggerElm = this.$refs['submenu-title'];
-					triggerElm.addEventListener('click', this.handleClick);
+					VueUtil.on(triggerElm, 'click', this.handleClick);
 				}
 			}
 		},

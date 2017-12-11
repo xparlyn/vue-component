@@ -90,7 +90,7 @@
 				this.onDragStart(event);
 				VueUtil.addTouchMove(document, this.onDragging);
 				VueUtil.addTouchEnd(document, this.onDragEnd);
-				document.addEventListener('contextmenu', this.onDragEnd);
+				VueUtil.on(document, 'contextmenu', this.onDragEnd);
 			},
 			onDragStart: function(event) {
 				this.dragging = true;
@@ -132,7 +132,7 @@
 					}, 0);
 					VueUtil.removeTouchMove(document, this.onDragging);
 					VueUtil.removeTouchEnd(document, this.onDragEnd);
-					document.removeEventListener('contextmenu', self.onDragEnd);
+					VueUtil.off(document, 'contextmenu', self.onDragEnd);
 				}
 			},
 			setPosition: function(newPosition) {

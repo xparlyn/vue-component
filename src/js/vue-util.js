@@ -12,7 +12,6 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil, Screenfull) {
 	'use strict';
-	var isServer = Vue.prototype.$isServer;
 	var isVNode = function(node) {
 		return typeof node === 'object' && Object.prototype.hasOwnProperty.call(node, 'componentOptions');
 	};
@@ -36,32 +35,16 @@
 		return string.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '');
 	};
 	var on = (function() {
-		if (!isServer && document.addEventListener) {
-			return function(element, event, handler) {
-				if (element && event && handler) {
-					element.addEventListener(event, handler, false);
-				}
-			}
-		} else {
-			return function(element, event, handler) {
-				if (element && event && handler) {
-					element.attachEvent('on' + event, handler);
-				}
+		return function(element, event, handler) {
+			if (element && event && handler) {
+				element.addEventListener(event, handler, false);
 			}
 		}
 	})();
 	var off = (function() {
-		if (!isServer && document.removeEventListener) {
-			return function(element, event, handler) {
-				if (element && event) {
-					element.removeEventListener(event, handler, false);
-				}
-			}
-		} else {
-			return function(element, event, handler) {
-				if (element && event) {
-					element.detachEvent('on' + event, handler);
-				}
+		return function(element, event, handler) {
+			if (element && event) {
+				element.removeEventListener(event, handler, false);
 			}
 		}
 	})();
@@ -94,7 +77,6 @@
 		}).replace(/^moz([A-Z])/, 'Moz$1');
 	};
 	var getStyle = function(element, styleName) {
-		if (isServer) return;
 		if (!element || !styleName) return null;
 		styleName = camelCase(styleName);
 		if (styleName === 'float') {
@@ -172,7 +154,6 @@
 		},
 		modalStack: [],
 		openModal: function(id, zIndex) {
-			if (isServer) return;
 			if (!id || isUndef(zIndex)) return;
 			var modalStack = this.modalStack;
 			for (var i = 0, j = modalStack.length; i < j; i++) {
@@ -228,71 +209,62 @@
 		return [];
 	};
 	var addResizeListener = function(element, fn) {
-		if (isServer) return;
 		if (isUndef(fn)) {
 			fn = element;
 			element = document.body;
 		}
-		if (document.addEventListener) {
-			if (!isArray(element.__resizeListeners__)) {
-				var resetTrigger = function(element) {
-					var trigger = element.__resizeTrigger__;
-					var expand = trigger.firstElementChild;
-					var contract = trigger.lastElementChild;
-					var expandChild = expand.firstElementChild;
-					contract.scrollLeft = contract.scrollWidth;
-					contract.scrollTop = contract.scrollHeight;
-					expandChild.style.width = expand.offsetWidth + 1 + 'px';
-					expandChild.style.height = expand.offsetHeight + 1 + 'px';
-					expand.scrollLeft = expand.scrollWidth;
-					expand.scrollTop = expand.scrollHeight;
-				};
-				var resizeListeners = throttle(20, function(element, event) {
-					if (element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height) {
-						element.__resizeLast__.width = element.offsetWidth;
-						element.__resizeLast__.height = element.offsetHeight;
-						element.__resizeListeners__.forEach(function(fn) {
-							fn.call(element, event);
-						});
-					}
-				});
-				var scrollListener = function(event) {
-					resetTrigger(element);
-					resizeListeners(element, event);
-				};
-				var resizeStart = function(event) {
-					if (event.animationName === 'resizeanim') {
-						resetTrigger(element);
-					}
-				};
-				if (getComputedStyle(element).position === 'static') {
-					element.style.position = 'relative';
+		if (!isArray(element.__resizeListeners__)) {
+			var resetTrigger = function(element) {
+				var trigger = element.__resizeTrigger__;
+				var expand = trigger.firstElementChild;
+				var contract = trigger.lastElementChild;
+				var expandChild = expand.firstElementChild;
+				contract.scrollLeft = contract.scrollWidth;
+				contract.scrollTop = contract.scrollHeight;
+				expandChild.style.width = expand.offsetWidth + 1 + 'px';
+				expandChild.style.height = expand.offsetHeight + 1 + 'px';
+				expand.scrollLeft = expand.scrollWidth;
+				expand.scrollTop = expand.scrollHeight;
+			};
+			var resizeListeners = throttle(20, function(element, event) {
+				if (element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height) {
+					element.__resizeLast__.width = element.offsetWidth;
+					element.__resizeLast__.height = element.offsetHeight;
+					element.__resizeListeners__.forEach(function(fn) {
+						fn.call(element, event);
+					});
 				}
-				var resizeTrigger = element.__resizeTrigger__ = document.createElement('div');
-				resizeTrigger.className = 'resize-triggers';
-				resizeTrigger.innerHTML = '<div class="expand-trigger"><div></div></div><div class="contract-trigger"></div>';
-				resizeTrigger.addEventListener('animationstart', resizeStart);
-				element.__resizeLast__ = {};
-				element.__resizeListeners__ = [];
-				element.appendChild(resizeTrigger);
-				element.addEventListener('scroll', scrollListener, true);
+			});
+			var scrollListener = function(event) {
+				resetTrigger(element);
+				resizeListeners(element, event);
+			};
+			var resizeStart = function(event) {
+				if (event.animationName === 'resizeanim') {
+					resetTrigger(element);
+				}
+			};
+			if (getComputedStyle(element).position === 'static') {
+				element.style.position = 'relative';
 			}
-			element.__resizeListeners__.push(fn);
-		} else {
-			element.attachEvent('onresize', fn);
+			var resizeTrigger = element.__resizeTrigger__ = document.createElement('div');
+			resizeTrigger.className = 'resize-triggers';
+			resizeTrigger.innerHTML = '<div class="expand-trigger"><div></div></div><div class="contract-trigger"></div>';
+			resizeTrigger.addEventListener('animationstart', resizeStart);
+			element.__resizeLast__ = {};
+			element.__resizeListeners__ = [];
+			element.appendChild(resizeTrigger);
+			element.addEventListener('scroll', scrollListener, true);
 		}
+		element.__resizeListeners__.push(fn);
 	};
 	var removeResizeListener = function(element, fn) {
 		if (isUndef(fn)) {
 			fn = element;
 			element = document.body;
 		}
-		if (document.removeEventListener) {
-			if (isArray(element.__resizeListeners__)) {
-				element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
-			}
-		} else {
-			element.detachEvent('onresize', fn);
+		if (isArray(element.__resizeListeners__)) {
+			element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
 		}
 	};
 	var isDate = function(date) {
@@ -637,9 +609,7 @@
 				node[CTX].documentHandler(e)
 			});
 		};
-		if (!isServer) {
-			on(document, 'click', clickOutSideFn);
-		}
+		on(document, 'click', clickOutSideFn);
 		return {
 			bind: function(el, binding, vnode) {
 				var id = nodeList.push(el) - 1;
@@ -674,7 +644,6 @@
 		}
 	};
 	var scrollBarWidth = function() {
-		if (isServer) return;
 		var outer = document.createElement('div');
 		outer.className = 'vue-scrollbar__wrap';
 		outer.style.visibility = 'hidden';
@@ -723,7 +692,6 @@
 		objType: objType,
 		isArray: isArray,
 		isFunction: isFunction,
-		isServer: isServer,
 		isVNode: isVNode,
 		isUndef: isUndef,
 		isDef: isDef,
@@ -740,6 +708,7 @@
 		throttle: throttle,
 		getSystemInfo: getSystemInfo,
 		scrollBarWidth: scrollBarWidth,
+		nextZIndex: popupManager.nextZIndex,
 		component: {
 			menumixin: menumixin,
 			emitter: emitter,

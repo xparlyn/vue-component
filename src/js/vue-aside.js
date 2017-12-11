@@ -46,14 +46,14 @@
 				if (val) {
 					this.opened = true;
 					this.$emit('open');
-					this.$el.addEventListener('scroll', this.updatePopper);
+					VueUtil.on(this.$el, 'scroll', this.updatePopper);
 					var refsAside = this.$refs.aside;
 					this.$nextTick(function() {
 						refsAside.scrollTop = 0;
 					});
 				} else {
 					this.opened = false;
-					this.$el.removeEventListener('scroll', this.updatePopper);
+					VueUtil.off(this.$el, 'scroll', this.updatePopper);
 					this.$emit('close');
 				}
 			},

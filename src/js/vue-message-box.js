@@ -141,7 +141,6 @@
 		}
 	};
 	var MessageBox = function(options) {
-		if (VueUtil.isServer) return;
 		var callback;
 		if (options.callback) {
 			callback = options.callback;

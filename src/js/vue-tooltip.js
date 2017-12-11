@@ -30,7 +30,6 @@
 			enterable: Boolean
 		},
 		beforeCreate: function() {
-			if (VueUtil.isServer) return;
 			var self = this;
 			self.popperVM = new Vue({
 				data: {node: ''},

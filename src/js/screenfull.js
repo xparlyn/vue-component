@@ -10,7 +10,7 @@
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
-	var document = isDef(window) && isDef(window.document) ? window.document : {};
+	var doc = document ? document : {};
 	var keyboardAllowed = isDef(Element) && 'ALLOW_KEYBOARD_INPUT' in Element;
 	var fn = (function () {
 		var val;
@@ -20,7 +20,7 @@
 		var ret = {};
 		for (; i < l; i++) {
 			val = fnMap[i];
-			if (val && val[1]in document) {
+			if (val && val[1]in doc) {
 				for (i = 0; i < val.length; i++) {
 					ret[fnMap[0][i]] = val[i];
 				}
@@ -32,7 +32,7 @@
 	var screenfull = {
 		request: function (elem) {
 			var request = fn.requestFullscreen;
-			elem = elem || document.documentElement;
+			elem = elem || doc.docElement;
 			if (/5\.1[.\d]* Safari/.test(navigator.userAgent)) {
 				elem[request]();
 			} else {
@@ -40,7 +40,7 @@
 			}
 		},
 		exit: function () {
-			document[fn.exitFullscreen]();
+			doc[fn.exitFullscreen]();
 		},
 		toggle: function (elem) {
 			if (this.isFullscreen) {
@@ -50,10 +50,10 @@
 			}
 		},
 		onchange: function (callback) {
-			document.addEventListener(fn.fullscreenchange, callback, false);
+			doc.addEventListener(fn.fullscreenchange, callback, false);
 		},
 		onerror: function (callback) {
-			document.addEventListener(fn.fullscreenerror, callback, false);
+			doc.addEventListener(fn.fullscreenerror, callback, false);
 		},
 		raw: fn
 	};
@@ -63,19 +63,19 @@
 	Object.defineProperties(screenfull, {
 		isFullscreen: {
 			get: function () {
-				return Boolean(document[fn.fullscreenElement]);
+				return Boolean(doc[fn.fullscreenElement]);
 			}
 		},
 		element: {
 			enumerable: true,
 			get: function () {
-				return document[fn.fullscreenElement];
+				return doc[fn.fullscreenElement];
 			}
 		},
 		enabled: {
 			enumerable: true,
 			get: function () {
-				return Boolean(document[fn.fullscreenEnabled]);
+				return Boolean(doc[fn.fullscreenEnabled]);
 			}
 		}
 	});

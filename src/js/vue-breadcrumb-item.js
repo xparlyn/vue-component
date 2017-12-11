@@ -1,9 +1,9 @@
 (function(context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context.VueBreadcrumbItem = definition(context.Vue);
+		context.VueBreadcrumbItem = definition(context.Vue, context.VueUtil);
 		delete context.VueBreadcrumbItem;
 	}
 })(this, function(Vue) {
@@ -25,14 +25,14 @@
 			var self = this;
 			var link = self.$refs.link;
 			if (self.to) {
-				link.addEventListener('click', function() {
+				VueUtil.on(link, 'click', function() {
 					var to = self.to;
 					if (self.$router) {
 						self.replace ? self.$router.replace(to) : self.$router.push(to);
 					}
 				});
 			} else {
-				link.addEventListener('click', function() {
+				VueUtil.on(link, 'click', function() {
 					self.$emit('click');
 				});
 			}

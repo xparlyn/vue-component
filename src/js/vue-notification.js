@@ -93,7 +93,6 @@
 	var seed = 1;
 	var offHeight = 8;
 	var Notification = function(options) {
-		if (VueUtil.isServer) return;
 		options = options || {};
 		var userOnClose = options.onClose;
 		var id = 'notification_' + seed++;
@@ -110,7 +109,7 @@
 		instance.id = id;
 		instance.vm = instance.$mount();
 		instance.dom = instance.vm.$el;
-		instance.dom.style.zIndex = VueUtil.component.popupManager.nextZIndex();
+		instance.dom.style.zIndex = VueUtil.nextZIndex();
 		var instancePosition = instance.position.split("-");
 		var positionX = instancePosition[1];
 		var positionY = instancePosition[0];

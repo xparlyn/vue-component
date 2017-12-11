@@ -15,8 +15,8 @@
 	};
 	var BindAsEventListener = function(object, fun) {
 		var args = Array.prototype.slice.call(arguments).slice(2);
-		return function(event) {
-			return fun.apply(object, [event || window.event].concat(args));
+		return function(e) {
+			return fun.apply(object, [e || event].concat(args));
 		}
 	};
 	var Class = function(properties) {
@@ -77,7 +77,7 @@
 				this._dragobj.setCapture();
 			} else {
 				e.preventDefault();
-				VueUtil.on(window, "blur", this._fS);
+				VueUtil.on(document, "blur", this._fS);
 			}
 			VueUtil.addTouchMove(document, this._fM);
 			VueUtil.addTouchEnd(document, this._fS);
@@ -90,7 +90,7 @@
 				clientY = e.touches[0].clientY;
 			}
 			if (VueUtil.isUndef(clientX) || VueUtil.isUndef(clientY)) return;
-			window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
+			getSelection ? getSelection().removeAllRanges() : document.selection.empty();
 			var i_x = clientX - this._x;
 			var i_y = clientY - this._y;
 			this._dragobj.style[this._Css.x] = (this._isdrag ? i_x : Math.max(i_x, this.Minwidth)) + 'px';
@@ -106,12 +106,11 @@
 				VueUtil.off(this._dragobj, "losecapture", this._fS);
 				this._dragobj.releaseCapture();
 			} else {
-				VueUtil.off(window, "blur", this._fS);
+				VueUtil.off(document, "blur", this._fS);
 			}
 		}
 	});
 	var directive = function(Vue) {
-		if (VueUtil.isServer) return;
 		Vue.directive('draggable', {
 			inserted: function(el, binding) {
 				var cancelObj = [];
@@ -150,7 +149,7 @@
 						offsetTop = el.offsetTop;
 						VueUtil.setStyle(el, 'display', displayStyle);
 						VueUtil.setStyle(el, 'position', 'relative');
-						VueUtil.setStyle(el, 'zIndex', VueUtil.component.popupManager.nextZIndex());
+						VueUtil.setStyle(el, 'zIndex', VueUtil.nextZIndex());
 					}
 					new dragEl(el,cancelObj,resizeObj,offsetLeft,offsetTop);
 				});

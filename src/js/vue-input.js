@@ -90,7 +90,6 @@
 				this.$refs.input.select();
 			},
 			resizeTextarea: function() {
-				if (VueUtil.isServer) return;
 				if (!this.autosize || this.type !== 'textarea') return;
 				var minRows = this.autosize.minRows;
 				var maxRows = this.autosize.maxRows;
@@ -101,7 +100,7 @@
 					document.body.appendChild(hiddenTextarea);
 					var calculateNodeStylingFn = function(node) {
 						var CONTEXT_STYLE = ['letter-spacing', 'line-height', 'padding-top', 'padding-bottom', 'font-family', 'font-weight', 'font-size', 'text-rendering', 'text-transform', 'width', 'text-indent', 'padding-left', 'padding-right', 'border-width', 'box-sizing'];
-						var style = window.getComputedStyle(node);
+						var style = getComputedStyle(node);
 						var boxSizing = style.getPropertyValue('box-sizing');
 						var paddingSize = (parseFloat(style.getPropertyValue('padding-bottom')) + parseFloat(style.getPropertyValue('padding-top')));
 						var borderSize = (parseFloat(style.getPropertyValue('border-bottom-width')) + parseFloat(style.getPropertyValue('border-top-width')));

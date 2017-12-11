@@ -358,8 +358,8 @@
 		var boundaries = {};
 		var width, height;
 		if (boundariesElement === 'window') {
-			var body = document.body
-			  , html = document.documentElement;
+			var body = document.body;
+			var html = document.documentElement;
 			height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
 			width = Math.max(body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth);
 			boundaries = {
@@ -700,7 +700,6 @@
 				e.stopPropagation()
 			},
 			createPopper: function() {
-				if (VueUtil.isServer) return;
 				var self = this;
 				self.currentPlacement = self.currentPlacement || self.placement;
 				if (!/^(top|bottom|left|right)(-start|-end)?$/g.test(self.currentPlacement)) return;
@@ -723,7 +722,7 @@
 				if (typeof options.onUpdate === 'function') {
 					self.popperJS.onUpdate(options.onUpdate);
 				}
-				self.popperJS._popper.style.zIndex = VueUtil.component.popupManager.nextZIndex();
+				self.popperJS._popper.style.zIndex = VueUtil.nextZIndex();
 				VueUtil.on(self.popperElm, 'click', self.stop);
 			},
 			updatePopper: function() {

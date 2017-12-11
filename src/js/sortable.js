@@ -16,7 +16,7 @@
 		return el.style.pointerEvents === 'auto';
 	})(), _silent = false, abs = Math.abs, min = Math.min, savedInputChecked = [], touchDragOverListeners = [], _autoScroll = _throttle(function(evt, options, rootEl) {
 		if (rootEl && options.scroll) {
-			var _this = rootEl[expando], el, rect, sens = options.scrollSensitivity, speed = options.scrollSpeed, x = evt.clientX, y = evt.clientY, winWidth = window.innerWidth, winHeight = window.innerHeight, vx, vy, scrollOffsetX, scrollOffsetY;
+			var _this = rootEl[expando], el, rect, sens = options.scrollSensitivity, speed = options.scrollSpeed, x = evt.clientX, y = evt.clientY, winWidth = innerWidth, winHeight = innerHeight, vx, vy, scrollOffsetX, scrollOffsetY;
 			if (scrollParentEl !== rootEl) {
 				scrollEl = options.scroll;
 				scrollParentEl = rootEl;
@@ -91,7 +91,7 @@
 		options.group = group;
 	};
 	try {
-		window.addEventListener('test', null, Object.defineProperty({}, 'passive', {
+		addEventListener('test', null, Object.defineProperty({}, 'passive', {
 			get: function() {
 				passiveMode = false;
 				captureMode = {
@@ -282,7 +282,7 @@
 						clearTimeout(emptyTimer);
 					},0);
 				} else {
-					window.getSelection().removeAllRanges();
+					getSelection().removeAllRanges();
 				}
 			} catch (err) {}
 		},

@@ -74,13 +74,13 @@
 				 , splitButton = this.splitButton;
 				var triggerElm = splitButton ? this.$refs.trigger.$el : this.$slots.default[0].elm;
 				if (trigger === 'hover') {
-					triggerElm.addEventListener('mouseenter', show);
-					triggerElm.addEventListener('mouseleave', hide);
+					VueUtil.on(triggerElm, 'mouseenter', show);
+					VueUtil.on(triggerElm, 'mouseleave', hide);
 					var dropdownElm = this.$slots.dropdown[0].elm;
-					dropdownElm.addEventListener('mouseenter', show);
-					dropdownElm.addEventListener('mouseleave', hide);
+					VueUtil.on(dropdownElm, 'mouseenter', show);
+					VueUtil.on(dropdownElm, 'mouseleave', hide);
 				} else if (trigger === 'click') {
-					triggerElm.addEventListener('click', handleClick);
+					VueUtil.on(triggerElm, 'click', handleClick);
 				}
 			},
 			handleMenuItemClick: function(command, instance) {

@@ -358,7 +358,6 @@
 				}
 			},
 			showPicker: function() {
-				if (VueUtil.isServer) return;
 				var self = this;
 				if (!self.picker) {
 					self.mountPicker();

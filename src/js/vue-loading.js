@@ -25,7 +25,6 @@
 		}
 	});
 	var directive = function(Vue) {
-		if (VueUtil.isServer) return;
 		var insertDom = function(parent, el, binding) {
 			if (!el.domVisible) {
 				Object.keys(el.maskStyle).forEach(function(property) {
@@ -98,12 +97,12 @@
 			e.preventDefault();
 			return false;
 		};
-		var attachEvent = function(binding) {
+		var bindEvent = function(binding) {
 			if (binding.modifiers.fullscreen) {
 				if (binding.value) {
-					VueUtil.on(document.body, 'keydown', doKeyDown);
+					VueUtil.on(document, 'keydown', doKeyDown);
 				} else {
-					VueUtil.off(document.body, 'keydown', doKeyDown);
+					VueUtil.off(document, 'keydown', doKeyDown);
 				}
 			}
 		};
@@ -125,7 +124,7 @@
 			update: function(el, binding) {
 				if (binding.oldValue !== binding.value) {
 					toggleLoading(el, binding);
-					attachEvent(binding);
+					bindEvent(binding);
 				}
 			},
 			unbind: function(el, binding) {

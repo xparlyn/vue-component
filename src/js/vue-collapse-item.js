@@ -53,7 +53,7 @@
 				}
 			},
 			handleHeaderClick: function() {
-				if (this.headerExpand &&  this.expandOnClick) {
+				if (this.headerExpand && this.expandOnClick) {
 					this.dispatch('VueCollapse', 'item-click', this);
 				}
 			},

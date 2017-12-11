@@ -714,7 +714,7 @@
 			var self = this;
 			self.popperElm = self.$el;
 			self.referenceElm = self.cell;
-			self.table.$refs.bodyWrapper.addEventListener('scroll', function() {
+			VueUtil.on(self.table.$refs.bodyWrapper, 'scroll', function() {
 				self.updatePopper();
 			});
 			self.$watch('showPopper', function(value) {
@@ -729,8 +729,8 @@
 		},
 		watch: {
 			showPopper: function(val) {
-				if (val === true && parseInt(this.popperJS._popper.style.zIndex, 10) < VueUtil.component.popupManager.zIndex) {
-					this.popperJS._popper.style.zIndex = VueUtil.component.popupManager.nextZIndex();
+				if (val === true) {
+					this.popperJS._popper.style.zIndex = VueUtil.nextZIndex();
 				}
 			}
 		}
@@ -1234,7 +1234,7 @@
 					filterPanel.table = this.$parent;
 					filterPanel.cell = cell;
 					filterPanel.column = column;
-					!VueUtil.isServer && filterPanel.$mount(document.createElement('div'));
+					filterPanel.$mount(document.createElement('div'));
 				}
 				this.$nextTick(function() {
 					filterPanel.showPopper = true;
@@ -1244,7 +1244,6 @@
 				this.$parent.$emit('header-click', column, event);
 			},
 			handleMouseDown: function(event, column) {
-				if (VueUtil.isServer) return;
 				var self = this;
 				if (event.touches) {
 					self.handleMouseMove(event, column);
@@ -1323,7 +1322,6 @@
 				}
 			},
 			handleMouseOut: function() {
-				if (VueUtil.isServer) return;
 				document.body.style.cursor = '';
 			},
 			toggleOrder: function(order) {
@@ -1534,7 +1532,7 @@
 				this.store.scheduleLayout();
 			},
 			rightPin: function(columns) {
-				if (columns.length <= 0)  {
+				if (columns.length <= 0) {
 					var layoutFLg = false;
 					this.tableColumns.forEach(function(column){
 						if (column.fixed === 'right'){
@@ -1788,7 +1786,7 @@
 				var data = tableDataToCsv(columns, datas, footer, params);
 				var getDownloadUrl = function(text) {
 					var BOM = '\uFEFF';
-					if (window.Blob && window.URL && window.URL.createObjectURL) {
+					if (Blob && URL && URL.createObjectURL) {
 						var csvData = new Blob([BOM + text], {type: 'text/csv'});
 						return URL.createObjectURL(csvData);
 					} else {

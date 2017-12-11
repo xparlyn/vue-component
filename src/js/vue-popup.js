@@ -8,7 +8,7 @@
 })(this, function(Vue, VueUtil) {
 	'use strict';
 	var PopupManager = VueUtil.component.popupManager;
-	!VueUtil.isServer && window.addEventListener('keydown', function(event) {
+	VueUtil.on(document, 'keydown', function(event) {
 		if (event.keyCode === 27) {
 			if (PopupManager.modalStack.length > 0) {
 				var topItem = PopupManager.modalStack[PopupManager.modalStack.length - 1];

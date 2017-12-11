@@ -41,7 +41,7 @@
 			el: div,
 			components: {LoadingBar: LoadingBar},
 			mounted: function() {
-				this.$el.style.zIndex = VueUtil.component.popupManager.nextZIndex();
+				this.$el.style.zIndex = VueUtil.nextZIndex();
 			}
 		}).$children[0];
 		return {

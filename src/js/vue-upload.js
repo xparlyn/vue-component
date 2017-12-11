@@ -90,7 +90,7 @@
 			type: String,
 			action: {
 				type: String,
-				default: window.location.href
+				default: location.href
 			},
 			name: {
 				type: String,
@@ -255,7 +255,7 @@
 			data: {},
 			action: {
 				type: String,
-				default: window.location.href
+				default: location.href
 			},
 			name: {
 				type: String,
@@ -336,7 +336,7 @@
 		},
 		mounted: function() {
 			var self = this;
-			!VueUtil.isServer && window.addEventListener('message', function(event) {
+			VueUtil.on(document, 'message', function(event) {
 				if (!self.file) return;
 				var targetOrigin = new URL(self.action).origin;
 				if (event.origin !== targetOrigin) return;
@@ -348,7 +348,7 @@
 				}
 				self.submitting = false;
 				self.file = null;
-			}, false);
+			});
 		},
 		render: function(createElement) {
 			var drag = this.drag;
@@ -358,7 +358,7 @@
 			var disabled = this.disabled;
 			var oClass = {'vue-upload': true};
 			oClass['vue-upload--' + listType] = true;
-			return createElement('div', {'class': oClass, on: {'click': this.handleClick}, nativeOn: {'drop': this.onDrop, 'dragover': this.handleDragover, 'dragleave': this.handleDragleave}}, [createElement('iframe', {on: {'load': this.onload}, ref: 'iframe', attrs: {name: frameName}}, []), createElement('form', {ref: 'form', attrs: {action: this.action, target: frameName, enctype: 'multipart/form-data', method: 'POST'}}, [createElement('input', {'class': 'vue-upload__input',attrs: {type: 'file', name: 'file', accept: this.accept}, ref: 'input', on: {'change': this.handleChange}}, []), createElement('input', {attrs: {type: 'hidden', name: 'documentDomain', value: VueUtil.isServer ? '' : document.domain}}, []), createElement('span', {ref: 'data'}, [])]), drag ? createElement('upload-dragger', {on: {'file': uploadFiles},attrs: {disabled: disabled}}, [this.$slots.default]) : this.$slots.default])
+			return createElement('div', {'class': oClass, on: {'click': this.handleClick}, nativeOn: {'drop': this.onDrop, 'dragover': this.handleDragover, 'dragleave': this.handleDragleave}}, [createElement('iframe', {on: {'load': this.onload}, ref: 'iframe', attrs: {name: frameName}}, []), createElement('form', {ref: 'form', attrs: {action: this.action, target: frameName, enctype: 'multipart/form-data', method: 'POST'}}, [createElement('input', {'class': 'vue-upload__input',attrs: {type: 'file', name: 'file', accept: this.accept}, ref: 'input', on: {'change': this.handleChange}}, []), createElement('input', {attrs: {type: 'hidden', name: 'documentDomain', value: document.domain}}, []), createElement('span', {ref: 'data'}, [])]), drag ? createElement('upload-dragger', {on: {'file': uploadFiles},attrs: {disabled: disabled}}, [this.$slots.default]) : this.$slots.default])
 		}
 	};
 	var migrating = {
@@ -388,7 +388,7 @@
 		props: {
 			action: {
 				type: String,
-				default: window.location.href
+				default: location.href
 			},
 			headers: {
 				type: Object,
@@ -595,9 +595,7 @@
 				ref: 'upload-inner'
 			};
 			var trigger = this.$slots.trigger || this.$slots.default;
-			var uploadComponent = (VueUtil.isDef(FormData) || VueUtil.isServer)
-					? createElement('upload', uploadData, [trigger])
-					: createElement('iframeUpload', uploadData, [trigger]);
+			var uploadComponent = (VueUtil.isDef(FormData)) ? createElement('upload', uploadData, [trigger]) : createElement('iframeUpload', uploadData, [trigger]);
 			return createElement('div', null, ['picture-card' === this.listType ? uploadList : '', this.$slots.trigger ? [uploadComponent, this.$slots.default]: uploadComponent, this.$slots.tip, 'picture-card' !== this.listType ? uploadList : '']);
 		},
 		mounted: function() {

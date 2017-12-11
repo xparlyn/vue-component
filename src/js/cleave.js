@@ -438,7 +438,7 @@
 				if (e.clipboardData) {
 					e.clipboardData.setData('Text', textToCopy);
 				} else {
-					window.clipboardData.setData('Text', textToCopy);
+					clipboardData.setData('Text', textToCopy);
 				}
 				e.preventDefault();
 			} catch (ex) {}
@@ -504,7 +504,7 @@
 		updateValueState: function() {
 			var owner = this;
 			if (owner.isAndroid) {
-				window.setTimeout(function() {
+				setTimeout(function() {
 					owner.element.value = owner.properties.result;
 				}, 1);
 				return;

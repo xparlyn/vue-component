@@ -234,8 +234,6 @@
 			},
 			options: function(val) {
 				var self = this;
-				if (VueUtil.isServer)
-					return;
 				self.optionsAllDisabled = val.length === val.filter(function(item) {
 					return item.disabled === true;
 				}).length;
@@ -386,7 +384,7 @@
 					var input = self.$refs.reference.$refs.input;
 					var icon = self.$refs.reference.$refs.icon;
 					var size = sizeMap[self.size] || 36;
-					var newHeight = (parseInt(self.$refs.tags.children[0].offsetHeight / size, 10) + 1) * size  + 'px';
+					var newHeight = (parseInt(self.$refs.tags.children[0].offsetHeight / size, 10) + 1) * size + 'px';
 					input.style.height = newHeight;
 					icon.style.lineHeight = newHeight;
 					if (self.visible && self.emptyText !== false) {

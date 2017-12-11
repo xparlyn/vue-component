@@ -264,7 +264,6 @@
 		}
 	};
 	var draggable = function(element, options) {
-		if (VueUtil.isServer) return;
 		var isDragging = false;
 		var moveFn = function(event) {
 			if (options.drag) {
