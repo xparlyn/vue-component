@@ -42,7 +42,7 @@
 				}
 			}
 			var len = toLength(items.length);
-			var A = isCallable(C) ? Object(new C(len)) : new Array(len);
+			var A = VueUtil.isFunction(C) ? Object(new C(len)) : new Array(len);
 			var k = 0;
 			var kValue;
 			while (k < len) {
