@@ -329,7 +329,7 @@
 					if (column.order === "descending") {
 						sortOrder = -1
 					}
-					if (typeof column.sortMethod === 'function') {
+					if (VueUtil.isFunction(column.sortMethod)) {
 						return sortMethod(value1, value2) ? order : -order;
 					} else {
 						return value1 > value2 ? sortOrder : -sortOrder;
@@ -485,7 +485,7 @@
 		VueUtil.merge(this, options);
 		this.updateScrollY = function() {
 			var height = this.height;
-			if (typeof height !== 'string' && typeof height !== 'number') return;
+			if (!VueUtil.isString(height) && !VueUtil.isNumber(height)) return;
 			var bodyWrapper = this.table.$refs.bodyWrapper;
 			if (this.table.$el && bodyWrapper) {
 				var body = bodyWrapper.querySelector('.vue-table__body');
@@ -498,14 +498,14 @@
 	TableLayout.prototype.setHeight = function(value) {
 		var prop = 'height';
 		var el = this.table.$el;
-		if (typeof value === 'string' && /^\d+$/.test(value)) {
+		if (VueUtil.isString(value) && /^\d+$/.test(value)) {
 			value = Number(value);
 		}
 		this.height = value;
 		if (!el) return;
-		if (typeof value === 'number') {
+		if (VueUtil.isNumber(value)) {
 			el.style[prop] = value + 'px';
-		} else if (typeof value === 'string') {
+		} else if (VueUtil.isString(value)) {
 			if (value === '') {
 				el.style[prop] = '';
 			}
@@ -547,7 +547,7 @@
 		var flexColumns = [];
 		var allColumnsWidth = 0;
 		columns.forEach(function(column) {
-			if (typeof column.width !== 'number') {
+			if (!VueUtil.isNumber(column.width)) {
 				flexColumns.push(column);
 				allColumnsWidth = allColumnsWidth + (column.minWidth || 80);
 			}
@@ -972,7 +972,7 @@
 			},
 			getRowStyle: function(row, index) {
 				var rowStyle = this.rowStyle;
-				if (typeof rowStyle === 'function') {
+				if (VueUtil.isFunction(rowStyle)) {
 					return rowStyle.call(null, row, index);
 				}
 				return rowStyle;
@@ -980,9 +980,9 @@
 			getRowClass: function(row, index) {
 				var classes = [];
 				var rowClassName = this.rowClassName;
-				if (typeof rowClassName === 'string') {
+				if (VueUtil.isString(rowClassName)) {
 					classes.push(rowClassName);
-				} else if (typeof rowClassName === 'function') {
+				} else if (VueUtil.isFunction(rowClassName)) {
 					classes.push(rowClassName.call(null, row, index) || '');
 				}
 				return classes.join(' ');
@@ -990,9 +990,9 @@
 			getExpandClass: function(row, index) {
 				var classes = [];
 				var expandClassName = this.expandClassName;
-				if (typeof expandClassName === 'string') {
+				if (VueUtil.isString(expandClassName)) {
 					classes.push(expandClassName);
-				} else if (typeof expandClassName === 'function') {
+				} else if (VueUtil.isFunction(expandClassName)) {
 					classes.push(expandClassName.call(null, row, index) || '');
 				}
 				return classes.join(' ');
@@ -1584,10 +1584,10 @@
 			},
 			filterColumn: function() {
 				var filterColumn = this.filterForm.filterColumn;
-				if (!filterColumn) return;
+				if (VueUtil.isUndef(filterColumn)) return;
 				filterColumn.conditions = this.filterForm.conditions;
 				filterColumn.operations = this.filterForm.operations;
-				if (typeof filterColumn.filterMethod === 'function' && !filterColumn.orgFilterMethod) {
+				if (VueUtil.isFunction(filterColumn.filterMethod) && VueUtil.isUndef(filterColumn.orgFilterMethod)) {
 					filterColumn.orgFilterMethod = filterColumn.filterMethod;
 				}
 				filterColumn.filterMethod = function(value, row) {
@@ -1741,7 +1741,7 @@
 					var quoted = options.quoted
 					var line = row.map(function(data) {
 						if (!quoted) return data;
-						data = typeof data === 'string' ? data.replace(/"/g, '"') : data;
+						data = VueUtil.isString(data) ? data.replace(/"/g, '"') : data;
 						return '"' + data + '"';
 					});
 					content.push(line.join(separator));
@@ -1753,7 +1753,7 @@
 					var column = [];
 					if (columns) {
 						columnOrder = columns.map(function(v) {
-							if (typeof v === 'string') return v;
+							if (VueUtil.isString(v)) return v;
 							column.push(VueUtil.isDef(v.label) ? v.label : v.property);
 							return v.property;
 						});

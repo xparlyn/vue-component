@@ -47,7 +47,7 @@
 			},
 			handleAction: function(action) {
 				this.action = action;
-				if (typeof this.beforeClose === 'function') {
+				if (VueUtil.isFunction(this.beforeClose)) {
 					this.close = this.getSafeClose();
 					this.beforeClose(action, this, this.close);
 				} else {

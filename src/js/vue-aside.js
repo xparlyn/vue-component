@@ -61,7 +61,7 @@
 				if (val) {
 					this.visibleaside = val;
 				} else {
-					if (typeof this.beforeClose === 'function') {
+					if (VueUtil.isFunction(this.beforeClose)) {
 						var self = this;
 						var done = function(resolve) {
 							if (VueUtil.isUndef(resolve)) resolve = true;

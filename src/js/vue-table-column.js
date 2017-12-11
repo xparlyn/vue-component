@@ -258,9 +258,9 @@
 				getCellClass: function(rowIndex, cellIndex, rowData) {
 					var classes = [];
 					var className = this.className;
-					if (typeof className === 'string') {
+					if (VueUtil.isString(className)) {
 						classes.push(className);
-					} else if (typeof className === 'function') {
+					} else if (VueUtil.isFunction(className)) {
 						classes.push(className.call(null, rowIndex, cellIndex, rowData) || '');
 					}
 					return classes.join(' ');

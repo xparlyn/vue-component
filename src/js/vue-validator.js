@@ -22,7 +22,7 @@
 		if (type === 'array' && VueUtil.isArray(value) && !value.length) {
 			return true;
 		}
-		if (isNativeStringType(type) && typeof value === 'string' && !value) {
+		if (isNativeStringType(type) && VueUtil.isString(value) && !value) {
 			return true;
 		}
 		return false;
@@ -124,7 +124,7 @@
 				if (!rule.pattern.test(value)) {
 					errors.push(options.messages.default);
 				}
-			} else if (typeof rule.pattern === 'string') {
+			} else if (VueUtil.isString(rule.pattern)) {
 				var _pattern = new RegExp(rule.pattern);
 				if (!_pattern.test(value)) {
 					errors.push(options.messages.default);
@@ -133,13 +133,13 @@
 		}
 	};
 	var rulesRange = function(rule, value, source, errors, options) {
-		var len = typeof rule.len === 'number';
-		var min = typeof rule.min === 'number';
-		var max = typeof rule.max === 'number';
+		var len = VueUtil.isNumber(rule.len);
+		var min = VueUtil.isNumber(rule.min);
+		var max = VueUtil.isNumber(rule.max);
 		var val = value;
 		var key = null;
-		var num = typeof (value) === 'number';
-		var str = typeof (value) === 'string';
+		var num = VueUtil.isNumber(value);
+		var str = VueUtil.isString(value);
 		var arr = VueUtil.isArray(value);
 		if (num) {
 			key = 'number';
@@ -198,7 +198,7 @@
 				}
 			},
 			date: function(value) {
-				return typeof value.getTime === 'function' && typeof value.getMonth === 'function' && typeof value.getYear === 'function';
+				return VueUtil.isFunction(value.getTime) && VueUtil.isFunction(value.getMonth) && VueUtil.isFunction(value.getYear);
 			},
 			number: function(value) {
 				if (isNaN(value)) {
@@ -468,7 +468,7 @@
 			var source = source_;
 			var options = o || {};
 			var callback = oc;
-			if (typeof options === 'function') {
+			if (VueUtil.isFunction(options)) {
 				callback = options;
 				options = {};
 			}
@@ -516,13 +516,13 @@
 				value = source[z];
 				arr.forEach(function(r) {
 					var rule = r;
-					if (typeof (rule.transform) === 'function') {
+					if (VueUtil.isFunction(rule.transform)) {
 						if (source === source_) {
 							source = VueUtil.merge({}, source);
 						}
 						value = source[z] = rule.transform(value);
 					}
-					if (typeof (rule) === 'function') {
+					if (VueUtil.isFunction(rule)) {
 						rule = {
 							validator: rule,
 						};
@@ -620,13 +620,13 @@
 			if (VueUtil.isUndef(rule.type) && (rule.pattern instanceof RegExp)) {
 				rule.type = 'pattern';
 			}
-			if (typeof (rule.validator) !== 'function' && (rule.type && !validators.hasOwnProperty(rule.type))) {
+			if (!VueUtil.isFunction(rule.validator) && (rule.type && !validators.hasOwnProperty(rule.type))) {
 				throw new Error('Unknown rule type ' + rule.type);
 			}
 			return rule.type || 'string';
 		},
 		getValidationMethod: function(rule) {
-			if (typeof rule.validator === 'function') {
+			if (VueUtil.isFunction(rule.validator)) {
 				return rule.validator;
 			}
 			var keys = Object.keys(rule);
@@ -641,7 +641,7 @@
 		},
 	};
 	Schema.register = function register(type, validator) {
-		if (typeof validator !== 'function') {
+		if (!VueUtil.isFunction(validator)) {
 			throw new Error('Cannot register a validator by type, validator is not a function');
 		}
 		validators[type] = validator;

@@ -40,30 +40,9 @@
 		}
 		return null;
 	};
-	var getStyleComputedProperty = function(element, property) {
-		var css = getComputedStyle(element, null);
-		return css[property];
-	};
 	var getOffsetParent = function(element) {
 		var offsetParent = element.offsetParent;
 		return offsetParent === document.body || !offsetParent ? document.documentElement : offsetParent;
-	};
-	var getScrollParent = function(element) {
-		var parent = element.parentNode;
-		if (!parent) {
-			return element;
-		}
-		if (parent === document) {
-			if (document.body.scrollTop) {
-				return document.body;
-			} else {
-				return document.documentElement;
-			}
-		}
-		if (['scroll', 'auto'].indexOf(getStyleComputedProperty(parent, 'overflow')) !== -1 || ['scroll', 'auto'].indexOf(getStyleComputedProperty(parent, 'overflow-x')) !== -1 || ['scroll', 'auto'].indexOf(getStyleComputedProperty(parent, 'overflow-y')) !== -1) {
-			return parent;
-		}
-		return getScrollParent(element.parentNode);
 	};
 	var setStyle = function(element, styles) {
 		function is_numeric(n) {
@@ -160,7 +139,7 @@
 		data.offsets = this._getOffsets(this._popper, this._reference, data.placement);
 		data.boundaries = this._getBoundaries(data, this._options.boundariesPadding, this._options.boundariesElement);
 		data = this.runModifiers(data, this._options.modifiers);
-		if (typeof this.state.updateCallback === 'function') {
+		if (VueUtil.isFunction(this.state.updateCallback)) {
 			this.state.updateCallback(data);
 		}
 	}
@@ -203,7 +182,7 @@
 			popper.appendChild(arrow);
 		}
 		var parent = config.parent.jquery ? config.parent[0] : config.parent;
-		if (typeof parent === 'string') {
+		if (VueUtil.isString(parent)) {
 			parent = d.querySelectorAll(config.parent);
 			if (parent.length > 1) {
 				console.warn('WARNING: the given \'parent\' query(' + config.parent + ') matched more than one element, the first one will be used');
@@ -236,7 +215,7 @@
 		}
 		var isFixed = function(element) {
 			if (element === document.body) return false;
-			var elementPosition = getStyleComputedProperty(element, 'position');
+			var elementPosition = VueUtil.getStyle(element, 'position');
 			if (elementPosition === 'fixed' || elementPosition === 'relative') return true;
 			return element.parentNode ? isFixed(element.parentNode) : element;
 		};
@@ -264,7 +243,7 @@
 			var elementRect = getBoundingClientRect(element);
 			var parentRect = getBoundingClientRect(parent);
 			if (fixed) {
-				var scrollParent = getScrollParent(parent);
+				var scrollParent = VueUtil.component.getScrollParent(parent);
 				parentRect.top += scrollParent.scrollTop;
 				parentRect.bottom += scrollParent.scrollTop;
 				parentRect.left += scrollParent.scrollLeft;
@@ -309,7 +288,7 @@
 		this.state.updateBound = this.update.bind(this);
 		VueUtil.on(document, 'resize', this.state.updateBound);
 		if (this._options.boundariesElement !== 'window') {
-			var target = getScrollParent(this._reference);
+			var target = VueUtil.component.getScrollParent(this._reference);
 			if (target === document.body || target === document.documentElement) {
 				target = document;
 			}
@@ -319,7 +298,7 @@
 	Popper.prototype._removeEventListeners = function() {
 		VueUtil.off(document, 'resize', this.state.updateBound);
 		if (this._options.boundariesElement !== 'window') {
-			var target = getScrollParent(this._reference);
+			var target = VueUtil.component.getScrollParent(this._reference);
 			if (target === document.body || target === document.documentElement) {
 				target = document;
 			}
@@ -343,7 +322,7 @@
 			};
 		} else if (boundariesElement === 'viewport') {
 			var offsetParent = getOffsetParent(this._popper);
-			var scrollParent = getScrollParent(this._popper);
+			var scrollParent = VueUtil.component.getScrollParent(this._popper);
 			var offsetParentRect = getOffsetRect(offsetParent);
 			var getScrollTopValue = function(element) {
 				return element == document.body ? Math.max(document.documentElement.scrollTop, document.body.scrollTop) : element.scrollTop;
@@ -579,7 +558,7 @@
 	}
 	Popper.prototype.modifiers.arrow = function(data) {
 		var arrow = this._options.arrowElement;
-		if (typeof arrow === 'string') {
+		if (VueUtil.isString(arrow)) {
 			arrow = this._popper.querySelector(arrow);
 		}
 		if (!arrow) {
@@ -692,7 +671,7 @@
 					self.resetTransformOrigin();
 					self.$nextTick(self.updatePopper);
 				});
-				if (typeof options.onUpdate === 'function') {
+				if (VueUtil.isFunction(options.onUpdate)) {
 					self.popperJS.onUpdate(options.onUpdate);
 				}
 				self.popperJS._popper.style.zIndex = VueUtil.nextZIndex();

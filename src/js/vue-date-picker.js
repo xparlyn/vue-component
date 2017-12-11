@@ -25,7 +25,7 @@
 				var style = {};
 				var date = new Date(this.date);
 				date.setFullYear(year);
-				style.disabled = typeof this.disabledDate === 'function' && this.disabledDate(date);
+				style.disabled = VueUtil.isFunction(this.disabledDate) && this.disabledDate(date);
 				style.current = Number(this.year) === year;
 				return style;
 			},
@@ -60,7 +60,7 @@
 				var style = {};
 				var date = new Date(this.date);
 				date.setMonth(month);
-				style.disabled = typeof this.disabledDate === 'function' && this.disabledDate(date);
+				style.disabled = VueUtil.isFunction(this.disabledDate) && this.disabledDate(date);
 				style.current = this.month === month;
 				return style;
 			},
@@ -193,7 +193,7 @@
 								cell.type = 'next-month';
 							}
 						}
-						cell.disabled = typeof disabledDate === 'function' && disabledDate(new Date(time));
+						cell.disabled = VueUtil.isFunction(disabledDate) && disabledDate(new Date(time));
 						cell.event = false;
 						if (cell.type === 'today' || cell.type === 'normal') {
 							if (this.events && this.events.length>0) {
@@ -475,7 +475,7 @@
 					return;
 				newVal = new Date(newVal);
 				if (!isNaN(newVal)) {
-					if (typeof this.disabledDate === 'function' && this.disabledDate(new Date(newVal))) {
+					if (VueUtil.isFunction(this.disabledDate) && this.disabledDate(new Date(newVal))) {
 						return;
 					}
 					this.date = newVal;
@@ -688,7 +688,7 @@
 				set: function(val) {
 					var date = VueUtil.parseDate(val, 'yyyy-MM-dd');
 					if (!date) return;
-					if (typeof this.disabledDate === 'function' && this.disabledDate(date)) return;
+					if (VueUtil.isFunction(this.disabledDate) && this.disabledDate(date)) return;
 					date.setHours(this.date.getHours());
 					date.setMinutes(this.date.getMinutes());
 					date.setSeconds(this.date.getSeconds());
@@ -874,7 +874,7 @@
 				var value = event.target.value;
 				var parsedValue = VueUtil.parseDate(value, 'yyyy-MM-dd');
 				if (parsedValue) {
-					if (typeof this.disabledDate === 'function' && this.disabledDate(new Date(parsedValue))) {
+					if (VueUtil.isFunction(this.disabledDate) && this.disabledDate(new Date(parsedValue))) {
 						return;
 					}
 					var target = new Date(type === 'min' ? this.minDate : this.maxDate);

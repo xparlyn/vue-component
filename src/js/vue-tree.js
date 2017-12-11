@@ -71,9 +71,9 @@
 		var props = node.store.props;
 		var data = node.data || {};
 		var config = props[prop];
-		if (typeof config === 'function') {
+		if (VueUtil.isFunction(config)) {
 			return config(data, node);
-		} else if (typeof config === 'string') {
+		} else if (VueUtil.isString(config)) {
 			return data[config];
 		} else if (VueUtil.isUndef(config)) {
 			return '';
@@ -113,7 +113,7 @@
 		var props = store.props;
 		if (props && VueUtil.isDef(props.isLeaf)) {
 			var isLeaf = getPropertyFromData(this, 'isLeaf');
-			if (typeof isLeaf === 'boolean') {
+			if (VueUtil.isBoolean(isLeaf)) {
 				this.isLeafByUser = isLeaf;
 			}
 		}

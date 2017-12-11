@@ -22,7 +22,7 @@
 				if (this.isDot) return;
 				var value = this.value;
 				var max = this.max;
-				if (typeof value === 'number' && typeof max === 'number') {
+				if (VueUtil.isNumber(value) && VueUtil.isNumber(max)) {
 					return max < value ? max + '+' : value;
 				}
 				return value;

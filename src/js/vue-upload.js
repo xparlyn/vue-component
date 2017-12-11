@@ -311,7 +311,7 @@
 				var formNode = this.getFormNode();
 				var dataSpan = this.getFormDataNode();
 				var data = this.data;
-				if (typeof data === 'function') {
+				if (VueUtil.isFunction(data)) {
 					data = data(file);
 				}
 				var inputs = [];

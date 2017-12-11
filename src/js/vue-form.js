@@ -72,13 +72,13 @@
 							valid = false;
 							errorMsgs.push(errors);
 						}
-						if (typeof callback === 'function' && ++count === self.fields.length) {
+						if (VueUtil.isFunction(callback) && ++count === self.fields.length) {
 							callback(valid);
 						}
 					});
 				});
 				if (errorMsgs.length > 0) {
-					if (self.customMessageMethod && typeof self.customMessageMethod === 'function') {
+					if (VueUtil.isFunction(self.customMessageMethod)) {
 						self.customMessageMethod(errorMsgs);
 					} else if (self.notifyMessage) {
 						var createElement = self.$createElement;

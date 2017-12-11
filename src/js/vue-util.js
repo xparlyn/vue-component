@@ -145,7 +145,7 @@
 		return isObject(node) && node.hasOwnProperty('componentOptions');
 	};
 	var trim = function(string) {
-		if (typeof string !== 'string') string = '';
+		if (!isString(string)) string = '';
 		return string.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '');
 	};
 	var merge = function(target) {
@@ -227,7 +227,7 @@
 	};
 	var setStyle = function(element, styleName, value) {
 		if (!element || !styleName) return;
-		if (typeof styleName === 'object') {
+		if (isObject(styleName)) {
 			for (var prop in styleName) {
 				if (styleName.hasOwnProperty(prop)) {
 					setStyle(element, prop, styleName[prop]);
@@ -539,7 +539,7 @@
 						el.style.height = '0';
 						el.style.paddingTop = 0;
 						el.style.paddingBottom = 0;
-						if (typeof vueComponent.collapseBeforeEnter === 'function') {
+						if (isFunction(vueComponent.collapseBeforeEnter)) {
 							vueComponent.collapseBeforeEnter();
 						}
 					},
@@ -555,14 +555,14 @@
 							el.style.paddingBottom = el.dataset.oldPaddingBottom;
 						}
 						el.style.overflow = 'hidden';
-						if (typeof vueComponent.collapseEnter === 'function') {
+						if (isFunction(vueComponent.collapseEnter)) {
 							vueComponent.collapseEnter();
 						}
 					},
 					'afterEnter': function(el) {
 						el.style.height = '';
 						el.style.overflow = el.dataset.oldOverflow;
-						if (typeof vueComponent.collapseAfterEnter === 'function') {
+						if (isFunction(vueComponent.collapseAfterEnter)) {
 							vueComponent.collapseAfterEnter();
 						}
 					},
@@ -574,7 +574,7 @@
 						el.dataset.oldOverflow = el.style.overflow;
 						el.style.height = el.scrollHeight + 'px';
 						el.style.overflow = 'hidden';
-						if (typeof vueComponent.collapseBeforeLeave === 'function') {
+						if (isFunction(vueComponent.collapseBeforeLeave)) {
 							vueComponent.collapseBeforeLeave();
 						}
 					},
@@ -584,7 +584,7 @@
 							el.style.paddingTop = 0;
 							el.style.paddingBottom = 0;
 						}
-						if (typeof vueComponent.collapseLeave === 'function') {
+						if (isFunction(vueComponent.collapseLeave)) {
 							vueComponent.collapseLeave();
 						}
 					},
@@ -593,7 +593,7 @@
 						el.style.overflow = el.dataset.oldOverflow;
 						el.style.paddingTop = el.dataset.oldPaddingTop;
 						el.style.paddingBottom = el.dataset.oldPaddingBottom;
-						if (typeof vueComponent.collapseAfterLeave === 'function') {
+						if (isFunction(vueComponent.collapseAfterLeave)) {
 							vueComponent.collapseAfterLeave();
 						}
 					}
@@ -646,6 +646,23 @@
 				}
 			}
 		}
+	};
+	var getScrollParent = function(element) {
+		var parent = element.parentNode;
+		if (!parent) {
+			return element;
+		}
+		if (parent === document) {
+			if (document.body.scrollTop) {
+				return document.body;
+			} else {
+				return document.documentElement;
+			}
+		}
+		if (['scroll', 'auto'].indexOf(getStyle(parent, 'overflow')) !== -1 || ['scroll', 'auto'].indexOf(getStyle(parent, 'overflow-x')) !== -1 || ['scroll', 'auto'].indexOf(getStyle(parent, 'overflow-y')) !== -1) {
+			return parent;
+		}
+		return getScrollParent(element.parentNode);
 	};
 	return {
 		isUndef: isUndef,
@@ -705,7 +722,8 @@
 			emitter: emitter,
 			collapseTransition: collapseTransition,
 			clickoutside: clickoutside,
-			popupManager: popupManager
+			popupManager: popupManager,
+			getScrollParent: getScrollParent
 		}
 	}
 });

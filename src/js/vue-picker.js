@@ -193,7 +193,7 @@
 			currentValue: function(val) {
 				if (val)
 					return;
-				if (this.picker && typeof this.picker.handleClear === 'function') {
+				if (this.picker && VueUtil.isFunction(this.picker.handleClear)) {
 					this.picker.handleClear();
 				} else {
 					this.$emit('input');
@@ -423,7 +423,7 @@
 				if (this.picker) {
 					this.picker.$destroy();
 					this.picker.$off();
-					if (typeof this.unwatchPickerOptions === 'function') {
+					if (VueUtil.isFunction(this.unwatchPickerOptions)) {
 						this.unwatchPickerOptions();
 					}
 					VueUtil.removeNode(this.picker.$el);

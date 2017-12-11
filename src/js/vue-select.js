@@ -171,11 +171,11 @@
 				if (self.multiple && self.filterable) {
 					self.resetInputHeight();
 				}
-				if (self.remote && typeof self.remoteMethod === 'function') {
+				if (self.remote && VueUtil.isFunction(self.remoteMethod)) {
 					self.hoverIndex = -1;
 					self.remoteMethod(val);
 					self.broadcast('VueOption', 'resetIndex');
-				} else if (typeof self.filterMethod === 'function') {
+				} else if (VueUtil.isFunction(self.filterMethod)) {
 					self.filterMethod(val);
 					self.broadcast('VueOptionGroup', 'queryChange');
 				} else {
@@ -292,7 +292,7 @@
 				})[0];
 				if (option)
 					return option;
-				var label = typeof value === 'string' || typeof value === 'number' ? value : '';
+				var label = VueUtil.isString(value) || VueUtil.isNumber(value) ? value : '';
 				var newOption = {
 					value: value,
 					currentLabel: label

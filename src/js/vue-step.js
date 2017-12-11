@@ -42,7 +42,7 @@
 				if (isCenter && this.isLast) {
 					return {};
 				}
-				var space = (typeof parent.space === 'number' ? parent.space + 'px' : parent.space ? parent.space : 100 / (isCenter ? len - 1 : len) + '%');
+				var space = (VueUtil.isNumber(parent.space) ? parent.space + 'px' : parent.space ? parent.space : 100 / (isCenter ? len - 1 : len) + '%');
 				if (parent.direction === 'horizontal') {
 					return {
 						width: space

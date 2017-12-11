@@ -32,7 +32,7 @@
 		},
 		computed: {
 			currentLabel: function() {
-				return this.label || ((typeof this.value === 'string' || typeof this.value === 'number') ? this.value : '');
+				return this.label || ((VueUtil.isString(this.value) || VueUtil.isNumber(this.value)) ? this.value : '');
 			},
 			currentValue: function() {
 				return this.value || this.label || '';

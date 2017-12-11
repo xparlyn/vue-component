@@ -232,7 +232,7 @@
 			},
 			Total: {
 				render: function(createElement) {
-					return 'number' == typeof this.$parent.total ? createElement('span', {class: 'vue-pagination__total'}, [this.$t('vue.pagination.total', {total: this.$parent.total})]) : '';
+					return VueUtil.isNumber(this.$parent.total) ? createElement('span', {class: 'vue-pagination__total'}, [this.$t('vue.pagination.total', {total: this.$parent.total})]) : '';
 				}
 			},
 			Pager: VuePager
@@ -251,7 +251,7 @@
 			},
 			getValidCurrentPage: function(value) {
 				value = parseInt(value, 10);
-				var havePageCount = typeof this.internalPageCount === 'number';
+				var havePageCount = VueUtil.isNumber(this.internalPageCount);
 				var resetValue;
 				if (!havePageCount) {
 					if (isNaN(value) || value < 1) resetValue = 1;
@@ -272,9 +272,9 @@
 		},
 		computed: {
 			internalPageCount: function() {
-				if (typeof this.total === 'number') {
+				if (VueUtil.isNumber(this.total)) {
 					return Math.ceil(this.total / this.internalPageSize);
-				} else if (typeof this.pageCount === 'number') {
+				} else if (VueUtil.isNumber(this.pageCount)) {
 					return this.pageCount;
 				}
 				return null;

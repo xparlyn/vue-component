@@ -121,7 +121,7 @@
 				this.timer = setInterval(this.playSlides, this.interval);
 			},
 			setActiveItem: function(index) {
-				if (typeof index === 'string') {
+				if (VueUtil.isString(index)) {
 					var filteredItems = this.items.filter(function(item) {
 						return item.name === index;
 					});

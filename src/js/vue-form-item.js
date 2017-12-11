@@ -119,7 +119,7 @@
 			validate: function(trigger, callback) {
 				var self = this;
 				var noop = function() {}
-				if (self.form.customMessageMethod && typeof self.form.customMessageMethod === 'function') {
+				if (VueUtil.isFunction(self.form.customMessageMethod)) {
 					noop = self.form.customMessageMethod;
 				} else if (self.form.notifyMessage) {
 					noop = function(errorMsg) {

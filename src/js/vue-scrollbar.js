@@ -160,7 +160,7 @@
 				if (VueUtil.isArray(self.wrapStyle)) {
 					style = VueUtil.arrayToObject(self.wrapStyle);
 					style.marginRight = style.marginBottom = gutterWith;
-				} else if (typeof self.wrapStyle === 'string') {
+				} else if (VueUtil.isString(self.wrapStyle)) {
 					style += gutterStyle;
 				} else {
 					style = gutterStyle;

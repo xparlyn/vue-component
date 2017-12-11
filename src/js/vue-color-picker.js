@@ -10,10 +10,10 @@
 	'use strict';
 	var bound01 = function(value, max) {
 		var isOnePointZero = function(n) {
-			return typeof n === 'string' && n.indexOf('.') !== -1 && parseFloat(n) === 1;
+			return VueUtil.isString(n) && n.indexOf('.') !== -1 && parseFloat(n) === 1;
 		};
 		var isPercentage = function(n) {
-			return typeof n === 'string' && n.indexOf('%') !== -1;
+			return VueUtil.isString(n) && n.indexOf('%') !== -1;
 		};
 		if (isOnePointZero(value)) value = '100%';
 		var processPercent = isPercentage(value);

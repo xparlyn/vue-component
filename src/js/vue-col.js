@@ -45,7 +45,7 @@
 				}
 			});
 			['xs', 'sm', 'md', 'lg'].forEach(function(size) {
-				if (typeof self[size] === 'number') {
+				if (VueUtil.isNumber(self[size])) {
 					classList.push('vue-col-' + size + '-' + self[size]);
 				} else if (VueUtil.isObject(self[size])) {
 					var props = self[size];

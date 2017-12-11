@@ -61,7 +61,7 @@
 		methods: {
 			close: function() {
 				this.closed = true;
-				if (typeof this.onClose === 'function') {
+				if (VueUtil.isFunction(this.onClose)) {
 					this.onClose();
 				}
 			},
@@ -213,7 +213,7 @@
 		for (var i = 0, len = instances.length; i < len; i++) {
 			var instance = instances[i];
 			if (id === instance.id) {
-				if (typeof userOnClose === 'function') {
+				if (VueUtil.isFunction(userOnClose)) {
 					userOnClose(instance);
 				}
 				var removedHeight = instance.dom.offsetHeight + offHeight;
