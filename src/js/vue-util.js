@@ -193,10 +193,11 @@
 		on(el, event, listener);
 	};
 	var hasClass = function(el, clazz) {
+		if (isUndef(el) || isUndef(clazz)) return false;
 		return (new RegExp('(\\s|^)' + clazz + '(\\s|$)')).test(el.className);
 	};
 	var addClass = function(el, clazz) {
-		if (!hasClass(el, clazz)) el.className += ' ' + clazz;
+		if (isDef(el) && !hasClass(el, clazz)) el.className += ' ' + clazz;
 	};
 	var removeClass = function(el, clazz) {
 		if (hasClass(el, clazz)) {
