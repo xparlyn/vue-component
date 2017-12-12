@@ -241,7 +241,7 @@
 					self.resetInputHeight();
 				}
 				var inputs = self.$el.querySelectorAll('input');
-				if ([].indexOf.call(inputs, document.activeElement) === -1) {
+				if (Array.prototype.indexOf.call(inputs, document.activeElement) === -1) {
 					self.setSelected();
 				}
 			}

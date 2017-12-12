@@ -262,12 +262,12 @@
 						resetValue = this.internalPageCount;
 					}
 				}
-				if (VueUtil.isUndef(resetValue) && isNaN(value)) {
+				if (!VueUtil.isDef(resetValue) && isNaN(value)) {
 					resetValue = 1;
 				} else if (resetValue === 0) {
 					resetValue = 1;
 				}
-				return VueUtil.isUndef(resetValue) ? value : resetValue;
+				return !VueUtil.isDef(resetValue) ? value : resetValue;
 			}
 		},
 		computed: {

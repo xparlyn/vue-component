@@ -73,9 +73,11 @@
 		var config = props[prop];
 		if (VueUtil.isFunction(config)) {
 			return config(data, node);
-		} else if (VueUtil.isString(config)) {
+		}
+		if (VueUtil.isString(config)) {
 			return data[config];
-		} else if (VueUtil.isUndef(config)) {
+		}
+		if (!VueUtil.isDef(config)) {
 			return '';
 		}
 	};
@@ -193,7 +195,7 @@
 			child = new Node(child);
 		}
 		child.level = self.level + 1;
-		if (VueUtil.isUndef(index) || index < 0) {
+		if (!VueUtil.isDef(index) || index < 0) {
 			self.childNodes.push(child);
 		} else {
 			self.childNodes.splice(index, 0, child);
@@ -346,7 +348,7 @@
 		if (props) {
 			children = props.children || 'children';
 		}
-		if (VueUtil.isUndef(data[children])) {
+		if (!VueUtil.isDef(data[children])) {
 			data[children] = null;
 		}
 		return data[children];

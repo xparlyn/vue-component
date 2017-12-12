@@ -72,7 +72,7 @@
 				VueUtil.on(popper, 'mouseleave', self.handleMouseLeave);
 			} else if (self.trigger === 'focus') {
 				var found = false;
-				if ([].slice.call(reference.children).length) {
+				if (Array.prototype.slice.call(reference.children).length) {
 					var children = reference.childNodes;
 					var len = children.length;
 					for (var i = 0; i < len; i++) {

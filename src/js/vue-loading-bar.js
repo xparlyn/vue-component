@@ -55,7 +55,7 @@
 		};
 	};
 	var updateInstance = function(options) {
-		if (VueUtil.isUndef(loadingBarInstance)) loadingBarInstance = newInstance();
+		if (!VueUtil.isDef(loadingBarInstance)) loadingBarInstance = newInstance();
 		loadingBarInstance.update(options);
 	};
 	var destroyInstance = VueUtil.throttle(1000, function() {

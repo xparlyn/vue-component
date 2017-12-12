@@ -60,7 +60,7 @@
 				clientX = e.touches[0].clientX;
 				clientY = e.touches[0].clientY;
 			}
-			if (VueUtil.isUndef(clientX) || VueUtil.isUndef(clientY)) return;
+			if (!VueUtil.isDef(clientX) || !VueUtil.isDef(clientY)) return;
 			if (!isdrag) this.Cancelbubble(e);
 			this._Css = isdrag ? {
 				x: "left",
@@ -89,7 +89,7 @@
 				clientX = e.touches[0].clientX;
 				clientY = e.touches[0].clientY;
 			}
-			if (VueUtil.isUndef(clientX) || VueUtil.isUndef(clientY)) return;
+			if (!VueUtil.isDef(clientX) || !VueUtil.isDef(clientY)) return;
 			getSelection ? getSelection().removeAllRanges() : document.selection.empty();
 			var i_x = clientX - this._x;
 			var i_y = clientY - this._y;

@@ -62,7 +62,7 @@
 				return '' + value;
 			},
 			parser: function(text) {
-				if (VueUtil.isUndef(text) || text === '') return null;
+				if (!VueUtil.isDef(text) || text === '') return null;
 				return text;
 			}
 		},

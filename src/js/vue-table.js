@@ -239,7 +239,7 @@
 			resultMap.label = '';
 			var aggregateType = column.aggregate.toLowerCase();
 			var aggregateLabel = labelMap[aggregateType];
-			if (!aggregateLabel && VueUtil.isUndef(column.aggregateLabel)) {
+			if (!aggregateLabel && !VueUtil.isDef(column.aggregateLabel)) {
 				this.states.aggregates.push(resultMap);
 				continue;
 			}
@@ -254,10 +254,10 @@
 				var value = Number(item[column.property]);
 				if (!isNaN(value)) {
 					var decimal = ('' + value).split('.')[1];
-					decimal && decimal.length > precision ? precision = decimal.length : void 0;
-					VueUtil.isUndef(max) ? max = value : value > max ? max = value : void 0;
-					VueUtil.isUndef(min) ? min = value : value < min ? min = value : void 0;
-					VueUtil.isUndef(sum) ? sum = value : sum = sum + value;
+					decimal && decimal.length > precision ? precision = decimal.length : null;
+					!VueUtil.isDef(max) ? max = value : value > max ? max = value : null;
+					!VueUtil.isDef(min) ? min = value : value < min ? min = value : null;
+					!VueUtil.isDef(sum) ? sum = value : sum = sum + value;
 					valueCount++;
 				}
 			});
@@ -367,7 +367,7 @@
 		var changed = false;
 		var selection = this.states.selection;
 		var index = selection.indexOf(row);
-		if (VueUtil.isUndef(selected)) {
+		if (!VueUtil.isDef(selected)) {
 			if (index === -1) {
 				selection.push(row);
 				changed = true;
@@ -911,9 +911,6 @@
 				delta.total = slots.length;
 				delta.paddingTop = delta.size * delta.start;
 				delta.allPadding = delta.size * (slots.length - delta.keeps);
-				delta.paddingTop < 0 ? delta.paddingTop = 0 : void 0;
-				delta.allPadding < 0 ? delta.allPadding = 0 : void 0;
-				delta.allPadding < delta.paddingTop ? delta.allPadding = delta.paddingTop : void 0;
 				var result = [];
 				for (var i = delta.start, j = delta.end; i < j; i++) {
 					result.push(slots[i]);
@@ -927,7 +924,7 @@
 				delta.keeps = delta.remain;
 				if (delta.total <= delta.keeps) return;
 				var overs = Math.floor(offset / delta.size) - 5;
-				overs < 0 ? overs = 0 : void 0;
+				overs < 0 ? overs = 0 : null;
 				var start = overs ? overs : 0;
 				var end = overs ? (overs + delta.keeps) : delta.keeps;
 				if (overs + delta.keeps >= delta.total) {
@@ -1584,10 +1581,10 @@
 			},
 			filterColumn: function() {
 				var filterColumn = this.filterForm.filterColumn;
-				if (VueUtil.isUndef(filterColumn)) return;
+				if (!VueUtil.isDef(filterColumn)) return;
 				filterColumn.conditions = this.filterForm.conditions;
 				filterColumn.operations = this.filterForm.operations;
-				if (VueUtil.isFunction(filterColumn.filterMethod) && VueUtil.isUndef(filterColumn.orgFilterMethod)) {
+				if (VueUtil.isFunction(filterColumn.filterMethod) && !VueUtil.isDef(filterColumn.orgFilterMethod)) {
 					filterColumn.orgFilterMethod = filterColumn.filterMethod;
 				}
 				filterColumn.filterMethod = function(value, row) {
@@ -1727,7 +1724,7 @@
 				} else {
 					params.fileName = 'table.csv';
 				}
-				if (VueUtil.isUndef(params.original)) params.original = true;
+				if (!VueUtil.isDef(params.original)) params.original = true;
 				var columns = params.original ? this.store.states._columns : this.store.states.columns;
 				var datas = params.original ? this.store.states._data : this.store.states.data;
 				var footer = [];
@@ -1901,8 +1898,8 @@
 							scrollTop -= wheel;
 						}
 						var scrollBottom = refs.bodyWrapper.scrollHeight - refs.bodyWrapper.clientHeight;
-						scrollTop < 0 ? scrollTop = 0 : void 0;
-						scrollTop > scrollBottom ? scrollTop = scrollBottom : void 0;
+						scrollTop < 0 ? scrollTop = 0 : null;
+						scrollTop > scrollBottom ? scrollTop = scrollBottom : null;
 						refs.bodyWrapper.scrollTop = scrollTop;
 						refs.fixedBodyWrapper.scrollTop = scrollTop;
 						refs.rightFixedBodyWrapper.scrollTop = scrollTop;
@@ -1919,8 +1916,8 @@
 							scrollLeft -= 80;
 						}
 						var scrollRight = refs.bodyWrapper.scrollWidth - refs.bodyWrapper.clientWidth;
-						scrollLeft < 0 ? scrollLeft = 0 : void 0;
-						scrollLeft > scrollRight ? scrollLeft = scrollRight : void 0;
+						scrollLeft < 0 ? scrollLeft = 0 : null;
+						scrollLeft > scrollRight ? scrollLeft = scrollRight : null;
 						refs.bodyWrapper.scrollLeft = scrollLeft;
 						refs.headerWrapper.scrollLeft = scrollLeft;
 						refs.footerWrapper.scrollLeft = scrollLeft;

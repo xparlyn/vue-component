@@ -395,7 +395,7 @@
 			var owner = this.owner;
 			var parent = this.$parent;
 			var columnIndex;
-			columnIndex = [].indexOf.call(parent.$refs.hiddenColumns.children, this.$el);
+			columnIndex = Array.prototype.indexOf.call(parent.$refs.hiddenColumns.children, this.$el);
 			owner.store.commit('insertColumn', this.columnConfig, columnIndex);
 		}
 	};

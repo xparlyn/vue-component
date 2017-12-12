@@ -592,7 +592,7 @@
 				this.resetDate();
 			},
 			handleYearPick: function(year, close) {
-				if (VueUtil.isUndef(close)) close = true;
+				if (!VueUtil.isDef(close)) close = true;
 				this.year = year;
 				if (!close) return;
 				this.date.setFullYear(year);
@@ -936,7 +936,7 @@
 				}
 			},
 			handleRangePick: function(val, close) {
-				if (VueUtil.isUndef(close)) close = true;
+				if (!VueUtil.isDef(close)) close = true;
 				if (this.maxDate === val.maxDate && this.minDate === val.minDate) return;
 				this.onPick && this.onPick(val);
 				this.maxDate = val.maxDate;

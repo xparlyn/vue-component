@@ -92,7 +92,7 @@
 		};
 		this._reference = reference.jquery ? reference[0] : reference;
 		this.state = {};
-		var isNotDefined = VueUtil.isUndef(popper);
+		var isNotDefined = !VueUtil.isDef(popper);
 		var isConfig = VueUtil.isObject(popper);
 		if (isNotDefined || isConfig) {
 			this._popper = this.parse(isConfig ? popper : {});

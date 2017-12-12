@@ -12,9 +12,6 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil, Screenfull) {
 	'use strict';
-	var isUndef = function(v) {
-		return v === undefined || v === null
-	};
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -46,16 +43,16 @@
 		return isDef(obj) && objType(obj) === '[object Date]';
 	};
 	var toDate = function(date) {
-		return (isUndef(date) || isNaN(new Date(date).getTime())) ? null : new Date(date);
+		return (!isDef(date) || isNaN(new Date(date).getTime())) ? null : new Date(date);
 	};
 	var formatDate = function(date, format) {
 		date = toDate(date);
-		if (isUndef(date)) return null;
+		if (!isDef(date)) return null;
 		return DateUtil.format(date, format || 'yyyy-MM-dd');
 	};
 	var parseDate = function(string, format) {
 		var str = formatDate(string, format);
-		if (isUndef(str)) str = string;
+		if (!isDef(str)) str = string;
 		return DateUtil.parse(str, format || 'yyyy-MM-dd');
 	};
 	var getDayCountOfMonth = function(year, month) {
@@ -143,9 +140,9 @@
 	var isVNode = function(node) {
 		return isObject(node) && node.hasOwnProperty('componentOptions');
 	};
-	var trim = function(string) {
-		if (!isString(string)) string = '';
-		return string.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '');
+	var trim = function(str) {
+		if (!isString(str)) str = '';
+		return str.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '');
 	};
 	var merge = function(target) {
 		for (var i = 1, j = arguments.length; i < j; i++) {
@@ -185,7 +182,7 @@
 	})();
 	var once = function(el, event, fn) {
 		var listener = function() {
-			if (fn) {
+			if (isFunction(fn)) {
 				fn.apply(this, arguments);
 			}
 			off(el, event, listener);
@@ -193,11 +190,11 @@
 		on(el, event, listener);
 	};
 	var hasClass = function(el, clazz) {
-		if (isUndef(el) || isUndef(clazz)) return false;
+		if (!isDef(el) || !isDef(clazz)) return false;
 		return (new RegExp('(\\s|^)' + clazz + '(\\s|$)')).test(el.className);
 	};
 	var addClass = function(el, clazz) {
-		if (isDef(el) && !hasClass(el, clazz)) el.className += ' ' + clazz;
+		if (isDef(el) && isDef(clazz) && !hasClass(el, clazz)) el.className += ' ' + clazz;
 	};
 	var removeClass = function(el, clazz) {
 		if (hasClass(el, clazz)) {
@@ -206,7 +203,7 @@
 		}
 	};
 	var getStyle = function(element, styleName) {
-		if (!element || !styleName) return null;
+		if (!isDef(element) || !isDef(styleName)) return null;
 		if (styleName === 'float') {
 			styleName = 'cssFloat';
 		}
@@ -214,7 +211,7 @@
 		return computed[styleName];
 	};
 	var setStyle = function(element, styleName, value) {
-		if (!element || !styleName) return;
+		if (!isDef(element) || !isDef(styleName)) return;
 		if (isObject(styleName)) {
 			for (var prop in styleName) {
 				if (styleName.hasOwnProperty(prop)) {
@@ -249,14 +246,14 @@
 			var args = arguments;
 			clearTimeout(timer);
 			timer = setTimeout(function(){
-				callback.apply(self, args);
+				isFunction(callback) && callback.apply(self, args);
 				clearTimeout(timer);
 			}, delay);
 		};
 		return wrapper;
 	};
 	var addResizeListener = function(element, fn) {
-		if (isUndef(fn)) {
+		if (!isDef(fn)) {
 			fn = element;
 			element = document.body;
 		}
@@ -303,10 +300,10 @@
 			element.appendChild(resizeTrigger);
 			on(element, 'scroll', scrollListener, true);
 		}
-		element.__resizeListeners__.push(fn);
+		isFunction(fn) && element.__resizeListeners__.push(fn);
 	};
 	var removeResizeListener = function(element, fn) {
-		if (isUndef(fn)) {
+		if (!isDef(fn)) {
 			fn = element;
 			element = document.body;
 		}
@@ -328,7 +325,7 @@
 		node && node.parentElement && node.parentElement.removeChild(node);
 	};
 	var insertNodeAt = function(fatherNode, node, position) {
-		if (isUndef(position)) position = 0;
+		if (!isDef(position)) position = 0;
 		var refNode = (position === 0) ? fatherNode.children[0] : fatherNode.children[position - 1].nextSibling
 		fatherNode.insertBefore(node, refNode)
 	};
@@ -405,7 +402,7 @@
 		},
 		modalStack: [],
 		openModal: function(id, zIndex) {
-			if (!id || isUndef(zIndex)) return;
+			if (!id || !isDef(zIndex)) return;
 			var modalStack = this.modalStack;
 			for (var i = 0, j = modalStack.length; i < j; i++) {
 				var item = modalStack[i];
@@ -648,7 +645,6 @@
 		return getScrollParent(element.parentNode);
 	};
 	return {
-		isUndef: isUndef,
 		isDef: isDef,
 		objType: objType,
 		isString: isString,

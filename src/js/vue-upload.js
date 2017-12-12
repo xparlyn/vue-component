@@ -9,7 +9,7 @@
 })(this, function(Vue, VueUtil) {
 	'use strict';
 	var ajax = function(option) {
-		if (VueUtil.isUndef(this.$http)) return;
+		if (!VueUtil.isDef(this.$http)) return;
 		var httpOption = {};
 		httpOption.headers = option.headers;
 		httpOption.progress = function progress(e) {
@@ -383,7 +383,7 @@
 			IframeUpload: IframeUpload
 		},
 		provide: {
-			uploader: void 0
+			uploader: null
 		},
 		props: {
 			action: {
@@ -600,7 +600,7 @@
 		},
 		mounted: function() {
 			if (this.disabled) {
-				this.$el.querySelectorAll('button').forEach(function(buttonNote) {
+				Array.prototype.forEach.call(this.$el.querySelectorAll('button'), function(buttonNote) {
 					VueUtil.addClass(buttonNote, 'is-disabled');
 				});
 			}

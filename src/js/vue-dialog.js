@@ -66,7 +66,7 @@
 					if (VueUtil.isFunction(this.beforeClose)) {
 						var self = this;
 						var done = function(resolve) {
-							if (VueUtil.isUndef(resolve)) resolve = true;
+							if (!VueUtil.isDef(resolve)) resolve = true;
 							if (resolve) {
 								self.$nextTick(function() {
 									self.visibledialog = val;
@@ -84,10 +84,7 @@
 		},
 		computed: {
 			showTitle: function() {
-				if (VueUtil.trim(this.title) === "") {
-					return false;
-				}
-				return true;
+				return VueUtil.trim(this.title) === "" ? false : true;
 			},
 			sizeClass: function() {
 				return 'vue-dialog--' + this.size;

@@ -16,7 +16,7 @@
 		return type === 'string' || type === 'url' || type === 'hex' || type === 'email' || type === 'pattern';
 	};
 	var isEmptyValue = function(value, type) {
-		if (VueUtil.isUndef(value)) {
+		if (!VueUtil.isDef(value)) {
 			return true;
 		}
 		if (type === 'array' && VueUtil.isArray(value) && !value.length) {
@@ -26,9 +26,6 @@
 			return true;
 		}
 		return false;
-	};
-	var isEmptyObject = function(obj) {
-		return Object.keys(obj).length === 0;
 	};
 	var asyncParallelArray = function(arr, func, callback) {
 		var results = [];
@@ -222,7 +219,7 @@
 				return VueUtil.isString(value) && !!value.match(pattern.hex);
 			},
 		};
-		if (rule.required && VueUtil.isUndef(value)) {
+		if (rule.required && !VueUtil.isDef(value)) {
 			rulesRequired(rule, value, source, errors, options);
 			return;
 		}
@@ -617,7 +614,7 @@
 			});
 		},
 		getType: function(rule) {
-			if (VueUtil.isUndef(rule.type) && (rule.pattern instanceof RegExp)) {
+			if (!VueUtil.isDef(rule.type) && (rule.pattern instanceof RegExp)) {
 				rule.type = 'pattern';
 			}
 			if (!VueUtil.isFunction(rule.validator) && (rule.type && !validators.hasOwnProperty(rule.type))) {
