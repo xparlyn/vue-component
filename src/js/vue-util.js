@@ -36,19 +36,17 @@
 	var isObject = function(obj) {
 		return isDef(obj) && objType(obj) === '[object Object]';
 	};
-	var isArray = Array.isArray || function(obj) {
+	var isArray = function(obj) {
 		return isDef(obj) && objType(obj) === '[object Array]';
 	};
 	var isFunction = function(obj) {
 		return isDef(obj) && objType(obj) === '[object Function]';
 	};
-	var isDate = function(date) {
-		if (isUndef(date)) return false;
-		if (isNaN(new Date(date).getTime())) return false;
-		return true;
+	var isDate = function(obj) {
+		return isDef(obj) && objType(obj) === '[object Date]';
 	};
 	var toDate = function(date) {
-		return isDate(date) ? new Date(date) : null;
+		return (isUndef(date) || isNaN(new Date(date).getTime())) ? null : new Date(date);
 	};
 	var formatDate = function(date, format) {
 		date = toDate(date);
@@ -198,9 +196,7 @@
 		return (new RegExp('(\\s|^)' + clazz + '(\\s|$)')).test(el.className);
 	};
 	var addClass = function(el, clazz) {
-		if (!hasClass(el, clazz)) {
-			el.className += ' ' + clazz;
-		}
+		if (!hasClass(el, clazz)) el.className += ' ' + clazz;
 	};
 	var removeClass = function(el, clazz) {
 		if (hasClass(el, clazz)) {
@@ -208,23 +204,13 @@
 			el.className = el.className.replace(reg, ' ');
 		}
 	};
-	var camelCase = function(name) {
-		return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
-			return offset ? letter.toUpperCase() : letter;
-		}).replace(/^moz([A-Z])/, 'Moz$1');
-	};
 	var getStyle = function(element, styleName) {
 		if (!element || !styleName) return null;
-		styleName = camelCase(styleName);
 		if (styleName === 'float') {
 			styleName = 'cssFloat';
 		}
-		try {
-			var computed = document.defaultView.getComputedStyle(element, '');
-			return element.style[styleName] || computed ? computed[styleName] : null;
-		} catch (e) {
-			return element.style[styleName];
-		}
+		var computed = getComputedStyle(element, '');
+		return computed[styleName];
 	};
 	var setStyle = function(element, styleName, value) {
 		if (!element || !styleName) return;
@@ -235,7 +221,6 @@
 				}
 			}
 		} else {
-			styleName = camelCase(styleName);
 			element.style[styleName] = value;
 		}
 	};
@@ -329,9 +314,7 @@
 		}
 	};
 	var setLang = function(lang) {
-		if (lang) {
-			Vue.config.lang = lang;
-		}
+		if(isDef(lang)) Vue.config.lang = lang;
 	};
 	var setLocale = function(lang, langObjs) {
 		langObjs = merge({}, Vue.locale(lang), langObjs);
@@ -362,14 +345,12 @@
 		inner.style.width = '100%';
 		outer.appendChild(inner);
 		var widthWithScroll = inner.offsetWidth;
-		outer.parentNode.removeChild(outer);
+		removeNode(outer);
 		return widthNoScroll - widthWithScroll;
 	};
 	var screenfull = function() {
 		if (!Screenfull.enabled) {
-			this.$alert(this.$t('vue.screenfull.canot'), {
-				type: 'warning'
-			});
+			Vue.notify.warning({message: Vue.t('vue.screenfull.canot')});
 			return false;
 		}
 		Screenfull.toggle();

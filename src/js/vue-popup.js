@@ -64,8 +64,8 @@
 				if (!self.opened) {
 					self.$nextTick(function() {
 						var dom = getDOM(self.$el);
-						if (getComputedStyle(dom).position === 'static') {
-							dom.style.position = 'absolute';
+						if (VueUtil.getStyle(dom, 'position') === 'static') {
+							VueUtil.setStyle(dom, 'position', 'absolute');
 						}
 						dom.style.zIndex = PopupManager.nextZIndex();
 						if (self.closeOnPressEscape)

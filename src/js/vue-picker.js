@@ -202,7 +202,8 @@
 			value: {
 				immediate: true,
 				handler: function(val) {
-					this.currentValue = VueUtil.isDate(val) ? new Date(val) : val;
+					var dateVal = VueUtil.toDate(val);
+					this.currentValue = dateVal || val;
 				}
 			},
 			displayValue: function(val) {

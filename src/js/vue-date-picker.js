@@ -856,8 +856,8 @@
 					this.minDate = null;
 					this.maxDate = null;
 				} else if (VueUtil.isArray(newVal)) {
-					this.minDate = newVal[0] ? VueUtil.toDate(newVal[0]) : null;
-					this.maxDate = newVal[1] ? VueUtil.toDate(newVal[1]) : null;
+					this.minDate = VueUtil.toDate(newVal[0]);
+					this.maxDate = VueUtil.toDate(newVal[1]);
 					if (this.minDate)
 						this.date = new Date(this.minDate);
 					this.handleConfirm(true);

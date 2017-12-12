@@ -1807,10 +1807,7 @@
 							link.click();
 							document.body.removeChild(link);
 						} catch (e) {
-							Vue.notify({
-								message: Vue.t('vue.screenfull.canot'),
-								type: "warning"
-							});
+							Vue.notify.warning({message: Vue.t('vue.screenfull.canot')});
 						}
 					}
 				};
