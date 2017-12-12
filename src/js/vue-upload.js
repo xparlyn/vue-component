@@ -141,7 +141,7 @@
 			},
 			uploadFiles: function(files) {
 				var self = this;
-				var postFiles = Array.prototype.slice.call(files);
+				var postFiles = [].slice.call(files);
 				if (!self.multiple) {
 					postFiles = postFiles.slice(0, 1);
 				}
@@ -600,7 +600,7 @@
 		},
 		mounted: function() {
 			if (this.disabled) {
-				Array.prototype.forEach.call(this.$el.querySelectorAll('button'), function(buttonNote) {
+				[].forEach.call(this.$el.querySelectorAll('button'), function(buttonNote) {
 					VueUtil.addClass(buttonNote, 'is-disabled');
 				});
 			}

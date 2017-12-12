@@ -698,7 +698,7 @@
 				_off(el, 'dragover', this);
 				_off(el, 'dragenter', this);
 			}
-			Array.prototype.forEach.call(el.querySelectorAll('[draggable]'), function(el) {
+			[].forEach.call(el.querySelectorAll('[draggable]'), function(el) {
 				el.removeAttribute('draggable');
 			});
 			touchDragOverListeners.splice(touchDragOverListeners.indexOf(this._onDragOver), 1);
