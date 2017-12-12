@@ -1,12 +1,12 @@
 (function(context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context.VueStep = definition(context.Vue);
+		context.VueStep = definition(context.Vue, context.VueUtil);
 		delete context.VueStep;
 	}
-})(this, function(Vue) {
+})(this, function(Vue, VueUtil) {
 	'use strict';
 	var VueStep = {
 		template: '<div :style="[style, isLast ? \'\' : {marginRight: - $parent.stepOffset + \'px\'}]" :class="[\'vue-step\', \'is-\' + $parent.direction]"><div :class="[\'vue-step__head\', \'is-\' + currentStatus, {\'is-text\': !icon}]"><div :style="isLast ? \'\' : {marginRight: $parent.stepOffset + \'px\'}" :class="[\'vue-step__line\', \'is-\' + $parent.direction, {\'is-icon\': icon}]"><i class="vue-step__line-inner" :style="lineStyle"></i></div><span class="vue-step__icon"><slot v-if="currentStatus !== \'success\' && currentStatus !== \'error\'" name="icon"><i v-if="icon" :class="icon"></i><div v-else>{{index + 1}}</div></slot><i v-else :class="[\'vue-icon-\' + (currentStatus === \'success\' ? \'check\' : \'close\')]"></i></span></div><div class="vue-step__main" :style="{marginLeft: mainOffset}"><div ref="title" :class="[\'vue-step__title\', \'is-\' + currentStatus]"><slot name="title">{{title}}</slot></div><div :class="[\'vue-step__description\', \'is-\' + currentStatus]"><slot></slot></div></div></div>',
