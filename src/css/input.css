@@ -21,12 +21,6 @@
 	color: #bbb;
 	cursor: not-allowed;
 }
-.vue-input.is-disabled .vue-input__inner::-webkit-input-placeholder {
-	color: #bfcbd9;
-}
-.vue-input.is-disabled .vue-input__inner::-moz-placeholder {
-	color: #bfcbd9;
-}
 .vue-input.is-disabled .vue-input__inner::placeholder {
 	color: #bfcbd9;
 }
@@ -35,9 +29,6 @@
 	border-color: #409eff;
 }
 .vue-input__inner {
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
 	background-color: #fff;
 	border-radius: 4px;
 	border: 1px solid #bfcbd9;
@@ -48,12 +39,6 @@
 	outline: 0;
 	padding: 3px 10px;
 	width: 100%;
-}
-.vue-input__inner::-webkit-input-placeholder {
-	color: #97a8be;
-}
-.vue-input__inner::-moz-placeholder {
-	color: #97a8be;
 }
 .vue-input__inner::placeholder {
 	color: #97a8be;
@@ -173,12 +158,6 @@
 	color: #bbb;
 	cursor: not-allowed;
 }
-.vue-textarea.is-disabled .vue-textarea__inner::-webkit-input-placeholder {
-	color: #bfcbd9;
-}
-.vue-textarea.is-disabled .vue-textarea__inner::-moz-placeholder {
-	color: #bfcbd9;
-}
 .vue-textarea.is-disabled .vue-textarea__inner::placeholder {
 	color: #bfcbd9;
 }
@@ -193,12 +172,6 @@
 	background-color: #fff;
 	border: 1px solid #bfcbd9;
 	border-radius: 4px;
-}
-.vue-textarea__inner::-webkit-input-placeholder {
-	color: #97a8be;
-}
-.vue-textarea__inner::-moz-placeholder {
-	color: #97a8be;
 }
 .vue-textarea__inner::placeholder {
 	color: #97a8be;

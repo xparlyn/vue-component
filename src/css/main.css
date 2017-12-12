@@ -18,8 +18,6 @@
 	line-height: 1;
 	vertical-align: baseline;
 	display: inline-block;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
 }
 [v-cloak] {
 	display: none;

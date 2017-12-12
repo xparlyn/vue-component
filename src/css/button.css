@@ -6,7 +6,6 @@
 	background: #fff;
 	border: 1px solid #bfcbd9;
 	color: #1f2d3d;
-	-webkit-appearance: none;
 	text-align: center;
 	box-sizing: border-box;
 	outline: 0;
@@ -15,7 +14,7 @@
 	font-size: 14px;
 	border-radius: 4px;
 	-webkit-user-select: none;
-	-moz-user-select: none;
+	-ms-user-select: none;
 }
 .vue-button+.vue-button {
 	margin-left: 10px;
@@ -29,9 +28,6 @@
 	color: #8cc5ff;
 	border-color: #8cc5ff;
 	outline: 0;
-}
-.vue-button::-moz-focus-inner {
-	border: 0;
 }
 .vue-button [class*=vue-icon-]+span {
 	margin-left: 10px;

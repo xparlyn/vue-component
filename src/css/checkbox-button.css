@@ -34,7 +34,6 @@
 	border: 1px solid #bfcbd9;
 	border-left: 0;
 	color: #1f2d3d;
-	-webkit-appearance: none;
 	text-align: center;
 	box-sizing: border-box;
 	outline: 0;
@@ -44,7 +43,6 @@
 	font-size: 14px;
 	border-radius: 0;
 	white-space: nowrap;
-	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
 }

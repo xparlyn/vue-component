@@ -45,9 +45,8 @@
 	z-index: 10;
 	left: 0;
 	top: 0;
-	user-select: none;
 	-webkit-user-select: none;
-	-moz-user-select: none;
+	-ms-user-select: none;
 }
 .vue-switch__label * {
 	line-height: 1;

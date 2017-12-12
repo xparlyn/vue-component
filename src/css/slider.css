@@ -63,22 +63,12 @@
 	transform: translateX(-50%);
 	background-color: transparent;
 	text-align: center;
-	user-select: none;
 	-webkit-user-select: none;
-	-moz-user-select: none;
+	-ms-user-select: none;
 }
 .vue-slider__button-wrapper:after {
 	content: '';
 	height: 100%;
-}
-.vue-slider__button-wrapper.hover,
-.vue-slider__button-wrapper:hover {
-	cursor: -webkit-grab;
-	cursor: grab;
-}
-.vue-slider__button-wrapper.dragging {
-	cursor: -webkit-grabbing;
-	cursor: grabbing;
 }
 .vue-slider__button {
 	width: 12px;
@@ -87,23 +77,13 @@
 	border-radius: 50%;
 	transition: .3s;
 	-webkit-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
+	-ms-user-select: none;
 }
 .vue-slider__button.dragging,
 .vue-slider__button.hover,
 .vue-slider__button:hover {
 	transform: scale(1.5);
 	background-color: #1c8de0;
-}
-.vue-slider__button.hover,
-.vue-slider__button:hover {
-	cursor: -webkit-grab;
-	cursor: grab;
-}
-.vue-slider__button.dragging {
-	cursor: -webkit-grabbing;
-	cursor: grabbing;
 }
 .vue-slider__stop {
 	position: absolute;

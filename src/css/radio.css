@@ -12,7 +12,7 @@
 .vue-radio {
 	color: #1f2d3d;
 	-webkit-user-select: none;
-	-moz-user-select: none;
+	-ms-user-select: none;
 }
 .vue-radio+.vue-radio {
 	margin-left: 15px;

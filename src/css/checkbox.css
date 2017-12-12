@@ -7,7 +7,6 @@
 }
 .vue-checkbox {
 	color: #1f2d3d;
-	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
 }

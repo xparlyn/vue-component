@@ -58,6 +58,8 @@
 	color: #8391a5;
 	position: relative;
 	transition: .3s;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 .vue-tabs__item .vue-icon-close {
 	border-radius: 50%;

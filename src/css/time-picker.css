@@ -78,9 +78,8 @@
 	width: 180px;
 	left: 0;
 	z-index: 1000;
-	-moz-user-select: none;
-	user-select: none;
 	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 .vue-time-panel__content {
 	font-size: 0;

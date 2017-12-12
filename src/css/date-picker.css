@@ -1,9 +1,8 @@
 .vue-date-table {
 	font-size: 12px;
 	min-width: 224px;
-	user-select: none;
-	-moz-user-select: none;
 	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 .vue-date-table td {
 	width: 32px;

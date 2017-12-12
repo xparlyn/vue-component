@@ -27,8 +27,6 @@
 	font-family: component;
 	content: '\e808';
 	font-size: 11px;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
 }
 .vue-select-dropdown__empty {
 	padding: 10px 0;

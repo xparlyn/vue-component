@@ -141,8 +141,7 @@
 }
 .vue-pager {
 	-webkit-user-select: none;
-	-moz-user-select: none;
-	user-select: none;
+	-ms-user-select: none;
 	list-style: none;
 	font-size: 0;
 	padding: 0;
