@@ -463,7 +463,7 @@
 		if (mutations[name]) {
 			mutations[name].apply(this, [this.states].concat(args));
 		} else {
-			throw new Error('Action not found: ' + name);
+			throw 'Action not found: ' + name;
 		}
 	}
 	var TableLayout = function(options) {

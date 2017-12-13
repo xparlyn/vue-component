@@ -44,8 +44,7 @@
 					var activeValue = self.activeValue;
 					var configurableProps = ['label', 'value', 'children', 'disabled'];
 					var formatOptions = function(options) {
-						options = options || [];
-						options.forEach(function(option) {
+						VueUtil.isArray(options) && options.forEach(function(option) {
 							if (option.__IS__FLAT__OPTIONS)
 								return;
 							configurableProps.forEach(function(prop) {

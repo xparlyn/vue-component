@@ -108,9 +108,7 @@
 			this.level = this.parent.level + 1;
 		}
 		var store = this.store;
-		if (!store) {
-			throw new Error('[Node]store is required!');
-		}
+		if (!store) throw 'store is required!';
 		store.registerNode(this);
 		var props = store.props;
 		if (props && VueUtil.isDef(props.isLeaf)) {
@@ -187,9 +185,8 @@
 		return null;
 	};
 	Node.prototype.insertChild = function(child, index) {
+		if (!child) throw 'insertChild error: child is required.';
 		var self = this;
-		if (!child)
-			throw new Error('insertChild error: child is required.');
 		if (!(child instanceof Node)) {
 			VueUtil.merge(child, {parent: self, store: self.store});
 			child = new Node(child);
@@ -909,8 +906,7 @@
 		},
 		methods: {
 			filter: function(value) {
-				if (!this.filterNodeMethod)
-					throw new Error('[Tree] filterNodeMethod is required when filter');
+				if (!this.filterNodeMethod) throw 'filterNodeMethod is required when filter';
 				this.store.filter(value);
 			},
 			getNodeKey: function(node, index) {
@@ -930,15 +926,13 @@
 				return currentNode ? currentNode.data[this.nodeKey] : null;
 			},
 			setCurrentNode: function(node) {
-				if (!this.nodeKey)
-					throw new Error('[Tree] nodeKey is required in setCheckedNodes');
+				if (!this.nodeKey) throw 'nodeKey is required in setCheckedNodes';
 				if (!node) return this.store.setCurrentNodeKey(null);
 				var key = node[this.nodeKey];
 				return this.store.setCurrentNodeKey(key);
 			},
 			setCurrentKey: function(key) {
-				if (!this.nodeKey)
-					throw new Error('[Tree] nodeKey is required in setCheckedNodes');
+				if (!this.nodeKey) throw 'nodeKey is required in setCheckedNodes';
 				return this.store.setCurrentNodeKey(key);
 			},
 			getCheckedNodes: function(leafOnly) {
@@ -948,13 +942,11 @@
 				return this.store.getCheckedKeys(leafOnly);
 			},
 			setCheckedNodes: function(nodes, leafOnly) {
-				if (!this.nodeKey)
-					throw new Error('[Tree] nodeKey is required in setCheckedNodes');
+				if (!this.nodeKey) throw 'nodeKey is required in setCheckedNodes';
 				this.store.setCheckedNodes(nodes, leafOnly);
 			},
 			setCheckedKeys: function(keys, leafOnly) {
-				if (!this.nodeKey)
-					throw new Error('[Tree] nodeKey is required in setCheckedNodes');
+				if (!this.nodeKey) throw 'nodeKey is required in setCheckedNodes';
 				this.store.setCheckedKeys(keys, leafOnly);
 			},
 			setChecked: function(data, checked, deep) {

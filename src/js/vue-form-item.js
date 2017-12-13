@@ -96,7 +96,7 @@
 					if (key in tempObj) {
 						tempObj = tempObj[key];
 					} else {
-						throw new Error('please transfer a valid prop path to form item!');
+						throw 'please transfer a valid prop path to form item!';
 					}
 				}
 				return {

@@ -10,59 +10,49 @@
 })(this, function(Vue, Sortable, VueUtil) {
 	'use strict';
 	var arrayfrom = function(arr) {
-		var toInteger = function(value) {
-			var number = Number(value);
-			if (isNaN(number)) {
-				return 0;
-			}
-			if (number === 0 || !isFinite(number)) {
-				return number;
-			}
-			return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
-		};
-		var maxSafeInteger = Math.pow(2, 53) - 1;
-		var toLength = function(value) {
-			var len = toInteger(value);
-			return Math.min(Math.max(len, 0), maxSafeInteger);
-		};
 		var from = function(arrayLike) {
-			var C = this;
+			if (!VueUtil.isDef(arrayLike)) return [];
 			var items = Object(arrayLike);
-			if (!VueUtil.isDef(arrayLike)) {
-				throw new TypeError("Array.from requires an array-like object - not null or undefined");
-			}
 			var mapFn = arguments.length > 1 ? arguments[1] : null;
-			var T;
+			var T = null;
 			if (VueUtil.isDef(mapFn)) {
-				if (!VueUtil.isFunction(mapFn)) {
-					throw new TypeError('Array.from: when provided, the second argument must be a function');
-				}
+				if (!VueUtil.isFunction(mapFn)) return [];
 				if (arguments.length > 2) {
 					T = arguments[2];
 				}
 			}
+			var toLength = function(value) {
+				var toInteger = function(value) {
+					var number = Number(value);
+					if (isNaN(number)) return 0;
+					if (number === 0 || !isFinite(number)) return number;
+					return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
+				};
+				var maxSafeInteger = Math.pow(2, 53) - 1;
+				var len = toInteger(value);
+				return Math.min(Math.max(len, 0), maxSafeInteger);
+			};
 			var len = toLength(items.length);
-			var A = VueUtil.isFunction(C) ? Object(new C(len)) : new Array(len);
+			var A = [];
 			var k = 0;
-			var kValue;
+			var kValue = null;
 			while (k < len) {
 				kValue = items[k];
 				if (mapFn) {
-					A[k] = !VueUtil.isDef(T) ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
+					A.push(!VueUtil.isDef(T) ? mapFn(kValue, k) : mapFn.call(T, kValue, k));
 				} else {
-					A[k] = kValue;
+					A.push(kValue);
 				}
 				k += 1;
 			}
-			A.length = len;
 			return A;
 		}
 		return from(arr);
 	};
 	var toConsumableArray = function(arr) {
 		if (VueUtil.isArray(arr)) {
-			for (var i = 0, arr2 = Array(arr.length), j = arr.length; i < j; i++) {
-				arr2[i] = arr[i];
+			for (var i = 0, arr2 = [], j = arr.length; i < j; i++) {
+				arr2.push(arr[i]);
 			}
 			return arr2;
 		} else {
@@ -70,18 +60,16 @@
 		}
 	};
 	var computeVmIndex = function(vnodes, element) {
-		if (vnodes) {
+		if (VueUtil.isArray(vnodes)) {
 			return vnodes.map(function(elt) {
 				return elt.elm;
 			}).indexOf(element)
 		} else {
 			return -1;
 		}
-	}
+	};
 	var computeIndexes = function(slots, children) {
-		if (!slots) {
-			return [];
-		}
+		if (!VueUtil.isArray(slots)) return [];
 		var elmFromNodes = slots.map(function(elt) {
 			return elt.elm;
 		});
@@ -91,13 +79,13 @@
 		return rawIndexes.filter(function(index){
 			return index !== -1;
 		});
-	}
+	};
 	var emit = function(evtName, evtData) {
 		var self = this;
 		self.$nextTick(function() {
 			self.$emit(evtName.toLowerCase(), evtData);
 		});
-	}
+	};
 	var delegateAndEmit = function(evtName) {
 		var self = this;
 		return function(evtData) {
@@ -106,7 +94,7 @@
 			}
 			emit.call(self, evtName, evtData);
 		}
-	}
+	};
 	var eventsListened = ['Start', 'Add', 'Remove', 'Update', 'End'];
 	var eventsToEmit = ['Choose', 'Sort', 'Filter', 'Clone'];
 	var readonlyProperties = ['Move'].concat(eventsListened, eventsToEmit).map(function(evt) {

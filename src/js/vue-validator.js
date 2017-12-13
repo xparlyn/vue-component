@@ -446,10 +446,10 @@
 		},
 		define: function(rules) {
 			if (!rules) {
-				throw new Error('No rules');
+				throw 'No rules';
 			}
 			if (!VueUtil.isObject(rules)) {
-				throw new Error('Rules must be an object');
+				throw 'Rules must be an object';
 			}
 			this.rules = {};
 			var z;
@@ -618,7 +618,7 @@
 				rule.type = 'pattern';
 			}
 			if (!VueUtil.isFunction(rule.validator) && (rule.type && !validators.hasOwnProperty(rule.type))) {
-				throw new Error('Unknown rule type ' + rule.type);
+				throw 'Unknown rule type ' + rule.type;
 			}
 			return rule.type || 'string';
 		},
@@ -639,7 +639,7 @@
 	};
 	Schema.register = function register(type, validator) {
 		if (!VueUtil.isFunction(validator)) {
-			throw new Error('Cannot register a validator by type, validator is not a function');
+			throw 'Cannot register a validator by type, validator is not a function';
 		}
 		validators[type] = validator;
 	}

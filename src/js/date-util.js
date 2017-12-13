@@ -224,7 +224,7 @@
 			dateObj = new Date(dateObj);
 		}
 		if (Object.prototype.toString.call(dateObj) !== '[object Date]' || isNaN(dateObj.getTime())) {
-			throw new Error('Invalid Date in fecha.format');
+			throw 'Invalid Date in fecha.format';
 		}
 		mask = fecha.masks[mask] || mask || fecha.masks['default'];
 		return mask.replace(token, function($0) {
@@ -234,7 +234,7 @@
 	fecha.parse = function(dateStr, format, i18nSettings) {
 		var i18n = i18nSettings || fecha.i18n;
 		if (typeof format !== 'string') {
-			throw new Error('Invalid format in fecha.parse');
+			throw 'Invalid format in fecha.parse';
 		}
 		format = fecha.masks[format] || format;
 		if (dateStr.length > 1000) {

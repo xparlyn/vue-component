@@ -344,7 +344,7 @@
 			owner.element = ((typeof element.length !== 'undefined') && element.length > 0) ? element[0] : element;
 		}
 		if (!owner.element) {
-			throw new Error('[cleave.js] Please check the element');
+			throw 'Please check the element';
 		}
 		opts.initValue = owner.element.value;
 		owner.properties = Cleave.DefaultProperties.assign({}, opts);
@@ -400,7 +400,7 @@
 			try {
 				pps.phoneFormatter = new Cleave.PhoneFormatter(new pps.root.Cleave.AsYouTypeFormatter(pps.phoneRegionCode),pps.delimiter);
 			} catch (ex) {
-				throw new Error('[cleave.js] Please include phone-type-formatter.{country}.js lib');
+				throw 'Please include phone-type-formatter lib';
 			}
 		},
 		onKeyDown: function(event) {

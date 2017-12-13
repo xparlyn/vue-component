@@ -96,7 +96,7 @@
 					return (field.prop === prop)
 				})[0];
 				if (!field) {
-					throw new Error('must call validateField with valid prop string!');
+					throw 'must call validateField with valid prop string!';
 				}
 				field.validate('', cb);
 			}
