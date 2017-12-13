@@ -57,7 +57,7 @@
 		},
 		methods: {
 			resetFields: function() {
-				this.fields.forEach(function(field) {
+				VueUtil.loop(this.fields, function(field) {
 					field.resetField();
 				});
 			},
@@ -66,7 +66,7 @@
 				var valid = true;
 				var count = 0;
 				var errorMsgs = [];
-				this.fields.forEach(function(field, index) {
+				VueUtil.loop(this.fields, function(field, index) {
 					field.validate('', function(errors) {
 						if (errors) {
 							valid = false;

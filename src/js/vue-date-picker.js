@@ -198,7 +198,7 @@
 						if (cell.type === 'today' || cell.type === 'normal') {
 							if (this.events && this.events.length>0) {
 								var cellDate = new Date(this.year, this.month, cell.text);
-								this.events.forEach(function(event){
+								VueUtil.loop(this.events, function(event){
 									var st = VueUtil.parseDate(event.start).getTime();
 									var ed = VueUtil.parseDate(event.end ? event.end : st).getTime();
 									var de = VueUtil.parseDate(cellDate).getTime();
@@ -858,8 +858,7 @@
 				} else if (VueUtil.isArray(newVal)) {
 					this.minDate = VueUtil.toDate(newVal[0]);
 					this.maxDate = VueUtil.toDate(newVal[1]);
-					if (this.minDate)
-						this.date = new Date(this.minDate);
+					if (this.minDate) this.date = new Date(this.minDate);
 					this.handleConfirm(true);
 				}
 			}

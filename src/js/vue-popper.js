@@ -48,7 +48,7 @@
 		function is_numeric(n) {
 			return ( n !== '' && !isNaN(parseFloat(n)) && isFinite(n)) ;
 		}
-		Object.keys(styles).forEach(function(prop) {
+		VueUtil.loop(Object.keys(styles), function(prop) {
 			var unit = '';
 			if (['width', 'height', 'top', 'right', 'bottom', 'left'].indexOf(prop) !== -1 && is_numeric(styles[prop])) {
 				unit = 'px';
@@ -199,12 +199,12 @@
 		parent.appendChild(popper);
 		return popper;
 		function addClassNames(element, classNames) {
-			classNames.forEach(function(className) {
+			VueUtil.loop(classNames, function(className) {
 				element.classList.add(className);
 			});
 		}
 		function addAttributes(element, attributes) {
-			attributes.forEach(function(attribute) {
+			VueUtil.loop(attributes, function(attribute) {
 				element.setAttribute(attribute.split(':')[0], attribute.split(':')[1] || '');
 			});
 		}
@@ -361,7 +361,7 @@
 		if (VueUtil.isDef(ends)) {
 			modifiersToRun = this._options.modifiers.slice(0, getArrayKeyIndex(this._options.modifiers, ends));
 		}
-		modifiersToRun.forEach(function(modifier) {
+		VueUtil.loop(modifiersToRun, function(modifier) {
 			if (VueUtil.isFunction(modifier)) {
 				data = modifier.call(this, data);
 			}
@@ -470,7 +470,7 @@
 				};
 			}
 		};
-		order.forEach(function(direction) {
+		VueUtil.loop(order, function(direction) {
 			data.offsets.popper = VueUtil.merge(popper, check[direction]());
 		});
 		return data;
@@ -521,7 +521,7 @@
 		} else {
 			flipOrder = this._options.flipBehavior;
 		}
-		flipOrder.forEach(function(step, index) {
+		VueUtil.loop(flipOrder, function(step, index) {
 			if (placement !== step || flipOrder.length === index + 1) {
 				return;
 			}

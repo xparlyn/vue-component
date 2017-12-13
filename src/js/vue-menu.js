@@ -121,7 +121,7 @@
 				if (!activeItem || self.mode === 'horizontal')
 					return;
 				var indexPath = activeItem.indexPath;
-				indexPath.forEach(function(index) {
+				VueUtil.loop(indexPath, function(index) {
 					var submenu = self.submenus[index];
 					submenu && self.openMenu(index, submenu.indexPath);
 				});

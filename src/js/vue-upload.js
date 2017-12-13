@@ -23,7 +23,7 @@
 		}
 		var formData = new FormData();
 		if (option.data) {
-			Object.keys(option.data).forEach(function(key) {
+			VueUtil.loop(Object.keys(option.data), function(key) {
 				formData.append(key, option.data[key]);
 			});
 		}
@@ -146,7 +146,7 @@
 					postFiles = postFiles.slice(0, 1);
 				}
 				if (postFiles.length === 0) return;
-				postFiles.forEach(function(rawFile) {
+				VueUtil.loop(postFiles, function(rawFile) {
 					self.onStart(rawFile);
 					if (self.autoUpload) self.upload(rawFile);
 				});
@@ -183,7 +183,7 @@
 						reqs[uid].abort();
 					}
 				} else {
-					Object.keys(reqs).forEach(function (uid) {
+					VueUtil.loop(Object.keys(reqs), function (uid) {
 						if (reqs[uid]) reqs[uid].abort();
 						delete reqs[uid];
 					});
@@ -545,13 +545,11 @@
 			},
 			submit: function() {
 				var self = this;
-				self.uploadFiles
-					.filter(function(file) {
-						return file.status === 'ready';
-					})
-					.forEach(function(file) {
-						self.$refs['upload-inner'].upload(file.raw);
-					});
+				VueUtil.loop(self.uploadFiles.filter(function(file) {
+					return file.status === 'ready';
+				}), function(file) {
+					self.$refs['upload-inner'].upload(file.raw);
+				});
 			},
 			getMigratingConfig: function() {
 				return {
@@ -600,7 +598,7 @@
 		},
 		mounted: function() {
 			if (this.disabled) {
-				[].forEach.call(this.$el.querySelectorAll('button'), function(buttonNote) {
+				VueUtil.loop(this.$el.querySelectorAll('button'), function(buttonNote) {
 					VueUtil.addClass(buttonNote, 'is-disabled');
 				});
 			}

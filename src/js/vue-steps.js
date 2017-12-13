@@ -41,7 +41,7 @@
 			},
 			steps: function(steps) {
 				var self = this;
-				steps.forEach(function(child, index) {
+				VueUtil.loop(steps, function(child, index) {
 					child.index = index;
 				});
 				if (self.center) {

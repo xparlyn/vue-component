@@ -203,7 +203,7 @@
 			instance.vm.visible = true;
 		});
 	};
-	['success', 'warning', 'info', 'error'].forEach(function(type) {
+	VueUtil.loop(['success', 'warning', 'info', 'error'], function(type) {
 		Notification[type] = function(options) {
 			options.type = type;
 			Notification(options);

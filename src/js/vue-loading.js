@@ -27,7 +27,7 @@
 	var directive = function(Vue) {
 		var insertDom = function(parent, el, binding) {
 			if (!el.domVisible) {
-				Object.keys(el.maskStyle).forEach(function(property) {
+				VueUtil.loop(Object.keys(el.maskStyle), function(property) {
 					el.mask.style[property] = el.maskStyle[property];
 				});
 				if (el.originalPosition !== 'absolute') {
@@ -61,11 +61,11 @@
 						VueUtil.removeClass(el.mask, 'is-fullscreen');
 						if (binding.modifiers.body) {
 							el.originalPosition = document.body.style.position;
-							['top', 'left'].forEach(function(property) {
+							VueUtil.loop(['top', 'left'], function(property) {
 								var scroll = property === 'top' ? 'scrollTop' : 'scrollLeft';
 								el.maskStyle[property] = el.getBoundingClientRect()[property] + document.body[scroll] + document.documentElement[scroll] + 'px';
 							});
-							['height', 'width'].forEach(function(property) {
+							VueUtil.loop(['height', 'width'], function(property) {
 								el.maskStyle[property] = el.getBoundingClientRect()[property] + 'px';
 							});
 							insertDom(document.body, el, binding);

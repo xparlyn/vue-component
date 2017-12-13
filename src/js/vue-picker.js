@@ -320,15 +320,12 @@
 			dateChanged: function(dateA, dateB) {
 				if (VueUtil.isArray(dateA)) {
 					var len = dateA.length;
-					if (!dateB)
-						return true;
+					if (!dateB) return true;
 					while (len--) {
-						if (!equalDate(dateA[len], dateB[len]))
-							return true;
+						if (!equalDate(dateA[len], dateB[len])) return true;
 					}
 				} else {
-					if (!equalDate(dateA, dateB))
-						return true;
+					if (!equalDate(dateA, dateB)) return true;
 				}
 				return false;
 			},

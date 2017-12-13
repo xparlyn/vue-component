@@ -316,11 +316,9 @@
 					return;
 				}
 				var result = [];
-				if (VueUtil.isArray(self.value)) {
-					self.value.forEach(function(value) {
-						result.push(self.getOption(value));
-					});
-				}
+				VueUtil.loop(self.value, function(value) {
+					result.push(self.getOption(value));
+				});
 				self.selected = result;
 				self.$nextTick(function() {
 					self.resetInputHeight();
@@ -331,7 +329,7 @@
 					this.deleteSelected(event);
 				} else if (this.iconClass.indexOf('vue-icon-success') > -1) {
 					var value = [];
-					this.options.forEach(function(option){
+					VueUtil.loop(this.options, function(option){
 						if (!option.disabled) {
 							value.push(option.value);
 						}
@@ -531,12 +529,8 @@
 		created: function() {
 			var self = this;
 			self.cachedPlaceHolder = self.currentPlaceholder = self.placeholder;
-			if (self.multiple && !VueUtil.isArray(self.value)) {
-				self.$emit('input', []);
-			}
-			if (!self.multiple && VueUtil.isArray(self.value)) {
-				self.$emit('input', '');
-			}
+			if (self.multiple && !VueUtil.isArray(self.value)) self.$emit('input', []);
+			if (!self.multiple && VueUtil.isArray(self.value)) self.$emit('input', '');
 			self.setSelected();
 			self.debouncedOnInputChange = VueUtil.throttle(self.debounce, function() {
 				self.onInputChange();

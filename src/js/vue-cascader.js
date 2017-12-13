@@ -44,10 +44,9 @@
 					var activeValue = self.activeValue;
 					var configurableProps = ['label', 'value', 'children', 'disabled'];
 					var formatOptions = function(options) {
-						VueUtil.isArray(options) && options.forEach(function(option) {
-							if (option.__IS__FLAT__OPTIONS)
-								return;
-							configurableProps.forEach(function(prop) {
+						VueUtil.loop(options, function(option) {
+							if (option.__IS__FLAT__OPTIONS) return;
+							VueUtil.loop(configurableProps, function(prop) {
 								var value = option[self.props[prop] || prop];
 								if (value)
 									option[prop] = value;
@@ -263,7 +262,7 @@
 				var self = this;
 				var options = self.options || [];
 				var labels = [];
-				self.currentValue.forEach(function(value) {
+				VueUtil.loop(self.currentValue, function(value) {
 					var targetOption = options && options.filter(function(option) {
 						return option[self.valueKey] === value;
 					})[0];
@@ -406,7 +405,7 @@
 				ancestor = ancestor || [];
 				var self = this;
 				var flatOptions = [];
-				options.forEach(function(option) {
+				VueUtil.loop(options, function(option) {
 					var optionsStack = ancestor.concat(option);
 					if (!option[self.childrenKey]) {
 						flatOptions.push(optionsStack);

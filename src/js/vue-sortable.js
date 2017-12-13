@@ -51,10 +51,7 @@
 	};
 	var toConsumableArray = function(arr) {
 		if (VueUtil.isArray(arr)) {
-			for (var i = 0, arr2 = [], j = arr.length; i < j; i++) {
-				arr2.push(arr[i]);
-			}
-			return arr2;
+			return arr;
 		} else {
 			return arrayfrom(arr);
 		}
@@ -136,10 +133,10 @@
 			var self = this;
 			self.componentMode = self.element.toLowerCase() !== self.$el.nodeName.toLowerCase();
 			var optionsAdded = {};
-			eventsListened.forEach(function(elt) {
+			VueUtil.loop(eventsListened, function(elt) {
 				optionsAdded['on' + elt] = delegateAndEmit.call(self, elt);
 			});
-			eventsToEmit.forEach(function(elt) {
+			VueUtil.loop(eventsToEmit, function(elt) {
 				optionsAdded['on' + elt] = emit.bind(self, elt);
 			});
 			var options = VueUtil.merge({}, self.options, optionsAdded, {

@@ -152,7 +152,7 @@
 			if (self.small) {
 				template.data.class += ' vue-pagination--small';
 			}
-			components.forEach(function(compo) {
+			VueUtil.loop(components, function(compo) {
 				if (compo === '->') {
 					haveRightWrapper = true;
 					return;

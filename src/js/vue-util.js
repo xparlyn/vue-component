@@ -16,31 +16,37 @@
 		return v !== undefined && v !== null
 	};
 	var objType = function(obj) {
-		return Object.prototype.toString.call(obj);
+		return Object.prototype.toString.call(obj).slice(8, -1);
 	};
 	var isString = function(obj) {
-		return isDef(obj) && objType(obj) === '[object String]';
+		return isDef(obj) && objType(obj) === 'String';
 	};
 	var isNumber = function(obj) {
-		return isDef(obj) && objType(obj) === '[object Number]';
+		return isDef(obj) && objType(obj) === 'Number';
 	};
 	var isBoolean = function(obj) {
-		return isDef(obj) && objType(obj) === '[object Boolean]';
+		return isDef(obj) && objType(obj) === 'Boolean';
 	};
 	var isFile = function(obj) {
-		return isDef(obj) && objType(obj) === '[object File]';
+		return isDef(obj) && objType(obj) === 'File';
 	};
 	var isObject = function(obj) {
-		return isDef(obj) && objType(obj) === '[object Object]';
+		return isDef(obj) && objType(obj) === 'Object';
 	};
 	var isArray = function(obj) {
-		return isDef(obj) && objType(obj) === '[object Array]';
+		return isDef(obj) && objType(obj) === 'Array';
 	};
 	var isFunction = function(obj) {
-		return isDef(obj) && objType(obj) === '[object Function]';
+		return isDef(obj) && objType(obj) === 'Function';
 	};
 	var isDate = function(obj) {
-		return isDef(obj) && objType(obj) === '[object Date]';
+		return isDef(obj) && objType(obj) === 'Date';
+	};
+	var isNodeList = function(obj) {
+		return isDef(obj) && objType(obj) === 'NodeList';
+	};
+	var toString = function(val) {
+		return !isDef(val) ? '' : typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val);
 	};
 	var toDate = function(date) {
 		return (!isDef(date) || isNaN(new Date(date).getTime())) ? null : new Date(date);
@@ -112,7 +118,7 @@
 					addMonth = -1;
 					num = -num;
 				}
-				for (var i=0; i<num; i++) {
+				while (num--) {
 					if (addMonth > 0) {
 						year = month === 11 ? year + addMonth : year;
 						month = month === 11 ? 0 : month + addMonth;
@@ -139,6 +145,9 @@
 	};
 	var isVNode = function(node) {
 		return isObject(node) && node.hasOwnProperty('componentOptions');
+	};
+	var loop = function(arr, fn) {
+		(isArray(arr) || isNodeList(arr)) && Array.prototype.forEach.call(arr, fn);
 	};
 	var trim = function(str) {
 		if (!isString(str)) str = '';
@@ -226,8 +235,7 @@
 		var arr = document.cookie.replace(/\s/g, "").split(';');
 		for (var i=0, j=arr.length; i < j; i++) {
 			var tempArr = arr[i].split('=');
-			if (tempArr[0] === name) 
-				return decodeURIComponent(tempArr[1]);
+			if (tempArr[0] === name) return decodeURIComponent(tempArr[1]);
 		}
 		return '';
 	};
@@ -274,7 +282,7 @@
 				if (element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height) {
 					element.__resizeLast__.width = element.offsetWidth;
 					element.__resizeLast__.height = element.offsetHeight;
-					element.__resizeListeners__.forEach(function(fn) {
+					loop(element.__resizeListeners__, function(fn) {
 						fn.call(element, event);
 					});
 				}
@@ -447,7 +455,7 @@
 			},
 			broadcast: function(componentName, eventName, params) {
 				var broadcast = function(componentName, eventName, params) {
-					this.$children.forEach(function(child) {
+					loop(this.$children, function(child) {
 						var name = child.$options.componentName;
 						if (name === componentName) {
 							child.$emit.apply(child, [eventName].concat(params));
@@ -579,7 +587,7 @@
 					}
 				}
 			};
-			children.forEach(function(child) {
+			loop(children, function(child) {
 				child.data.class = ['collapse-transition'];
 			});
 			return createElement('transition', data, children);
@@ -589,7 +597,7 @@
 		var nodeList = [];
 		var CTX = '@@clickoutsideContext';
 		var clickOutSideFn = function(e) {
-			nodeList.forEach(function(node) {
+			loop(nodeList, function(node) {
 				node[CTX].documentHandler(e)
 			});
 		};
@@ -655,6 +663,7 @@
 		isArray: isArray,
 		isFunction: isFunction,
 		isDate: isDate,
+		toString: toString,
 		toDate: toDate,
 		formatDate: formatDate,
 		parseDate: parseDate,
@@ -664,6 +673,7 @@
 		getStartDateOfMonth: getStartDateOfMonth,
 		addDate: addDate,
 		isVNode: isVNode,
+		loop: loop,
 		trim: trim,
 		merge: merge,
 		arrayToObject: arrayToObject,

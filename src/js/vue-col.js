@@ -39,17 +39,17 @@
 		render: function(createElement) {
 			var self = this;
 			var classList = [];
-			['span', 'offset', 'pull', 'push'].forEach(function(prop) {
+			VueUtil.loop(['span', 'offset', 'pull', 'push'], function(prop) {
 				if (self[prop]) {
 					classList.push(prop !== 'span' ? 'vue-col-' + prop + '-' + self[prop] : 'vue-col-' + self[prop]);
 				}
 			});
-			['xs', 'sm', 'md', 'lg'].forEach(function(size) {
+			VueUtil.loop(['xs', 'sm', 'md', 'lg'], function(size) {
 				if (VueUtil.isNumber(self[size])) {
 					classList.push('vue-col-' + size + '-' + self[size]);
 				} else if (VueUtil.isObject(self[size])) {
 					var props = self[size];
-					Object.keys(props).forEach(function(prop) {
+					VueUtil.loop(Object.keys(props), function(prop) {
 						classList.push(prop !== 'span' ? 'vue-col-' + size + '-' + prop + '-' + props[prop] : 'vue-col-' + size + '-' + props[prop]);
 					});
 				}

@@ -20,16 +20,16 @@
 		format = format || 'yyyy-MM-dd HH:mm:ss';
 		if (!ranges || !ranges.length) return date;
 		var len = ranges.length;
-		date = VueUtil.parseDate(VueUtil.formatDate(date, format), format);
-		for (var i = 0; i < len; i++) {
-			var range = ranges[i];
+		date = VueUtil.parseDate(date, format);
+		while (len--) {
+			var range = ranges[len];
 			if (date >= range[0] && date <= range[1]) {
 				return date;
 			}
 		}
 		var maxDate = ranges[0][0];
 		var minDate = ranges[0][0];
-		ranges.forEach(function(range) {
+		VueUtil.loop(ranges, function(range) {
 			minDate = new Date(Math.min(range[0], minDate));
 			maxDate = new Date(Math.max(range[1], maxDate));
 		});
@@ -83,7 +83,7 @@
 				var getRangeHours = function(ranges) {
 					var hours = [];
 					var disabledHours = [];
-					VueUtil.isArray(ranges) && ranges.forEach(function(range) {
+					VueUtil.loop(ranges, function(range) {
 						var value = range.map(function(date) {
 							return VueUtil.toDate(date).getHours();
 						});
@@ -96,14 +96,9 @@
 						};
 						disabledHours = disabledHours.concat(newArray(value[0], value[1]));
 					});
-					if (disabledHours.length) {
-						for (var i = 0; i < 24; i++) {
-							hours[i] = disabledHours.indexOf(i) === -1;
-						}
-					} else {
-						for (var i = 0; i < 24; i++) {
-							hours[i] = false;
-						}
+					var i = 24;
+					while (i--) {
+						hours[i] = disabledHours.length ? disabledHours.indexOf(i) === -1 : false;
 					}
 					return hours;
 				};

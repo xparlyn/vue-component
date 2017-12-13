@@ -13,8 +13,7 @@
 		var all = true;
 		var none = true;
 		var allWithoutDisable = true;
-		for (var i = 0, j = node.length; i < j; i++) {
-			var n = node[i];
+		VueUtil.loop(node, function(n) {
 			if (n.checked !== true || n.indeterminate) {
 				all = false;
 				if (!n.disabled) {
@@ -24,7 +23,7 @@
 			if (n.checked !== false || n.indeterminate) {
 				none = false;
 			}
-		}
+		});
 		return {
 			all: all,
 			none: none,
@@ -54,14 +53,13 @@
 		}
 	};
 	var initLazyLoadChild = function(node) {
-		var childNodes = node.childNodes;
 		if (node.checked) {
-			for (var i = 0, j = childNodes.length; i < j; i++) {
-				var child = childNodes[i];
+			var childNodes = node.childNodes;
+			VueUtil.loop(childNodes, function(child) {
 				if (!child.disabled) {
 					child.checked = true;
 				}
-			}
+			});
 		}
 		var parent = node.parent;
 		if (!parent || parent.level === 0) return;
@@ -162,11 +160,11 @@
 		} else {
 			children = getPropertyFromData(self, 'children') || [];
 		}
-		for (var i = 0, j = children.length; i < j; i++) {
+		VueUtil.loop(children, function(child) {
 			self.insertChild({
-				data: children[i]
+				data: child
 			});
-		}
+		});
 	};
 	Node.prototype.getLabel = function() {
 		return getPropertyFromData(this, 'label');
@@ -230,7 +228,7 @@
 	Node.prototype.removeChildByData = function(data) {
 		var self = this;
 		var targetNode = null;
-		self.childNodes.forEach(function(node) {
+		VueUtil.loop(self.childNodes, function(node) {
 			if (node.data === data) {
 				targetNode = node;
 			}
@@ -267,7 +265,7 @@
 	Node.prototype.doCreateChildren = function(array, defaultProps) {
 		var self = this;
 		defaultProps = defaultProps || {};
-		array.forEach(function(item) {
+		VueUtil.loop(array, function(item) {
 			self.insertChild(VueUtil.merge({
 				data: item
 			}, defaultProps));
@@ -306,12 +304,11 @@
 		var handleDescendants = function(lazy) {
 			if (deep && !lazy) {
 				var childNodes = self.childNodes;
-				for (var i = 0, j = childNodes.length; i < j; i++) {
-					var child = childNodes[i];
+				VueUtil.loop(childNodes, function(child) {
 					passValue = passValue || value !== false;
 					var isCheck = child.disabled ? child.checked : passValue;
 					child.setChecked(isCheck, deep, true, passValue);
-				}
+				});
 				var childState = getChildState(childNodes);
 				var half = childState.half;
 				var all = childState.all;
@@ -358,7 +355,7 @@
 		});
 		var newDataMap = {};
 		var newNodes = [];
-		newData.forEach(function(item, index) {
+		VueUtil.loop(newData, function(item, index) {
 			if (item[NODE_KEY]) {
 				newDataMap[item[NODE_KEY]] = {
 					index: index,
@@ -371,11 +368,11 @@
 				});
 			}
 		});
-		oldData.forEach(function(item) {
+		VueUtil.loop(oldData, function(item) {
 			if (!newDataMap[item[NODE_KEY]])
 				self.removeChildByData(item);
 		});
-		newNodes.forEach(function(args) {
+		VueUtil.loop(newNodes, function(args) {
 			var index = args.index;
 			var data = args.data;
 			self.insertChild({
@@ -435,13 +432,13 @@
 		var filterNodeMethod = self.filterNodeMethod;
 		var traverse = function(node) {
 			var childNodes = node.root ? node.root.childNodes : node.childNodes;
-			childNodes.forEach(function(child) {
+			VueUtil.loop(childNodes, function(child) {
 				child.visible = filterNodeMethod.call(child, value, child.data, child);
 				traverse(child);
 			});
 			if (!node.visible && childNodes.length) {
 				var allHidden = true;
-				childNodes.forEach(function(child) {
+				VueUtil.loop(childNodes, function(child) {
 					if (child.visible)
 						allHidden = false;
 				});
@@ -507,7 +504,7 @@
 		var self = this;
 		var defaultCheckedKeys = self.defaultCheckedKeys || [];
 		var nodesMap = self.nodesMap;
-		defaultCheckedKeys.forEach(function(checkedKey) {
+		VueUtil.loop(defaultCheckedKeys, function(checkedKey) {
 			var node = nodesMap[checkedKey];
 			if (node) {
 				node.setChecked(true, !self.checkStrictly);
@@ -552,7 +549,7 @@
 		var checkedNodes = [];
 		var traverse = function(node) {
 			var childNodes = node.root ? node.root.childNodes : node.childNodes;
-			childNodes.forEach(function(child) {
+			VueUtil.loop(childNodes, function(child) {
 				if ((!leafOnly && child.checked) || (leafOnly && child.isLeaf && child.checked)) {
 					checkedNodes.push(child.data);
 				}
@@ -568,7 +565,7 @@
 		var key = self.key;
 		var allNodes = self._getAllNodes();
 		var keys = [];
-		allNodes.forEach(function(node) {
+		VueUtil.loop(allNodes, function(node) {
 			if (!leafOnly || (leafOnly && node.isLeaf)) {
 				if (node.checked) {
 					keys.push((node.data || {})[key]);
@@ -595,11 +592,11 @@
 		var allNodes = self._getAllNodes().sort(function(a, b){return b.level - a.level});
 		var cache = Object.create(null);
 		var keys = Object.keys(checkedKeys);
-		allNodes.forEach(function(node){return node.setChecked(false, false)});
 		for (var i = 0, j = allNodes.length; i < j; i++) {
 			var node = allNodes[i];
 			var nodeKey = node.data[key]+'';
 			var checked = keys.indexOf(nodeKey) > -1;
+			node.setChecked(false, false)
 			if (!checked) {
 				if (node.checked && !cache[nodeKey]) {
 					node.setChecked(false, false);
@@ -619,8 +616,8 @@
 			if (leafOnly) {
 				node.setChecked(false, false);
 				var traverse = function(node) {
-					var childNodes = node.childNodes;
-					childNodes.forEach(function(child) {
+					var childNodes = node.childNodes || [];
+					VueUtil.loop(childNodes, function(child) {
 						if (!child.isLeaf) {
 							child.setChecked(false, false);
 						}
@@ -636,7 +633,7 @@
 		var leafOnly = arguments.length > 1 && VueUtil.isDef(arguments[1]) ? arguments[1] : false;
 		var key = self.key;
 		var checkedKeys = {};
-		array.forEach(function(item) {
+		VueUtil.loop(array, function(item) {
 			checkedKeys[(item || {})[key]] = true;
 		});
 		self._setCheckedKeys(key, leafOnly, checkedKeys);
@@ -647,7 +644,7 @@
 		self.defaultCheckedKeys = keys;
 		var key = self.key;
 		var checkedKeys = {};
-		keys.forEach(function(key) {
+		VueUtil.loop(keys, function(key) {
 			checkedKeys[key] = true;
 		});
 		self._setCheckedKeys(key, leafOnly, checkedKeys);
@@ -656,10 +653,9 @@
 		var self = this;
 		keys = keys || [];
 		self.defaultExpandedKeys = keys;
-		keys.forEach(function(key) {
+		VueUtil.loop(keys, function(key) {
 			var node = self.getNode(key);
-			if (node)
-				node.expand(null, self.autoExpandParent);
+			if (node) node.expand(null, self.autoExpandParent);
 		});
 	};
 	TreeStore.prototype.setChecked = function(data, checked, deep) {

@@ -38,12 +38,12 @@
 					var isActive = false;
 					var submenus = this.submenus;
 					var items = this.items;
-					Object.keys(items).forEach(function(index) {
+					VueUtil.loop(Object.keys(items), function(index) {
 						if (items[index].active) {
 							isActive = true;
 						}
 					});
-					Object.keys(submenus).forEach(function(index) {
+					VueUtil.loop(Object.keys(submenus), function(index) {
 						if (submenus[index].active) {
 							isActive = true;
 						}

@@ -83,7 +83,7 @@
 			},
 			handleButtonEnter: function(arrow) {
 				var self = this;
-				self.items.forEach(function(item, index) {
+				VueUtil.loop(self.items, function(item, index) {
 					if (arrow === self.itemInStage(item, index)) {
 						item.hover = true;
 					}
@@ -91,7 +91,7 @@
 			},
 			handleButtonLeave: function() {
 				var self = this;
-				self.items.forEach(function(item) {
+				VueUtil.loop(self.items, function(item) {
 					item.hover = self;
 				});
 			},
@@ -102,7 +102,7 @@
 			},
 			resetItemPosition: function() {
 				var self = this;
-				self.items.forEach(function(item, index) {
+				VueUtil.loop(self.items, function(item, index) {
 					item.translateItem(index, self.activeIndex);
 				});
 			},

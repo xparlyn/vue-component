@@ -304,8 +304,7 @@
 			target.creditCard = !!opts.creditCard;
 			target.creditCardStrictMode = !!opts.creditCardStrictMode;
 			target.creditCardType = '';
-			target.onCreditCardTypeChanged = opts.onCreditCardTypeChanged || (function() {}
-			);
+			target.onCreditCardTypeChanged = opts.onCreditCardTypeChanged || (function() {});
 			target.phone = !!opts.phone;
 			target.phoneRegionCode = opts.phoneRegionCode || 'CN';
 			target.phoneFormatter = {};

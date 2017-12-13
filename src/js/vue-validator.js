@@ -38,7 +38,7 @@
 				callback(results);
 			}
 		}
-		arr.forEach(function(a) {
+		VueUtil.loop(arr, function(a) {
 			func(a, count);
 		});
 	};
@@ -62,7 +62,7 @@
 	};
 	var flattenObjArr = function(objArr) {
 		var ret = [];
-		Object.keys(objArr).forEach(function(k) {
+		VueUtil.loop(Object.keys(objArr), function(k) {
 			ret.push.apply(ret, objArr[k]);
 		});
 		return ret;
@@ -87,7 +87,7 @@
 				callback(results);
 			}
 		};
-		objArrKeys.forEach(function(key) {
+		VueUtil.loop(objArrKeys, function(key) {
 			var arr = objArr[key];
 			if (firstFields.indexOf(key) !== -1) {
 				asyncSerialArray(arr, func, next);
@@ -487,14 +487,16 @@
 						errors.push(e);
 					}
 				}
-				for (i = 0; i < results.length; i++) {
+				i = results.length;
+				while (i--) {
 					add(results[i]);
 				}
 				if (!errors.length) {
 					errors = null;
 					fields = null;
 				} else {
-					for (i = 0; i < errors.length; i++) {
+					i = errors.length;
+					while (i--) {
 						field = errors[i].field;
 						fields[field] = fields[field] || [];
 						fields[field].push(errors[i]);
@@ -508,10 +510,10 @@
 			var value;
 			var series = {};
 			var keys = options.keys || Object.keys(self.rules);
-			keys.forEach(function(z) {
+			VueUtil.loop(keys, function(z) {
 				arr = self.rules[z];
 				value = source[z];
-				arr.forEach(function(r) {
+				VueUtil.loop(arr, function(r) {
 					var rule = r;
 					if (VueUtil.isFunction(rule.transform)) {
 						if (source === source_) {

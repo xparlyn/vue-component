@@ -55,7 +55,7 @@
 				}
 				eventClass = eventClass.join(' ');
 				var mouseenterItem = function(eventCards, event) {
-					eventCards.forEach(function(card) {
+					VueUtil.loop(eventCards, function(card) {
 						if (card.event.cellIndex === event.cellIndex
 						 && VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
 						 && VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
@@ -64,7 +64,7 @@
 					})
 				};
 				var mouseleaveItem = function(eventCards, event) {
-					eventCards.forEach(function(card) {
+					VueUtil.loop(eventCards, function(card) {
 						if (card.event.cellIndex === event.cellIndex
 						 && VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
 						 && VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
@@ -190,7 +190,7 @@
 				var eventCard = this.$refs.eventCard;
 				var defaultWidth = this.$el.querySelector('.vue-full-calendar__events-day').offsetWidth;
 				if (VueUtil.isArray(eventCard)) {
-					eventCard.forEach(function(card){
+					VueUtil.loop(eventCard, function(card){
 						card.defaultWidth = defaultWidth;
 					});
 				} else {
@@ -214,7 +214,7 @@
 					var week = [];
 					for (var perDay = 0; perDay < 7; perDay++) {
 						var dayClass = [];
-						dateClassAry.forEach(function(dateClass) {
+						VueUtil.loop(dateClassAry, function(dateClass) {
 							if (VueUtil.formatDate(dateClass.date) === VueUtil.formatDate(monthViewStartDate)) {
 								var customClass = dateClass.customClass
 								if (VueUtil.isArray(customClass)) {
@@ -224,7 +224,7 @@
 								}
 							}
 						});
-						weekClassAry.forEach(function(weekClass) {
+						VueUtil.loop(weekClassAry, function(weekClass) {
 							if (weekClass.week === perDay) {
 								var customClass = weekClass.customClass
 								if (VueUtil.isArray(customClass)) {
@@ -278,16 +278,14 @@
 			},
 			findEventsByDate: function(date, events){
 				var findEvents = [];
-				if (events && events.length>0) {
-					events.forEach(function(event){
-						var st = VueUtil.parseDate(event.start).getTime();
-						var ed = VueUtil.parseDate(event.end ? event.end : st).getTime();
-						var de = VueUtil.parseDate(date).getTime();
-						if (de >= st && de <= ed) {
-							findEvents.push(event);
-						}
-					});
-				}
+				VueUtil.loop(events, function(event){
+					var st = VueUtil.parseDate(event.start).getTime();
+					var ed = VueUtil.parseDate(event.end ? event.end : st).getTime();
+					var de = VueUtil.parseDate(date).getTime();
+					if (de >= st && de <= ed) {
+						findEvents.push(event);
+					}
+				});
 				return findEvents;
 			},
 			mouseenterDay: function(e) {
@@ -297,7 +295,7 @@
 				e.target.parentElement.classList.remove('hover');
 			},
 			mouseenterEvent: function(event, e) {
-				this.$refs.eventCard.forEach(function(card) {
+				VueUtil.loop(this.$refs.eventCard, function(card) {
 					if (card.event.cellIndex === event.cellIndex
 					 && VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
 					 && VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
@@ -307,7 +305,7 @@
 				e.target.classList.add('hover');
 			},
 			mouseleaveEvent: function(event, e) {
-				this.$refs.eventCard.forEach(function(card) {
+				VueUtil.loop(this.$refs.eventCard, function(card) {
 					if (card.event.cellIndex === event.cellIndex
 					 && VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
 					 && VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
@@ -385,7 +383,7 @@
 				var findEventsByDate = function(date, events){
 					if (events && events.length>0) {
 						var findEvents = [];
-						events.forEach(function(event){
+						VueUtil.loop(events, function(event){
 							var st = VueUtil.parseDate(event.start).getTime();
 							var ed = VueUtil.parseDate(event.end ? event.end : st).getTime();
 							var de = VueUtil.parseDate(date).getTime();

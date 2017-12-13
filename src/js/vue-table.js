@@ -88,7 +88,7 @@
 			}
 			var data = states._data;
 			var filters = states.filters;
-			Object.keys(filters).forEach(function(columnId) {
+			VueUtil.loop(Object.keys(filters), function(columnId) {
 				var values = filters[columnId];
 				if (!values || values.length === 0)
 					return;
@@ -199,7 +199,7 @@
 			var selection = this.states.selection;
 			var selectionChanged = false;
 			var self = this;
-			data.forEach(function(item, index) {
+			VueUtil.loop(data, function(item, index) {
 				if (states.selectable) {
 					if (states.selectable.call(null, item, index) && self.toggleRowSelection(item, value)) {
 						selectionChanged = true;
@@ -228,10 +228,11 @@
 			'max': Vue.t('vue.table.maxText'),
 		};
 		this.states.aggregates = [];
-		for (var index=0,len=columns.length; index<len; index++) {
+		var index = columns.length;
+		while (index--) {
 			var column = columns[index];
 			var aggregate = '';
-			var resultMap = {};
+			var resultMap = Object.create(null);
 			resultMap.max = '';
 			resultMap.min = '';
 			resultMap.sum = '';
@@ -239,42 +240,40 @@
 			resultMap.label = '';
 			var aggregateType = column.aggregate.toLowerCase();
 			var aggregateLabel = labelMap[aggregateType];
-			if (!aggregateLabel && !VueUtil.isDef(column.aggregateLabel)) {
-				this.states.aggregates.push(resultMap);
-				continue;
-			}
 			if (VueUtil.isDef(column.aggregateLabel)) aggregateLabel = column.aggregateLabel;
-			var max = null;
-			var min = null;
-			var sum = null;
-			var precision = 0;
-			var valueCount = 0;
-			resultMap.count = data.length;
-			data.forEach(function(item) {
-				var value = Number(item[column.property]);
-				if (!isNaN(value)) {
-					var decimal = ('' + value).split('.')[1];
-					decimal && decimal.length > precision ? precision = decimal.length : null;
-					!VueUtil.isDef(max) ? max = value : value > max ? max = value : null;
-					!VueUtil.isDef(min) ? min = value : value < min ? min = value : null;
-					!VueUtil.isDef(sum) ? sum = value : sum = sum + value;
-					valueCount++;
+			if (VueUtil.isDef(aggregateLabel)) {
+				var max = null;
+				var min = null;
+				var sum = null;
+				var precision = 0;
+				var valueCount = 0;
+				resultMap.count = data.length;
+				VueUtil.loop(data, function(item) {
+					var value = Number(item[column.property]);
+					if (!isNaN(value)) {
+						var decimal = ('' + value).split('.')[1];
+						decimal && decimal.length > precision ? precision = decimal.length : null;
+						VueUtil.isDef(max) ? value > max ? max = value : null : max = value;
+						VueUtil.isDef(min) ? value < min ? min = value : null : min = value;
+						VueUtil.isDef(sum) ? sum = sum + value : sum = value;
+						valueCount++;
+					}
+				});
+				if (valueCount > 0) {
+					resultMap.max = max;
+					resultMap.min = min;
+					resultMap.sum = parseFloat(sum.toFixed(precision));
+					resultMap.average = parseFloat((sum / valueCount).toFixed(precision));
 				}
-			});
-			if (valueCount > 0) {
-				resultMap.max = max;
-				resultMap.min = min;
-				resultMap.sum = parseFloat(sum.toFixed(precision));
-				resultMap.average = parseFloat((sum / valueCount).toFixed(precision));
+				var columnAggregate = resultMap[aggregateType] || '';
+				if (!columnAggregate) {
+					aggregate = aggregateLabel;
+				} else {
+					aggregateLabel ? aggregate = aggregateLabel + ': ' + columnAggregate : aggregate = columnAggregate;
+				}
+				resultMap.label = aggregate;
 			}
-			var columnAggregate = resultMap[aggregateType] || '';
-			if (!columnAggregate) {
-				aggregate = aggregateLabel;
-			} else {
-				aggregateLabel ? aggregate = aggregateLabel + ': ' + columnAggregate : aggregate = columnAggregate;
-			}
-			resultMap.label = aggregate;
-			this.states.aggregates.push(resultMap);
+			this.states.aggregates[index] = resultMap;
 		}
 	}
 	TableStore.prototype.updateColumns = function() {
@@ -282,7 +281,7 @@
 		var columns = [];
 		states.fixedColumns = [];
 		states.rightFixedColumns = [];
-		(states._columns || []).slice().forEach(function(column) {
+		VueUtil.loop((states._columns || []).slice(), function(column) {
 			if (column.visible) {
 				columns.push(column);
 				if (column.fixed === true || column.fixed === 'left') {
@@ -342,7 +341,8 @@
 	TableStore.prototype.getColumnById = function(columnId) {
 		var column = null;
 		var columns = this.states.columns;
-		for (var i=0, j=columns.length; i<j; i++) {
+		var i = columns.length;
+		while (i--) {
 			var item = columns[i];
 			if (item.id === columnId) {
 				column = item;
@@ -393,7 +393,7 @@
 		deleted = selection.filter(function(item) {
 			return data.indexOf(item) === -1;
 		});
-		deleted.forEach(function(deletedItem) {
+		VueUtil.loop(deleted, function(deletedItem) {
 			selection.splice(selection.indexOf(deletedItem), 1);
 		});
 		if (deleted.length) {
@@ -415,7 +415,8 @@
 		};
 		var isAllSelected = true;
 		var selectedCount = 0;
-		for (var i = 0, j = data.length; i < j; i++) {
+		var i = data.length;
+		while (i--) {
 			var item = data[i];
 			if (selectable) {
 				var isRowSelectable = selectable.call(null, item, i);
@@ -458,7 +459,7 @@
 		var mutations = this.mutations;
 		var args = [];
 		for (var i = 1, j = arguments.length; i < j; i++) {
-			args[i - 1] = arguments[i];
+			args.push(arguments[i]);
 		}
 		if (mutations[name]) {
 			mutations[name].apply(this, [this.states].concat(args));
@@ -546,7 +547,7 @@
 		var bodyMinWidth = 0;
 		var flexColumns = [];
 		var allColumnsWidth = 0;
-		columns.forEach(function(column) {
+		VueUtil.loop(columns, function(column) {
 			if (!VueUtil.isNumber(column.width)) {
 				flexColumns.push(column);
 				allColumnsWidth = allColumnsWidth + (column.minWidth || 80);
@@ -562,8 +563,9 @@
 				var totalFlexWidth = bodyWidth - this.gutterWidth - bodyMinWidth;
 				var noneFirstWidth = 0;
 				var flexWidthPerPixel = totalFlexWidth / allColumnsWidth;
-				for (var i = 1; i < flexColumnLen; i++) {
-					var column = flexColumns[i];
+				while (flexColumnLen--) {
+					if (flexColumnLen === 0) break;
+					var column = flexColumns[flexColumnLen];
 					var flexWidth = Math.floor((column.minWidth || 80) * flexWidthPerPixel);
 					noneFirstWidth += flexWidth;
 					column.realWidth = (column.minWidth || 80) + flexWidth;
@@ -571,7 +573,7 @@
 				flexColumns[0].realWidth = (flexColumns[0].minWidth || 80) + totalFlexWidth - noneFirstWidth;
 			} else {
 				this.scrollX = true;
-				flexColumns.forEach(function(column) {
+				VueUtil.loop(flexColumns, function(column) {
 					column.realWidth = column.minWidth || 80;
 				});
 			}
@@ -579,13 +581,13 @@
 		}
 		var fixedColumns = this.store.states.fixedColumns;
 		var fixedWidth = 0;
-		fixedColumns.forEach(function(column) {
+		VueUtil.loop(fixedColumns, function(column) {
 			fixedWidth += column.realWidth || 80;
 		});
 		this.fixedWidth = fixedWidth;
 		var rightFixedColumns = this.store.states.rightFixedColumns;
 		var rightFixedWidth = 0;
-		rightFixedColumns.forEach(function(column) {
+		VueUtil.loop(rightFixedColumns, function(column) {
 			rightFixedWidth += column.realWidth || 80;
 		});
 		this.rightFixedWidth = rightFixedWidth;
@@ -1167,9 +1169,10 @@
 		mounted: function() {
 			var self = this;
 			var sortingColumns = self.store.states.sortingColumns;
-			self.defaultSort.forEach(function(sort) {
+			VueUtil.loop(self.defaultSort, function(sort) {
 				var columns = self.store.states.columns;
-				for (var i = 0, l = columns.length; i < l; i++) {
+				var i=columns.length;
+				while (i--) {
 					var column = columns[i];
 					if (column.property === sort.prop) {
 						column.order = sort.order;
@@ -1196,7 +1199,8 @@
 			convertToRows: function(columns) {
 				var rows = [[]];
 				var colspan = 1;
-				for (var i=columns.length-1; i>=0; i--) {
+				var i=columns.length;
+				while (i--) {
 					var column = columns[i];
 					column.colspanNum = 1
 					if (!column.colspan) {
@@ -1463,7 +1467,8 @@
 				var labelColumns = [];
 				var colColumns = [];
 				var tableColumns = this.tableColumns;
-				for (var i=tableColumns.length-1; i>=0; i--) {
+				var i = tableColumns.length;
+				while (i--) {
 					var column = tableColumns[i];
 					if (column.colspan) {
 						colColumns.push(column);
@@ -1504,7 +1509,7 @@
 			leftPin: function(columns) {
 				if (columns.length <= 0) {
 					var layoutFLg = false;
-					this.tableColumns.forEach(function(column){
+					VueUtil.loop(this.tableColumns, function(column){
 						if (column.fixed === true || column.fixed === 'left'){
 							column.fixed = false;
 							layoutFLg = true;
@@ -1514,24 +1519,22 @@
 					return;
 				}
 				var self = this;
-				columns.forEach(function(column, index) {
+				VueUtil.loop(columns, function(column, index) {
 					var rightIndex = self.pinForm.rightPin.indexOf(column);
 					if (rightIndex !== -1) self.pinForm.rightPin.splice(rightIndex, 1);
 					column.fixed = 'left';
 					column.fixedIndex = index;
-					if (column.colColumns) {
-						for (var i=0,j=column.colColumns.length; i<j; i++) {
-							column.colColumns[i].fixed = 'left';
-							column.colColumns[i].fixedIndex = index;
-						}
-					}
+					VueUtil.loop(column.colColumns, function(colColumn) {
+						colColumn.fixed = 'left';
+						colColumn.fixedIndex = index;
+					});
 				});
 				this.store.scheduleLayout();
 			},
 			rightPin: function(columns) {
 				if (columns.length <= 0) {
 					var layoutFLg = false;
-					this.tableColumns.forEach(function(column){
+					VueUtil.loop(this.tableColumns, function(column){
 						if (column.fixed === 'right'){
 							column.fixed = false;
 							layoutFLg = true;
@@ -1541,17 +1544,15 @@
 					return;
 				}
 				var self = this;
-				columns.forEach(function(column, index) {
+				VueUtil.loop(columns, function(column, index) {
 					var leftIndex = self.pinForm.leftPin.indexOf(column);
 					if (leftIndex !== -1) self.pinForm.leftPin.splice(leftIndex, 1);
 					column.fixed = 'right';
 					column.fixedIndex = index;
-					if (column.colColumns) {
-						for (var i=0,j=column.colColumns.length; i<j; i++) {
-							column.colColumns[i].fixed = 'right';
-							column.colColumns[i].fixedIndex = index;
-						}
-					}
+					VueUtil.loop(column.colColumns, function(colColumn) {
+						colColumn.fixed = 'right';
+						colColumn.fixedIndex = index;
+					});
 				});
 				this.store.scheduleLayout();
 			},
@@ -1606,7 +1607,7 @@
 					}
 				}
 				var existflg = false;
-				this.filterList.forEach(function(filterObj) {
+				VueUtil.loop(this.filterList, function(filterObj) {
 					if (filterColumn.property === filterObj.property) {
 						existflg = true;
 					}
@@ -1631,7 +1632,7 @@
 			doFilter: function() {
 				var store = this.store;
 				var filterList = this.filterList;
-				filterList.forEach(function(filterColumn) {
+				VueUtil.loop(filterList, function(filterColumn) {
 					store.commit('filterChange', {
 						column: filterColumn,
 						values: 'filter'
@@ -1642,18 +1643,16 @@
 			},
 			displayColumn: function(column) {
 				column.visible = !column.visible;
-				if (column.colColumns) {
-					for (var i=0,j=column.colColumns.length; i<j; i++) {
-						column.colColumns[i].visible = !column.colColumns[i].visible;
-					}
-				}
+				VueUtil.loop(column.colColumns, function(colColumn) {
+					colColumn.visible = !colColumn.visible;
+				});
 				this.store.scheduleLayout();
 			}
 		},
 		mounted: function() {
 			if (this.store) {
 				var tableColumns = this.tableColumns;
-				this.store.states._columns.forEach(function(column) {
+				VueUtil.loop(this.store.states._columns, function(column) {
 					if (column.property !== 'selectionColumn'
 					 && column.property !== 'indexColumn'
 					 && column.property !== 'expandColumn') {
@@ -1757,7 +1756,7 @@
 						if (column.length > 0) appendLine(content, column, options);
 					} else {
 						columnOrder = [];
-						datas.forEach(function(v) {
+						VueUtil.loop(datas, function(v) {
 							if (!VueUtil.isArray(v)) {
 								columnOrder = columnOrder.concat(Object.keys(v));
 							}
@@ -1767,14 +1766,12 @@
 							appendLine(content, columnOrder, options);
 						}
 					}
-					if (VueUtil.isArray(datas)) {
-						datas.forEach(function(row) {
-							if (!VueUtil.isArray(row)) {
-								row = columnOrder.map(function(k) {return VueUtil.isDef(row[k]) ? row[k] : '';});
-							}
-							appendLine(content, row, options);
-						});
-					}
+					VueUtil.loop(datas, function(row) {
+						if (!VueUtil.isArray(row)) {
+							row = columnOrder.map(function(k) {return VueUtil.isDef(row[k]) ? row[k] : '';});
+						}
+						appendLine(content, row, options);
+					});
 					if (VueUtil.isArray(footer)) {
 						appendLine(content, footer, options);
 					}
@@ -2043,7 +2040,7 @@
 			if (self.height) {
 				self.layout.setHeight(self.height);
 			}
-			self.store.states.columns.forEach(function(column) {
+			VueUtil.loop(self.store.states.columns, function(column) {
 				if (column.filteredValue && column.filteredValue.length) {
 					self.store.commit('filterChange', {
 						column: cloumn,
