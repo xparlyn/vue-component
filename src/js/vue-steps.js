@@ -1,12 +1,12 @@
 (function(context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context.VueSteps = definition(context.Vue);
+		context.VueSteps = definition(context.Vue, context.VueUtil);
 		delete context.VueSteps;
 	}
-})(this, function(Vue) {
+})(this, function(Vue, VueUtil) {
 	'use strict';
 	var VueSteps = {
 		template: '<div :class="[\'vue-steps\', \'is-\' + direction, center ? \'is-center\' : \'\']"><slot></slot></div>',
