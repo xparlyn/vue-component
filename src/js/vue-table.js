@@ -2058,9 +2058,9 @@
 					});
 				}
 			});
-			self.doLayout();
 			self.$nextTick(function() {
 				self.bindEvents();
+				self.doLayout();
 			});
 		},
 		data: function() {
