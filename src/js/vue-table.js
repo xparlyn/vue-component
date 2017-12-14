@@ -320,20 +320,29 @@
 		if (sortingColumns.length === 0) return data;
 		var orderBy = function(data, sortList) {
 			return data.slice().sort(function(data1, data2) {
-				for (var i = 0, l = sortList.length; i < l; i++) {
-					var column = sortList[i];
+				var index = 0;
+				var column = sortList[index];
+				index++; 
+				var sortBy = function() {
 					var value1 = data1[column.property];
 					var value2 = data2[column.property];
 					var sortOrder = 1;
 					if (column.order === "descending") {
 						sortOrder = -1
 					}
+					if (value1 === value2) {
+						if (index === sortList.length) return;
+						column = sortList[index];
+						index++; 
+						return sortBy();
+					}
 					if (VueUtil.isFunction(column.sortMethod)) {
-						return sortMethod(value1, value2) ? order : -order;
+						return sortMethod(value1, value2) ? sortOrder : -sortOrder;
 					} else {
 						return value1 > value2 ? sortOrder : -sortOrder;
 					}
-				}
+				};
+				return sortBy();
 			});
 		};
 		return orderBy(data, sortingColumns);
