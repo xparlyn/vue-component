@@ -6,7 +6,7 @@
 		context.VueBreadcrumbItem = definition(context.Vue, context.VueUtil);
 		delete context.VueBreadcrumbItem;
 	}
-})(this, function(Vue) {
+})(this, function(Vue, VueUtil) {
 	'use strict';
 	var VueBreadcrumbItem = {
 		template: '<span class="vue-breadcrumb__item"><span class="vue-breadcrumb__item__inner" ref="link"><slot></slot></span><span class="vue-breadcrumb__separator">{{separator}}</span></span>',
