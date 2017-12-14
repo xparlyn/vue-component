@@ -828,7 +828,7 @@
 					class: ['vue-table__row', self.getRowClass(row, $index)]
 				}, [self._l(columns, function(column, cellIndex) {
 					return createElement('td', {
-						class: ['vue-table__cell', $index%2 === 0 ? 'grey' : '', column.align, column.getCellClass($index, cellIndex, row) || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : ''],
+						class: ['vue-table__cell', $index%2 === 1 ? 'grey' : '', column.align, column.getCellClass($index, cellIndex, row) || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : ''],
 						on: {
 							mouseenter: function(e) {
 								return self.handleCellMouseEnter(e, row)
