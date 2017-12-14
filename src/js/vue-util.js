@@ -594,17 +594,20 @@
 		}
 	};
 	var clickoutside = function() {
-		var nodeList = [];
+		var nodes = document.__clickoutsideNodes__;
 		var CTX = '@@clickoutsideContext';
-		var clickOutSideFn = function(e) {
-			loop(nodeList, function(node) {
-				node[CTX].documentHandler(e)
-			});
-		};
-		on(document, 'click', clickOutSideFn);
+		if (!isArray(nodes)) {
+			nodes = document.__clickoutsideNodes__ = [];
+			var clickOutSideFn = function(e) {
+				loop(nodes, function(node) {
+					node[CTX].documentHandler(e)
+				});
+			};
+			on(document, 'click', clickOutSideFn);
+		}
 		return {
 			bind: function(el, binding, vnode) {
-				var id = nodeList.push(el) - 1;
+				var id = nodes.push(el) - 1;
 				var documentHandler = function(e) {
 					if (!vnode.context || el.contains(e.target) || (vnode.context.popperElm && vnode.context.popperElm.contains(e.target)))
 						return;
@@ -626,9 +629,9 @@
 				el[CTX].bindingFn = binding.value;
 			},
 			unbind: function(el) {
-				for (var i = 0, j = nodeList.length; i < j; i++) {
-					if (nodeList[i][CTX].id === el[CTX].id) {
-						nodeList.splice(i, 1);
+				for (var i = 0, j = nodes.length; i < j; i++) {
+					if (nodes[i][CTX].id === el[CTX].id) {
+						nodes.splice(i, 1);
 						break;
 					}
 				}

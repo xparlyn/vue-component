@@ -592,11 +592,13 @@
 		var allNodes = self._getAllNodes().sort(function(a, b){return b.level - a.level});
 		var cache = Object.create(null);
 		var keys = Object.keys(checkedKeys);
+		VueUtil.loop(allNodes, function(node){
+			node.setChecked(false, false)
+		});
 		for (var i = 0, j = allNodes.length; i < j; i++) {
 			var node = allNodes[i];
 			var nodeKey = node.data[key]+'';
 			var checked = keys.indexOf(nodeKey) > -1;
-			node.setChecked(false, false)
 			if (!checked) {
 				if (node.checked && !cache[nodeKey]) {
 					node.setChecked(false, false);
