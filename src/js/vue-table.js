@@ -1016,7 +1016,7 @@
 				var cellChild = event.target.querySelector('.cell');
 				if (VueUtil.hasClass(cellChild, 'vue-tooltip') && cellChild.scrollWidth > cellChild.offsetWidth) {
 					var tooltip = this.$refs.tooltip;
-					var activateTooltip = VueUtil.throttle(50, function(tooltip) {
+					var activateTooltip = VueUtil.throttle(100, function(tooltip) {
 						return tooltip.handleShowPopper();
 					});
 					this.tooltipContent = cell.innerText;
@@ -1863,7 +1863,7 @@
 			bindEvents: function() {
 				var self = this;
 				var refs = self.$refs;
-				var bodyScroll = function() {
+				var bodyScroll = VueUtil.throttle(100, function() {
 					var scrollLeft = this.scrollLeft;
 					var scrollTop = this.scrollTop;
 					if (self.bodyScroll.left !== scrollLeft) {
@@ -1891,7 +1891,7 @@
 							self.$emit('scroll-bottom');
 						}
 					}
-				};
+				});
 				var scrollYMouseWheel = function(event) {
 					if (self.layout.scrollY) {
 						event.preventDefault();

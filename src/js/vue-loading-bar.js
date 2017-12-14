@@ -58,7 +58,7 @@
 		if (!VueUtil.isDef(loadingBarInstance)) loadingBarInstance = newInstance();
 		loadingBarInstance.update(options);
 	};
-	var destroyInstance = VueUtil.throttle(1000, function() {
+	var destroyInstance = VueUtil.throttle(1500, function() {
 		if (VueUtil.isDef(loadingBarInstance)) {
 			loadingBarInstance.destroy();
 			loadingBarInstance = null;

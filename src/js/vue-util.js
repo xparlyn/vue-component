@@ -45,6 +45,9 @@
 	var isNodeList = function(obj) {
 		return isDef(obj) && objType(obj) === 'NodeList';
 	};
+	var isVNode = function(node) {
+		return isObject(node) && node.hasOwnProperty('componentOptions');
+	};
 	var toString = function(val) {
 		return !isDef(val) ? '' : typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val);
 	};
@@ -142,9 +145,6 @@
 				break;
 		}
 		return result;
-	};
-	var isVNode = function(node) {
-		return isObject(node) && node.hasOwnProperty('componentOptions');
 	};
 	var loop = function(arr, fn) {
 		(isArray(arr) || isNodeList(arr)) && Array.prototype.forEach.call(arr, fn);
@@ -265,6 +265,16 @@
 			fn = element;
 			element = document.body;
 		}
+		if (element !== document.body) {
+			var getDisplayParent = function(element) {
+				var parent = element.parentNode;
+				if (!parent) return true;
+				if (parent === document) return true;
+				if ((getStyle(parent, 'display')) === 'none') return false;
+				return getDisplayParent(element.parentNode);
+			};
+			if (getDisplayParent(element)) element = document.body;
+		}
 		if (!isArray(element.__resizeListeners__)) {
 			var resetTrigger = function(element) {
 				var trigger = element.__resizeTrigger__;
@@ -278,7 +288,7 @@
 				expand.scrollLeft = expand.scrollWidth;
 				expand.scrollTop = expand.scrollHeight;
 			};
-			var resizeListeners = throttle(20, function(element, event) {
+			var resizeListeners = throttle(100, function(element, event) {
 				if (element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height) {
 					element.__resizeLast__.width = element.offsetWidth;
 					element.__resizeLast__.height = element.offsetHeight;
@@ -666,6 +676,7 @@
 		isArray: isArray,
 		isFunction: isFunction,
 		isDate: isDate,
+		isVNode: isVNode,
 		toString: toString,
 		toDate: toDate,
 		formatDate: formatDate,
@@ -675,7 +686,6 @@
 		getWeekNumber: getWeekNumber,
 		getStartDateOfMonth: getStartDateOfMonth,
 		addDate: addDate,
-		isVNode: isVNode,
 		loop: loop,
 		trim: trim,
 		merge: merge,
