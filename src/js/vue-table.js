@@ -828,7 +828,7 @@
 					class: ['vue-table__row', self.getRowClass(row, $index)]
 				}, [self._l(columns, function(column, cellIndex) {
 					return createElement('td', {
-						class: ['vue-table__cell', column.align, column.getCellClass($index, cellIndex, row) || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : ''],
+						class: ['vue-table__cell', $index%2 === 0 ? 'grey' : '', column.align, column.getCellClass($index, cellIndex, row) || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : ''],
 						on: {
 							mouseenter: function(e) {
 								return self.handleCellMouseEnter(e, row)
@@ -1863,7 +1863,7 @@
 			bindEvents: function() {
 				var self = this;
 				var refs = self.$refs;
-				var bodyScroll = VueUtil.throttle(100, function() {
+				var bodyScroll = function() {
 					var scrollLeft = this.scrollLeft;
 					var scrollTop = this.scrollTop;
 					if (self.bodyScroll.left !== scrollLeft) {
@@ -1891,13 +1891,13 @@
 							self.$emit('scroll-bottom');
 						}
 					}
-				});
+				};
 				var scrollYMouseWheel = function(event) {
 					if (self.layout.scrollY) {
 						event.preventDefault();
 						var wheelDelta = event.wheelDelta || -event.detail;
 						var scrollTop = self.bodyScroll.top;
-						var wheel = (parseInt(VueUtil.getStyle(self.$el.querySelector('.vue-table__body .vue-table__row'), 'height'), 10) || 40) * 2;
+						var wheel = (parseInt(VueUtil.getStyle(self.$el.querySelector('.vue-table__body .vue-table__row'), 'height'), 10) || 40) * 3;
 						if (wheelDelta < 0) {
 							scrollTop += wheel;
 						} else {

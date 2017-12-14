@@ -21,10 +21,10 @@
 	height: 0;
 	cursor: pointer;
 	border-radius: inherit;
-	background-color: rgba(151,168,190,.3);
+	background-color: rgba(193,193,193,.7);
 }
 .vue-scrollbar__thumb:hover {
-	background-color: rgba(151,168,190,.5);
+	background-color: #c1c1c1;
 }
 .vue-scrollbar__bar {
 	position: absolute;

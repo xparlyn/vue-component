@@ -318,18 +318,6 @@
 	overflow: auto;
 	position: relative;
 }
-.vue-table--striped .vue-table__body .vue-table__row:nth-child(2n) .vue-table__cell {
-	background-color: #fafafa;
-}
-.vue-table__body .vue-table__row.hover-row>.vue-table__cell,
-.vue-table--striped .vue-table__body .vue-table__row:nth-child(2n).hover-row .vue-table__cell {
-	background-color: #eef1f6;
-}
-.vue-table__body .vue-table__row.current-row>.vue-table__cell,
-.vue-table--striped .vue-table__body .vue-table__row:nth-child(2n).current-row .vue-table__cell {
-	background-color: #edf7ff;
-	color: #409eff;
-}
 .vue-table__column-resize-proxy {
 	position: absolute;
 	left: 200px;
@@ -350,6 +338,16 @@
 }
 .vue-table__body .vue-table__cell {
 	background-color: #fff;
+}
+.vue-table--striped .vue-table__body .vue-table__cell.grey {
+	background-color: #fafafa;
+}
+.vue-table__body .vue-table__row.hover-row>.vue-table__cell {
+	background-color: #eef1f6;
+}
+.vue-table__body .vue-table__row.current-row>.vue-table__cell {
+	background-color: #edf7ff;
+	color: #409eff;
 }
 .vue-table__body .vue-table__expanded-cell {
 	padding: 20px 50px;
