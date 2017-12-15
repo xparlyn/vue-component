@@ -287,9 +287,23 @@
 	Popper.prototype._setupEventListeners = function() {
 		this.state.updateBound = this.update.bind(this);
 		VueUtil.addResizeListener(this.state.updateBound);
+		if (this._options.boundariesElement !== 'window') {
+			var target = VueUtil.component.getScrollParent(this._reference);
+			if (target === document.body || target === document.documentElement) {
+				target = document;
+			}
+			VueUtil.on(target, 'scroll', this.state.updateBound);
+		}
 	}
 	Popper.prototype._removeEventListeners = function() {
 		VueUtil.removeResizeListener(this.state.updateBound);
+		if (this._options.boundariesElement !== 'window') {
+			var target = VueUtil.component.getScrollParent(this._reference);
+			if (target === document.body || target === document.documentElement) {
+				target = document;
+			}
+			VueUtil.off(target, 'scroll', this.state.updateBound);
+		}
 		this.state.updateBound = null;
 	}
 	Popper.prototype._getBoundaries = function(data, padding, boundariesElement) {
