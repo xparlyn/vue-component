@@ -134,7 +134,7 @@
 		}
 	};
 	var FullCalendar = {
-		template: '<div class="vue-full-calendar" :style="compStyle"><fc-header :current-month="currentMonth" :first-day="firstDay" @change="emitChangeMonth"></fc-header><div class="vue-full-calendar-body"><div class="vue-full-calendar__weeks"><div class="vue-full-calendar__week" v-for="(week, weekIndex) in WEEKS" :key="weekIndex">{{ $t(\'vue.datepicker.weeks.\'+week) }}</div></div><div class="vue-full-calendar__dates"><div class="vue-full-calendar__dates-events"><div class="vue-full-calendar__events-week" v-for="(week,weekIndex) in currentDates" :key="weekIndex"><div v-for="(day, dayIndex) in week" :style="eventDayStyle" :key="dayIndex" :class="[\'vue-full-calendar__events-day\', {\'today\': day.isToday}, day.dayClass]"><div :class="[\'day-number\']" @mouseenter="mouseenterDay" @mouseleave="mouseleaveDay" @click="dayclick(day.date, $event)">{{day.monthDay}}</div><div class="vue-full-calendar__event-box"><event-card ref="eventCard" :event="event" :date="day.date" :firstDay="firstDay" v-for="(event, eventIndex) in day.events" :key="eventIndex" v-show="event.cellIndex <= eventLimit" @click="eventclick"></event-card><vue-popover trigger="click" v-if="day.events.length > eventLimit && showMore"><div class="vue-full-calendar__more-events"><ul class="events-list"><li v-for="(event, eventIndex) in selectDay.events" :key="eventIndex" v-show="event.isShow" :class="[\'vue-full-calendar__event-item\', event.customClass]" @click="eventclick(event, $event)" @mouseenter="mouseenterEvent(event, $event)" @mouseleave="mouseleaveEvent(event, $event)">{{event.title}}</li></ul></div><div slot="reference" class="more-link" @click="moreclick(day, $event)">+ {{day.events[day.events.length -1].cellIndex - eventLimit}}</div></vue-popover><div v-if="day.events.length > eventLimit && !showMore" class="more-link" @click="moreclick(day, $event)">+ {{day.events[day.events.length -1].cellIndex - eventLimit}}</div></div></div></div></div></div></div></div>',
+		template: '<div class="vue-full-calendar" :style="compStyle"><fc-header :current-month="currentMonth" :first-day="firstDay" @change="emitChangeMonth"></fc-header><div class="vue-full-calendar-body"><div class="vue-full-calendar__weeks"><div class="vue-full-calendar__week" v-for="(week, weekIndex) in WEEKS" :key="weekIndex">{{ $t(\'vue.datepicker.weeks.\'+week) }}</div></div><div class="vue-full-calendar__dates"><div class="vue-full-calendar__dates-events"><div class="vue-full-calendar__events-week" v-for="(week,weekIndex) in currentDates" :key="weekIndex"><div v-for="(day, dayIndex) in week" :style="eventDayStyle" :key="dayIndex" :class="[\'vue-full-calendar__events-day\', {\'today\': day.isToday}, day.dayClass]"><div :class="[\'day-number\']" @mouseenter="mouseenterDay" @mouseleave="mouseleaveDay" @click="dayclick(day.date, $event)">{{day.monthDay}}</div><div class="vue-full-calendar__event-box"><event-card ref="eventCard" :event="event" :date="day.date" :firstDay="firstDay" v-for="(event, eventIndex) in day.events" :key="eventIndex" v-show="event.cellIndex <= eventLimit" @click="eventclick"></event-card><vue-popover trigger="click" v-if="day.events.length > eventLimit && showMore"><div class="vue-full-calendar__more-events"><ul class="events-list"><li v-for="(event, eventIndex) in selectDay.showEvents" :key="eventIndex" :class="[\'vue-full-calendar__event-item\', event.customClass]" @click="eventclick(event, $event)" @mouseenter="mouseenterEvent(event, $event)" @mouseleave="mouseleaveEvent(event, $event)">{{event.title}}</li></ul></div><div slot="reference" class="more-link" @click="moreclick(day, $event)">+ {{day.showEvents[0].cellIndex > eventLimit ? day.showEvents.length : day.showEvents[day.showEvents.length -1].cellIndex - eventLimit}}</div></vue-popover><div v-if="day.events.length > eventLimit && !showMore" class="more-link" @click="moreclick(day, $event)">+{{day.showEvents[0].cellIndex > eventLimit ? day.showEvents.length : day.showEvents[day.showEvents.length -1].cellIndex - eventLimit}}</div></div></div></div></div></div></div></div>',
 		props: {
 			events: Array,
 			eventLimit: Number,
@@ -244,6 +244,11 @@
 						});
 						monthViewStartDate = VueUtil.addDate(monthViewStartDate, 1);
 					}
+					VueUtil.loop(week, function(day) {
+						day.showEvents = day.events.filter(function(event) {
+							return event.isShow === true;
+						});
+					});
 					calendar.push(week);
 				}
 				return calendar
@@ -415,7 +420,10 @@
 			},
 			eventLimit: {
 				type: Number,
-				default: 2
+				default: 2,
+				validator: function(val) {
+					return val >= 1 && val <= 3
+				}
 			},
 			showMore: {
 				type: Boolean,
