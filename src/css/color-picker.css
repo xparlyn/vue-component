@@ -1,6 +1,5 @@
 .vue-color-hue-slider {
 	position: relative;
-	box-sizing: border-box;
 	width: 280px;
 	height: 12px;
 	background-color: red;
@@ -28,7 +27,6 @@
 .vue-color-hue-slider__thumb {
 	position: absolute;
 	cursor: pointer;
-	box-sizing: border-box;
 	left: 0;
 	top: 0;
 	width: 4px;
@@ -71,7 +69,6 @@
 }
 .vue-color-alpha-slider {
 	position: relative;
-	box-sizing: border-box;
 	width: 280px;
 	height: 12px;
 	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==);
@@ -97,7 +94,6 @@
 .vue-color-alpha-slider__thumb {
 	position: absolute;
 	cursor: pointer;
-	box-sizing: border-box;
 	left: 0;
 	top: 0;
 	width: 4px;
@@ -164,7 +160,6 @@
 }
 .vue-color-picker__trigger {
 	display: inline-block;
-	box-sizing: border-box;
 	height: 36px;
 	padding: 6px;
 	border: 1px solid #bfcbd9;
@@ -174,7 +169,6 @@
 .vue-color-picker__color {
 	position: relative;
 	display: inline-block;
-	box-sizing: border-box;
 	vertical-align: middle;
 	border: 1px solid #666;
 	width: 22px;

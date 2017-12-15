@@ -1,7 +1,6 @@
 .vue-pager li,
 .vue-pagination__editor {
 	text-align: center;
-	box-sizing: border-box;
 }
 .vue-pagination__rightwrapper {
 	float: right;
@@ -30,7 +29,6 @@
 	height: 28px;
 	line-height: 28px;
 	vertical-align: top;
-	box-sizing: border-box;
 }
 .vue-pagination .vue-select .vue-input {
 	width: 110px;
@@ -156,7 +154,6 @@
 	border: 1px solid #d1dbe5;
 	border-right: 0;
 	cursor: pointer;
-	box-sizing: border-box;
 	text-align: center;
 }
 .vue-pager li:last-child {

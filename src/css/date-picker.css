@@ -7,7 +7,6 @@
 .vue-date-table td {
 	width: 32px;
 	height: 32px;
-	box-sizing: border-box;
 	text-align: center;
 	cursor: pointer;
 }
@@ -116,7 +115,6 @@
 .vue-date-range-picker__content {
 	float: left;
 	width: 50%;
-	box-sizing: border-box;
 	margin: 0;
 	padding: 16px;
 }
@@ -131,7 +129,6 @@
 	border-right: 1px solid #e4e4e4;
 }
 .vue-date-range-picker__editors-wrap {
-	box-sizing: border-box;
 	display: table-cell;
 }
 .vue-date-range-picker__editors-wrap.is-right {
@@ -144,7 +141,6 @@
 	padding: 8px 5px 5px;
 	display: table;
 	width: 100%;
-	box-sizing: border-box;
 }
 .vue-date-range-picker__time-header>.vue-icon-arrow-right {
 	font-size: 20px;
@@ -199,7 +195,6 @@
 	padding: 8px 5px 5px;
 	display: table;
 	width: 100%;
-	box-sizing: border-box;
 }
 .vue-date-picker__header {
 	margin: 12px 8px;
@@ -235,7 +230,6 @@
 .vue-date-editor .vue-picker-panel {
 	position: absolute;
 	min-width: 180px;
-	box-sizing: border-box;
 	box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
 	background: #fff;
 	z-index: 10;

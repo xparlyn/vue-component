@@ -25,7 +25,6 @@
 	will-change: height;
 	background-color: #fbfdff;
 	overflow: hidden;
-	box-sizing: border-box;
 	border-bottom: 1px solid #dfe6ec;
 }
 .vue-collapse-item__content {

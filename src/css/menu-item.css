@@ -6,7 +6,6 @@
 	padding: 0 20px;
 	cursor: pointer;
 	position: relative;
-	box-sizing: border-box;
 	white-space: nowrap;
 }
 .vue-menu-item.is-active {

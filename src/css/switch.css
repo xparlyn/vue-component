@@ -73,7 +73,6 @@
 	border: 1px solid #bfcbd9;
 	outline: 0;
 	border-radius: 12px;
-	box-sizing: border-box;
 	background: #bfcbd9;
 }
 .vue-switch__core .vue-switch__button {

@@ -56,7 +56,6 @@
 	display: block;
 }
 .vue-select .vue-tag {
-	box-sizing: border-box;
 	margin: 6px 0 6px 6px;
 }
 .vue-select__input {

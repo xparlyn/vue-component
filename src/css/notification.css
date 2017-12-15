@@ -1,7 +1,6 @@
 .vue-notification {
 	width: 330px;
 	padding: 17px 13px;
-	box-sizing: border-box;
 	border-radius: 4px;
 	position: fixed;
 	border: 1px solid #e6ebf5;

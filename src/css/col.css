@@ -76,7 +76,6 @@
 .vue-col-8,
 .vue-col-9 {
 	float: left;
-	box-sizing: border-box;
 }
 .vue-col-1 {
 	width: 4.16667%;

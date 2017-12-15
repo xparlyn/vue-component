@@ -1,6 +1,5 @@
 .vue-input__inner,
 .vue-textarea__inner {
-	box-sizing: border-box;
 	background-image: none;
 }
 .vue-input {

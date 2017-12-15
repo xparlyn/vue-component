@@ -44,7 +44,6 @@
 	margin: 0;
 	cursor: pointer;
 	position: relative;
-	box-sizing: border-box;
 	border-bottom: 5px solid transparent;
 }
 .vue-menu--horizontal .vue-menu-item a,

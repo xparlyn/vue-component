@@ -12,7 +12,6 @@
 }
 .vue-step__line.is-vertical {
 	width: 2px;
-	box-sizing: border-box;
 	top: 28px;
 	bottom: 0;
 	left: 13px;

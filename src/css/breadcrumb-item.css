@@ -1,5 +1,7 @@
 .vue-breadcrumb__item {
 	float: left;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 .vue-breadcrumb__item:last-child .vue-breadcrumb__item__inner,
 .vue-breadcrumb__item:last-child .vue-breadcrumb__item__inner a,

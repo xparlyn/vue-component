@@ -8,7 +8,6 @@
 	padding: 10px;
 }
 .vue-time-range-picker__cell {
-	box-sizing: border-box;
 	margin: 0;
 	padding: 4px 7px 7px;
 	width: 50%;
@@ -100,7 +99,6 @@
 	z-index: -1;
 	left: 0;
 	right: 0;
-	box-sizing: border-box;
 	padding-top: 6px;
 	text-align: left;
 }
@@ -124,7 +122,6 @@
 	height: 36px;
 	line-height: 25px;
 	text-align: right;
-	box-sizing: border-box;
 }
 .vue-time-panel__btn {
 	border: none;

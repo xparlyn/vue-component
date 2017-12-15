@@ -1,6 +1,5 @@
 .vue-row {
 	position: relative;
-	box-sizing: border-box;
 }
 .vue-row:after,
 .vue-row:before {

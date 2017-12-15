@@ -8,7 +8,6 @@
 .vue-aside {
 	background: #fff;
 	box-shadow: 0 1px 3px rgba(0,0,0,.3);
-	box-sizing: border-box;
 	right: 0;
 	left: auto;
 }
@@ -68,7 +67,6 @@
 .vue-aside__footer {
 	padding: 10px 20px 15px;
 	text-align: right;
-	box-sizing: border-box;
 }
 .aside-right-enter-active {
 	animation: aside-right-in .5s;

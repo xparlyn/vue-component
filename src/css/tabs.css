@@ -50,7 +50,6 @@
 .vue-tabs__item {
 	padding: 0 16px;
 	height: 42px;
-	box-sizing: border-box;
 	line-height: 42px;
 	display: inline-block;
 	list-style: none;

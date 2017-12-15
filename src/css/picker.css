@@ -85,7 +85,6 @@
 	bottom: 0;
 	width: 110px;
 	border-right: 1px solid #e4e4e4;
-	box-sizing: border-box;
 	padding-top: 6px;
 	background-color: #fbfdff;
 }
