@@ -28,14 +28,14 @@
 			});
 		}
 		formData.append(option.filename, option.file);
-		this.$http.post(option.action, formData, httpOption).then(function(reqponse){
+		this.$http.post(option.action, formData, httpOption).then(function(reqponse) {
 			option.onSuccess(reqponse);
-		}, function(reqponse){
+		}, function(reqponse) {
 			option.onError(reqponse);
 		});
 	}
 	var UploadDragger = {
-		template: '<div :class="[\'vue-upload-dragger\', {\'is-dragover\': dragover}]" @drop.prevent="onDrop" @dragover.prevent="onDragover" @dragleave.prevent="dragover = false"><slot></slot></div>', 
+		template: '<div :class="[\'vue-upload-dragger\', {\'is-dragover\': dragover}]" @drop.prevent="onDrop" @dragover.prevent="onDragover" @dragleave.prevent="dragover = false"><slot></slot></div>',
 		name: 'VueUploadDrag',
 		props: {
 			disabled: Boolean
@@ -183,7 +183,7 @@
 						reqs[uid].abort();
 					}
 				} else {
-					VueUtil.loop(Object.keys(reqs), function (uid) {
+					VueUtil.loop(Object.keys(reqs), function(uid) {
 						if (reqs[uid]) reqs[uid].abort();
 						delete reqs[uid];
 					});
@@ -243,7 +243,7 @@
 				}
 			};
 			data.class['vue-upload--' + listType] = true;
-			return createElement('div', data, [drag ? createElement('upload-dragger', {attrs: {disabled: disabled}, on: {'file': uploadFiles}}, [this.$slots.default]) : this.$slots.default, createElement('input', {class: 'vue-upload__input',attrs: {type: 'file', name: name, multiple: multiple, accept: accept}, ref: 'input', on: {'change': handleChange}}, [])]);
+			return createElement('div', data, [drag ? createElement('upload-dragger', {attrs: {disabled: disabled}, on: {'file': uploadFiles}}, [this.$slots.default]) : this.$slots.default, createElement('input', {class: 'vue-upload__input', attrs: {type: 'file', name: name, multiple: multiple, accept: accept}, ref: 'input', on: {'change': handleChange}}, [])]);
 		}
 	};
 	var IframeUpload = {
@@ -358,7 +358,7 @@
 			var disabled = this.disabled;
 			var oClass = {'vue-upload': true};
 			oClass['vue-upload--' + listType] = true;
-			return createElement('div', {'class': oClass, on: {'click': this.handleClick}, nativeOn: {'drop': this.onDrop, 'dragover': this.handleDragover, 'dragleave': this.handleDragleave}}, [createElement('iframe', {on: {'load': this.onload}, ref: 'iframe', attrs: {name: frameName}}, []), createElement('form', {ref: 'form', attrs: {action: this.action, target: frameName, enctype: 'multipart/form-data', method: 'POST'}}, [createElement('input', {'class': 'vue-upload__input',attrs: {type: 'file', name: 'file', accept: this.accept}, ref: 'input', on: {'change': this.handleChange}}, []), createElement('input', {attrs: {type: 'hidden', name: 'documentDomain', value: document.domain}}, []), createElement('span', {ref: 'data'}, [])]), drag ? createElement('upload-dragger', {on: {'file': uploadFiles},attrs: {disabled: disabled}}, [this.$slots.default]) : this.$slots.default])
+			return createElement('div', {'class': oClass, on: {'click': this.handleClick}, nativeOn: {'drop': this.onDrop, 'dragover': this.handleDragover, 'dragleave': this.handleDragleave}}, [createElement('iframe', {on: {'load': this.onload}, ref: 'iframe', attrs: {name: frameName}}, []), createElement('form', {ref: 'form', attrs: {action: this.action, target: frameName, enctype: 'multipart/form-data', method: 'POST'}}, [createElement('input', {'class': 'vue-upload__input', attrs: {type: 'file', name: 'file', accept: this.accept}, ref: 'input', on: {'change': this.handleChange}}, []), createElement('input', {attrs: {type: 'hidden', name: 'documentDomain', value: document.domain}}, []), createElement('span', {ref: 'data'}, [])]), drag ? createElement('upload-dragger', {on: {'file': uploadFiles}, attrs: {disabled: disabled}}, [this.$slots.default]) : this.$slots.default])
 		}
 	};
 	var migrating = {
@@ -594,7 +594,7 @@
 			};
 			var trigger = this.$slots.trigger || this.$slots.default;
 			var uploadComponent = (VueUtil.isDef(FormData)) ? createElement('upload', uploadData, [trigger]) : createElement('iframeUpload', uploadData, [trigger]);
-			return createElement('div', null, ['picture-card' === this.listType ? uploadList : '', this.$slots.trigger ? [uploadComponent, this.$slots.default]: uploadComponent, this.$slots.tip, 'picture-card' !== this.listType ? uploadList : '']);
+			return createElement('div', null, ['picture-card' === this.listType ? uploadList : '', this.$slots.trigger ? [uploadComponent, this.$slots.default] : uploadComponent, this.$slots.tip, 'picture-card' !== this.listType ? uploadList : '']);
 		},
 		mounted: function() {
 			if (this.disabled) {

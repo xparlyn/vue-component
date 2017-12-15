@@ -39,7 +39,7 @@
 		},
 		mounted: function() {
 			var self = this;
-			self.$nextTick(function(){
+			self.$nextTick(function() {
 				if (self.fixed) {
 					self.pin = true;
 					var elOffset = self.getOffset(self.$el);
@@ -62,7 +62,7 @@
 					}
 				} else {
 					self.scrollParent = VueUtil.component.getScrollParent(self.$el);
-					VueUtil.on(self.scrollParent,'scroll', self.handleScroll);
+					VueUtil.on(self.scrollParent, 'scroll', self.handleScroll);
 					VueUtil.addResizeListener(self.handleScroll);
 				}
 			});

@@ -20,7 +20,7 @@
 						var criteria = this.clearable && !this.disabled && this.inputHovering;
 						return criteria ? 'vue-icon-success is-show-check' : (this.remote && this.filterable ? '' : 'vue-icon-arrow-up is-reverse');
 					} else {
-						var criteria = this.clearable && !this.disabled && this.inputHovering && VueUtil.isDef(this.value) && this.value.length>0;
+						var criteria = this.clearable && !this.disabled && this.inputHovering && VueUtil.isDef(this.value) && this.value.length > 0;
 						return criteria ? 'vue-icon-error is-show-close' : (this.remote && this.filterable ? '' : 'vue-icon-arrow-up');
 					}
 				} else {
@@ -136,12 +136,12 @@
 				}
 				if (val) {
 					self.selected = [];
-					self.$nextTick(function(){
+					self.$nextTick(function() {
 						self.$emit('input', []);
 					});
 				} else {
 					self.selected = {};
-					self.$nextTick(function(){
+					self.$nextTick(function() {
 						self.$emit('input', '');
 					});
 				}
@@ -329,7 +329,7 @@
 					this.deleteSelected(event);
 				} else if (this.iconClass.indexOf('vue-icon-success') > -1) {
 					var value = [];
-					VueUtil.loop(this.options, function(option){
+					VueUtil.loop(this.options, function(option) {
 						if (!option.disabled) {
 							value.push(option.value);
 						}

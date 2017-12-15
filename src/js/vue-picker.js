@@ -405,8 +405,8 @@
 				self.picker.resetView && self.picker.resetView();
 				self.picker.$on('doDestroy', self.doDestroy);
 				self.picker.$on('pick', function(date, visible) {
-					date = date||'';
-					visible = visible||false;
+					date = date || '';
+					visible = visible || false;
 					self.$emit('input', date);
 					self.pickerVisible = self.picker.visible = visible;
 					self.picker.resetView && self.picker.resetView();

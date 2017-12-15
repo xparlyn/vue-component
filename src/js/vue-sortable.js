@@ -71,9 +71,9 @@
 			return elt.elm;
 		});
 		var rawIndexes = [].concat(toConsumableArray(children)).map(function(elt) {
-				return elmFromNodes.indexOf(elt);
+			return elmFromNodes.indexOf(elt);
 		});
-		return rawIndexes.filter(function(index){
+		return rawIndexes.filter(function(index) {
 			return index !== -1;
 		});
 	};
@@ -144,8 +144,8 @@
 					return self.onDragMove(evt, originalEvent);
 				}
 			});
-			!('draggable'in options) && (options.draggable = '>*');
-			self._sortable = new Sortable(self.rootContainer,options);
+			!('draggable' in options) && (options.draggable = '>*');
+			self._sortable = new Sortable(self.rootContainer, options);
 			self.computeIndexes();
 		},
 		beforeDestroy: function() {

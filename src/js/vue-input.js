@@ -54,7 +54,7 @@
 			min: {},
 			cleave: {
 				type: Object,
-				default: function(){return null}
+				default: function() {return null}
 			},
 			validateEvent: {
 				type: Boolean,

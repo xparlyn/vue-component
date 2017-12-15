@@ -322,8 +322,8 @@
 			self.loadData(function() {
 				handleDescendants(true);
 			}, {
-				checked: value !== false
-			});
+					checked: value !== false
+				});
 		} else {
 			handleDescendants();
 		}
@@ -589,15 +589,15 @@
 		var self = this;
 		var leafOnly = arguments.length > 1 && VueUtil.isDef(arguments[1]) ? arguments[1] : false;
 		var checkedKeys = arguments[2];
-		var allNodes = self._getAllNodes().sort(function(a, b){return b.level - a.level});
+		var allNodes = self._getAllNodes().sort(function(a, b) {return b.level - a.level});
 		var cache = Object.create(null);
 		var keys = Object.keys(checkedKeys);
-		VueUtil.loop(allNodes, function(node){
+		VueUtil.loop(allNodes, function(node) {
 			node.setChecked(false, false)
 		});
 		for (var i = 0, j = allNodes.length; i < j; i++) {
 			var node = allNodes[i];
-			var nodeKey = node.data[key]+'';
+			var nodeKey = node.data[key] + '';
 			var checked = keys.indexOf(nodeKey) > -1;
 			if (!checked) {
 				if (node.checked && !cache[nodeKey]) {
@@ -711,14 +711,14 @@
 					var node = this.node;
 					var data = node.data;
 					var store = node.store;
-					return ( parent.renderContent ? parent.renderContent.call(parent._renderProxy, createElement, {
+					return (parent.renderContent ? parent.renderContent.call(parent._renderProxy, createElement, {
 						_self: parent.tree.$vnode.context,
 						node: node,
 						data: data,
 						store: store
 					}) : createElement("span", {
 						class: "vue-tree-node__label"
-					}, [this.node.label])) ;
+					}, [this.node.label]));
 				}
 			}
 		},

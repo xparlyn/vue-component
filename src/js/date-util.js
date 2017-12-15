@@ -146,7 +146,7 @@
 		],
 		yy: [twoDigits, function(d, v) {
 			var da = new Date()
-			 , cent = +('' + da.getFullYear()).substr(0, 2);
+				, cent = +('' + da.getFullYear()).substr(0, 2);
 			d.year = '' + (v > 68 ? cent - 1 : cent) + v;
 		}
 		],
@@ -272,7 +272,7 @@
 			dateInfo.minute = +(dateInfo.minute || 0) - +dateInfo.timezoneOffset;
 			date = new Date(Date.UTC(dateInfo.year || today.getFullYear(), dateInfo.month || 0, dateInfo.day || 1, dateInfo.hour || 0, dateInfo.minute || 0, dateInfo.second || 0, dateInfo.millisecond || 0));
 		} else {
-			date = new Date(dateInfo.year || today.getFullYear(),dateInfo.month || 0,dateInfo.day || 1,dateInfo.hour || 0,dateInfo.minute || 0,dateInfo.second || 0,dateInfo.millisecond || 0);
+			date = new Date(dateInfo.year || today.getFullYear(), dateInfo.month || 0, dateInfo.day || 1, dateInfo.hour || 0, dateInfo.minute || 0, dateInfo.second || 0, dateInfo.millisecond || 0);
 		}
 		return date;
 	}

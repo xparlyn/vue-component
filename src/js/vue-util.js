@@ -19,31 +19,31 @@
 		return Object.prototype.toString.call(obj).slice(8, -1);
 	};
 	var isString = function(obj) {
-		return isDef(obj) && objType(obj) === 'String';
+		return objType(obj) === 'String';
 	};
 	var isNumber = function(obj) {
-		return isDef(obj) && objType(obj) === 'Number';
+		return objType(obj) === 'Number';
 	};
 	var isBoolean = function(obj) {
-		return isDef(obj) && objType(obj) === 'Boolean';
+		return objType(obj) === 'Boolean';
 	};
 	var isFile = function(obj) {
-		return isDef(obj) && objType(obj) === 'File';
+		return objType(obj) === 'File';
 	};
 	var isObject = function(obj) {
-		return isDef(obj) && objType(obj) === 'Object';
+		return objType(obj) === 'Object';
 	};
 	var isArray = function(obj) {
-		return isDef(obj) && objType(obj) === 'Array';
+		return objType(obj) === 'Array';
 	};
 	var isFunction = function(obj) {
-		return isDef(obj) && objType(obj) === 'Function';
+		return objType(obj) === 'Function';
 	};
 	var isDate = function(obj) {
-		return isDef(obj) && objType(obj) === 'Date';
+		return objType(obj) === 'Date';
 	};
 	var isNodeList = function(obj) {
-		return isDef(obj) && objType(obj) === 'NodeList';
+		return objType(obj) === 'NodeList';
 	};
 	var isVNode = function(node) {
 		return isObject(node) && node.hasOwnProperty('componentOptions');
@@ -91,7 +91,7 @@
 	};
 	var getStartDateOfMonth = function(year, month) {
 		var DAY_DURATION = 86400000;
-		var result = new Date(year,month,1);
+		var result = new Date(year, month, 1);
 		var day = result.getDay();
 		if (day === 0) {
 			result.setTime(result.getTime() - DAY_DURATION * 7);
@@ -110,7 +110,7 @@
 				var week = 7;
 			case 'day':
 				var DAY_DURATION = 86400000;
-				result.setTime(src.getTime() + DAY_DURATION * num * (week||1));
+				result.setTime(src.getTime() + DAY_DURATION * num * (week || 1));
 				break;
 			case 'month':
 				var year = src.getFullYear();
@@ -233,7 +233,7 @@
 	};
 	var getCookie = function(name) {
 		var arr = document.cookie.replace(/\s/g, "").split(';');
-		for (var i=0, j=arr.length; i < j; i++) {
+		for (var i = 0, j = arr.length; i < j; i++) {
 			var tempArr = arr[i].split('=');
 			if (tempArr[0] === name) return decodeURIComponent(tempArr[1]);
 		}
@@ -253,7 +253,7 @@
 			var self = this;
 			var args = arguments;
 			clearTimeout(timer);
-			timer = setTimeout(function(){
+			timer = setTimeout(function() {
 				isFunction(callback) && callback.apply(self, args);
 				clearTimeout(timer);
 			}, delay);
@@ -330,7 +330,7 @@
 		}
 	};
 	var setLang = function(lang) {
-		if(isDef(lang)) Vue.config.lang = lang;
+		if (isDef(lang)) Vue.config.lang = lang;
 	};
 	var setLocale = function(lang, langObjs) {
 		langObjs = merge({}, Vue.locale(lang), langObjs);

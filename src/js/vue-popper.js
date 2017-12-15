@@ -46,7 +46,7 @@
 	};
 	var setStyle = function(element, styles) {
 		function is_numeric(n) {
-			return ( n !== '' && !isNaN(parseFloat(n)) && isFinite(n)) ;
+			return (n !== '' && !isNaN(parseFloat(n)) && isFinite(n));
 		}
 		VueUtil.loop(Object.keys(styles), function(prop) {
 			var unit = '';
@@ -366,7 +366,7 @@
 				data = modifier.call(this, data);
 			}
 		}
-		.bind(this));
+			.bind(this));
 		return data;
 	}
 	Popper.prototype.isModifierRequired = function(requesting, requested) {
@@ -539,7 +539,7 @@
 				data = this.runModifiers(data, this._options.modifiers, this._flip);
 			}
 		}
-		.bind(this));
+			.bind(this));
 		return data;
 	}
 	Popper.prototype.modifiers.offset = function(data) {
@@ -665,7 +665,7 @@
 				if (self.popperJS && self.popperJS.destroy) self.popperJS.destroy();
 				options.placement = self.currentPlacement;
 				options.offset = self.offset;
-				self.popperJS = new Popper(reference,popper,options);
+				self.popperJS = new Popper(reference, popper, options);
 				self.popperJS.onCreate(function() {
 					self.$emit('created', self);
 					self.resetTransformOrigin();

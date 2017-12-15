@@ -192,7 +192,7 @@
 						move: self.moveY,
 						size: self.sizeHeight
 					}
-				}, []), ];
+				}, []),];
 			} else {
 				nodes = [createElement('div', {
 					ref: "wrap",

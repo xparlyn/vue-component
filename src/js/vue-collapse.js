@@ -46,8 +46,8 @@
 				if (this.accordion) {
 					this.setActiveNames(
 						this.activeNames[0] &&
-						this.activeNames[0] === item.name
-						? '' : item.name
+							this.activeNames[0] === item.name
+							? '' : item.name
 					);
 				} else {
 					var activeNames = this.activeNames.slice(0);

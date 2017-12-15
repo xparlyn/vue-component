@@ -66,9 +66,9 @@
 				x: "left",
 				y: "top"
 			} : {
-				x: "width",
-				y: "height"
-			}
+					x: "width",
+					y: "height"
+				}
 			this._isdrag = isdrag;
 			this._x = isdrag ? (clientX - this._dragobj.offsetLeft + this.offsetLeft) : (this._dragobj.offsetLeft || 0);
 			this._y = isdrag ? (clientY - this._dragobj.offsetTop + this.offsetTop) : (this._dragobj.offsetTop || 0);
@@ -151,7 +151,7 @@
 						VueUtil.setStyle(el, 'position', 'relative');
 						VueUtil.setStyle(el, 'zIndex', VueUtil.nextZIndex());
 					}
-					new dragEl(el,cancelObj,resizeObj,offsetLeft,offsetTop);
+					new dragEl(el, cancelObj, resizeObj, offsetLeft, offsetTop);
 				});
 			}
 		});

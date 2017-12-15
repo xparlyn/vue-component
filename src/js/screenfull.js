@@ -12,7 +12,7 @@
 	};
 	var doc = document ? document : {};
 	var keyboardAllowed = isDef(Element) && 'ALLOW_KEYBOARD_INPUT' in Element;
-	var fn = (function () {
+	var fn = (function() {
 		var val;
 		var fnMap = [['requestFullscreen', 'exitFullscreen', 'fullscreenElement', 'fullscreenEnabled', 'fullscreenchange', 'fullscreenerror'], ['webkitRequestFullscreen', 'webkitExitFullscreen', 'webkitFullscreenElement', 'webkitFullscreenEnabled', 'webkitfullscreenchange', 'webkitfullscreenerror'], ['webkitRequestFullScreen', 'webkitCancelFullScreen', 'webkitCurrentFullScreenElement', 'webkitCancelFullScreen', 'webkitfullscreenchange', 'webkitfullscreenerror'], ['mozRequestFullScreen', 'mozCancelFullScreen', 'mozFullScreenElement', 'mozFullScreenEnabled', 'mozfullscreenchange', 'mozfullscreenerror'], ['msRequestFullscreen', 'msExitFullscreen', 'msFullscreenElement', 'msFullscreenEnabled', 'MSFullscreenChange', 'MSFullscreenError']];
 		var i = 0;
@@ -20,7 +20,7 @@
 		var ret = {};
 		for (; i < l; i++) {
 			val = fnMap[i];
-			if (val && val[1]in doc) {
+			if (val && val[1] in doc) {
 				for (i = 0; i < val.length; i++) {
 					ret[fnMap[0][i]] = val[i];
 				}
@@ -30,7 +30,7 @@
 		return false;
 	})();
 	var screenfull = {
-		request: function (elem) {
+		request: function(elem) {
 			var request = fn.requestFullscreen;
 			elem = elem || doc.docElement;
 			if (/5\.1[.\d]* Safari/.test(navigator.userAgent)) {
@@ -39,20 +39,20 @@
 				elem[request](keyboardAllowed && Element.ALLOW_KEYBOARD_INPUT);
 			}
 		},
-		exit: function () {
+		exit: function() {
 			doc[fn.exitFullscreen]();
 		},
-		toggle: function (elem) {
+		toggle: function(elem) {
 			if (this.isFullscreen) {
 				this.exit();
 			} else {
 				this.request(elem);
 			}
 		},
-		onchange: function (callback) {
+		onchange: function(callback) {
 			doc.addEventListener(fn.fullscreenchange, callback);
 		},
-		onerror: function (callback) {
+		onerror: function(callback) {
 			doc.addEventListener(fn.fullscreenerror, callback);
 		},
 		raw: fn
@@ -62,19 +62,19 @@
 	}
 	Object.defineProperties(screenfull, {
 		isFullscreen: {
-			get: function () {
+			get: function() {
 				return Boolean(doc[fn.fullscreenElement]);
 			}
 		},
 		element: {
 			enumerable: true,
-			get: function () {
+			get: function() {
 				return doc[fn.fullscreenElement];
 			}
 		},
 		enabled: {
 			enumerable: true,
-			get: function () {
+			get: function() {
 				return Boolean(doc[fn.fullscreenEnabled]);
 			}
 		}

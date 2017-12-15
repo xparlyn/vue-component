@@ -68,10 +68,10 @@
 			},
 			initEvent: function() {
 				var trigger = this.trigger
-				 , show = this.show
-				 , hide = this.hide
-				 , handleClick = this.handleClick
-				 , splitButton = this.splitButton;
+					, show = this.show
+					, hide = this.hide
+					, handleClick = this.handleClick
+					, splitButton = this.splitButton;
 				var triggerElm = splitButton ? this.$refs.trigger.$el : this.$slots.default[0].elm;
 				if (trigger === 'hover') {
 					VueUtil.on(triggerElm, 'mouseenter', show);
@@ -93,9 +93,9 @@
 		render: function(createElement) {
 			var self = this;
 			var hide = self.hide
-			 , splitButton = self.splitButton
-			 , type = self.type
-			 , size = self.size;
+				, splitButton = self.splitButton
+				, type = self.type
+				, size = self.size;
 			var handleClick = function() {
 				self.$emit('click');
 			};

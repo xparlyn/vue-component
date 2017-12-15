@@ -12,7 +12,7 @@
 		template: '<div :class="[\'vue-list-item\', {\'is-active\': isActive}]" @click="handleClick"><slot></slot></div>',
 		name: 'VueListItem',
 		mixins: [VueUtil.component.emitter],
-		data: function(){
+		data: function() {
 			return {
 				index: null
 			}

@@ -127,7 +127,7 @@
 				return VueUtil.getStartDateOfMonth(this.year, this.month);
 			},
 			rows: function() {
-				var date = new Date(this.year,this.month,1);
+				var date = new Date(this.year, this.month, 1);
 				var day = VueUtil.getFirstDayOfMonth(date);
 				var dateCountOfMonth = VueUtil.getDayCountOfMonth(date.getFullYear(), date.getMonth());
 				var dateCountOfLastMonth = VueUtil.getDayCountOfMonth(date.getFullYear(), (date.getMonth() === 0 ? 11 : date.getMonth() - 1));
@@ -196,9 +196,9 @@
 						cell.disabled = VueUtil.isFunction(disabledDate) && disabledDate(new Date(time));
 						cell.event = false;
 						if (cell.type === 'today' || cell.type === 'normal') {
-							if (this.events && this.events.length>0) {
+							if (this.events && this.events.length > 0) {
 								var cellDate = new Date(this.year, this.month, cell.text);
-								VueUtil.loop(this.events, function(event){
+								VueUtil.loop(this.events, function(event) {
 									var st = VueUtil.parseDate(event.start).getTime();
 									var ed = VueUtil.parseDate(event.end ? event.end : st).getTime();
 									var de = VueUtil.parseDate(cellDate).getTime();
@@ -307,7 +307,7 @@
 			isWeekActive: function(cell) {
 				if (this.selectionMode !== 'week')
 					return false;
-				var newDate = new Date(this.year,this.month,1);
+				var newDate = new Date(this.year, this.month, 1);
 				var year = newDate.getFullYear();
 				var month = newDate.getMonth();
 				if (cell.type === 'prev-month') {
@@ -386,7 +386,7 @@
 				var cell = this.rows[rowIndex - 1][cellIndex];
 				var text = cell.text;
 				var className = target.className;
-				var newDate = new Date(year,month,1);
+				var newDate = new Date(year, month, 1);
 				if (className.indexOf('prev') !== -1) {
 					if (month === 0) {
 						year = year - 1;
@@ -520,18 +520,18 @@
 				this.currentView = 'year';
 			},
 			prevMonth: function() {
-				this.date = VueUtil.addDate(this.date, -1 , 'month');
+				this.date = VueUtil.addDate(this.date, -1, 'month');
 				this.resetDate();
 			},
 			nextMonth: function() {
-				this.date = VueUtil.addDate(this.date, 1 , 'month');
+				this.date = VueUtil.addDate(this.date, 1, 'month');
 				this.resetDate();
 			},
 			nextYear: function() {
 				if (this.currentView === 'year') {
 					this.$refs.yearTable.nextTenYear();
 				} else {
-					this.date = VueUtil.addDate(this.date, 1 , 'year');
+					this.date = VueUtil.addDate(this.date, 1, 'year');
 					this.resetDate();
 				}
 			},
@@ -539,7 +539,7 @@
 				if (this.currentView === 'year') {
 					this.$refs.yearTable.prevTenYear();
 				} else {
-					this.date = VueUtil.addDate(this.date, -1 , 'year');
+					this.date = VueUtil.addDate(this.date, -1, 'year');
 					this.resetDate();
 				}
 			},
@@ -574,7 +574,7 @@
 					this.date.setMonth(month);
 					this.year && this.date.setFullYear(this.year);
 					this.resetDate();
-					var value = new Date(this.date.getFullYear(),month,1);
+					var value = new Date(this.date.getFullYear(), month, 1);
 					this.$emit('pick', value);
 				}
 			},

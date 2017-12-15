@@ -322,7 +322,7 @@
 			return data.slice().sort(function(data1, data2) {
 				var index = 0;
 				var column = sortList[index];
-				index++; 
+				index++;
 				var sortBy = function() {
 					var value1 = data1[column.property];
 					var value2 = data2[column.property];
@@ -333,7 +333,7 @@
 					if (value1 === value2) {
 						if (index === sortList.length) return;
 						column = sortList[index];
-						index++; 
+						index++;
 						return sortBy();
 					}
 					if (VueUtil.isFunction(column.sortMethod)) {
@@ -769,7 +769,7 @@
 			var storeData = self.store.states.data;
 			if (self.fixed) {
 				if (((self.fixed === true || self.fixed === 'left') && self.store.states.fixedColumns.length > 0)
-				 || (self.fixed === 'right' && self.store.states.rightFixedColumns.length > 0)) {
+					|| (self.fixed === 'right' && self.store.states.rightFixedColumns.length > 0)) {
 					delta = self.$parent.$refs.tableBody.delta;
 					selfData = delta.data;
 					self.$nextTick(self.updateCurrentClass);
@@ -828,7 +828,7 @@
 					class: ['vue-table__row', self.getRowClass(row, $index)]
 				}, [self._l(columns, function(column, cellIndex) {
 					return createElement('td', {
-						class: ['vue-table__cell', $index%2 === 1 ? 'grey' : '', column.align, column.getCellClass($index, cellIndex, row) || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : ''],
+						class: ['vue-table__cell', $index % 2 === 1 ? 'grey' : '', column.align, column.getCellClass($index, cellIndex, row) || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : ''],
 						on: {
 							mouseenter: function(e) {
 								return self.handleCellMouseEnter(e, row)
@@ -1082,8 +1082,8 @@
 		name: 'VueTableHeader',
 		render: function(createElement) {
 			if (!this.store.table.showHeader
-			 || ((this.fixed === true || this.fixed === 'left') && this.store.states.fixedColumns.length === 0)
-			 || (this.fixed === 'right' && this.store.states.rightFixedColumns.length === 0)) return null;
+				|| ((this.fixed === true || this.fixed === 'left') && this.store.states.fixedColumns.length === 0)
+				|| (this.fixed === 'right' && this.store.states.rightFixedColumns.length === 0)) return null;
 			var self = this;
 			var columns = self.store.states.columns;
 			var columnRows = self.convertToRows(columns);
@@ -1132,7 +1132,7 @@
 						class: ['cell', (column.filteredValue && column.filteredValue.length > 0) || column.order ? 'highlight' : ''],
 						style: {'width': column.renderHeader ? '100%' : '', 'padding': column.renderHeader ? 0 : ''},
 					}, [column.renderHeader ? column.renderHeader.call(self._renderProxy, createElement) : column.label,
-						column.sortable && !column.renderHeader ? createElement('span', {
+					column.sortable && !column.renderHeader ? createElement('span', {
 						class: 'vue-table__sort-wrapper',
 						on: {
 							click: function(e) {
@@ -1180,7 +1180,7 @@
 			var sortingColumns = self.store.states.sortingColumns;
 			VueUtil.loop(self.defaultSort, function(sort) {
 				var columns = self.store.states.columns;
-				var i=columns.length;
+				var i = columns.length;
 				while (i--) {
 					var column = columns[i];
 					if (column.property === sort.prop) {
@@ -1208,7 +1208,7 @@
 			convertToRows: function(columns) {
 				var rows = [[]];
 				var colspan = 1;
-				var i=columns.length;
+				var i = columns.length;
 				while (i--) {
 					var column = columns[i];
 					column.colspanNum = 1
@@ -1374,8 +1374,8 @@
 		name: 'VueTableFooter',
 		render: function(createElement) {
 			if (!this.store.table.showFooter
-			 || ((this.fixed === true || this.fixed === 'left') && this.store.states.fixedColumns.length === 0)
-			 || (this.fixed === 'right' && this.store.states.rightFixedColumns.length === 0)) return null;
+				|| ((this.fixed === true || this.fixed === 'left') && this.store.states.fixedColumns.length === 0)
+				|| (this.fixed === 'right' && this.store.states.rightFixedColumns.length === 0)) return null;
 			var self = this;
 			var aggregates = self.fixed ? self.$parent.$refs.tableFooter.aggregates : self.aggregates;
 			var columns = self.store.states.columns;
@@ -1518,8 +1518,8 @@
 			leftPin: function(columns) {
 				if (columns.length <= 0) {
 					var layoutFLg = false;
-					VueUtil.loop(this.tableColumns, function(column){
-						if (column.fixed === true || column.fixed === 'left'){
+					VueUtil.loop(this.tableColumns, function(column) {
+						if (column.fixed === true || column.fixed === 'left') {
 							column.fixed = false;
 							layoutFLg = true;
 						}
@@ -1543,8 +1543,8 @@
 			rightPin: function(columns) {
 				if (columns.length <= 0) {
 					var layoutFLg = false;
-					VueUtil.loop(this.tableColumns, function(column){
-						if (column.fixed === 'right'){
+					VueUtil.loop(this.tableColumns, function(column) {
+						if (column.fixed === 'right') {
 							column.fixed = false;
 							layoutFLg = true;
 						}
@@ -1663,8 +1663,8 @@
 				var tableColumns = this.tableColumns;
 				VueUtil.loop(this.store.states._columns, function(column) {
 					if (column.property !== 'selectionColumn'
-					 && column.property !== 'indexColumn'
-					 && column.property !== 'expandColumn') {
+						&& column.property !== 'indexColumn'
+						&& column.property !== 'expandColumn') {
 						tableColumns.push(column)
 					}
 				});
@@ -1737,7 +1737,7 @@
 				var datas = params.original ? this.store.states._data : this.store.states.data;
 				var footer = [];
 				if (this.showFooter) {
-					footer = this.store.states.aggregates.map(function(aggregate){
+					footer = this.store.states.aggregates.map(function(aggregate) {
 						return aggregate.label;
 					});
 				}

@@ -105,10 +105,10 @@
 		render: function(createElement) {
 			var self = this;
 			var activeValue = self.activeValue
-			 , activeOptions = self.activeOptions
-			 , visible = self.visible
-			 , expandTrigger = self.expandTrigger
-			 , popperClass = self.popperClass;
+				, activeOptions = self.activeOptions
+				, visible = self.visible
+				, expandTrigger = self.expandTrigger
+				, popperClass = self.popperClass;
 			var menus = self._l(activeOptions, function(menu, menuIndex) {
 				var isFlat = false;
 				var items = self._l(menu, function(item) {
@@ -356,7 +356,7 @@
 				}
 				var filteredFlatOptions = flatOptions.filter(function(optionsStack) {
 					return optionsStack.some(function(option) {
-						return new RegExp(value,'i').test(option[self.labelKey]);
+						return new RegExp(value, 'i').test(option[self.labelKey]);
 					});
 				});
 				if (filteredFlatOptions.length > 0) {

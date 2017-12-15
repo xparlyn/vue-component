@@ -79,7 +79,7 @@
 					}
 				} else if (showPrevMore && showNextMore) {
 					var offset = Math.floor(pagerCount / 2) - 1;
-					for (var i = currentPage - offset ; i <= currentPage + offset; i++) {
+					for (var i = currentPage - offset; i <= currentPage + offset; i++) {
 						array.push(i);
 					}
 				} else {
@@ -140,13 +140,13 @@
 			var TEMPLATE_MAP = {
 				prev: createElement('prev', null, []),
 				jumper: createElement('jumper', null, []),
-				pager: createElement('pager', {attrs: {currentPage: self.internalCurrentPage,pageCount: self.internalPageCount}, on: {change: self.handleCurrentChange}}, []),
+				pager: createElement('pager', {attrs: {currentPage: self.internalCurrentPage, pageCount: self.internalPageCount}, on: {change: self.handleCurrentChange}}, []),
 				next: createElement('next', null, []),
 				sizes: createElement('sizes', {attrs: {pageSizes: self.pageSizes}}, []),
 				slot: createElement('my-slot', null, []),
 				total: createElement('total', null, [])
 			};
-			var components = layout.split(',').map(function(item){return item.trim();});
+			var components = layout.split(',').map(function(item) {return item.trim();});
 			var rightWrapper = createElement('div', {class: 'vue-pagination__rightwrapper'}, []);
 			var haveRightWrapper = false;
 			if (self.small) {
@@ -176,7 +176,7 @@
 			},
 			Prev: {
 				render: function(createElement) {
-					return createElement('button',{attrs: {type: 'button'}, class: ['btn-prev', {disabled: this.$parent.internalCurrentPage <= 1}], on: {click: this.$parent.prev}}, [createElement('i', {class: 'vue-icon vue-icon-arrow-left'}, [])]);
+					return createElement('button', {attrs: {type: 'button'}, class: ['btn-prev', {disabled: this.$parent.internalCurrentPage <= 1}], on: {click: this.$parent.prev}}, [createElement('i', {class: 'vue-icon vue-icon-arrow-left'}, [])]);
 				}
 			},
 			Next: {
@@ -200,7 +200,7 @@
 				},
 				render: function(createElement) {
 					var self = this;
-					return createElement('span', {class: 'vue-pagination__sizes'}, [createElement('vue-select', {attrs: {value: this.$parent.internalPageSize}, on: {input: this.handleChange}}, [this.pageSizes.map(function (item) {return createElement('vue-option', {attrs: {value: item, label: item + ' ' + self.$t('vue.pagination.pagesize')}}, [])})])]);
+					return createElement('span', {class: 'vue-pagination__sizes'}, [createElement('vue-select', {attrs: {value: this.$parent.internalPageSize}, on: {input: this.handleChange}}, [this.pageSizes.map(function(item) {return createElement('vue-option', {attrs: {value: item, label: item + ' ' + self.$t('vue.pagination.pagesize')}}, [])})])]);
 				},
 				methods: {
 					handleChange: function(val) {

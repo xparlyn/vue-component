@@ -86,7 +86,7 @@
 		methods: {
 			addToStore: function() {
 				if (VueUtil.isArray(this.model)
-				 && this.model.indexOf(this.label) === -1) {
+					&& this.model.indexOf(this.label) === -1) {
 					this.model.push(this.label);
 				} else {
 					this.model = this.trueLabel || true;

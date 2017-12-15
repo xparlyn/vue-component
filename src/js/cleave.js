@@ -14,7 +14,7 @@
 		owner.numeralThousandsGroupStyle = numeralThousandsGroupStyle || NumeralFormatter.groupStyle.thousand;
 		owner.numeralPositiveOnly = !!numeralPositiveOnly;
 		owner.delimiter = (delimiter || delimiter === '') ? delimiter : ',';
-		owner.delimiterRE = delimiter ? new RegExp('\\' + delimiter,'g') : '';
+		owner.delimiterRE = delimiter ? new RegExp('\\' + delimiter, 'g') : '';
 	};
 	NumeralFormatter.groupStyle = {
 		thousand: 'thousand',
@@ -35,16 +35,16 @@
 				partDecimal = owner.numeralDecimalMark + parts[1].slice(0, owner.numeralDecimalScale);
 			}
 			switch (owner.numeralThousandsGroupStyle) {
-			case NumeralFormatter.groupStyle.lakh:
-				partInteger = partInteger.replace(/(\d)(?=(\d\d)+\d$)/g, '$1' + owner.delimiter);
-				break;
-			case NumeralFormatter.groupStyle.wan:
-				partInteger = partInteger.replace(/(\d)(?=(\d{4})+$)/g, '$1' + owner.delimiter);
-				break;
-			default:
-				partInteger = partInteger.replace(/(\d)(?=(\d{3})+$)/g, '$1' + owner.delimiter);
+				case NumeralFormatter.groupStyle.lakh:
+					partInteger = partInteger.replace(/(\d)(?=(\d\d)+\d$)/g, '$1' + owner.delimiter);
+					break;
+				case NumeralFormatter.groupStyle.wan:
+					partInteger = partInteger.replace(/(\d)(?=(\d{4})+$)/g, '$1' + owner.delimiter);
+					break;
+				default:
+					partInteger = partInteger.replace(/(\d)(?=(\d{3})+$)/g, '$1' + owner.delimiter);
 			}
-			return partInteger + (owner.numeralDecimalScale > 0 ? partDecimal+'' : '');
+			return partInteger + (owner.numeralDecimalScale > 0 ? partDecimal + '' : '');
 		}
 	};
 	var DateFormatter = function(datePattern) {
@@ -77,24 +77,24 @@
 					var sub0 = sub.slice(0, 1);
 					var rest = value.slice(length);
 					switch (owner.datePattern[index]) {
-					case 'd':
-						if (sub === '00') {
-							sub = '01';
-						} else if (parseInt(sub0, 10) > 3) {
-							sub = '0' + sub0;
-						} else if (parseInt(sub, 10) > 31) {
-							sub = '31';
-						}
-						break;
-					case 'm':
-						if (sub === '00') {
-							sub = '01';
-						} else if (parseInt(sub0, 10) > 1) {
-							sub = '0' + sub0;
-						} else if (parseInt(sub, 10) > 12) {
-							sub = '12';
-						}
-						break;
+						case 'd':
+							if (sub === '00') {
+								sub = '01';
+							} else if (parseInt(sub0, 10) > 3) {
+								sub = '0' + sub0;
+							} else if (parseInt(sub, 10) > 31) {
+								sub = '31';
+							}
+							break;
+						case 'm':
+							if (sub === '00') {
+								sub = '01';
+							} else if (parseInt(sub0, 10) > 1) {
+								sub = '0' + sub0;
+							} else if (parseInt(sub, 10) > 12) {
+								sub = '12';
+							}
+							break;
 					}
 					result += sub;
 					value = rest;
@@ -106,7 +106,7 @@
 	var PhoneFormatter = function(formatter, delimiter) {
 		var owner = this;
 		owner.delimiter = (delimiter || delimiter === '') ? delimiter : ' ';
-		owner.delimiterRE = delimiter ? new RegExp('\\' + delimiter,'g') : '';
+		owner.delimiterRE = delimiter ? new RegExp('\\' + delimiter, 'g') : '';
 		owner.formatter = formatter;
 	};
 	PhoneFormatter.prototype = {
@@ -241,11 +241,11 @@
 		},
 		stripDelimiters: function(value, delimiter, delimiters) {
 			if (delimiters.length === 0) {
-				var delimiterRE = delimiter ? new RegExp('\\' + delimiter,'g') : '';
+				var delimiterRE = delimiter ? new RegExp('\\' + delimiter, 'g') : '';
 				return value.replace(delimiterRE, '');
 			}
 			delimiters.forEach(function(current) {
-				value = value.replace(new RegExp('\\' + current,'g'), '');
+				value = value.replace(new RegExp('\\' + current, 'g'), '');
 			});
 			return value;
 		},
@@ -323,7 +323,7 @@
 			target.prefixLength = target.prefix.length;
 			target.rawValueTrimPrefix = !!opts.rawValueTrimPrefix;
 			target.copyDelimiter = !!opts.copyDelimiter;
-			target.initValue = opts.initValue === undefined ? '' : opts.initValue+'';
+			target.initValue = opts.initValue === undefined ? '' : opts.initValue + '';
 			target.delimiter = (opts.delimiter || opts.delimiter === '') ? opts.delimiter : (opts.date ? '/' : (opts.numeral ? ',' : ' '));
 			target.delimiters = opts.delimiters || [];
 			target.blocks = opts.blocks || [];
@@ -377,7 +377,7 @@
 			if (!pps.numeral) {
 				return;
 			}
-			pps.numeralFormatter = new Cleave.NumeralFormatter(pps.numeralDecimalMark,pps.numeralDecimalScale,pps.numeralThousandsGroupStyle,pps.numeralPositiveOnly,pps.delimiter);
+			pps.numeralFormatter = new Cleave.NumeralFormatter(pps.numeralDecimalMark, pps.numeralDecimalScale, pps.numeralThousandsGroupStyle, pps.numeralPositiveOnly, pps.delimiter);
 		},
 		initDateFormatter: function() {
 			var owner = this;
@@ -397,7 +397,7 @@
 				return;
 			}
 			try {
-				pps.phoneFormatter = new Cleave.PhoneFormatter(new pps.root.Cleave.AsYouTypeFormatter(pps.phoneRegionCode),pps.delimiter);
+				pps.phoneFormatter = new Cleave.PhoneFormatter(new pps.root.Cleave.AsYouTypeFormatter(pps.phoneRegionCode), pps.delimiter);
 			} catch (ex) {
 				throw 'Please include phone-type-formatter lib';
 			}
@@ -520,7 +520,7 @@
 		setRawValue: function(value) {
 			var owner = this;
 			var pps = owner.properties;
-			value = value !== undefined ? value+'' : '';
+			value = value !== undefined ? value + '' : '';
 			if (pps.numeral) {
 				value = value.replace('.', pps.numeralDecimalMark);
 			}

@@ -33,7 +33,7 @@
 		var max = Math.max(r, g, b);
 		var min = Math.min(r, g, b);
 		var h,
-		s;
+			s;
 		var v = max;
 		var d = max - min;
 		s = max === 0 ? 0 : d / max;
@@ -41,15 +41,15 @@
 			h = 0;
 		} else {
 			switch (max) {
-			case r:
-				h = (g - b) / d + (g < b ? 6 : 0);
-				break;
-			case g:
-				h = (b - r) / d + 2;
-				break;
-			case b:
-				h = (r - g) / d + 4;
-				break;
+				case r:
+					h = (g - b) / d + (g < b ? 6 : 0);
+					break;
+				case g:
+					h = (b - r) / d + 2;
+					break;
+				case b:
+					h = (r - g) / d + 4;
+					break;
 			}
 			h /= 6;
 		}
@@ -214,52 +214,52 @@
 		};
 		if (this.enableAlpha) {
 			switch (format) {
-			case 'hsl':
-				var hsl = hsv2hsl(_hue, _saturation / 100, _value / 100);
-				this.value = 'hsla(' + _hue + ', ' + Math.round(hsl[1] * 100) + '%, ' + Math.round(hsl[2] * 100) + '%, ' + _alpha / 100 + ')';
-				break;
-			case 'hsv':
-				this.value = 'hsva(' + _hue + ', ' + Math.round(_saturation) + '%, ' + Math.round(_value) + '%, ' + _alpha / 100 + ')';
-				break;
-			default:
-				var _hsv2rgb = hsv2rgb(_hue, _saturation, _value);
-				var r = _hsv2rgb.r;
-				var g = _hsv2rgb.g;
-				var b = _hsv2rgb.b;
-				this.value = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + _alpha / 100 + ')';
+				case 'hsl':
+					var hsl = hsv2hsl(_hue, _saturation / 100, _value / 100);
+					this.value = 'hsla(' + _hue + ', ' + Math.round(hsl[1] * 100) + '%, ' + Math.round(hsl[2] * 100) + '%, ' + _alpha / 100 + ')';
+					break;
+				case 'hsv':
+					this.value = 'hsva(' + _hue + ', ' + Math.round(_saturation) + '%, ' + Math.round(_value) + '%, ' + _alpha / 100 + ')';
+					break;
+				default:
+					var _hsv2rgb = hsv2rgb(_hue, _saturation, _value);
+					var r = _hsv2rgb.r;
+					var g = _hsv2rgb.g;
+					var b = _hsv2rgb.b;
+					this.value = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + _alpha / 100 + ')';
 			}
 		} else {
 			switch (format) {
-			case 'hsl':
-				var hsl = hsv2hsl(_hue, _saturation / 100, _value / 100);
-				this.value = 'hsl(' + _hue + ', ' + Math.round(_hsl[1] * 100) + '%, ' + Math.round(_hsl[2] * 100) + '%)';
-				break;
-			case 'hsv':
-				 this.value = 'hsv(' + _hue + ', ' + Math.round(_saturation) + '%, ' + Math.round(_value) + '%)';
-				break;
-			case 'rgb':
-				var _hsv2rgb2 = hsv2rgb(_hue, _saturation, _value);
-				var r = _hsv2rgb2.r;
-				var g = _hsv2rgb2.g;
-				var b = _hsv2rgb2.b;
-				this.value = 'rgb(' + r + ', ' + g + ', ' + b + ')';
-				break;
-			default:
-				var toHex = function(ref) {
-					var r = ref.r;
-					var g = ref.g;
-					var b = ref.b;
-					var INT_HEX_MAP = {10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F'};
-					var hexOne = function(value) {
-						value = Math.min(Math.round(value), 255);
-						var high = Math.floor(value / 16);
-						var low = value % 16;
-						return '' + (INT_HEX_MAP[high] || high) + (INT_HEX_MAP[low] || low);
+				case 'hsl':
+					var hsl = hsv2hsl(_hue, _saturation / 100, _value / 100);
+					this.value = 'hsl(' + _hue + ', ' + Math.round(_hsl[1] * 100) + '%, ' + Math.round(_hsl[2] * 100) + '%)';
+					break;
+				case 'hsv':
+					this.value = 'hsv(' + _hue + ', ' + Math.round(_saturation) + '%, ' + Math.round(_value) + '%)';
+					break;
+				case 'rgb':
+					var _hsv2rgb2 = hsv2rgb(_hue, _saturation, _value);
+					var r = _hsv2rgb2.r;
+					var g = _hsv2rgb2.g;
+					var b = _hsv2rgb2.b;
+					this.value = 'rgb(' + r + ', ' + g + ', ' + b + ')';
+					break;
+				default:
+					var toHex = function(ref) {
+						var r = ref.r;
+						var g = ref.g;
+						var b = ref.b;
+						var INT_HEX_MAP = {10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F'};
+						var hexOne = function(value) {
+							value = Math.min(Math.round(value), 255);
+							var high = Math.floor(value / 16);
+							var low = value % 16;
+							return '' + (INT_HEX_MAP[high] || high) + (INT_HEX_MAP[low] || low);
+						};
+						if (isNaN(r) || isNaN(g) || isNaN(b)) return '';
+						return '#' + hexOne(r) + hexOne(g) + hexOne(b);
 					};
-					if (isNaN(r) || isNaN(g) || isNaN(b)) return '';
-					return '#' + hexOne(r) + hexOne(g) + hexOne(b);
-				};
-				this.value = toHex(hsv2rgb(_hue, _saturation, _value));
+					this.value = toHex(hsv2rgb(_hue, _saturation, _value));
 			}
 		}
 	};
@@ -544,16 +544,16 @@
 			var bar = _$refs.bar;
 			var thumb = _$refs.thumb;
 			var dragConfig = {
-					start: function(event) {
-						self.handleDrag(event);
-					},
-					drag: function(event) {
-						self.handleDrag(event);
-					},
-					end: function(event) {
-						self.handleDrag(event);
-					}
-				};
+				start: function(event) {
+					self.handleDrag(event);
+				},
+				drag: function(event) {
+					self.handleDrag(event);
+				},
+				end: function(event) {
+					self.handleDrag(event);
+				}
+			};
 			draggable(bar, dragConfig);
 			draggable(thumb, dragConfig);
 			self.update();

@@ -22,7 +22,7 @@
 				return this.type && typeMap[this.type.toLowerCase()] ? 'vue-icon-' + typeMap[this.type.toLowerCase()] : '';
 			},
 			confirmButtonClasses: function() {
-				return 'vue-button--primary '+ this.confirmButtonClass;
+				return 'vue-button--primary ' + this.confirmButtonClass;
 			},
 			cancelButtonClasses: function() {
 				return this.cancelButtonClass;

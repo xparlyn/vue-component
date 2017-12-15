@@ -140,7 +140,7 @@
 				var tabName = pane.name || pane.index || index;
 				var closable = pane.isClosable || editable;
 				pane.index = '' + index;
-				var btnClose = closable ? createElement('span', {'class': 'vue-icon-close',on: {'click': function click(ev) {onTabRemove(pane, ev);}}}, []) : null;
+				var btnClose = closable ? createElement('span', {'class': 'vue-icon-close', on: {'click': function click(ev) {onTabRemove(pane, ev);}}}, []) : null;
 				var tabLabelContent = pane.$slots.label || pane.label;
 				return createElement('div', {
 					'class': {
@@ -159,15 +159,15 @@
 				}, [tabLabelContent, btnClose]);
 			});
 			return createElement('div', {
-					'class': ['vue-tabs__nav-wrap', scrollable ? 'is-scrollable' : '']
-				}, [scrollBtn, createElement('div', {
-					'class': ['vue-tabs__nav-scroll'],
-					ref: 'navScroll'
-				}, [createElement('div', {
-					'class': 'vue-tabs__nav',
-					ref: 'nav',
-					style: navStyle
-				}, [tabs])])]);
+				'class': ['vue-tabs__nav-wrap', scrollable ? 'is-scrollable' : '']
+			}, [scrollBtn, createElement('div', {
+				'class': ['vue-tabs__nav-scroll'],
+				ref: 'navScroll'
+			}, [createElement('div', {
+				'class': 'vue-tabs__nav',
+				ref: 'nav',
+				style: navStyle
+			}, [tabs])])]);
 		},
 		computed: {
 			mouseWheel: function() {

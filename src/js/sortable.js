@@ -280,7 +280,7 @@
 					var emptyTimer = setTimeout(function() {
 						document.selection.empty();
 						clearTimeout(emptyTimer);
-					},0);
+					}, 0);
 				} else {
 					getSelection().removeAllRanges();
 				}
@@ -625,23 +625,23 @@
 		},
 		handleEvent: function(evt) {
 			switch (evt.type) {
-			case 'drop':
-			case 'dragend':
-				this._onDrop(evt);
-				break;
-			case 'dragover':
-			case 'dragenter':
-				if (dragEl) {
-					this._onDragOver(evt);
-					_globalDragOver(evt);
-				}
-				break;
-			case 'mouseover':
-				this._onDrop(evt);
-				break;
-			case 'selectstart':
-				evt.preventDefault();
-				break;
+				case 'drop':
+				case 'dragend':
+					this._onDrop(evt);
+					break;
+				case 'dragover':
+				case 'dragenter':
+					if (dragEl) {
+						this._onDragOver(evt);
+						_globalDragOver(evt);
+					}
+					break;
+				case 'mouseover':
+					this._onDrop(evt);
+					break;
+				case 'selectstart':
+					evt.preventDefault();
+					break;
 			}
 		},
 		toArray: function() {
@@ -846,7 +846,7 @@
 		while (i--) {
 			sum += str.charCodeAt(i);
 		}
-		return sum+'';
+		return sum + '';
 	}
 	function _index(el, selector) {
 		var index = 0;
@@ -864,7 +864,7 @@
 		if (el) {
 			selector = selector.split('.');
 			var tag = selector.shift().toUpperCase();
-			var re = new RegExp('\\s(' + selector.join('|') + ')(?=\\s)','g');
+			var re = new RegExp('\\s(' + selector.join('|') + ')(?=\\s)', 'g');
 			return ((tag === '' || el.nodeName.toUpperCase() == tag) && (!selector.length || ((' ' + el.className + ' ').match(re) || []).length == selector.length));
 		}
 		return false;
@@ -943,7 +943,7 @@
 		cancelNextTick: _cancelNextTick
 	};
 	Sortable.create = function(el, options) {
-		return new Sortable(el,options);
+		return new Sortable(el, options);
 	}
 	return Sortable;
 });

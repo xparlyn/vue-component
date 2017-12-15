@@ -7,7 +7,7 @@
 		delete context.VueDatePicker;
 		delete context.VuePicker;
 	}
-})(this, function (Vue, VueUtil, VueDatePicker) {
+})(this, function(Vue, VueUtil, VueDatePicker) {
 	'use strict';
 	var EventCard = {
 		props: {
@@ -57,8 +57,8 @@
 				var mouseenterItem = function(eventCards, event) {
 					VueUtil.loop(eventCards, function(card) {
 						if (card.event.cellIndex === event.cellIndex
-						 && VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
-						 && VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
+							&& VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
+							&& VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
 							card.$refs.eventItem && card.$refs.eventItem.classList.add('hover');
 						}
 					})
@@ -66,8 +66,8 @@
 				var mouseleaveItem = function(eventCards, event) {
 					VueUtil.loop(eventCards, function(card) {
 						if (card.event.cellIndex === event.cellIndex
-						 && VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
-						 && VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
+							&& VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
+							&& VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
 							card.$refs.eventItem && card.$refs.eventItem.classList.remove('hover');
 						}
 					})
@@ -190,7 +190,7 @@
 				var eventCard = this.$refs.eventCard;
 				var defaultWidth = this.$el.querySelector('.vue-full-calendar__events-day').offsetWidth;
 				if (VueUtil.isArray(eventCard)) {
-					VueUtil.loop(eventCard, function(card){
+					VueUtil.loop(eventCard, function(card) {
 						card.defaultWidth = defaultWidth;
 					});
 				} else {
@@ -203,7 +203,7 @@
 				var end = VueUtil.addDate(start, 6, 'week')
 				this.$emit('changemonth', start, end, firstDayOfMonth);
 				this.$nextTick(this.changeEventCardWidth);
-				
+
 			},
 			getCalendar: function() {
 				var monthViewStartDate = VueUtil.getStartDateOfMonth(this.currentMonth.getFullYear(), this.currentMonth.getMonth());
@@ -262,7 +262,7 @@
 					if (!b.cellIndex) return -1;
 					return a.cellIndex - b.cellIndex
 				});
-				for (var i=0; i<thisDayEvents.length; i++) {
+				for (var i = 0; i < thisDayEvents.length; i++) {
 					thisDayEvents[i].cellIndex = thisDayEvents[i].cellIndex || (i + 1);
 					thisDayEvents[i].isShow = true;
 					if (thisDayEvents[i].cellIndex === i + 1 || i > this.eventLimit) continue;
@@ -276,9 +276,9 @@
 				}
 				return thisDayEvents
 			},
-			findEventsByDate: function(date, events){
+			findEventsByDate: function(date, events) {
 				var findEvents = [];
-				VueUtil.loop(events, function(event){
+				VueUtil.loop(events, function(event) {
 					var st = VueUtil.parseDate(event.start).getTime();
 					var ed = VueUtil.parseDate(event.end ? event.end : st).getTime();
 					var de = VueUtil.parseDate(date).getTime();
@@ -297,8 +297,8 @@
 			mouseenterEvent: function(event, e) {
 				VueUtil.loop(this.$refs.eventCard, function(card) {
 					if (card.event.cellIndex === event.cellIndex
-					 && VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
-					 && VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
+						&& VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
+						&& VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
 						card.$refs.eventItem && card.$refs.eventItem.classList.add('hover');
 					}
 				});
@@ -307,8 +307,8 @@
 			mouseleaveEvent: function(event, e) {
 				VueUtil.loop(this.$refs.eventCard, function(card) {
 					if (card.event.cellIndex === event.cellIndex
-					 && VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
-					 && VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
+						&& VueUtil.formatDate(event.start) === VueUtil.formatDate(card.event.start)
+						&& VueUtil.formatDate(event.end) === VueUtil.formatDate(card.event.end)) {
 						card.$refs.eventItem && card.$refs.eventItem.classList.remove('hover');
 					}
 				});
@@ -380,10 +380,10 @@
 		},
 		created: function() {
 			this.$on('pick', function(date) {
-				var findEventsByDate = function(date, events){
-					if (events && events.length>0) {
+				var findEventsByDate = function(date, events) {
+					if (events && events.length > 0) {
 						var findEvents = [];
-						VueUtil.loop(events, function(event){
+						VueUtil.loop(events, function(event) {
 							var st = VueUtil.parseDate(event.start).getTime();
 							var ed = VueUtil.parseDate(event.end ? event.end : st).getTime();
 							var de = VueUtil.parseDate(date).getTime();

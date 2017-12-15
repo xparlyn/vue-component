@@ -113,12 +113,12 @@
 		var instancePosition = instance.position.split("-");
 		var positionX = instancePosition[1];
 		var positionY = instancePosition[0];
-		var isLeft = positionX.indexOf('left')!==-1;
-		var isCenterX = positionX.indexOf('center')!==-1;
-		var isRight = positionX.indexOf('right')!==-1;
-		var isTop = positionY.indexOf('top')!==-1;
-		var isCenterY = positionY.indexOf('center')!==-1;
-		var isBottom = positionY.indexOf('bottom')!==-1;
+		var isLeft = positionX.indexOf('left') !== -1;
+		var isCenterX = positionX.indexOf('center') !== -1;
+		var isRight = positionX.indexOf('right') !== -1;
+		var isTop = positionY.indexOf('top') !== -1;
+		var isCenterY = positionY.indexOf('center') !== -1;
+		var isBottom = positionY.indexOf('bottom') !== -1;
 		if ((!isLeft && !isCenterX && !isRight) || (!isTop && !isCenterY && !isBottom)) {
 			VueUtil.removeNode(instance.dom);
 			instance.$destroy();
@@ -220,30 +220,30 @@
 				var instancesPosition = instance.position.split("-");
 				var positionX = instancesPosition[1];
 				var positionY = instancesPosition[0];
-				var isLeft = positionX.indexOf('left')!==-1;
-				var isCenterX = positionX.indexOf('center')!==-1;
-				var isRight = positionX.indexOf('right')!==-1;
-				var isTop = positionY.indexOf('top')!==-1;
-				var isBottom = positionY.indexOf('bottom')!==-1;
+				var isLeft = positionX.indexOf('left') !== -1;
+				var isCenterX = positionX.indexOf('center') !== -1;
+				var isRight = positionX.indexOf('right') !== -1;
+				var isTop = positionY.indexOf('top') !== -1;
+				var isBottom = positionY.indexOf('bottom') !== -1;
 				if (isBottom) {
 					if (isLeft) {
 						var lbi = leftBottomInstances.indexOf(instance);
 						leftBottomInstances.splice(lbi, 1);
-						for (var lbj = leftBottomInstances.length; lbi < lbj ; lbi++) {
+						for (var lbj = leftBottomInstances.length; lbi < lbj; lbi++) {
 							leftBottomInstances[lbi].dom.style.bottom = parseInt(leftBottomInstances[lbi].dom.style.bottom, 10) - removedHeight + 'px';
 						}
 					}
 					if (isCenterX) {
 						var cbi = centerBottomInstances.indexOf(instance);
 						centerBottomInstances.splice(cbi, 1);
-						for (var cbj = centerBottomInstances.length; cbi < cbj ; cbi++) {
+						for (var cbj = centerBottomInstances.length; cbi < cbj; cbi++) {
 							centerBottomInstances[cbi].dom.style.bottom = parseInt(centerBottomInstances[cbi].dom.style.bottom, 10) - removedHeight + 'px';
 						}
 					}
 					if (isRight) {
 						var rbi = rightBottomInstances.indexOf(instance);
 						rightBottomInstances.splice(rbi, 1);
-						for (var rbj = rightBottomInstances.length; rbi < rbj ; rbi++) {
+						for (var rbj = rightBottomInstances.length; rbi < rbj; rbi++) {
 							rightBottomInstances[rbi].dom.style.bottom = parseInt(rightBottomInstances[rbi].dom.style.bottom, 10) - removedHeight + 'px';
 						}
 					}
@@ -252,22 +252,22 @@
 					if (isLeft) {
 						var lti = leftTopInstances.indexOf(instance);
 						leftTopInstances.splice(lti, 1);
-						for (var ltj = leftTopInstances.length; lti < ltj ; lti++) {
+						for (var ltj = leftTopInstances.length; lti < ltj; lti++) {
 							leftTopInstances[lti].dom.style.top = parseInt(leftTopInstances[lti].dom.style.top, 10) - removedHeight + 'px';
 						}
 					}
 					if (isCenterX) {
 						var cti = centerTopInstances.indexOf(instance);
 						centerTopInstances.splice(cti, 1);
-						for (var ctj = centerTopInstances.length; cti < ctj ; cti++) {
+						for (var ctj = centerTopInstances.length; cti < ctj; cti++) {
 							centerTopInstances[cti].dom.style.top = parseInt(centerTopInstances[cti].dom.style.top, 10) - removedHeight + 'px';
 						}
-					
+
 					}
 					if (isRight) {
 						var rti = rightTopInstances.indexOf(instance);
 						rightTopInstances.splice(rti, 1);
-						for (var rtj = rightTopInstances.length; rti < rtj ; rti++) {
+						for (var rtj = rightTopInstances.length; rti < rtj; rti++) {
 							rightTopInstances[rti].dom.style.top = parseInt(rightTopInstances[rti].dom.style.top, 10) - removedHeight + 'px';
 						}
 					}

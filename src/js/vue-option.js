@@ -51,7 +51,7 @@
 					return this.parent.value.indexOf(this.value) > -1;
 				}
 			},
-			itemHover: function(){
+			itemHover: function() {
 				return this.parent.hoverIndex === this.parent.options.indexOf(this);
 			},
 			limitReached: function() {
@@ -88,7 +88,7 @@
 			},
 			queryChange: function(query) {
 				var parsedQuery = String(query).replace(/(\^|\(|\)|\[|\]|\$|\*|\+|\.|\?|\\|\{|\}|\|)/g, '\\$1');
-				this.visible = new RegExp(parsedQuery,'i').test(this.currentLabel) || this.created;
+				this.visible = new RegExp(parsedQuery, 'i').test(this.currentLabel) || this.created;
 				if (!this.visible) {
 					this.parent.filteredOptionsCount--;
 				}

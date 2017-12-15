@@ -11,7 +11,7 @@
 	var VueList = {
 		name: 'VueList',
 		componentName: 'VueList',
-		data: function(){
+		data: function() {
 			return {
 				activedIndex: null,
 				remain: 0,
@@ -87,7 +87,7 @@
 			init: function() {
 				var slots = this.$slots.default;
 				var delta = this.delta;
-				delta.remain = Math.floor(this.height*1 / delta.size);
+				delta.remain = Math.floor(this.height * 1 / delta.size);
 				delta.end = delta.remain;
 				delta.keeps = delta.remain;
 				if (slots && slots.length <= delta.remain) {
@@ -110,25 +110,25 @@
 			return createElement('div', {
 				'class': ['vue-list'],
 				'style': {
-					'height': this.height*1 + 'px'
+					'height': this.height * 1 + 'px'
 				},
 				'on': {
 					'scroll': this.handleScroll
 				}
 			}, [
-				createElement('div', {
-					'style': {
-						'padding-top': paddingTop + 'px',
-						'padding-bottom': allPadding - paddingTop + 'px'
-					}
-				}, showList)
-			]);
+					createElement('div', {
+						'style': {
+							'padding-top': paddingTop + 'px',
+							'padding-bottom': allPadding - paddingTop + 'px'
+						}
+					}, showList)
+				]);
 		},
 		mounted: function() {
 			var self = this;
 			self.$on('item-click', self.handleItemClick);
 			if (self.defaultSelected) {
-				self.$nextTick(function(){
+				self.$nextTick(function() {
 					self.$slots.default[self.defaultActivedIndex].componentInstance.handleClick();
 				});
 			}

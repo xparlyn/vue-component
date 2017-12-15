@@ -102,7 +102,7 @@
 		watch: {
 			suggestionVisible: function(val) {
 				var self = this;
-				self.$nextTick(function(){
+				self.$nextTick(function() {
 					self.broadcast('VueAutocompleteSuggestions', 'visible', [val, self.$refs.input.$refs.input.offsetWidth]);
 				});
 			}

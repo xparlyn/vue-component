@@ -12,7 +12,7 @@
 		template: '<div :class="[{\'vue-aside__static\':relative}]"><div v-show="visibleaside" :class="[\'vue-aside__wrapper\', {\'vue-aside__absolute\':relative}, {\'is-cleanness\': cleannessModal}]" @click.self="handleWrapperClick"></div><transition :name="left ? \'aside-left\' : \'aside-right\'"><div v-show="visibleaside" :class="[\'vue-aside\', {\'vue-aside-left\':left, \'vue-aside__absolute\':relative},sizeClass,customClass]" ref="aside"><div v-if="showClose" class="vue-aside__headerbtn"><i class="vue-aside__close vue-icon vue-icon-close" @click=\'handleClose\'></i></div><div class="vue-aside__header"><span class="vue-aside__title" v-if="showTitle && !$slots.header">{{title}}</span><slot name="header"></slot></div><div class="vue-aside__body"><slot></slot></div><div class="vue-aside__footer" v-if="$slots.footer"><slot name="footer"></slot></div></div></transition></div>',
 		name: 'VueAside',
 		mixins: [VuePopup],
-		data: function(){
+		data: function() {
 			return {
 				visibleaside: false
 			}
@@ -42,7 +42,7 @@
 			beforeClose: Function
 		},
 		watch: {
-			visibleaside: function(val){
+			visibleaside: function(val) {
 				if (val) {
 					this.opened = true;
 					this.$emit('open');
@@ -77,7 +77,7 @@
 					} else {
 						this.visibleaside = val
 					}
-				} 
+				}
 			}
 		},
 		computed: {

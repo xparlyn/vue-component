@@ -30,7 +30,7 @@
 		},
 		computed: {
 			opened: function() {
-				return ( this.rootMenu.openedMenus.indexOf(this.index) > -1) ;
+				return (this.rootMenu.openedMenus.indexOf(this.index) > -1);
 			},
 			active: {
 				cache: false,

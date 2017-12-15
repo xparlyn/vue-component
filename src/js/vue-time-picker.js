@@ -265,7 +265,7 @@
 				this.$emit('select-range', start, end);
 			},
 			handleConfirm: function(visible, first) {
-				visible = visible||false;
+				visible = visible || false;
 				if (first) return;
 				var date = new Date(limitRange(this.currentDate, this.selectableRange, 'HH:mm:ss'));
 				this.$emit('pick', date, visible, first);
@@ -404,8 +404,8 @@
 				this.$emit('select-range', start + 11, end + 11);
 			},
 			handleConfirm: function(visible, first) {
-				visible = visible||false;
-				first = first||false;
+				visible = visible || false;
+				first = first || false;
 				var minSelectableRange = this.$refs.minSpinner.selectableRange;
 				var maxSelectableRange = this.$refs.maxSpinner.selectableRange;
 				this.minTime = limitRange(this.minTime, minSelectableRange);

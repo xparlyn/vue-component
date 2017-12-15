@@ -81,8 +81,8 @@
 				return vnode;
 			var data = vnode.data = vnode.data || {};
 			var on = vnode.data.on = vnode.data.on || {};
-			on.mouseenter = self.addEventHandle(on.mouseenter, function(){self.setExpectedState(true); self.handleShowPopper();});
-			on.mouseleave = self.addEventHandle(on.mouseleave, function(){self.setExpectedState(false); self.debounceClose();});
+			on.mouseenter = self.addEventHandle(on.mouseenter, function() {self.setExpectedState(true); self.handleShowPopper();});
+			on.mouseleave = self.addEventHandle(on.mouseleave, function() {self.setExpectedState(false); self.debounceClose();});
 			data.staticClass = self.concatClass(data.staticClass, 'vue-tooltip');
 			return vnode;
 		},

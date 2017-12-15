@@ -311,10 +311,10 @@
 					renderCell = DEFAULT_RENDER_CELL;
 				}
 				return self.showOverflowTooltip ? createElement('div',
-				{'class': 'cell vue-tooltip'},
-				[renderCell(createElement, data)]) : createElement('div', {
-					class: 'cell'
-				}, [renderCell(createElement, data)]);
+					{'class': 'cell vue-tooltip'},
+					[renderCell(createElement, data)]) : createElement('div', {
+						class: 'cell'
+					}, [renderCell(createElement, data)]);
 			};
 		},
 		destroyed: function() {
