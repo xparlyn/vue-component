@@ -11,7 +11,8 @@
 		props: {
 			appendToBody: VuePopper.props.appendToBody,
 			offset: VuePopper.props.offset,
-			boundariesPadding: VuePopper.props.boundariesPadding
+			boundariesPadding: VuePopper.props.boundariesPadding,
+			autoWidth:VuePopper.props.autoWidth
 		},
 		methods: VuePopper.methods,
 		data: VuePopper.data,
@@ -168,6 +169,10 @@
 			defaultValue: {},
 			rangeSeparator: {
 				default: ' - '
+			},
+			autoWidth: {
+				type: Boolean,
+				default: true
 			},
 			pickerOptions: {}
 		},
@@ -378,7 +383,6 @@
 				self.picker = new Vue(self.panel).$mount();
 				self.picker.popperClass = self.popperClass;
 				self.popperElm = self.picker.$el;
-				self.picker.width = self.reference.getBoundingClientRect().width;
 				self.picker.showTime = self.type === 'datetime' || self.type === 'datetimerange';
 				self.picker.selectionMode = self.selectionMode;
 				if (self.format) {

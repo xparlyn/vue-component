@@ -136,6 +136,7 @@
 		};
 		data.placement = this._options.placement;
 		data._originalPlacement = this._options.placement;
+		this._options.autoWidth && VueUtil.setStyle(this._popper, 'width', this._reference.offsetWidth + 'px');
 		data.offsets = this._getOffsets(this._popper, this._reference, data.placement);
 		data.boundaries = this._getBoundaries(data, this._options.boundariesPadding, this._options.boundariesElement);
 		data = this.runModifiers(data, this._options.modifiers);
@@ -292,7 +293,7 @@
 			if (target === document.body || target === document.documentElement) {
 				target = document;
 			}
-			VueUtil.on(target, 'scroll', this.state.updateBound);
+			VueUtil.on(target, 'scroll', VueUtil.throttle(10, this.state.updateBound));
 		}
 	}
 	Popper.prototype._removeEventListeners = function() {
@@ -302,7 +303,7 @@
 			if (target === document.body || target === document.documentElement) {
 				target = document;
 			}
-			VueUtil.off(target, 'scroll', this.state.updateBound);
+			VueUtil.off(target, 'scroll', VueUtil.throttle(10, this.state.updateBound));
 		}
 		this.state.updateBound = null;
 	}
@@ -614,6 +615,7 @@
 			},
 			value: Boolean,
 			visibleArrow: Boolean,
+			autoWidth: Boolean,
 			transition: String,
 			appendToBody: {
 				type: Boolean,
@@ -665,6 +667,7 @@
 				if (self.popperJS && self.popperJS.destroy) self.popperJS.destroy();
 				options.placement = self.currentPlacement;
 				options.offset = self.offset;
+				options.autoWidth = self.autoWidth;
 				self.popperJS = new Popper(reference, popper, options);
 				self.popperJS.onCreate(function() {
 					self.$emit('created', self);

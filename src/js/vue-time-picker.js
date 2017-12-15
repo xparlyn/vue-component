@@ -175,7 +175,7 @@
 		}
 	};
 	var TimePanel = {
-		template: '<transition @after-leave="$emit(\'doDestroy\')"><div v-show="currentVisible" :style="{width: width + \'px\'}" :class="[\'vue-time-panel\', popperClass]"><div class="vue-time-panel__content" :class="{\'has-seconds\': showSeconds}"><time-spinner ref="spinner" @change="handleChange" :show-seconds="showSeconds" @select-range="setSelectionRange" :hours="hours" :minutes="minutes" :seconds="seconds"></time-spinner></div><div class="vue-time-panel__footer"><button type="button" class="vue-time-panel__btn cancel" @click="handleCancel">{{cancelLabel}}</button><button type="button" class="vue-time-panel__btn confirm" @click="handleConfirm()">{{confirmLabel}}</button></div></div></transition>',
+		template: '<transition @after-leave="$emit(\'doDestroy\')"><div v-show="currentVisible" :class="[\'vue-time-panel\', popperClass]"><div class="vue-time-panel__content" :class="{\'has-seconds\': showSeconds}"><time-spinner ref="spinner" @change="handleChange" :show-seconds="showSeconds" @select-range="setSelectionRange" :hours="hours" :minutes="minutes" :seconds="seconds"></time-spinner></div><div class="vue-time-panel__footer"><button type="button" class="vue-time-panel__btn cancel" @click="handleCancel">{{cancelLabel}}</button><button type="button" class="vue-time-panel__btn confirm" @click="handleConfirm()">{{confirmLabel}}</button></div></div></transition>',
 		components: {
 			TimeSpinner: TimeSpinner
 		},
@@ -224,8 +224,7 @@
 				seconds: 0,
 				selectableRange: [],
 				currentDate: this.$options.defaultValue || this.date || new Date(),
-				currentVisible: this.visible || false,
-				width: this.pickerWidth || 0
+				currentVisible: this.visible || false
 			};
 		},
 		computed: {
@@ -286,7 +285,7 @@
 		}
 	};
 	var TimeRangePanel = {
-		template: '<transition @before-enter="panelCreated" @after-leave="$emit(\'doDestroy\')"><div v-show="visible" :style="{width: width + \'px\'}" :class="[\'vue-time-range-picker vue-picker-panel\', popperClass]"><div class="vue-time-range-picker__content"><div class="vue-time-range-picker__cell"><div class="vue-time-range-picker__header">{{$t(\'vue.datepicker.startTime\')}}</div><div :class="[\'vue-time-range-picker__body vue-time-panel__content\', {\'has-seconds\': showSeconds}]"><time-spinner ref="minSpinner" :show-seconds="showSeconds" @change="handleMinChange" @select-range="setMinSelectionRange" :hours="minHours" :minutes="minMinutes" :seconds="minSeconds"></time-spinner></div></div><div class="vue-time-range-picker__cell"><div class="vue-time-range-picker__header">{{$t(\'vue.datepicker.endTime\')}}</div><div :class="[\'vue-time-range-picker__body vue-time-panel__content\', {\'has-seconds\': showSeconds}]"><time-spinner ref="maxSpinner" :show-seconds="showSeconds" @change="handleMaxChange" @select-range="setMaxSelectionRange" :hours="maxHours" :minutes="maxMinutes" :seconds="maxSeconds"></time-spinner></div></div></div><div class="vue-time-panel__footer"><button type="button" class="vue-time-panel__btn cancel" @click="handleCancel()">{{cancelLabel}}</button><button type="button" class="vue-time-panel__btn confirm" @click="handleConfirm()" :disabled="btnDisabled">{{confirmLabel}}</button></div></div></transition>',
+		template: '<transition @before-enter="panelCreated" @after-leave="$emit(\'doDestroy\')"><div v-show="visible" :class="[\'vue-time-range-picker vue-picker-panel\', popperClass]"><div class="vue-time-range-picker__content"><div class="vue-time-range-picker__cell"><div class="vue-time-range-picker__header">{{$t(\'vue.datepicker.startTime\')}}</div><div :class="[\'vue-time-range-picker__body vue-time-panel__content\', {\'has-seconds\': showSeconds}]"><time-spinner ref="minSpinner" :show-seconds="showSeconds" @change="handleMinChange" @select-range="setMinSelectionRange" :hours="minHours" :minutes="minMinutes" :seconds="minSeconds"></time-spinner></div></div><div class="vue-time-range-picker__cell"><div class="vue-time-range-picker__header">{{$t(\'vue.datepicker.endTime\')}}</div><div :class="[\'vue-time-range-picker__body vue-time-panel__content\', {\'has-seconds\': showSeconds}]"><time-spinner ref="maxSpinner" :show-seconds="showSeconds" @change="handleMaxChange" @select-range="setMaxSelectionRange" :hours="maxHours" :minutes="maxMinutes" :seconds="maxSeconds"></time-spinner></div></div></div><div class="vue-time-panel__footer"><button type="button" class="vue-time-panel__btn cancel" @click="handleCancel()">{{cancelLabel}}</button><button type="button" class="vue-time-panel__btn confirm" @click="handleConfirm()" :disabled="btnDisabled">{{confirmLabel}}</button></div></div></transition>',
 		components: {
 			TimeSpinner: TimeSpinner
 		},
@@ -321,8 +320,7 @@
 				minMinutes: time.minTime.getMinutes(),
 				minSeconds: time.minTime.getSeconds(),
 				format: 'HH:mm:ss',
-				visible: false,
-				width: 0
+				visible: false
 			};
 		},
 		watch: {

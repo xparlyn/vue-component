@@ -9,32 +9,23 @@
 })(this, function(Vue, VuePopper) {
 	'use strict';
 	var VueSelectDropdown = {
-		template: '<div :class="[\'vue-select-dropdown\', {\'is-multiple\': $parent.multiple}, popperClass]" :style="{minWidth: minWidth}"><slot></slot></div>',
+		template: '<div :class="[\'vue-select-dropdown\', {\'is-multiple\': $parent.multiple}, popperClass]"><slot></slot></div>',
 		name: 'VueSelectDropdown',
 		componentName: 'VueSelectDropdown',
 		mixins: [VuePopper],
 		props: {
 			placement: {
 				type: String,
-				default: 'bottom-start'
+				default: 'bottom-start',
+			},
+			autoWidth: {
+				type: Boolean,
+				default: true
 			}
-		},
-		data: function() {
-			return {
-				minWidth: ''
-			};
 		},
 		computed: {
 			popperClass: function() {
 				return this.$parent.popperClass;
-			}
-		},
-		watch: {
-			'$parent.visible': function(val) {
-				if (val) {
-					var clientRect = this.$parent.$el.getBoundingClientRect();
-					this.minWidth = clientRect.width + 'px';
-				}
 			}
 		},
 		mounted: function() {
