@@ -293,7 +293,7 @@
 			if (target === document.body || target === document.documentElement) {
 				target = document;
 			}
-			VueUtil.on(target, 'scroll', VueUtil.throttle(10, this.state.updateBound));
+			VueUtil.on(target, 'scroll', this.state.updateBound);
 		}
 	}
 	Popper.prototype._removeEventListeners = function() {
@@ -303,7 +303,7 @@
 			if (target === document.body || target === document.documentElement) {
 				target = document;
 			}
-			VueUtil.off(target, 'scroll', VueUtil.throttle(10, this.state.updateBound));
+			VueUtil.off(target, 'scroll', this.state.updateBound);
 		}
 		this.state.updateBound = null;
 	}

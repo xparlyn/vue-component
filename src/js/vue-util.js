@@ -191,9 +191,7 @@
 	})();
 	var once = function(el, event, fn) {
 		var listener = function() {
-			if (isFunction(fn)) {
-				fn.apply(this, arguments);
-			}
+			isFunction(fn) && fn.apply(this, arguments);
 			off(el, event, listener);
 		};
 		on(el, event, listener);
@@ -248,32 +246,33 @@
 		setCookie(name, '1', -1);
 	};
 	var throttle = function(delay, callback) {
+		if (!isFunction(callback)) return function() {};
 		var timer = null;
 		var wrapper = function() {
 			var self = this;
 			var args = arguments;
 			clearTimeout(timer);
 			timer = setTimeout(function() {
-				isFunction(callback) && callback.apply(self, args);
+				callback.apply(self, args);
 				clearTimeout(timer);
 			}, delay);
 		};
 		return wrapper;
 	};
-	var addResizeListener = function(element, fn) {
-		if (!isDef(fn)) {
+	var resizeListener = function(element, fn, removeFlg) {
+		if (!isFunction(fn)) {
 			fn = element;
 			element = document.body;
 		}
 		if (element !== document.body) {
-			var getDisplayParent = function(element) {
+			var isParentShow = function(element) {
 				var parent = element.parentNode;
 				if (!parent) return true;
 				if (parent === document) return true;
 				if ((getStyle(parent, 'display')) === 'none') return false;
-				return getDisplayParent(element.parentNode);
+				return isParentShow(element.parentNode);
 			};
-			if (getDisplayParent(element)) element = document.body;
+			if (isParentShow(element)) element = document.body;
 		}
 		if (!isArray(element.__resizeListeners__)) {
 			var resetTrigger = function(element) {
@@ -292,8 +291,8 @@
 				if (element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height) {
 					element.__resizeLast__.width = element.offsetWidth;
 					element.__resizeLast__.height = element.offsetHeight;
-					loop(element.__resizeListeners__, function(fn) {
-						fn.call(element, event);
+					loop(element.__resizeListeners__, function(resizeListener) {
+						resizeListener.call(element, event);
 					});
 				}
 			});
@@ -317,17 +316,20 @@
 			element.__resizeListeners__ = [];
 			element.appendChild(resizeTrigger);
 			on(element, 'scroll', scrollListener, true);
+		} else {
+			if (removeFlg) {
+				var index = element.__resizeListeners__.indexOf(fn);
+				index !== -1 && element.__resizeListeners__.splice(index, 1);
+			} else {
+				isFunction(fn) && element.__resizeListeners__.push(fn);
+			}
 		}
-		isFunction(fn) && element.__resizeListeners__.push(fn);
+	};
+	var addResizeListener = function(elment, fn) {
+		resizeListener(elment, fn);
 	};
 	var removeResizeListener = function(element, fn) {
-		if (!isDef(fn)) {
-			fn = element;
-			element = document.body;
-		}
-		if (isArray(element.__resizeListeners__)) {
-			element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
-		}
+		resizeListener(element, fn, true);
 	};
 	var setLang = function(lang) {
 		if (isDef(lang)) Vue.config.lang = lang;
@@ -530,8 +532,7 @@
 			var data = {
 				on: {
 					'beforeEnter': function(el) {
-						if (!el.dataset)
-							el.dataset = {};
+						if (!el.dataset) el.dataset = {};
 						el.dataset.oldPaddingTop = el.style.paddingTop;
 						el.dataset.oldPaddingBottom = el.style.paddingBottom;
 						el.style.height = '0';
