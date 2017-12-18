@@ -316,13 +316,12 @@
 			element.__resizeListeners__ = [];
 			element.appendChild(resizeTrigger);
 			on(element, 'scroll', scrollListener, true);
+		}
+		if (removeFlg) {
+			var index = element.__resizeListeners__.indexOf(fn);
+			index !== -1 && element.__resizeListeners__.splice(index, 1);
 		} else {
-			if (removeFlg) {
-				var index = element.__resizeListeners__.indexOf(fn);
-				index !== -1 && element.__resizeListeners__.splice(index, 1);
-			} else {
-				isFunction(fn) && element.__resizeListeners__.push(fn);
-			}
+			isFunction(fn) && element.__resizeListeners__.push(fn);
 		}
 	};
 	var addResizeListener = function(elment, fn) {
