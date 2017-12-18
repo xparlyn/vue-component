@@ -7,34 +7,6 @@
 	}
 })(this, function(Vue, VuePicker, VueUtil) {
 	'use strict';
-	var clacTime = function(time) {
-		time = VueUtil.isArray(time) ? time : [time];
-		var minTime = time[0] || new Date();
-		var date = new Date();
-		date.setHours(date.getHours() + 1);
-		var maxTime = time[1] || date;
-		if (minTime > maxTime) return clacTime();
-		return {minTime: minTime, maxTime: maxTime};
-	};
-	var limitRange = function(date, ranges, format) {
-		format = format || 'yyyy-MM-dd HH:mm:ss';
-		if (!ranges || !ranges.length) return date;
-		var len = ranges.length;
-		date = VueUtil.parseDate(date, format);
-		while (len--) {
-			var range = ranges[len];
-			if (date >= range[0] && date <= range[1]) {
-				return date;
-			}
-		}
-		var maxDate = ranges[0][0];
-		var minDate = ranges[0][0];
-		VueUtil.loop(ranges, function(range) {
-			minDate = new Date(Math.min(range[0], minDate));
-			maxDate = new Date(Math.max(range[1], maxDate));
-		});
-		return date < minDate ? minDate : maxDate;
-	};
 	var TimeSpinner = {
 		template: '<div :class="[\'vue-time-spinner\', {\'has-seconds\': showSeconds}]"><vue-scrollbar @mouseenter.native="emitSelectRange(\'hours\')" class="vue-time-spinner__wrapper" wrap-style="max-height: inherit;" view-class="vue-time-spinner__list" noresize tag="ul" ref="hour"><li @click="handleClick(\'hours\', {value: hour, disabled: disabled}, true)" v-for="(disabled, hour) in hoursList" track-by="hour" :class="[\'vue-time-spinner__item\', {\'active\': hour === hours, \'disabled\': disabled}]" v-text="hour"></li></vue-scrollbar><vue-scrollbar @mouseenter.native="emitSelectRange(\'minutes\')" class="vue-time-spinner__wrapper" wrap-style="max-height: inherit;" view-class="vue-time-spinner__list" noresize tag="ul" ref="minute"><li @click="handleClick(\'minutes\', key, true)" v-for="(minute, key) in 60" :class="[\'vue-time-spinner__item\', {\'active\': key === minutes}]" v-text="key"></li></vue-scrollbar><vue-scrollbar v-show="showSeconds" @mouseenter.native="emitSelectRange(\'seconds\')" class="vue-time-spinner__wrapper is-seconds" wrap-style="max-height: inherit;" view-class="vue-time-spinner__list" noresize tag="ul" ref="second"><li @click="handleClick(\'seconds\', key, true)" v-for="(second, key) in 60" :class="[\'vue-time-spinner__item\', {\'active\': key === seconds}]" v-text="key"></li></vue-scrollbar></div>',
 		props: {
@@ -199,7 +171,7 @@
 				var self = this;
 				var date;
 				if (newVal instanceof Date) {
-					date = limitRange(newVal, self.selectableRange);
+					date = this.limitRange(newVal, self.selectableRange);
 				} else if (!newVal) {
 					date = new Date();
 				}
@@ -239,6 +211,25 @@
 			}
 		},
 		methods: {
+			limitRange: function(date, ranges, format) {
+				format = format || 'yyyy-MM-dd HH:mm:ss';
+				if (!ranges || !ranges.length) return date;
+				var len = ranges.length;
+				date = VueUtil.parseDate(date, format);
+				while (len--) {
+					var range = ranges[len];
+					if (date >= range[0] && date <= range[1]) {
+						return date;
+					}
+				}
+				var maxDate = ranges[0][0];
+				var minDate = ranges[0][0];
+				VueUtil.loop(ranges, function(range) {
+					minDate = new Date(Math.min(range[0], minDate));
+					maxDate = new Date(Math.max(range[1], maxDate));
+				});
+				return date < minDate ? minDate : maxDate;
+			},
 			handleClear: function() {
 				this.$emit('pick');
 			},
@@ -266,7 +257,7 @@
 			handleConfirm: function(visible, first) {
 				visible = visible || false;
 				if (first) return;
-				var date = new Date(limitRange(this.currentDate, this.selectableRange, 'HH:mm:ss'));
+				var date = new Date(this.limitRange(this.currentDate, this.selectableRange, 'HH:mm:ss'));
 				this.$emit('pick', date, visible, first);
 			},
 			ajustScrollTop: function() {
@@ -302,7 +293,7 @@
 		},
 		props: ['value'],
 		data: function() {
-			var time = clacTime(this.$options.defaultValue);
+			var time = this.clacTime(this.$options.defaultValue);
 			var isDisabled = function(minTime, maxTime) {
 				var minValue = minTime.getHours() * 3600 + minTime.getMinutes() * 60 + minTime.getSeconds();
 				var maxValue = maxTime.getHours() * 3600 + maxTime.getMinutes() * 60 + maxTime.getSeconds();
@@ -331,8 +322,17 @@
 			}
 		},
 		methods: {
+			clacTime: function(time) {
+				time = VueUtil.isArray(time) ? time : [time];
+				var minTime = time[0] || new Date();
+				var date = new Date();
+				date.setHours(date.getHours() + 1);
+				var maxTime = time[1] || date;
+				if (minTime > maxTime) return this.clacTime();
+				return {minTime: minTime, maxTime: maxTime};
+			},
 			panelCreated: function() {
-				var time = clacTime(this.value);
+				var time = this.clacTime(this.value);
 				if (time.minTime === this.minTime && time.maxTime === this.maxTime) {
 					return;
 				}
@@ -406,8 +406,8 @@
 				first = first || false;
 				var minSelectableRange = this.$refs.minSpinner.selectableRange;
 				var maxSelectableRange = this.$refs.maxSpinner.selectableRange;
-				this.minTime = limitRange(this.minTime, minSelectableRange);
-				this.maxTime = limitRange(this.maxTime, maxSelectableRange);
+				this.minTime = this.limitRange(this.minTime, minSelectableRange);
+				this.maxTime = this.limitRange(this.maxTime, maxSelectableRange);
 				if (first) return;
 				this.$emit('pick', [this.minTime, this.maxTime], visible, first);
 			},

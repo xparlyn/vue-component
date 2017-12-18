@@ -34,20 +34,35 @@
 	};
 	TableStore.prototype.mutations = {
 		setData: function(states, data) {
+			var table = this.table;
 			var dataInstanceChanged = states._data !== data;
 			states._data = data;
 			states.data = this.sortData((data || []), states);
-			this.updateCurrentRow();
+			var oldCurrentRow = states.currentRow;
+			if (states.data.indexOf(oldCurrentRow) === -1) {
+				states.currentRow = null;
+				if (states.currentRow !== oldCurrentRow) {
+					table.$emit('current-change', null, oldCurrentRow);
+				}
+			}
 			if (dataInstanceChanged) {
 				this.clearSelection();
 			} else {
-				this.cleanSelection();
+				var selection = states.selection || [];
+				var deleted = selection.filter(function(item) {
+					return states.data.indexOf(item) === -1;
+				});
+				VueUtil.loop(deleted, function(deletedItem) {
+					selection.splice(selection.indexOf(deletedItem), 1);
+				});
+				if (deleted.length) {
+					table.$emit('selection-change', selection);
+				}
 			}
 			this.updateAllSelected();
 			if (states.defaultExpandAll) {
-				this.states.expandRows = (states.data || []).slice(0);
+				states.expandRows = states.data.slice(0);
 			}
-			var table = this.table;
 			if (table.$refs.tableBody && table.$refs.tableBody.delta.keeps !== 0 && !table.fixed) {
 				var delta = table.$refs.tableBody.delta;
 				var dataLen = data.length;
@@ -88,10 +103,9 @@
 			}
 			var data = states._data;
 			var filters = states.filters;
-			VueUtil.loop(Object.keys(filters), function(columnId) {
+			VueUtil.ownPropertyLoop(filters, function(columnId) {
 				var values = filters[columnId];
-				if (!values || values.length === 0)
-					return;
+				if (!values || values.length === 0) return;
 				var column = self.getColumnById(columnId);
 				if (column) {
 					if (column.filterMethod) {
@@ -147,7 +161,7 @@
 		},
 		removeColumn: function(states, column) {
 			var _columns = states._columns;
-			if (_columns) {
+			if (_columns.length) {
 				_columns.splice(_columns.indexOf(column), 1);
 			}
 			this.updateColumns();
@@ -395,20 +409,6 @@
 		}
 		return changed;
 	}
-	TableStore.prototype.cleanSelection = function() {
-		var selection = this.states.selection || [];
-		var data = this.states.data;
-		var deleted;
-		deleted = selection.filter(function(item) {
-			return data.indexOf(item) === -1;
-		});
-		VueUtil.loop(deleted, function(deletedItem) {
-			selection.splice(selection.indexOf(deletedItem), 1);
-		});
-		if (deleted.length) {
-			this.table.$emit('selection-change', selection);
-		}
-	}
 	TableStore.prototype.updateAllSelected = function() {
 		var states = this.states;
 		var selection = states.selection;
@@ -448,21 +448,6 @@
 		}
 		if (selectedCount === 0) isAllSelected = false;
 		states.isAllSelected = isAllSelected;
-	}
-	TableStore.prototype.scheduleLayout = function() {
-		this.table.doLayout();
-	}
-	TableStore.prototype.updateCurrentRow = function() {
-		var states = this.states;
-		var table = this.table;
-		var data = states.data || [];
-		var oldCurrentRow = states.currentRow;
-		if (data.indexOf(oldCurrentRow) === -1) {
-			states.currentRow = null;
-			if (states.currentRow !== oldCurrentRow) {
-				table.$emit('current-change', null, oldCurrentRow);
-			}
-		}
 	}
 	TableStore.prototype.commit = function(name) {
 		var mutations = this.mutations;
@@ -1198,11 +1183,11 @@
 		},
 		beforeDestroy: function() {
 			var panels = this.filterPanels;
-			for (var prop in panels) {
-				if (panels.hasOwnProperty(prop) && panels[prop]) {
+			VueUtil.ownPropertyLoop(panels, function(prop) {
+				if (isDef(panels[prop])) {
 					panels[prop].$destroy(true);
 				}
-			}
+			});
 		},
 		methods: {
 			convertToRows: function(columns) {
@@ -1513,7 +1498,7 @@
 			},
 			removePin: function(column) {
 				column.fixed = false;
-				this.store.scheduleLayout();
+				this.store.table.doLayout();
 			},
 			leftPin: function(columns) {
 				if (columns.length <= 0) {
@@ -1524,7 +1509,7 @@
 							layoutFLg = true;
 						}
 					});
-					if (layoutFLg) this.store.scheduleLayout();
+					if (layoutFLg) this.store.table.doLayout();
 					return;
 				}
 				var self = this;
@@ -1538,7 +1523,7 @@
 						colColumn.fixedIndex = index;
 					});
 				});
-				this.store.scheduleLayout();
+				this.store.table.doLayout();
 			},
 			rightPin: function(columns) {
 				if (columns.length <= 0) {
@@ -1549,7 +1534,7 @@
 							layoutFLg = true;
 						}
 					});
-					if (layoutFLg) this.store.scheduleLayout();
+					if (layoutFLg) this.store.table.doLayout();
 					return;
 				}
 				var self = this;
@@ -1563,7 +1548,7 @@
 						colColumn.fixedIndex = index;
 					});
 				});
-				this.store.scheduleLayout();
+				this.store.table.doLayout();
 			},
 			sortColumn: function(column, descFlg) {
 				column.sortable = true;
@@ -1655,7 +1640,7 @@
 				VueUtil.loop(column.colColumns, function(colColumn) {
 					colColumn.visible = !colColumn.visible;
 				});
-				this.store.scheduleLayout();
+				this.store.table.doLayout();
 			}
 		},
 		mounted: function() {
@@ -1811,6 +1796,7 @@
 							document.body.removeChild(link);
 						} catch (e) {
 							Vue.notify.warning({message: Vue.t('vue.screenfull.canot')});
+							throw e;
 						}
 					}
 				};

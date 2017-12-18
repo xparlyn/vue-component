@@ -262,7 +262,6 @@
 						for (var ctj = centerTopInstances.length; cti < ctj; cti++) {
 							centerTopInstances[cti].dom.style.top = parseInt(centerTopInstances[cti].dom.style.top, 10) - removedHeight + 'px';
 						}
-
 					}
 					if (isRight) {
 						var rti = rightTopInstances.indexOf(instance);

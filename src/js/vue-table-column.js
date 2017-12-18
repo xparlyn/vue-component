@@ -102,39 +102,6 @@
 			className: 'vue-table__expand-column'
 		}
 	};
-	var getValueByPath = function(object, prop) {
-		prop = prop || '';
-		var paths = prop.split('.');
-		var current = object;
-		var result = null;
-		for (var i = 0, j = paths.length; i < j; i++) {
-			var path = paths[i];
-			if (!current)
-				break;
-			if (i === j - 1) {
-				result = current[path];
-				break;
-			}
-			current = current[path];
-		}
-		return result;
-	};
-	var getDefaultColumn = function(type, options) {
-		var column = {};
-		VueUtil.merge(column, defaults[type || 'default'], options);
-		column.realWidth = column.width || column.minWidth;
-		return column;
-	};
-	var DEFAULT_RENDER_CELL = function(createElement, data) {
-		var row = data.row;
-		var column = data.column;
-		var property = column.property;
-		var value = property && property.indexOf('.') === -1 ? row[property] : getValueByPath(row, property);
-		if (column && column.formatter) {
-			return column.formatter(row, column, value);
-		}
-		return value;
-	};
 	var VueTableColumn = {
 		name: 'VueTableColumn',
 		props: {
@@ -222,6 +189,12 @@
 					minWidth = 80;
 				}
 			}
+			var getDefaultColumn = function(type, options) {
+				var column = {};
+				VueUtil.merge(column, defaults[type || 'default'], options);
+				column.realWidth = column.width || column.minWidth;
+				return column;
+			};
 			var column = getDefaultColumn(type, {
 				id: columnId,
 				label: this.label,
@@ -308,7 +281,33 @@
 					}
 				}
 				if (!renderCell) {
-					renderCell = DEFAULT_RENDER_CELL;
+					renderCell = function(createElement, data) {
+						var getValueByPath = function(object, prop) {
+							prop = prop || '';
+							var paths = prop.split('.');
+							var current = object;
+							var result = null;
+							for (var i = 0, j = paths.length; i < j; i++) {
+								var path = paths[i];
+								if (!current)
+									break;
+								if (i === j - 1) {
+									result = current[path];
+									break;
+								}
+								current = current[path];
+							}
+							return result;
+						};
+						var row = data.row;
+						var column = data.column;
+						var property = column.property;
+						var value = property && property.indexOf('.') === -1 ? row[property] : getValueByPath(row, property);
+						if (column && column.formatter) {
+							return column.formatter(row, column, value);
+						}
+						return value;
+					};
 				}
 				return self.showOverflowTooltip ? createElement('div',
 					{'class': 'cell vue-tooltip'},
@@ -318,8 +317,7 @@
 			};
 		},
 		destroyed: function() {
-			if (!this.$parent)
-				return;
+			if (!this.$parent) return;
 			this.owner.store.commit('removeColumn', this.columnConfig);
 		},
 		watch: {
@@ -364,19 +362,19 @@
 			width: function(newVal) {
 				if (this.columnConfig) {
 					this.columnConfig.width = newVal;
-					this.owner.store.scheduleLayout();
+					this.owner.doLayout();
 				}
 			},
 			minWidth: function(newVal) {
 				if (this.columnConfig) {
 					this.columnConfig.minWidth = newVal;
-					this.owner.store.scheduleLayout();
+					this.owner.doLayout();
 				}
 			},
 			fixed: function(newVal) {
 				if (this.columnConfig) {
 					this.columnConfig.fixed = newVal;
-					this.owner.store.scheduleLayout();
+					this.owner.doLayout();
 				}
 			},
 			sortable: function(newVal) {
@@ -387,7 +385,7 @@
 			visible: function(newVal) {
 				if (this.columnConfig) {
 					this.columnConfig.visible = newVal;
-					this.owner.store.scheduleLayout();
+					this.owner.doLayout();
 				}
 			}
 		},

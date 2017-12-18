@@ -52,19 +52,6 @@
 			reInitChecked(parent);
 		}
 	};
-	var initLazyLoadChild = function(node) {
-		if (node.checked) {
-			var childNodes = node.childNodes;
-			VueUtil.loop(childNodes, function(child) {
-				if (!child.disabled) {
-					child.checked = true;
-				}
-			});
-		}
-		var parent = node.parent;
-		if (!parent || parent.level === 0) return;
-		reInitChecked(parent);
-	};
 	var getPropertyFromData = function(node, prop) {
 		var props = node.store.props;
 		var data = node.data || {};
@@ -81,62 +68,60 @@
 	};
 	var nodeIdSeed = 0;
 	var Node = function(options) {
-		this.id = nodeIdSeed++;
-		this.text = null;
-		this.checked = false;
-		this.indeterminate = false;
-		this.data = null;
-		this.expanded = false;
-		this.parent = null;
-		this.visible = true;
-		for (var name in options) {
-			if (options.hasOwnProperty(name)) {
-				this[name] = options[name];
-			}
+		var self = this;
+		self.id = nodeIdSeed++;
+		self.text = null;
+		self.checked = false;
+		self.indeterminate = false;
+		self.data = null;
+		self.expanded = false;
+		self.parent = null;
+		self.visible = true;
+		VueUtil.ownPropertyLoop(options, function(name) {
+			self[name] = options[name];
+		});
+		self.level = 0;
+		self.loaded = false;
+		self.childNodes = [];
+		self.loading = false;
+		self.label = self.getLabel();
+		self.icon = self.getIcon();
+		self.key = self.getKey();
+		self.disabled = self.getDisabled();
+		if (self.parent) {
+			self.level = self.parent.level + 1;
 		}
-		this.level = 0;
-		this.loaded = false;
-		this.childNodes = [];
-		this.loading = false;
-		this.label = this.getLabel();
-		this.icon = this.getIcon();
-		this.key = this.getKey();
-		this.disabled = this.getDisabled();
-		if (this.parent) {
-			this.level = this.parent.level + 1;
-		}
-		var store = this.store;
+		var store = self.store;
 		if (!store) throw 'store is required!';
-		store.registerNode(this);
+		store.registerNode(self);
 		var props = store.props;
 		if (props && VueUtil.isDef(props.isLeaf)) {
-			var isLeaf = getPropertyFromData(this, 'isLeaf');
+			var isLeaf = getPropertyFromData(self, 'isLeaf');
 			if (VueUtil.isBoolean(isLeaf)) {
-				this.isLeafByUser = isLeaf;
+				self.isLeafByUser = isLeaf;
 			}
 		}
-		if (store.lazy !== true && this.data) {
-			this.setData(this.data);
+		if (store.lazy !== true && self.data) {
+			self.setData(self.data);
 			if (store.defaultExpandAll) {
-				this.expanded = true;
+				self.expanded = true;
 			}
-		} else if (this.level > 0 && store.lazy && store.defaultExpandAll) {
-			this.expand();
+		} else if (self.level > 0 && store.lazy && store.defaultExpandAll) {
+			self.expand();
 		}
-		if (!this.data)
-			return;
+		if (!self.data) return;
 		var defaultExpandedKeys = store.defaultExpandedKeys;
 		var key = store.key;
-		if (key && defaultExpandedKeys && defaultExpandedKeys.indexOf(this.key) !== -1) {
-			this.expand(null, store.autoExpandParent);
+		if (key && defaultExpandedKeys && defaultExpandedKeys.indexOf(self.key) !== -1) {
+			self.expand(null, store.autoExpandParent);
 		}
-		if (key && store.currentNodeKey && this.key === store.currentNodeKey) {
-			store.currentNode = this;
+		if (key && store.currentNodeKey && self.key === store.currentNodeKey) {
+			store.currentNode = self;
 		}
 		if (store.lazy) {
-			store._initDefaultCheckedNode(this);
+			store._initDefaultCheckedNode(self);
 		}
-		this.updateLeafState();
+		self.updateLeafState();
 	};
 	Node.prototype.setData = function(data) {
 		var self = this;
@@ -253,7 +238,20 @@
 		};
 		if (self.shouldLoadData()) {
 			self.loadData(function(data) {
-				if (data instanceof Array) {
+				if (VueUtil.isArray(data)) {
+					var initLazyLoadChild = function(node) {
+						if (node.checked) {
+							var childNodes = node.childNodes;
+							VueUtil.loop(childNodes, function(child) {
+								if (!child.disabled) {
+									child.checked = true;
+								}
+							});
+						}
+						var parent = node.parent;
+						if (!parent || parent.level === 0) return;
+						reInitChecked(parent);
+					};
 					initLazyLoadChild(self);
 					done();
 				}
@@ -407,11 +405,9 @@
 		var self = this;
 		self.currentNode = null;
 		self.currentNodeKey = null;
-		for (var option in options) {
-			if (options.hasOwnProperty(option)) {
-				self[option] = options[option];
-			}
-		}
+		VueUtil.ownPropertyLoop(options, function(option) {
+			self[option] = options[option];
+		});
 		self.nodesMap = {};
 		self.root = new Node({
 			data: self.data,
@@ -578,11 +574,9 @@
 		var self = this;
 		var allNodes = [];
 		var nodesMap = self.nodesMap;
-		for (var nodeKey in nodesMap) {
-			if (nodesMap.hasOwnProperty(nodeKey)) {
-				allNodes.push(nodesMap[nodeKey]);
-			}
-		}
+		VueUtil.ownPropertyLoop(nodesMap, function(nodeKey) {
+			allNodes.push(nodesMap[nodeKey]);
+		});
 		return allNodes;
 	};
 	TreeStore.prototype._setCheckedKeys = function(key) {
@@ -800,7 +794,7 @@
 			}
 			var tree = self.tree;
 			if (!tree) {
-				console.warn('Can not find node\'s tree.');
+				throw 'Can not find node\'s tree.';
 			}
 			var props = tree.props || {};
 			var childrenKey = props['children'] || 'children';

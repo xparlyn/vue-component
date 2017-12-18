@@ -12,8 +12,7 @@
 		if (event.keyCode === 27) {
 			if (PopupManager.modalStack.length > 0) {
 				var topItem = PopupManager.modalStack[PopupManager.modalStack.length - 1];
-				if (!topItem)
-					return;
+				if (!topItem) return;
 				var instance = PopupManager.getInstance(topItem.id);
 				if (instance.closeOnPressEscape) {
 					instance.$emit('visible-change', false);
@@ -22,13 +21,6 @@
 		}
 	});
 	var idSeed = 1;
-	var getDOM = function(dom) {
-		if (dom.nodeType === 3) {
-			dom = dom.nextElementSibling || dom.nextSibling;
-			getDOM(dom);
-		}
-		return dom;
-	};
 	var VuePopup = {};
 	VuePopup.model = {
 		prop: 'visible',
@@ -59,6 +51,13 @@
 	}
 	VuePopup.watch = {
 		visible: function(val) {
+			var getDOM = function(dom) {
+				if (dom.nodeType === 3) {
+					dom = dom.nextElementSibling || dom.nextSibling;
+					getDOM(dom);
+				}
+				return dom;
+			};
 			var self = this;
 			if (val) {
 				if (!self.opened) {

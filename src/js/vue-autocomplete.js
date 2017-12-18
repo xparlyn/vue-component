@@ -119,7 +119,7 @@
 					if (VueUtil.isArray(suggestions)) {
 						self.suggestions = suggestions;
 					} else {
-						console.error('autocomplete suggestions must be an array');
+						throw 'autocomplete suggestions must be an array';
 					}
 				});
 			},

@@ -8,32 +8,6 @@
 	}
 })(this, function(Vue, VueUtil) {
 	'use strict';
-	var ajax = function(option) {
-		if (!VueUtil.isDef(this.$http)) return;
-		var httpOption = {};
-		httpOption.headers = option.headers;
-		httpOption.progress = function progress(e) {
-			if (e.total > 0) {
-				e.percent = e.loaded / e.total * 100;
-			}
-			option.onProgress(e);
-		};
-		if (option.withCredentials) {
-			httpOption.emulateJSON = true
-		}
-		var formData = new FormData();
-		if (option.data) {
-			VueUtil.loop(Object.keys(option.data), function(key) {
-				formData.append(key, option.data[key]);
-			});
-		}
-		formData.append(option.filename, option.file);
-		this.$http.post(option.action, formData, httpOption).then(function(reqponse) {
-			option.onSuccess(reqponse);
-		}, function(reqponse) {
-			option.onError(reqponse);
-		});
-	}
 	var UploadDragger = {
 		template: '<div :class="[\'vue-upload-dragger\', {\'is-dragover\': dragover}]" @drop.prevent="onDrop" @dragover.prevent="onDragover" @dragleave.prevent="dragover = false"><slot></slot></div>',
 		name: 'VueUploadDrag',
@@ -120,7 +94,32 @@
 			listType: String,
 			httpRequest: {
 				type: Function,
-				default: ajax
+				default: function(option) {
+					if (!VueUtil.isDef(this.$http)) return;
+					var httpOption = {};
+					httpOption.headers = option.headers;
+					httpOption.progress = function progress(e) {
+						if (e.total > 0) {
+							e.percent = e.loaded / e.total * 100;
+						}
+						option.onProgress(e);
+					};
+					if (option.withCredentials) {
+						httpOption.emulateJSON = true
+					}
+					var formData = new FormData();
+					if (option.data) {
+						VueUtil.ownPropertyLoop(option.data, function(key) {
+							formData.append(key, option.data[key]);
+						});
+					}
+					formData.append(option.filename, option.file);
+					this.$http.post(option.action, formData, httpOption).then(function(reqponse) {
+						option.onSuccess(reqponse);
+					}, function(reqponse) {
+						option.onError(reqponse);
+					});
+				}
 			},
 			disabled: Boolean
 		},
@@ -183,7 +182,7 @@
 						reqs[uid].abort();
 					}
 				} else {
-					VueUtil.loop(Object.keys(reqs), function(uid) {
+					VueUtil.ownPropertyLoop(reqs, function(uid) {
 						if (reqs[uid]) reqs[uid].abort();
 						delete reqs[uid];
 					});
@@ -315,11 +314,9 @@
 					data = data(file);
 				}
 				var inputs = [];
-				for (var key in data) {
-					if (data.hasOwnProperty(key)) {
-						inputs.push('<input name="' + key + '" value="' + data[key] + '"/>');
-					}
-				}
+				VueUtil.ownPropertyLoop(data, function(key) {
+					inputs.push('<input name="' + key + '" value="' + data[key] + '"/>');
+				});
 				dataSpan.innerHTML = inputs.join('');
 				formNode.submit();
 				dataSpan.innerHTML = '';
@@ -489,9 +486,8 @@
 				};
 				try {
 					file.url = URL.createObjectURL(rawFile);
-				} catch (err) {
-					console.error(err);
-					return;
+				} catch (e) {
+					throw e;
 				}
 				this.uploadFiles.push(file);
 				this.onChange(file, this.uploadFiles);

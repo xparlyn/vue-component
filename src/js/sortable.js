@@ -100,7 +100,9 @@
 				};
 			}
 		}));
-	} catch (err) {}
+	} catch (e) {
+		throw e;
+	}
 	function Sortable(el, options) {
 		if (!(el && el.nodeType && el.nodeType === 1)) {
 			throw 'Sortable: ' + el + ' must be HTMLElement, and not ' + Object.prototype.toString.call(el);
@@ -284,7 +286,9 @@
 				} else {
 					getSelection().removeAllRanges();
 				}
-			} catch (err) {}
+			} catch (e) {
+				throw e;
+			}
 		},
 		_dragStarted: function() {
 			if (rootEl && dragEl) {

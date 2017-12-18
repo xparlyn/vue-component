@@ -131,7 +131,6 @@
 				}
 				index = Number(index);
 				if (isNaN(index) || index !== Math.floor(index)) {
-					process.env.NODE_ENV !== 'production' && console.warn('[Carousel]index must be an integer.');
 					return;
 				}
 				var length = this.items.length;

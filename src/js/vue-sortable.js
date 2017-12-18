@@ -9,73 +9,52 @@
 	}
 })(this, function(Vue, Sortable, VueUtil) {
 	'use strict';
-	var arrayfrom = function(arr) {
-		var from = function(arrayLike) {
-			if (!VueUtil.isDef(arrayLike)) return [];
-			var items = Object(arrayLike);
-			var mapFn = arguments.length > 1 ? arguments[1] : null;
-			var T = null;
-			if (VueUtil.isDef(mapFn)) {
-				if (!VueUtil.isFunction(mapFn)) return [];
-				if (arguments.length > 2) {
-					T = arguments[2];
-				}
-			}
-			var toLength = function(value) {
-				var toInteger = function(value) {
-					var number = Number(value);
-					if (isNaN(number)) return 0;
-					if (number === 0 || !isFinite(number)) return number;
-					return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
-				};
-				var maxSafeInteger = Math.pow(2, 53) - 1;
-				var len = toInteger(value);
-				return Math.min(Math.max(len, 0), maxSafeInteger);
-			};
-			var len = toLength(items.length);
-			var A = [];
-			var k = 0;
-			var kValue = null;
-			while (k < len) {
-				kValue = items[k];
-				if (mapFn) {
-					A.push(!VueUtil.isDef(T) ? mapFn(kValue, k) : mapFn.call(T, kValue, k));
-				} else {
-					A.push(kValue);
-				}
-				k += 1;
-			}
-			return A;
-		}
-		return from(arr);
-	};
 	var toConsumableArray = function(arr) {
 		if (VueUtil.isArray(arr)) {
 			return arr;
 		} else {
+			var arrayfrom = function(arr) {
+				var from = function(arrayLike) {
+					if (!VueUtil.isDef(arrayLike)) return [];
+					var items = Object(arrayLike);
+					var mapFn = arguments.length > 1 ? arguments[1] : null;
+					var T = null;
+					if (VueUtil.isDef(mapFn)) {
+						if (!VueUtil.isFunction(mapFn)) return [];
+						if (arguments.length > 2) {
+							T = arguments[2];
+						}
+					}
+					var toLength = function(value) {
+						var toInteger = function(value) {
+							var number = Number(value);
+							if (isNaN(number)) return 0;
+							if (number === 0 || !isFinite(number)) return number;
+							return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
+						};
+						var maxSafeInteger = Math.pow(2, 53) - 1;
+						var len = toInteger(value);
+						return Math.min(Math.max(len, 0), maxSafeInteger);
+					};
+					var len = toLength(items.length);
+					var A = [];
+					var k = 0;
+					var kValue = null;
+					while (k < len) {
+						kValue = items[k];
+						if (mapFn) {
+							A.push(!VueUtil.isDef(T) ? mapFn(kValue, k) : mapFn.call(T, kValue, k));
+						} else {
+							A.push(kValue);
+						}
+						k += 1;
+					}
+					return A;
+				}
+				return from(arr);
+			};
 			return arrayfrom(arr);
 		}
-	};
-	var computeVmIndex = function(vnodes, element) {
-		if (VueUtil.isArray(vnodes)) {
-			return vnodes.map(function(elt) {
-				return elt.elm;
-			}).indexOf(element)
-		} else {
-			return -1;
-		}
-	};
-	var computeIndexes = function(slots, children) {
-		if (!VueUtil.isArray(slots)) return [];
-		var elmFromNodes = slots.map(function(elt) {
-			return elt.elm;
-		});
-		var rawIndexes = [].concat(toConsumableArray(children)).map(function(elt) {
-			return elmFromNodes.indexOf(elt);
-		});
-		return rawIndexes.filter(function(index) {
-			return index !== -1;
-		});
 	};
 	var emit = function(evtName, evtData) {
 		var self = this;
@@ -94,9 +73,6 @@
 	};
 	var eventsListened = ['Start', 'Add', 'Remove', 'Update', 'End'];
 	var eventsToEmit = ['Choose', 'Sort', 'Filter', 'Clone'];
-	var readonlyProperties = ['Move'].concat(eventsListened, eventsToEmit).map(function(evt) {
-		return 'on' + evt;
-	});
 	var draggingElement = null;
 	var VueSortable = {
 		name: 'VueSortable',
@@ -144,7 +120,7 @@
 					return self.onDragMove(evt, originalEvent);
 				}
 			});
-			!('draggable' in options) && (options.draggable = '>*');
+			!VueUtil.isDef(options.draggable) && (options.draggable = '>*');
 			self._sortable = new Sortable(self.rootContainer, options);
 			self.computeIndexes();
 		},
@@ -165,6 +141,9 @@
 		watch: {
 			options: {
 				handler: function(newOptionValue) {
+					var readonlyProperties = ['Move'].concat(eventsListened, eventsToEmit).map(function(evt) {
+						return 'on' + evt;
+					});
 					for (var property in newOptionValue) {
 						if (readonlyProperties.indexOf(property) === -1) {
 							this._sortable.option(property, newOptionValue[property]);
@@ -185,12 +164,33 @@
 				return this.$slots.default;
 			},
 			computeIndexes: function() {
+				var computeIndexes = function(slots, children) {
+					if (!VueUtil.isArray(slots)) return [];
+					var elmFromNodes = slots.map(function(elt) {
+						return elt.elm;
+					});
+					var rawIndexes = [].concat(toConsumableArray(children)).map(function(elt) {
+						return elmFromNodes.indexOf(elt);
+					});
+					return rawIndexes.filter(function(index) {
+						return index !== -1;
+					});
+				};
 				var self = this;
 				self.$nextTick(function() {
 					self.visibleIndexes = computeIndexes(self.getChildrenNodes(), self.rootContainer.children);
 				});
 			},
 			getUnderlyingVm: function(htmlElt) {
+				var computeVmIndex = function(vnodes, element) {
+					if (VueUtil.isArray(vnodes)) {
+						return vnodes.map(function(elt) {
+							return elt.elm;
+						}).indexOf(element)
+					} else {
+						return -1;
+					}
+				};
 				var index = computeVmIndex(this.getChildrenNodes(), htmlElt);
 				if (index === -1)
 					return null;

@@ -131,7 +131,7 @@
 				try {
 					this.$router.push(route);
 				} catch (e) {
-					console.error(e);
+					throw e;
 				}
 			}
 		},

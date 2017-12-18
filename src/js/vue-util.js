@@ -45,6 +45,9 @@
 	var isNodeList = function(obj) {
 		return objType(obj) === 'NodeList';
 	};
+	var isElement = function(obj) {
+		return objType(obj).indexOf('Element') !== -1;
+	};
 	var isVNode = function(node) {
 		return isObject(node) && node.hasOwnProperty('componentOptions');
 	};
@@ -149,6 +152,9 @@
 	var loop = function(arr, fn) {
 		(isArray(arr) || isNodeList(arr)) && Array.prototype.forEach.call(arr, fn);
 	};
+	var ownPropertyLoop = function (obj, fn) {
+		loop(Object.keys(obj), fn);
+	};
 	var trim = function(str) {
 		if (!isString(str)) str = '';
 		return str.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '');
@@ -156,15 +162,13 @@
 	var merge = function(target) {
 		for (var i = 1, j = arguments.length; i < j; i++) {
 			var source = arguments[i] || {};
-			for (var prop in source) {
-				if (Object.prototype.hasOwnProperty.call(source, prop) && (isDef(source[prop]))) {
-					if (isObject(target[prop]) && isObject(source[prop])) {
-						target[prop] = merge({}, target[prop], source[prop]);
-					} else {
-						target[prop] = source[prop];
-					}
+			ownPropertyLoop(source, function(prop) {
+				if (isObject(target[prop]) && isObject(source[prop])) {
+					target[prop] = merge({}, target[prop], source[prop]);
+				} else {
+					isDef(source[prop]) && (target[prop] = source[prop]);
 				}
-			}
+			});
 		}
 		return target;
 	};
@@ -176,32 +180,32 @@
 		return res;
 	};
 	var on = (function() {
-		return function(element, event, handler, useCapture) {
-			if (element && event && handler) {
-				element.addEventListener(event, handler, useCapture);
+		return function(el, event, handler, useCapture) {
+			if (el && event && handler) {
+				el.addEventListener(event, handler, useCapture);
 			}
 		}
 	})();
 	var off = (function() {
-		return function(element, event, handler, useCapture) {
-			if (element && event) {
-				element.removeEventListener(event, handler, useCapture);
+		return function(el, event, handler, useCapture) {
+			if (el && event) {
+				el.removeEventListener(event, handler, useCapture);
 			}
 		}
 	})();
-	var once = function(el, event, fn) {
+	var once = function(el, event, handler) {
 		var listener = function() {
-			isFunction(fn) && fn.apply(this, arguments);
+			isFunction(handler) && handler.apply(this, arguments);
 			off(el, event, listener);
 		};
 		on(el, event, listener);
 	};
 	var hasClass = function(el, clazz) {
-		if (!isDef(el) || !isDef(clazz)) return false;
+		if (!isElement(el) || !isString(clazz)) return false;
 		return (new RegExp('(\\s|^)' + clazz + '(\\s|$)')).test(el.className);
 	};
 	var addClass = function(el, clazz) {
-		if (isDef(el) && isDef(clazz) && !hasClass(el, clazz)) el.className += ' ' + clazz;
+		if (isElement(el) && isString(clazz) && !hasClass(el, clazz)) el.className += ' ' + clazz;
 	};
 	var removeClass = function(el, clazz) {
 		if (hasClass(el, clazz)) {
@@ -209,25 +213,17 @@
 			el.className = el.className.replace(reg, ' ');
 		}
 	};
-	var getStyle = function(element, styleName) {
-		if (!isDef(element) || !isDef(styleName)) return null;
+	var getStyle = function(el, styleName) {
+		if (!isElement(el) || !isString(styleName)) return null;
 		if (styleName === 'float') {
 			styleName = 'cssFloat';
 		}
-		var computed = getComputedStyle(element, '');
+		var computed = getComputedStyle(el, '');
 		return computed[styleName];
 	};
-	var setStyle = function(element, styleName, value) {
-		if (!isDef(element) || !isDef(styleName)) return;
-		if (isObject(styleName)) {
-			for (var prop in styleName) {
-				if (styleName.hasOwnProperty(prop)) {
-					setStyle(element, prop, styleName[prop]);
-				}
-			}
-		} else {
-			element.style[styleName] = value;
-		}
+	var setStyle = function(el, styleName, value) {
+		if (!isElement(el) || !isString(styleName)) return;
+		el.style[styleName] = value;
 	};
 	var getCookie = function(name) {
 		var arr = document.cookie.replace(/\s/g, "").split(';');
@@ -259,24 +255,24 @@
 		};
 		return wrapper;
 	};
-	var resizeListener = function(element, fn, removeFlg) {
+	var resizeListener = function(el, fn, removeFlg) {
 		if (!isFunction(fn)) {
-			fn = element;
-			element = document.body;
+			fn = el;
+			el = document.body;
 		}
-		if (element !== document.body) {
-			var isParentShow = function(element) {
-				var parent = element.parentNode;
+		if (el !== document.body) {
+			var isParentShow = function(el) {
+				var parent = el.parentNode;
 				if (!parent) return true;
 				if (parent === document) return true;
 				if ((getStyle(parent, 'display')) === 'none') return false;
-				return isParentShow(element.parentNode);
+				return isParentShow(el.parentNode);
 			};
-			if (isParentShow(element)) element = document.body;
+			if (isParentShow(el)) el = document.body;
 		}
-		if (!isArray(element.__resizeListeners__)) {
-			var resetTrigger = function(element) {
-				var trigger = element.__resizeTrigger__;
+		if (!isArray(el.__resizeListeners__)) {
+			var resetTrigger = function(el) {
+				var trigger = el.__resizeTrigger__;
 				var expand = trigger.firstElementChild;
 				var contract = trigger.lastElementChild;
 				var expandChild = expand.firstElementChild;
@@ -287,48 +283,48 @@
 				expand.scrollLeft = expand.scrollWidth;
 				expand.scrollTop = expand.scrollHeight;
 			};
-			var resizeListeners = throttle(100, function(element, event) {
-				if (element.offsetWidth !== element.__resizeLast__.width || element.offsetHeight !== element.__resizeLast__.height) {
-					element.__resizeLast__.width = element.offsetWidth;
-					element.__resizeLast__.height = element.offsetHeight;
-					loop(element.__resizeListeners__, function(resizeListener) {
-						resizeListener.call(element, event);
+			var resizeListeners = throttle(100, function(el, event) {
+				if (el.offsetWidth !== el.__resizeLast__.width || el.offsetHeight !== el.__resizeLast__.height) {
+					el.__resizeLast__.width = el.offsetWidth;
+					el.__resizeLast__.height = el.offsetHeight;
+					loop(el.__resizeListeners__, function(resizeListener) {
+						resizeListener.call(el, event);
 					});
 				}
 			});
 			var scrollListener = function(event) {
-				resetTrigger(element);
-				resizeListeners(element, event);
+				resetTrigger(el);
+				resizeListeners(el, event);
 			};
 			var resizeStart = function(event) {
 				if (event.animationName === 'resizeanim') {
-					resetTrigger(element);
+					resetTrigger(el);
 				}
 			};
-			if (getComputedStyle(element).position === 'static') {
-				element.style.position = 'relative';
+			if (getComputedStyle(el).position === 'static') {
+				el.style.position = 'relative';
 			}
-			var resizeTrigger = element.__resizeTrigger__ = document.createElement('div');
+			var resizeTrigger = el.__resizeTrigger__ = document.createElement('div');
 			resizeTrigger.className = 'resize-triggers';
 			resizeTrigger.innerHTML = '<div class="expand-trigger"><div></div></div><div class="contract-trigger"></div>';
 			on(resizeTrigger, 'animationstart', resizeStart);
-			element.__resizeLast__ = {};
-			element.__resizeListeners__ = [];
-			element.appendChild(resizeTrigger);
-			on(element, 'scroll', scrollListener, true);
+			el.__resizeLast__ = {};
+			el.__resizeListeners__ = [];
+			el.appendChild(resizeTrigger);
+			on(el, 'scroll', scrollListener, true);
 		}
 		if (removeFlg) {
-			var index = element.__resizeListeners__.indexOf(fn);
-			index !== -1 && element.__resizeListeners__.splice(index, 1);
+			var index = el.__resizeListeners__.indexOf(fn);
+			index !== -1 && el.__resizeListeners__.splice(index, 1);
 		} else {
-			isFunction(fn) && element.__resizeListeners__.push(fn);
+			isFunction(fn) && el.__resizeListeners__.push(fn);
 		}
 	};
-	var addResizeListener = function(elment, fn) {
-		resizeListener(elment, fn);
+	var addResizeListener = function(el, fn) {
+		resizeListener(el, fn);
 	};
-	var removeResizeListener = function(element, fn) {
-		resizeListener(element, fn, true);
+	var removeResizeListener = function(el, fn) {
+		resizeListener(el, fn, true);
 	};
 	var setLang = function(lang) {
 		if (isDef(lang)) Vue.config.lang = lang;
@@ -648,10 +644,10 @@
 			}
 		}
 	};
-	var getScrollParent = function(element) {
-		var parent = element.parentNode;
+	var getScrollParent = function(el) {
+		var parent = el.parentNode;
 		if (!parent) {
-			return element;
+			return el;
 		}
 		if (parent === document) {
 			if (document.body.scrollTop) {
@@ -663,7 +659,7 @@
 		if (['scroll', 'auto'].indexOf(getStyle(parent, 'overflow')) !== -1 || ['scroll', 'auto'].indexOf(getStyle(parent, 'overflow-x')) !== -1 || ['scroll', 'auto'].indexOf(getStyle(parent, 'overflow-y')) !== -1) {
 			return parent;
 		}
-		return getScrollParent(element.parentNode);
+		return getScrollParent(el.parentNode);
 	};
 	return {
 		isDef: isDef,
@@ -676,6 +672,8 @@
 		isArray: isArray,
 		isFunction: isFunction,
 		isDate: isDate,
+		isNodeList: isNodeList,
+		isElement: isElement,
 		isVNode: isVNode,
 		toString: toString,
 		toDate: toDate,
@@ -687,6 +685,7 @@
 		getStartDateOfMonth: getStartDateOfMonth,
 		addDate: addDate,
 		loop: loop,
+		ownPropertyLoop: ownPropertyLoop,
 		trim: trim,
 		merge: merge,
 		arrayToObject: arrayToObject,

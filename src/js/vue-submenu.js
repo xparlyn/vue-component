@@ -38,12 +38,12 @@
 					var isActive = false;
 					var submenus = this.submenus;
 					var items = this.items;
-					VueUtil.loop(Object.keys(items), function(index) {
+					VueUtil.ownPropertyLoop(items, function(index) {
 						if (items[index].active) {
 							isActive = true;
 						}
 					});
-					VueUtil.loop(Object.keys(submenus), function(index) {
+					VueUtil.ownPropertyLoop(submenus, function(index) {
 						if (submenus[index].active) {
 							isActive = true;
 						}

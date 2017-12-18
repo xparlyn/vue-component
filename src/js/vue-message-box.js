@@ -116,11 +116,9 @@
 			if (msgQueue.length > 0) {
 				currentMsg = msgQueue.shift();
 				var options = currentMsg.options;
-				for (var prop in options) {
-					if (options.hasOwnProperty(prop)) {
-						instance[prop] = options[prop];
-					}
-				}
+				VueUtil.ownPropertyLoop(options, function(prop) {
+					instance[prop] = options[prop];
+				});
 				if (!VueUtil.isDef(options.callback)) {
 					instance.callback = defaultCallback;
 				}

@@ -12,9 +12,6 @@
 			default: 'Validation Error'
 		};
 	};
-	var isNativeStringType = function(type) {
-		return type === 'string' || type === 'url' || type === 'hex' || type === 'email' || type === 'pattern';
-	};
 	var isEmptyValue = function(value, type) {
 		if (!VueUtil.isDef(value)) {
 			return true;
@@ -22,91 +19,13 @@
 		if (type === 'array' && VueUtil.isArray(value) && !value.length) {
 			return true;
 		}
+		var isNativeStringType = function(type) {
+			return type === 'string' || type === 'url' || type === 'hex' || type === 'email' || type === 'pattern';
+		};
 		if (isNativeStringType(type) && VueUtil.isString(value) && !value) {
 			return true;
 		}
 		return false;
-	};
-	var asyncParallelArray = function(arr, func, callback) {
-		var results = [];
-		var total = 0;
-		var arrLength = arr.length;
-		function count(errors) {
-			results.push.apply(results, errors);
-			total++;
-			if (total === arrLength) {
-				callback(results);
-			}
-		}
-		VueUtil.loop(arr, function(a) {
-			func(a, count);
-		});
-	};
-	var asyncSerialArray = function(arr, func, callback) {
-		var index = 0;
-		var arrLength = arr.length;
-		function next(errors) {
-			if (errors && errors.length) {
-				callback(errors);
-				return;
-			}
-			var original = index;
-			index = index + 1;
-			if (original < arrLength) {
-				func(arr[original], next);
-			} else {
-				callback([]);
-			}
-		}
-		next([]);
-	};
-	var flattenObjArr = function(objArr) {
-		var ret = [];
-		VueUtil.loop(Object.keys(objArr), function(k) {
-			ret.push.apply(ret, objArr[k]);
-		});
-		return ret;
-	};
-	var asyncMap = function(objArr, option, func, callback) {
-		if (option.first) {
-			var flattenArr = flattenObjArr(objArr);
-			return asyncSerialArray(flattenArr, func, callback);
-		}
-		var firstFields = option.firstFields || [];
-		if (firstFields === true) {
-			firstFields = Object.keys(objArr);
-		}
-		var objArrKeys = Object.keys(objArr);
-		var objArrLength = objArrKeys.length;
-		var total = 0;
-		var results = [];
-		var next = function(errors) {
-			results.push.apply(results, errors);
-			total++;
-			if (total === objArrLength) {
-				callback(results);
-			}
-		};
-		VueUtil.loop(objArrKeys, function(key) {
-			var arr = objArr[key];
-			if (firstFields.indexOf(key) !== -1) {
-				asyncSerialArray(arr, func, next);
-			} else {
-				asyncParallelArray(arr, func, next);
-			}
-		});
-	};
-	var complementError = function(rule) {
-		return function(oe) {
-			if (oe && oe.message) {
-				oe.field = oe.field || rule.fullField;
-				return oe;
-			}
-			return {
-				message: oe,
-				field: oe.field || rule.fullField,
-			};
-		}
 	};
 	var rulesEnumerable = function(rule, value, source, errors, options) {
 		var ENUM = 'enum';
@@ -191,7 +110,7 @@
 				try {
 					return !!new RegExp(value);
 				} catch (e) {
-					return false;
+					throw e;
 				}
 			},
 			date: function(value) {
@@ -451,15 +370,12 @@
 			if (!VueUtil.isObject(rules)) {
 				throw 'Rules must be an object';
 			}
-			this.rules = {};
-			var z;
-			var item;
-			for (z in rules) {
-				if (rules.hasOwnProperty(z)) {
-					item = rules[z];
-					this.rules[z] = VueUtil.isArray(item) ? item : [item];
-				}
-			}
+			var self = this;
+			self.rules = {};
+			VueUtil.ownPropertyLoop(rules, function(z) {
+				var item = rules[z];
+				self.rules[z] = VueUtil.isArray(item) ? item : [item];
+			});
 		},
 		validate: function(source_, o, oc) {
 			var source = source_;
@@ -545,6 +461,75 @@
 				});
 			});
 			var errorFields = {};
+			var asyncMap = function(objArr, option, func, callback) {
+				var flattenObjArr = function(objArr) {
+					var ret = [];
+					VueUtil.ownPropertyLoop(objArr, function(k) {
+						ret.push.apply(ret, objArr[k]);
+					});
+					return ret;
+				};
+				var asyncSerialArray = function(arr, func, callback) {
+					var index = 0;
+					var arrLength = arr.length;
+					function next(errors) {
+						if (errors && errors.length) {
+							callback(errors);
+							return;
+						}
+						var original = index;
+						index = index + 1;
+						if (original < arrLength) {
+							func(arr[original], next);
+						} else {
+							callback([]);
+						}
+					}
+					next([]);
+				};
+				if (option.first) {
+					var flattenArr = flattenObjArr(objArr);
+					return asyncSerialArray(flattenArr, func, callback);
+				}
+				var firstFields = option.firstFields || [];
+				if (firstFields === true) {
+					firstFields = Object.keys(objArr);
+				}
+				var objArrKeys = Object.keys(objArr);
+				var objArrLength = objArrKeys.length;
+				var total = 0;
+				var results = [];
+				var next = function(errors) {
+					results.push.apply(results, errors);
+					total++;
+					if (total === objArrLength) {
+						callback(results);
+					}
+				};
+				VueUtil.loop(objArrKeys, function(key) {
+					var arr = objArr[key];
+					if (firstFields.indexOf(key) !== -1) {
+						asyncSerialArray(arr, func, next);
+					} else {
+						var asyncParallelArray = function(arr, func, callback) {
+							var results = [];
+							var total = 0;
+							var arrLength = arr.length;
+							function count(errors) {
+								results.push.apply(results, errors);
+								total++;
+								if (total === arrLength) {
+									callback(results);
+								}
+							}
+							VueUtil.loop(arr, function(a) {
+								func(a, count);
+							});
+						};
+						asyncParallelArray(arr, func, next);
+					}
+				});
+			};
 			asyncMap(series, options, function(data, doIt) {
 				var rule = data.rule;
 				var deep = (VueUtil.isObject(rule.type) || VueUtil.isArray(rule.type)) && (VueUtil.isObject(rule.fields) || VueUtil.isObject(rule.defaultField));
@@ -557,6 +542,18 @@
 				}
 				function cb() {
 					var errors = arguments.length > 0 && VueUtil.isDef(arguments[0]) ? arguments[0] : [];
+					var complementError = function(rule) {
+						return function(oe) {
+							if (oe && oe.message) {
+								oe.field = oe.field || rule.fullField;
+								return oe;
+							}
+							return {
+								message: oe,
+								field: oe.field || rule.fullField,
+							};
+						}
+					};
 					if (!VueUtil.isArray(errors)) {
 						errors = [errors];
 					}
@@ -583,19 +580,15 @@
 						}
 						var fieldsSchema = {};
 						if (rule.defaultField) {
-							for (var k in data.value) {
-								if (data.value.hasOwnProperty(k)) {
-									fieldsSchema[k] = rule.defaultField;
-								}
-							}
+							VueUtil.ownPropertyLoop(data.value, function(k) {
+								fieldsSchema[k] = rule.defaultField;
+							});
 						}
 						fieldsSchema = VueUtil.merge({}, fieldsSchema, data.rule.fields);
-						for (var f in fieldsSchema) {
-							if (fieldsSchema.hasOwnProperty(f)) {
-								var fieldSchema = VueUtil.isArray(fieldsSchema[f]) ? fieldsSchema[f] : [fieldsSchema[f]];
-								fieldsSchema[f] = fieldSchema.map(addFullfield.bind(null, f));
-							}
-						}
+						VueUtil.ownPropertyLoop(fieldsSchema, function(f) {
+							var fieldSchema = VueUtil.isArray(fieldsSchema[f]) ? fieldsSchema[f] : [fieldsSchema[f]];
+							fieldsSchema[f] = fieldSchema.map(addFullfield.bind(null, f));
+						});
 						var schema = new Schema(fieldsSchema);
 						schema.messages(options.messages);
 						if (data.rule.options) {

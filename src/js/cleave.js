@@ -398,7 +398,7 @@
 			}
 			try {
 				pps.phoneFormatter = new Cleave.PhoneFormatter(new pps.root.Cleave.AsYouTypeFormatter(pps.phoneRegionCode), pps.delimiter);
-			} catch (ex) {
+			} catch (e) {
 				throw 'Please include phone-type-formatter lib';
 			}
 		},
@@ -440,7 +440,9 @@
 					clipboardData.setData('Text', textToCopy);
 				}
 				e.preventDefault();
-			} catch (ex) {}
+			} catch (e) {
+				throw e;
+			}
 		},
 		onInput: function(value) {
 			var owner = this;

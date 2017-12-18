@@ -93,9 +93,8 @@
 				var i = 0;
 				for (var len = keyArr.length; i < len - 1; ++i) {
 					var key = keyArr[i];
-					if (key in tempObj) {
-						tempObj = tempObj[key];
-					} else {
+					tempObj = tempObj[key];
+					if (!VueUtil.isDef(tempObj)) {
 						throw 'please transfer a valid prop path to form item!';
 					}
 				}

@@ -31,12 +31,11 @@
 		return offsets;
 	};
 	var getArrayKeyIndex = function(arr, keyToFind) {
-		var i = 0, key;
-		for (key in arr) {
-			if (arr[key] === keyToFind) {
+		var i = arr.length;
+		while (i--) {
+			if (arr[i] === keyToFind) {
 				return i;
 			}
-			i++;
 		}
 		return null;
 	};
@@ -48,32 +47,13 @@
 		function is_numeric(n) {
 			return (n !== '' && !isNaN(parseFloat(n)) && isFinite(n));
 		}
-		VueUtil.loop(Object.keys(styles), function(prop) {
+		VueUtil.ownPropertyLoop(styles, function(prop) {
 			var unit = '';
 			if (['width', 'height', 'top', 'right', 'bottom', 'left'].indexOf(prop) !== -1 && is_numeric(styles[prop])) {
 				unit = 'px';
 			}
 			element.style[prop] = styles[prop] + unit;
 		});
-	};
-	var getOffsetRect = function(element) {
-		var elementRect = {
-			width: element.offsetWidth,
-			height: element.offsetHeight,
-			left: element.offsetLeft,
-			top: element.offsetTop
-		};
-		elementRect.right = elementRect.left + elementRect.width;
-		elementRect.bottom = elementRect.top + elementRect.height;
-		return elementRect;
-	};
-	var getSupportedPropertyName = function(property) {
-		var prefixes = ['', 'ms', 'webkit', 'moz', 'o'];
-		for (var i = 0; i < prefixes.length; i++) {
-			var toCheck = prefixes[i] ? prefixes[i] + property.charAt(0).toUpperCase() + property.slice(1) : property;
-			if (VueUtil.isDef(document.body.style[toCheck])) return toCheck;
-		}
-		return null;
 	};
 	var Popper = function(reference, popper, options) {
 		var DEFAULTS = {
@@ -122,7 +102,7 @@
 		this._popper.style.left = '';
 		this._popper.style.position = '';
 		this._popper.style.top = '';
-		this._popper.style[getSupportedPropertyName('transform')] = '';
+		this._popper.style.transform = '';
 		this._removeEventListeners();
 		if (this._options.removeOnDestroy) {
 			this._popper.parentElement.removeChild(this._popper);
@@ -136,7 +116,7 @@
 		};
 		data.placement = this._options.placement;
 		data._originalPlacement = this._options.placement;
-		this._options.autoWidth && VueUtil.setStyle(this._popper, 'width', this._reference.offsetWidth + 'px');
+		this._options.autoWidth && setStyle(this._popper, {'width': this._reference.offsetWidth});
 		data.offsets = this._getOffsets(this._popper, this._reference, data.placement);
 		data.boundaries = this._getBoundaries(data, this._options.boundariesPadding, this._options.boundariesElement);
 		data = this.runModifiers(data, this._options.modifiers);
@@ -184,17 +164,12 @@
 		}
 		var parent = config.parent.jquery ? config.parent[0] : config.parent;
 		if (VueUtil.isString(parent)) {
-			parent = d.querySelectorAll(config.parent);
-			if (parent.length > 1) {
-				console.warn('WARNING: the given \'parent\' query(' + config.parent + ') matched more than one element, the first one will be used');
-			}
-			if (parent.length === 0) {
+			parent = d.querySelector(config.parent);
+			if (!VueUtil.isDef(parent)) {
 				throw 'ERROR: the given \'parent\' doesn\'t exists!';
 			}
-			parent = parent[0];
 		}
-		if (parent.length > 1 && parent instanceof Element === false) {
-			console.warn('WARNING: you have passed as parent a list of elements, the first one will be used');
+		if (VueUtil.isNodeList(parent)) {
 			parent = parent[0];
 		}
 		parent.appendChild(popper);
@@ -308,6 +283,17 @@
 		this.state.updateBound = null;
 	}
 	Popper.prototype._getBoundaries = function(data, padding, boundariesElement) {
+		var getOffsetRect = function(element) {
+			var elementRect = {
+				width: element.offsetWidth,
+				height: element.offsetHeight,
+				left: element.offsetLeft,
+				top: element.offsetTop
+			};
+			elementRect.right = elementRect.left + elementRect.width;
+			elementRect.bottom = elementRect.top + elementRect.height;
+			return elementRect;
+		};
 		var boundaries = {};
 		var width, height;
 		if (boundariesElement === 'window') {
@@ -384,7 +370,7 @@
 		var left = Math.round(data.offsets.popper.left);
 		var top = Math.round(data.offsets.popper.top);
 		var prefixedProperty;
-		if (this._options.gpuAcceleration && (prefixedProperty = getSupportedPropertyName('transform'))) {
+		if (this._options.gpuAcceleration && (prefixedProperty = 'transform')) {
 			styles[prefixedProperty] = 'translate3d(' + left + 'px, ' + top + 'px, 0)';
 			styles.top = 0;
 			styles.left = 0;
@@ -496,7 +482,6 @@
 	}
 	Popper.prototype.modifiers.flip = function(data) {
 		if (!this.isModifierRequired(this.modifiers.flip, this.modifiers.preventOverflow)) {
-			console.warn('WARNING: preventOverflow modifier is required by flip modifier in order to work, be sure to include it before flip!');
 			return data;
 		}
 		if (data.flipped && data.placement === data._originalPlacement) {
@@ -562,15 +547,7 @@
 		if (VueUtil.isString(arrow)) {
 			arrow = this._popper.querySelector(arrow);
 		}
-		if (!arrow) {
-			return data;
-		}
-		if (!this._popper.contains(arrow)) {
-			console.warn('WARNING: \'arrowElement\' must be child of its popper element!');
-			return data;
-		}
-		if (!this.isModifierRequired(this.modifiers.arrow, this.modifiers.keepTogether)) {
-			console.warn('WARNING: keepTogether modifier is required by arrow modifier in order to work, be sure to include it before arrow!');
+		if (!arrow || !this._popper.contains(arrow) || !this.isModifierRequired(this.modifiers.arrow, this.modifiers.keepTogether)) {
 			return data;
 		}
 		var arrowStyle = {};
@@ -703,17 +680,9 @@
 				this.popperJS._popper.style.transformOrigin = ['top', 'bottom'].indexOf(placement) > -1 ? 'center ' + origin : origin + ' center';
 			},
 			appendArrow: function(element) {
-				var hash;
 				if (this.appended) return;
 				this.appended = true;
-				for (var item in element.attributes) {
-					if (/^_v-/.test(element.attributes[item].name)) {
-						hash = element.attributes[item].name;
-						break;
-					}
-				}
 				var arrow = document.createElement('div');
-				if (hash) arrow.setAttribute(hash, '');
 				arrow.setAttribute('x-arrow', '');
 				arrow.className = 'popper__arrow';
 				element.appendChild(arrow);

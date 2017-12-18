@@ -79,32 +79,30 @@
 		};
 	};
 	var Color = function(options) {
-		this._hue = 0;
-		this._saturation = 100;
-		this._value = 100;
-		this._alpha = 100;
-		this.enableAlpha = false;
-		this.format = 'hex';
-		this.value = '';
+		var self = this;
+		self._hue = 0;
+		self._saturation = 100;
+		self._value = 100;
+		self._alpha = 100;
+		self.enableAlpha = false;
+		self.format = 'hex';
+		self.value = '';
 		options = options || {};
-		for (var option in options) {
-			if (options.hasOwnProperty(option)) {
-				this[option] = options[option];
-			}
-		}
-		this.doOnChange();
+		VueUtil.ownPropertyLoop(options, function(option) {
+			self[option] = options[option];
+		});
+		self.doOnChange();
 	};
 	Color.prototype.set = function(prop, value) {
+		var self = this;
 		if (arguments.length === 1 && VueUtil.isObject(prop)) {
-			for (var p in prop) {
-				if (prop.hasOwnProperty(p)) {
-					this.set(p, prop[p]);
-				}
-			}
+			VueUtil.ownPropertyLoop(prop, function(p) {
+				self.set(p, prop[p]);
+			});
 			return;
 		}
-		this['_' + prop] = value;
-		this.doOnChange();
+		self['_' + prop] = value;
+		self.doOnChange();
 	};
 	Color.prototype.get = function(prop) {
 		return this['_' + prop];

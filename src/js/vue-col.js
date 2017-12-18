@@ -49,7 +49,7 @@
 					classList.push('vue-col-' + size + '-' + self[size]);
 				} else if (VueUtil.isObject(self[size])) {
 					var props = self[size];
-					VueUtil.loop(Object.keys(props), function(prop) {
+					VueUtil.ownPropertyLoop(props, function(prop) {
 						classList.push(prop !== 'span' ? 'vue-col-' + size + '-' + prop + '-' + props[prop] : 'vue-col-' + size + '-' + props[prop]);
 					});
 				}

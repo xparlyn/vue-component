@@ -203,7 +203,6 @@
 				var end = VueUtil.addDate(start, 6, 'week')
 				this.$emit('changemonth', start, end, firstDayOfMonth);
 				this.$nextTick(this.changeEventCardWidth);
-
 			},
 			getCalendar: function() {
 				var monthViewStartDate = VueUtil.getStartDateOfMonth(this.currentMonth.getFullYear(), this.currentMonth.getMonth());

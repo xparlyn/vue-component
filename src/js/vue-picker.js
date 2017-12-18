@@ -134,14 +134,6 @@
 			}
 		}
 	};
-	var PLACEMENT_MAP = {
-		left: 'bottom-start',
-		center: 'bottom-center',
-		right: 'bottom-end'
-	};
-	var equalDate = function(dateA, dateB) {
-		return dateA === dateB || new Date(dateA).getTime() === new Date(dateB).getTime();
-	};
 	var VuePicker = {
 		template: '<vue-input :class="[\'vue-date-editor\', \'vue-date-editor--\' + type]" :readonly="readonly" :autofocus="autofocus" :tabindex="tabindex" :disabled="disabled" :size="size" v-clickoutside="handleClose" :placeholder="placeholder" @mousedown.native="handleMouseDown" @blur="handleBlur" @keydown.native="handleKeydown" :value="displayValue" @change.native="displayValue = $event.target.value" :validateEvent="false" ref="reference"><i slot="icon" @click="handleClickIcon" :class="[\'vue-input__icon\', showClose ? \'vue-icon-close\' : triggerClass]" @mouseenter="handleMouseEnterIcon" @mouseleave="showClose = false" v-if="haveTrigger"></i></vue-input>',
 		mixins: [VueUtil.component.emitter, NewPopper],
@@ -285,6 +277,11 @@
 			}
 		},
 		created: function() {
+			var PLACEMENT_MAP = {
+				left: 'bottom-start',
+				center: 'bottom-center',
+				right: 'bottom-end'
+			};
 			this.popperOptions = {
 				boundariesPadding: 0,
 				gpuAcceleration: false
@@ -323,6 +320,9 @@
 				}
 			},
 			dateChanged: function(dateA, dateB) {
+				var equalDate = function(dateA, dateB) {
+					return dateA === dateB || new Date(dateA).getTime() === new Date(dateB).getTime();
+				};
 				if (VueUtil.isArray(dateA)) {
 					var len = dateA.length;
 					if (!dateB) return true;
@@ -397,11 +397,11 @@
 						ranges = VueUtil.isArray(ranges) ? ranges : [ranges];
 						self.picker.selectableRange = ranges.map(function(range) {return parser(range, format, self.rangeSeparator);});
 					}
-					for (var option in options) {
-						if (options.hasOwnProperty(option) && option !== 'selectableRange') {
+					VueUtil.ownPropertyLoop(options, function(option) {
+						if (option !== 'selectableRange') {
 							self.picker[option] = options[option];
 						}
-					}
+					});
 				};
 				updateOptions();
 				self.unwatchPickerOptions = self.$watch('pickerOptions', function() {updateOptions();}, {deep: true});

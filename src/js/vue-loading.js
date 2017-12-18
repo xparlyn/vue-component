@@ -8,26 +8,26 @@
 	}
 })(this, function(Vue, VueUtil) {
 	'use strict';
-	var VueLoading = Vue.extend({
-		template: '<transition name="loading-fade" @after-leave="handleAfterLeave"><div v-show="visible" :class="[\'vue-loading-mask\', customClass, {\'is-fullscreen\': fullscreen}]"><div class="vue-loading-spinner"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none"/></svg><p v-if="text" class="vue-loading-text">{{text}}</p></div></div></transition>',
-		data: function() {
-			return {
-				text: null,
-				fullscreen: true,
-				visible: false,
-				customClass: ''
-			};
-		},
-		methods: {
-			handleAfterLeave: function() {
-				this.$emit('after-leave');
+	var directive = function() {
+		var VueLoading = Vue.extend({
+			template: '<transition name="loading-fade" @after-leave="handleAfterLeave"><div v-show="visible" :class="[\'vue-loading-mask\', customClass, {\'is-fullscreen\': fullscreen}]"><div class="vue-loading-spinner"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none"/></svg><p v-if="text" class="vue-loading-text">{{text}}</p></div></div></transition>',
+			data: function() {
+				return {
+					text: null,
+					fullscreen: true,
+					visible: false,
+					customClass: ''
+				};
+			},
+			methods: {
+				handleAfterLeave: function() {
+					this.$emit('after-leave');
+				}
 			}
-		}
-	});
-	var directive = function(Vue) {
+		});
 		var insertDom = function(parent, el, binding) {
 			if (!el.domVisible) {
-				VueUtil.loop(Object.keys(el.maskStyle), function(property) {
+				VueUtil.ownPropertyLoop(el.maskStyle, function(property) {
 					el.mask.style[property] = el.maskStyle[property];
 				});
 				if (el.originalPosition !== 'absolute') {
