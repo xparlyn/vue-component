@@ -282,28 +282,31 @@
 				}
 				if (!renderCell) {
 					renderCell = function(createElement, data) {
-						var getValueByPath = function(object, prop) {
-							prop = prop || '';
-							var paths = prop.split('.');
-							var current = object;
-							var result = null;
-							for (var i = 0, j = paths.length; i < j; i++) {
-								var path = paths[i];
-								if (!current)
-									break;
-								if (i === j - 1) {
-									result = current[path];
-									break;
-								}
-								current = current[path];
-							}
-							return result;
-						};
 						var row = data.row;
 						var column = data.column;
 						var property = column.property;
-						var value = property && property.indexOf('.') === -1 ? row[property] : getValueByPath(row, property);
-						if (column && column.formatter) {
+						var value = row[property];
+						if (property && property.indexOf('.') !== -1) {
+							var getValueByPath = function(object, prop) {
+								prop = prop || '';
+								var paths = prop.split('.');
+								var current = object;
+								var result = null;
+								for (var i = 0, j = paths.length; i < j; i++) {
+									var path = paths[i];
+									if (!current)
+										break;
+									if (i === j - 1) {
+										result = current[path];
+										break;
+									}
+									current = current[path];
+								}
+								return result;
+							};
+							value = getValueByPath(row, property);
+						}
+						if (VueUtil.isFunction(column.formatter)) {
 							return column.formatter(row, column, value);
 						}
 						return value;

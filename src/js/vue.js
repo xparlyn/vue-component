@@ -1752,9 +1752,9 @@ function flushCallbacks () {
   pending = false;
   var copies = callbacks.slice(0);
   callbacks.length = 0;
-  for (var i = 0; i < copies.length; i++) {
-    copies[i]();
-  }
+  copies.forEach(function(copie){
+    setTimeout(copie, 0)
+  });
 }
 
 // Here we have async deferring wrappers using both micro and macro tasks.
