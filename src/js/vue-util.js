@@ -153,7 +153,7 @@
 		(isArray(arr) || isNodeList(arr)) && Array.prototype.forEach.call(arr, fn);
 	};
 	var ownPropertyLoop = function (obj, fn) {
-		loop(Object.keys(obj), fn);
+		isDef(obj) && loop(Object.keys(obj), fn);
 	};
 	var trim = function(str) {
 		if (!isString(str)) str = '';

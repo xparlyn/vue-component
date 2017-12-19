@@ -274,11 +274,11 @@
 						data._staticTrees = self._staticTrees;
 						data.$options.staticRenderFns = self.$options.staticRenderFns;
 						return self.customRender.call(data);
-					}
+					};
 				} else if (self.$scopedSlots.default) {
 					renderCell = function() {
 						return self.$scopedSlots.default(data);
-					}
+					};
 				}
 				if (!renderCell) {
 					renderCell = function(createElement, data) {
