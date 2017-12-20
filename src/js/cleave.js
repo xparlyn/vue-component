@@ -346,7 +346,7 @@
 			throw 'Please check the element';
 		}
 		opts.initValue = owner.element.value;
-		owner.properties = Cleave.DefaultProperties.assign({}, opts);
+		owner.properties = DefaultProperties.assign({}, opts);
 		owner.init();
 	};
 	Cleave.prototype = {
@@ -356,8 +356,8 @@
 			if (!pps.numeral && !pps.phone && !pps.creditCard && !pps.date && (pps.blocksLength === 0 && !pps.prefix)) {
 				return;
 			}
-			pps.maxLength = Cleave.Util.getMaxLength(pps.blocks);
-			owner.isAndroid = Cleave.Util.isAndroid();
+			pps.maxLength = Util.getMaxLength(pps.blocks);
+			owner.isAndroid = Util.isAndroid();
 			owner.onChangeListener = owner.onChange.bind(owner);
 			owner.onKeyDownListener = owner.onKeyDown.bind(owner);
 			owner.onCutListener = owner.onCut.bind(owner);
@@ -377,7 +377,7 @@
 			if (!pps.numeral) {
 				return;
 			}
-			pps.numeralFormatter = new Cleave.NumeralFormatter(pps.numeralDecimalMark, pps.numeralDecimalScale, pps.numeralThousandsGroupStyle, pps.numeralPositiveOnly, pps.delimiter);
+			pps.numeralFormatter = new NumeralFormatter(pps.numeralDecimalMark, pps.numeralDecimalScale, pps.numeralThousandsGroupStyle, pps.numeralPositiveOnly, pps.delimiter);
 		},
 		initDateFormatter: function() {
 			var owner = this;
@@ -385,10 +385,10 @@
 			if (!pps.date) {
 				return;
 			}
-			pps.dateFormatter = new Cleave.DateFormatter(pps.datePattern);
+			pps.dateFormatter = new DateFormatter(pps.datePattern);
 			pps.blocks = pps.dateFormatter.getBlocks();
 			pps.blocksLength = pps.blocks.length;
-			pps.maxLength = Cleave.Util.getMaxLength(pps.blocks);
+			pps.maxLength = Util.getMaxLength(pps.blocks);
 		},
 		initPhoneFormatter: function() {
 			var owner = this;
@@ -397,7 +397,7 @@
 				return;
 			}
 			try {
-				pps.phoneFormatter = new Cleave.PhoneFormatter(new pps.root.Cleave.AsYouTypeFormatter(pps.phoneRegionCode), pps.delimiter);
+				pps.phoneFormatter = new PhoneFormatter(new pps.root.Cleave.AsYouTypeFormatter(pps.phoneRegionCode), pps.delimiter);
 			} catch (e) {
 				throw 'Please include phone-type-formatter lib';
 			}
@@ -406,7 +406,7 @@
 			var owner = this;
 			var pps = owner.properties;
 			var charCode = event.which || event.keyCode;
-			if (charCode === 8 && Cleave.Util.isDelimiter(owner.element.value.slice(-1), pps.delimiter, pps.delimiters)) {
+			if (charCode === 8 && Util.isDelimiter(owner.element.value.slice(-1), pps.delimiter, pps.delimiters)) {
 				pps.backspace = true;
 				return;
 			}
@@ -425,7 +425,6 @@
 		copyClipboardData: function(e) {
 			var owner = this;
 			var pps = owner.properties;
-			var Util = Cleave.Util;
 			var inputValue = owner.element.value;
 			var textToCopy = '';
 			if (!pps.copyDelimiter) {
@@ -448,7 +447,6 @@
 			var owner = this;
 			var pps = owner.properties;
 			var prev = value;
-			var Util = Cleave.Util;
 			if (!pps.numeral && pps.backspace && !Util.isDelimiter(value.slice(-1), pps.delimiter, pps.delimiters)) {
 				value = Util.headStr(value, value.length - 1);
 			}
@@ -489,11 +487,11 @@
 			owner.updateValueState();
 		},
 		updateCreditCardPropsByValue: function(value) {
-			var owner = this, pps = owner.properties, Util = Cleave.Util, creditCardInfo;
+			var owner = this, pps = owner.properties, creditCardInfo;
 			if (Util.headStr(pps.result, 4) === Util.headStr(value, 4)) {
 				return;
 			}
-			creditCardInfo = Cleave.CreditCardDetector.getInfo(value, pps.creditCardStrictMode);
+			creditCardInfo = CreditCardDetector.getInfo(value, pps.creditCardStrictMode);
 			pps.blocks = creditCardInfo.blocks;
 			pps.blocksLength = pps.blocks.length;
 			pps.maxLength = Util.getMaxLength(pps.blocks);
@@ -532,7 +530,6 @@
 		getRawValue: function() {
 			var owner = this;
 			var pps = owner.properties;
-			var Util = Cleave.Util;
 			var rawValue = owner.element.value;
 			if (pps.rawValueTrimPrefix) {
 				rawValue = Util.getPrefixStrippedValue(rawValue, pps.prefix, pps.prefixLength);
@@ -555,14 +552,8 @@
 			owner.element.removeEventListener('copy', owner.onCopyListener);
 		},
 		toString: function() {
-			return '[Cleave Object]';
+			return '[Object Cleave]';
 		}
 	};
-	Cleave.NumeralFormatter = NumeralFormatter;
-	Cleave.DateFormatter = DateFormatter;
-	Cleave.PhoneFormatter = PhoneFormatter;
-	Cleave.CreditCardDetector = CreditCardDetector;
-	Cleave.Util = Util;
-	Cleave.DefaultProperties = DefaultProperties;
 	return Cleave;
 });

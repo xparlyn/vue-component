@@ -1,16 +1,15 @@
 (function(context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'SystemInfo', 'DateUtil', 'Screenfull', 'VueI18n', 'VueResource'], definition);
+		define(['Vue', 'SystemInfo', 'DateUtil', 'VueI18n', 'VueResource'], definition);
 	} else {
-		context.VueUtil = definition(context.Vue, context.SystemInfo, context.DateUtil, context.Screenfull);
+		context.VueUtil = definition(context.Vue, context.SystemInfo, context.DateUtil);
 		delete context.SystemInfo;
 		delete context.DateUtil;
-		delete context.Screenfull;
 		delete context.VueResource;
 		delete context.VueI18n;
 	}
-})(this, function(Vue, SystemInfo, DateUtil, Screenfull) {
+})(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
@@ -384,11 +383,80 @@
 		return widthNoScroll - widthWithScroll;
 	};
 	var screenfull = function() {
-		if (!Screenfull.enabled) {
+		var fn = (function() {
+			var fnMap = [['requestFullscreen', 'exitFullscreen', 'fullscreenElement', 'fullscreenEnabled', 'fullscreenchange', 'fullscreenerror']
+						, ['webkitRequestFullscreen', 'webkitExitFullscreen', 'webkitFullscreenElement', 'webkitFullscreenEnabled', 'webkitfullscreenchange', 'webkitfullscreenerror']
+						, ['webkitRequestFullScreen', 'webkitCancelFullScreen', 'webkitCurrentFullScreenElement', 'webkitCancelFullScreen', 'webkitfullscreenchange', 'webkitfullscreenerror']
+						, ['mozRequestFullScreen', 'mozCancelFullScreen', 'mozFullScreenElement', 'mozFullScreenEnabled', 'mozfullscreenchange', 'mozfullscreenerror']
+						, ['msRequestFullscreen', 'msExitFullscreen', 'msFullscreenElement', 'msFullscreenEnabled', 'MSFullscreenChange', 'MSFullscreenError']];
+			var ret = {};
+			for (var i = 0, l = fnMap.length; i < l; i++) {
+				var val = fnMap[i];
+				if (val[1] in document) {
+					for (i = 0; i < val.length; i++) {
+						ret[fnMap[0][i]] = val[i];
+					}
+					return ret;
+				}
+			}
+			return false;
+		})();
+		if (!fn) {
 			Vue.notify.warning({message: Vue.t('vue.screenfull.canot')});
 			return false;
 		}
-		Screenfull.toggle();
+		var screenfull = {
+			request: function(elem) {
+				var request = fn.requestFullscreen;
+				elem = elem || document.documentElement;
+				if (/5\.1[.\d]* Safari/.test(navigator.userAgent)) {
+					elem[request]();
+				} else {
+					elem[request]('ALLOW_KEYBOARD_INPUT' in Element && Element.ALLOW_KEYBOARD_INPUT);
+				}
+			},
+			exit: function() {
+				document[fn.exitFullscreen]();
+			},
+			toggle: function(elem) {
+				if (this.isFullscreen) {
+					this.exit();
+				} else {
+					this.request(elem);
+				}
+			},
+			onchange: function(callback) {
+				document.addEventListener(fn.fullscreenchange, callback);
+			},
+			onerror: function(callback) {
+				document.addEventListener(fn.fullscreenerror, callback);
+			},
+			raw: fn
+		};
+		Object.defineProperties(screenfull, {
+			isFullscreen: {
+				get: function() {
+					return Boolean(document[fn.fullscreenElement]);
+				}
+			},
+			element: {
+				enumerable: true,
+				get: function() {
+					return document[fn.fullscreenElement];
+				}
+			},
+			enabled: {
+				enumerable: true,
+				get: function() {
+					return Boolean(document[fn.fullscreenEnabled]);
+				}
+			}
+		});
+		if (!screenfull.enabled) {
+			Vue.notify.warning({message: Vue.t('vue.screenfull.canot')});
+			return false;
+		}
+		screenfull.toggle();
 	};
 	var addTouchStart = function(el, fn) {
 		on(el, 'mousedown', fn);
