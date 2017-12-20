@@ -295,7 +295,7 @@
 		var columns = [];
 		states.fixedColumns = [];
 		states.rightFixedColumns = [];
-		VueUtil.loop((states._columns || []).slice(), function(column) {
+		VueUtil.loop((states._columns || []).slice(0), function(column) {
 			if (column.visible) {
 				columns.push(column);
 				if (column.fixed === true || column.fixed === 'left') {
@@ -333,7 +333,7 @@
 		var sortingColumns = states.sortingColumns;
 		if (sortingColumns.length === 0) return data;
 		var orderBy = function(data, sortList) {
-			return data.slice().sort(function(data1, data2) {
+			return data.slice(0).sort(function(data1, data2) {
 				var index = 0;
 				var column = sortList[index];
 				index++;
@@ -757,7 +757,7 @@
 					|| (self.fixed === 'right' && self.store.states.rightFixedColumns.length > 0)) {
 					delta = self.$parent.$refs.tableBody.delta;
 					selfData = delta.data;
-					self.$nextTick(self.updateCurrentClass);
+					self.$nextTick(self.resetCurrentRow);
 				}
 			} else {
 				selfData = delta.data = self.scrollFilter(storeData, delta);
@@ -849,36 +849,11 @@
 			}, []))])]);
 		},
 		watch: {
-			'store.states.hoverRow': function(newVal, oldVal) {
-				var self = this;
-				var el = self.$el;
-				if (!el.querySelector) return;
-				var oldHoverRow = el.querySelector('.hover-row');
-				oldHoverRow && oldHoverRow.classList.remove('hover-row');
-				if (newVal === null) return;
-				var data = self.delta.data;
-				if (self.fixed) {
-					data = self.$parent.$refs.tableBody.delta.data;
-				}
-				var storeData = self.store.states.data;
-				var rows = el.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
-				var newRow = rows[data.indexOf(storeData[newVal])];
-				newRow && newRow.classList.add('hover-row');
+			'store.states.hoverRow': function(newVal) {
+				this.resetHoverRow(newVal);
 			},
-			'store.states.currentRow': function(newVal, oldVal) {
-				if (!this.highlight) return;
-				var self = this;
-				var el = self.$el;
-				if (!el.querySelector) return;
-				var oldCurrentRow = el.querySelector('.current-row');
-				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
-				var data = self.delta.data;
-				if (self.fixed) {
-					data = self.$parent.$refs.tableBody.delta.data;
-				}
-				var rows = el.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
-				var currentRow = rows[data.indexOf(newVal)];
-				currentRow && currentRow.classList.add('current-row');
+			'store.states.currentRow': function(newVal) {
+				this.resetCurrentRow(newVal);
 			}
 		},
 		data: function() {
@@ -929,23 +904,33 @@
 				}
 				delta.end = end;
 				delta.start = start;
-				this.$nextTick(this.updateCurrentClass);
+				this.$nextTick(this.resetCurrentRow);
 			},
-			updateCurrentClass: function() {
+			resetCurrentRow: function(currentRow) {
 				if (!this.highlight) return;
 				var self = this;
 				var el = self.$el;
 				if (!el.querySelector) return;
+				if (!VueUtil.isDef(currentRow)) currentRow = self.store.states.currentRow;
 				var oldCurrentRow = el.querySelector('.current-row');
 				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
-				var data = self.delta.data;
-				if (self.fixed) {
-					data = self.$parent.$refs.tableBody.delta.data;
-				}
+				var data = self.$parent.$refs.tableBody.delta.data;
 				var rows = el.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
-				var currentRow = rows[data.indexOf(self.store.states.currentRow)];
+				var currentRow = rows[data.indexOf(currentRow)];
 				currentRow && currentRow.classList.add('current-row');
 			},
+			resetHoverRow: VueUtil.throttle(function(hoverRow) {
+				if (!VueUtil.isDef(hoverRow) || !this.$el.querySelector) return;
+				var self = this;
+				var el = self.$el;
+				var oldHoverRow = el.querySelector('.hover-row');
+				oldHoverRow && oldHoverRow.classList.remove('hover-row');
+				var data = self.$parent.$refs.tableBody.delta.data;
+				var storeData = self.store.states.data;
+				var rows = el.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
+				var newRow = rows[data.indexOf(storeData[hoverRow])];
+				newRow && newRow.classList.add('hover-row');
+			}, 3),
 			getCell: function(event) {
 				var cell = event.target;
 				while (cell && cell.tagName.toUpperCase() !== 'HTML') {
@@ -1001,7 +986,7 @@
 				var cellChild = event.target.querySelector('.cell');
 				if (VueUtil.hasClass(cellChild, 'vue-tooltip') && cellChild.scrollWidth > cellChild.offsetWidth) {
 					var tooltip = this.$refs.tooltip;
-					var activateTooltip = VueUtil.throttle(100, function(tooltip) {
+					var activateTooltip = VueUtil.debounce(100, function(tooltip) {
 						return tooltip.handleShowPopper();
 					});
 					this.tooltipContent = cell.innerText;

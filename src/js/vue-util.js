@@ -241,10 +241,31 @@
 	var removeCookie = function(name) {
 		setCookie(name, '1', -1);
 	};
-	var throttle = function(delay, callback) {
+	var throttle = function(callback, totalrun) {
 		if (!isFunction(callback)) return function() {};
 		var timer = null;
-		var wrapper = function() {
+		var runtime = 0;
+		if (!isNumber(totalrun)) totalrun = 1;
+		return function() {
+			var args = arguments;
+			var self = this;
+			if (runtime < totalrun) {
+				callback.apply(self, args)
+				runtime++;
+			}
+			if (timer) return false
+			timer = setTimeout(function() { 
+				callback.apply(self, args)
+				clearTimeout(timer);
+				timer = null;
+				runtime = 0;
+			}, 16);
+		}
+	};
+	var debounce = function(delay, callback) {
+		if (!isFunction(callback)) return function() {};
+		var timer = null;
+		return function() {
 			var self = this;
 			var args = arguments;
 			clearTimeout(timer);
@@ -253,7 +274,6 @@
 				clearTimeout(timer);
 			}, delay);
 		};
-		return wrapper;
 	};
 	var resizeListener = function(el, fn, removeFlg) {
 		if (!isFunction(fn)) {
@@ -283,7 +303,7 @@
 				expand.scrollLeft = expand.scrollWidth;
 				expand.scrollTop = expand.scrollHeight;
 			};
-			var resizeListeners = throttle(100, function(el, event) {
+			var resizeListeners = function(el, event) {
 				if (el.offsetWidth !== el.__resizeLast__.width || el.offsetHeight !== el.__resizeLast__.height) {
 					el.__resizeLast__.width = el.offsetWidth;
 					el.__resizeLast__.height = el.offsetHeight;
@@ -291,11 +311,11 @@
 						resizeListener.call(el, event);
 					});
 				}
-			});
-			var scrollListener = function(event) {
+			};
+			var scrollListener = throttle(function(event) {
 				resetTrigger(el);
 				resizeListeners(el, event);
-			};
+			});
 			var resizeStart = function(event) {
 				if (event.animationName === 'resizeanim') {
 					resetTrigger(el);
@@ -333,7 +353,9 @@
 		langObjs = merge({}, Vue.locale(lang), langObjs);
 		Vue.locale(lang, langObjs);
 	};
-	var noLog = function() {
+	var produceModel = function() {
+		Vue.config.productionTip = false;
+		Vue.config.devtools = false;
 		Vue.config.silent = true;
 	};
 	var removeNode = function(node) {
@@ -701,11 +723,12 @@
 		setCookie: setCookie,
 		removeCookie: removeCookie,
 		throttle: throttle,
+		debounce: debounce,
 		addResizeListener: addResizeListener,
 		removeResizeListener: removeResizeListener,
 		setLang: setLang,
 		setLocale: setLocale,
-		noLog: noLog,
+		produceModel: produceModel,
 		removeNode: removeNode,
 		insertNodeAt: insertNodeAt,
 		scrollBarWidth: scrollBarWidth,

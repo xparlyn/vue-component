@@ -358,7 +358,7 @@
 			},
 			deletePrevTag: function(e) {
 				if (e.target.value.length <= 0) {
-					var value = this.value.slice();
+					var value = this.value.slice(0);
 					value.pop();
 					this.$emit('input', value);
 				}
@@ -408,7 +408,7 @@
 			},
 			handleOptionSelect: function(option) {
 				if (this.multiple) {
-					var value = this.value.slice();
+					var value = this.value.slice(0);
 					var optionIndex = value.indexOf(option.value);
 					if (optionIndex > -1) {
 						value.splice(optionIndex, 1);
@@ -497,7 +497,7 @@
 			deleteTag: function(event, tag) {
 				var index = this.selected.indexOf(tag);
 				if (index > -1 && !this.disabled) {
-					var value = this.value.slice();
+					var value = this.value.slice(0);
 					value.splice(index, 1);
 					this.$emit('input', value);
 					this.$emit('remove-tag', tag);
@@ -532,7 +532,7 @@
 			if (self.multiple && !VueUtil.isArray(self.value)) self.$emit('input', []);
 			if (!self.multiple && VueUtil.isArray(self.value)) self.$emit('input', '');
 			self.setSelected();
-			self.debouncedOnInputChange = VueUtil.throttle(self.debounce, function() {
+			self.debouncedOnInputChange = VueUtil.debounce(self.debounce, function() {
 				self.onInputChange();
 			});
 			self.$on('handleOptionClick', self.handleOptionSelect);

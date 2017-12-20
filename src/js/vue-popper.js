@@ -344,7 +344,7 @@
 		return boundaries;
 	}
 	Popper.prototype.runModifiers = function(data, modifiers, ends) {
-		var modifiersToRun = modifiers.slice();
+		var modifiersToRun = modifiers.slice(0);
 		if (VueUtil.isDef(ends)) {
 			modifiersToRun = this._options.modifiers.slice(0, getArrayKeyIndex(this._options.modifiers, ends));
 		}

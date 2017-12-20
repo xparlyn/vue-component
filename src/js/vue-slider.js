@@ -261,7 +261,7 @@
 						if (this.valueChanged()) {
 							this.$emit('change', [this.minValue, this.maxValue]);
 							this.dispatch('VueFormItem', 'vue.form.change', [this.minValue, this.maxValue]);
-							this.oldValue = val.slice();
+							this.oldValue = val.slice(0);
 						}
 					}
 				} else if (!this.range && VueUtil.isNumber(val) && !isNaN(val)) {

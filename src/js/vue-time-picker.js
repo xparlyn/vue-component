@@ -96,7 +96,7 @@
 		},
 		created: function() {
 			var self = this;
-			self.debounceAjustElTop = VueUtil.throttle(100, function(type) {self.ajustElTop(type, self[type + 's']);});
+			self.debounceAjustElTop = VueUtil.debounce(100, function(type) {self.ajustElTop(type, self[type + 's']);});
 		},
 		mounted: function() {
 			var self = this;
