@@ -23,13 +23,10 @@
 	border: 1px solid #d1dbe5;
 }
 .vue-time-spinner.has-seconds .vue-time-spinner__wrapper {
-	width: 33%;
+	width: 33.33%;
 }
 .vue-time-spinner.has-seconds .vue-time-spinner__wrapper .vue-scrollbar__wrap:not(.vue-scrollbar__wrap--hidden-default) {
 	padding-bottom: 15px;
-}
-.vue-time-spinner.has-seconds .vue-time-spinner__wrapper.is-seconds {
-	width: 34%;
 }
 .vue-time-spinner__wrapper {
 	max-height: 190px;
