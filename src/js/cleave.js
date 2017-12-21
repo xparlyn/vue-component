@@ -319,6 +319,7 @@
 			target.numericOnly = target.creditCard || target.date || !!opts.numericOnly;
 			target.uppercase = !!opts.uppercase;
 			target.lowercase = !!opts.lowercase;
+			target.formatter = typeof opts.customFormatter === 'function' ? opts.customFormatter : null;
 			target.prefix = (target.creditCard || target.phone || target.date) ? '' : (opts.prefix || '');
 			target.prefixLength = target.prefix.length;
 			target.rawValueTrimPrefix = !!opts.rawValueTrimPrefix;
@@ -353,7 +354,7 @@
 		init: function() {
 			var owner = this;
 			var pps = owner.properties;
-			if (!pps.numeral && !pps.phone && !pps.creditCard && !pps.date && (pps.blocksLength === 0 && !pps.prefix)) {
+			if (!pps.numeral && !pps.phone && !pps.creditCard && !pps.date && (pps.blocksLength === 0 && !pps.prefix) && !pps.formatter) {
 				return;
 			}
 			pps.maxLength = Util.getMaxLength(pps.blocks);
@@ -449,6 +450,11 @@
 			var prev = value;
 			if (!pps.numeral && pps.backspace && !Util.isDelimiter(value.slice(-1), pps.delimiter, pps.delimiters)) {
 				value = Util.headStr(value, value.length - 1);
+			}
+			if (pps.formatter) {
+				pps.result = pps.formatter(value)
+				owner.updateValueState();
+				return;
 			}
 			if (pps.phone) {
 				pps.result = pps.phoneFormatter.format(value);
