@@ -14,19 +14,19 @@
 		data: function() {
 			return {
 				activedIndex: null,
-				remain: 0,
-				delta: {
-					start: 0,
-					end: 0,
-					total: 0,
-					keeps: 0,
-					allPadding: 0,
-					paddingTop: 0,
-					remain: 0,
-					size: 20,
-					setFlg: false
-				}
+				remain: 0
 			}
+		},
+		delta: {
+			start: 0,
+			end: 0,
+			total: 0,
+			keeps: 0,
+			allPadding: 0,
+			paddingTop: 0,
+			remain: 0,
+			size: 20,
+			setFlg: false
 		},
 		props: {
 			height: {
@@ -56,7 +56,7 @@
 				this.$emit('scroll', e, scrollTop)
 			},
 			updateZone: function(offset) {
-				var delta = this.delta;
+				var delta = this.$options.delta;
 				if (delta.total <= delta.keeps) return;
 				var overs = Math.floor(offset / delta.size);
 				var start = overs ? overs : 0;
@@ -67,9 +67,10 @@
 				}
 				delta.end = end;
 				delta.start = start;
+				this.$forceUpdate();
 			},
 			filter: function(slots) {
-				var delta = this.delta;
+				var delta = this.$options.delta;
 				if (delta.keeps === 0 || slots.length <= delta.keeps) {
 					delta.paddingTop = 0;
 					delta.allPadding = 0;
@@ -86,7 +87,7 @@
 			},
 			init: function() {
 				var slots = this.$slots.default;
-				var delta = this.delta;
+				var delta = this.$options.delta;
 				delta.remain = Math.floor(this.height * 1 / delta.size);
 				delta.end = delta.remain;
 				delta.keeps = delta.remain;
@@ -100,7 +101,8 @@
 		},
 		render: function(createElement) {
 			var slots = this.$slots.default;
-			var delta = this.delta;
+			if (!VueUtil.isArray(slots)) return null;
+			var delta = this.$options.delta;
 			if (slots && !delta.setFlg) {
 				this.init();
 			}

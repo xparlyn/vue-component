@@ -63,8 +63,8 @@
 			if (states.defaultExpandAll) {
 				states.expandRows = states.data.slice(0);
 			}
-			if (table.$refs.tableBody && table.$refs.tableBody.delta.keeps !== 0 && !table.fixed) {
-				var delta = table.$refs.tableBody.delta;
+			if (table.$refs.tableBody && table.$refs.tableBody.$options.delta.keeps !== 0 && !table.fixed) {
+				var delta = table.$refs.tableBody.$options.delta;
 				var dataLen = data.length;
 				delta.start = 0;
 				if (dataLen <= delta.remain) {
@@ -130,8 +130,8 @@
 				self.table.$emit('filter-change', filters);
 			}
 			var table = this.table;
-			if (table.$refs.tableBody && table.$refs.tableBody.delta.keeps !== 0 && !table.fixed) {
-				var delta = table.$refs.tableBody.delta;
+			if (table.$refs.tableBody && table.$refs.tableBody.$options.delta.keeps !== 0 && !table.fixed) {
+				var delta = table.$refs.tableBody.$options.delta;
 				var dataLen = data.length;
 				delta.start = 0;
 				if (dataLen <= delta.remain) {
@@ -205,7 +205,10 @@
 					expandRows.splice(index, 1);
 				}
 			}
-			this.table.$emit('expand', row, expandRows.indexOf(row) !== -1);
+			var table = this.table;
+			Vue.nextTick(function(){
+				table.$emit('expand', row, expandRows.indexOf(row) !== -1);
+			});
 		},
 		toggleAllSelection: function(states) {
 			var data = states.data || [];
@@ -749,19 +752,19 @@
 		render: function(createElement) {
 			var self = this;
 			var selfData = [];
-			var delta = self.delta;
+			var delta = self.$options.delta;
 			var columns = self.store.states.columns;
 			var storeData = self.store.states.data;
 			if (self.fixed) {
 				if (((self.fixed === true || self.fixed === 'left') && self.store.states.fixedColumns.length > 0)
 					|| (self.fixed === 'right' && self.store.states.rightFixedColumns.length > 0)) {
-					delta = self.$parent.$refs.tableBody.delta;
-					selfData = delta.data;
+					delta = self.$parent.$refs.tableBody.$options.delta;
 					self.$nextTick(self.resetCurrentRow);
 				}
 			} else {
-				selfData = delta.data = self.scrollFilter(storeData, delta);
+				self.scrollFilter(storeData, delta);
 			}
+			selfData = delta.data;
 			if (selfData.length === 0) return null;
 			var paddingTop = delta.paddingTop;
 			var allPadding = delta.allPadding;
@@ -858,19 +861,19 @@
 		},
 		data: function() {
 			return {
-				delta: {
-					start: 0,
-					end: 0,
-					total: 0,
-					keeps: 0,
-					allPadding: 0,
-					paddingTop: 0,
-					size: 0,
-					remain: 0,
-					data: []
-				},
 				tooltipContent: ''
 			};
+		},
+		delta: {
+			start: 0,
+			end: 0,
+			total: 0,
+			keeps: 0,
+			allPadding: 0,
+			paddingTop: 0,
+			size: 0,
+			remain: 0,
+			data: []
 		},
 		methods: {
 			scrollFilter: function(slots, delta) {
@@ -882,14 +885,13 @@
 				delta.total = slots.length;
 				delta.paddingTop = delta.size * delta.start;
 				delta.allPadding = delta.size * (slots.length - delta.keeps);
-				var result = [];
+				delta.data = [];
 				for (var i = delta.start, j = delta.end; i < j; i++) {
-					result.push(slots[i]);
+					delta.data.push(slots[i]);
 				}
-				return result;
 			},
 			updateZone: function(offset) {
-				var delta = this.delta;
+				var delta = this.$options.delta;
 				delta.size = parseInt(VueUtil.getStyle(this.$parent.$el.querySelector('.vue-table__body .vue-table__row'), 'height'), 10) || 40;
 				delta.remain = Math.floor(this.$parent.height * 1 / delta.size) + 10;
 				delta.keeps = delta.remain;
@@ -904,6 +906,7 @@
 				}
 				delta.end = end;
 				delta.start = start;
+				this.$forceUpdate();
 				this.$nextTick(this.resetCurrentRow);
 			},
 			resetCurrentRow: function(currentRow) {
@@ -914,7 +917,7 @@
 				if (!VueUtil.isDef(currentRow)) currentRow = self.store.states.currentRow;
 				var oldCurrentRow = el.querySelector('.current-row');
 				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
-				var data = self.$parent.$refs.tableBody.delta.data;
+				var data = self.$parent.$refs.tableBody.$options.delta.data;
 				var rows = el.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
 				var currentRow = rows[data.indexOf(currentRow)];
 				currentRow && currentRow.classList.add('current-row');
@@ -925,7 +928,7 @@
 				var el = self.$el;
 				var oldHoverRow = el.querySelector('.hover-row');
 				oldHoverRow && oldHoverRow.classList.remove('hover-row');
-				var data = self.$parent.$refs.tableBody.delta.data;
+				var data = self.$parent.$refs.tableBody.$options.delta.data;
 				var storeData = self.store.states.data;
 				var rows = el.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
 				var newRow = rows[data.indexOf(storeData[hoverRow])];
@@ -1041,7 +1044,7 @@
 		mounted: function() {
 			var table = this.$parent;
 			if (table.height && table.lazyload && !this.fixed) {
-				var delta = this.delta;
+				var delta = this.$options.delta;
 				delta.remain = Math.floor(table.height * 1 / delta.size) + 10;
 				delta.end = delta.remain;
 				delta.keeps = delta.remain;
@@ -1849,7 +1852,7 @@
 						}
 					}
 					if (self.bodyScroll.top !== scrollTop) {
-						if (refs.tableBody && refs.tableBody.delta.keeps !== 0) {
+						if (refs.tableBody && refs.tableBody.$options.delta.keeps !== 0) {
 							refs.tableBody.updateZone(scrollTop);
 						}
 						self.bodyScroll.top = scrollTop;
@@ -1917,7 +1920,7 @@
 			},
 			resizeZone: function() {
 				var refs = this.$refs;
-				if (refs.tableBody && refs.tableBody.delta.keeps !== 0 && !this.fixed) {
+				if (refs.tableBody && refs.tableBody.$options.delta.keeps !== 0 && !this.fixed) {
 					var scrollTop = this.bodyScroll.top;
 					refs.tableBody.updateZone(scrollTop);
 				}
@@ -1998,7 +2001,7 @@
 			},
 			lazyload: function(val) {
 				if (this.height) {
-					var delta = this.$refs.tableBody.delta;
+					var delta = this.$refs.tableBody.$options.delta;
 					if (val) {
 						delta.size = parseInt(VueUtil.getStyle(this.$el.querySelector('.vue-table__body .vue-table__row'), 'height'), 10) || 40;
 						delta.remain = Math.floor(this.height * 1 / delta.size) + 10;

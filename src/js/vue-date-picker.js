@@ -124,13 +124,20 @@
 				return this.date.getDate();
 			},
 			startDate: function() {
-				return VueUtil.getStartDateOfMonth(this.year, this.month);
+				var result = new Date(this.year, this.month, 1);
+				var day = result.getDay();
+				if (day === 0) {
+					result.setTime(result.getTime() - this.dayDuration * 7);
+				} else {
+					result.setTime(result.getTime() - this.dayDuration * day);
+				}
+				return result;
 			},
 			rows: function() {
 				var date = new Date(this.year, this.month, 1);
 				var day = VueUtil.getFirstDayOfMonth(date);
-				var dateCountOfMonth = VueUtil.getDayCountOfMonth(date.getFullYear(), date.getMonth());
-				var dateCountOfLastMonth = VueUtil.getDayCountOfMonth(date.getFullYear(), (date.getMonth() === 0 ? 11 : date.getMonth() - 1));
+				var dateCountOfMonth = VueUtil.getDayCountOfMonth(date.getFullYear(), date.getMonth() + 1);
+				var dateCountOfLastMonth = VueUtil.getDayCountOfMonth(date.getFullYear(), (date.getMonth() === 0 ? 12 : date.getMonth()));
 				var offset = this.offsetDay;
 				var rows = this.tableRows;
 				var count = 1;

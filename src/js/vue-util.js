@@ -67,6 +67,8 @@
 		return DateUtil.parse(str, format || 'yyyy-MM-dd');
 	};
 	var getDayCountOfMonth = function(year, month) {
+		if (!isNumber(year) || !isNumber(month)) return null;
+		month--;
 		if (month === 3 || month === 5 || month === 8 || month === 10) {
 			return 30;
 		}
@@ -81,31 +83,22 @@
 	};
 	var getFirstDayOfMonth = function(date) {
 		var temp = toDate(date);
+		if (!isDate(temp)) return null;
 		temp.setDate(1);
 		return temp.getDay();
 	};
-	var getWeekNumber = function(src) {
-		var date = toDate(src);
+	var getWeekNumber = function(date) {
+		var date = toDate(date);
+		if (!isDate(date)) return null;
 		date.setHours(0, 0, 0, 0);
-		date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-		var week1 = new Date(date.getFullYear(), 0, 4);
-		return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
-	};
-	var getStartDateOfMonth = function(year, month) {
-		var DAY_DURATION = 86400000;
-		var result = new Date(year, month, 1);
-		var day = result.getDay();
-		if (day === 0) {
-			result.setTime(result.getTime() - DAY_DURATION * 7);
-		} else {
-			result.setTime(result.getTime() - DAY_DURATION * day);
-		}
-		return result;
+		date.setTime((date.getTime() + (6 - date.getDay()) * 86400000));
+		var firstDate = new Date(date.getFullYear(), 0, 1);
+		return Math.ceil(((date.getTime() - firstDate.getTime()) / 86400000) / 7);
 	};
 	var addDate = function(src, num, type) {
 		src = toDate(src);
-		if (!src) return new Date;
-		if (!type) type = 'day';
+		if (!isDate(src)) return null;
+		if (type !== 'week' && type !== 'day' && type !== 'month' && type !== 'year') type = 'day';
 		var result = new Date();
 		switch (type.toLowerCase()) {
 			case 'week':
@@ -192,12 +185,12 @@
 			}
 		}
 	})();
-	var once = function(el, event, handler) {
+	var once = function(el, event, handler, useCapture) {
 		var listener = function() {
 			isFunction(handler) && handler.apply(this, arguments);
-			off(el, event, listener);
+			off(el, event, listener, useCapture);
 		};
-		on(el, event, listener);
+		on(el, event, listener, useCapture);
 	};
 	var hasClass = function(el, clazz) {
 		if (!isElement(el) || !isString(clazz)) return false;
@@ -753,7 +746,6 @@
 	};
 	return {
 		isDef: isDef,
-		objType: objType,
 		isString: isString,
 		isNumber: isNumber,
 		isBoolean: isBoolean,
@@ -772,7 +764,6 @@
 		getDayCountOfMonth: getDayCountOfMonth,
 		getFirstDayOfMonth: getFirstDayOfMonth,
 		getWeekNumber: getWeekNumber,
-		getStartDateOfMonth: getStartDateOfMonth,
 		addDate: addDate,
 		loop: loop,
 		ownPropertyLoop: ownPropertyLoop,

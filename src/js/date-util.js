@@ -226,7 +226,7 @@
 		}
 		format = fecha.masks[format] || format;
 		if (dateStr.length > 1000) {
-			return false;
+			return null;
 		}
 		var isValid = true;
 		var dateInfo = {};
@@ -247,7 +247,7 @@
 			return parseFlags[$0] ? '' : $0.slice(1, $0.length - 1);
 		});
 		if (!isValid) {
-			return false;
+			return null;
 		}
 		var today = new Date();
 		if (dateInfo.isPm === true && dateInfo.hour != null && +dateInfo.hour !== 12) {
