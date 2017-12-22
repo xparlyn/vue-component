@@ -201,8 +201,7 @@
 	};
 	var removeClass = function(el, clazz) {
 		if (hasClass(el, clazz)) {
-			var reg = new RegExp('(\\s|^)' + clazz + '(\\s|$)');
-			el.className = el.className.replace(reg, ' ');
+			el.className = el.className.replace((new RegExp('(\\s|^)' + clazz + '(\\s|$)')), ' ');
 		}
 	};
 	var getStyle = function(el, styleName) {
@@ -223,11 +222,11 @@
 			var tempArr = arr[i].split('=');
 			if (tempArr[0] === name) return decodeURIComponent(tempArr[1]);
 		}
-		return '';
+		return null;
 	};
 	var setCookie = function(name, value, days) {
-		var date = new Date
-		date.setDate(date.getDate() + days);
+		if (!isNumber(days)) days = 1;
+		var date = addDate((new Date), days);
 		document.cookie = name + '=' + value + ';expires=' + date;
 	};
 	var removeCookie = function(name) {
@@ -256,6 +255,7 @@
 	};
 	var debounce = function(delay, callback) {
 		if (!isFunction(callback)) return function() {};
+		if (!isNumber(delay)) delay = 0;
 		var timer = null;
 		return function() {
 			var self = this;
