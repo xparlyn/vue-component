@@ -126,11 +126,8 @@
 			startDate: function() {
 				var result = new Date(this.year, this.month, 1);
 				var day = result.getDay();
-				if (day === 0) {
-					result.setTime(result.getTime() - this.dayDuration * 7);
-				} else {
-					result.setTime(result.getTime() - this.dayDuration * day);
-				}
+				if (day === 0) day = 7;
+				result.setTime(result.getTime() - this.dayDuration * day);
 				return result;
 			},
 			rows: function() {

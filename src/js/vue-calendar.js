@@ -197,15 +197,22 @@
 					eventCard.defaultWidth = defaultWidth;
 				}
 			},
+			getStartDateOfMonth: function(year, month) {
+				var result = new Date(year, month, 1);
+				var day = result.getDay();
+				if (day === 0) day = 7;
+				result.setTime(result.getTime() - 86400000 * day);
+				return result;
+			},
 			emitChangeMonth: function(firstDayOfMonth) {
 				this.currentMonth = firstDayOfMonth;
-				var start = VueUtil.getStartDateOfMonth(firstDayOfMonth.getFullYear(), firstDayOfMonth.getMonth());
+				var start = this.getStartDateOfMonth(firstDayOfMonth.getFullYear(), firstDayOfMonth.getMonth());
 				var end = VueUtil.addDate(start, 6, 'week')
 				this.$emit('changemonth', start, end, firstDayOfMonth);
 				this.$nextTick(this.changeEventCardWidth);
 			},
 			getCalendar: function() {
-				var monthViewStartDate = VueUtil.getStartDateOfMonth(this.currentMonth.getFullYear(), this.currentMonth.getMonth());
+				var monthViewStartDate = this.getStartDateOfMonth(this.currentMonth.getFullYear(), this.currentMonth.getMonth());
 				var calendar = [];
 				var dateClassAry = this.dateClass;
 				var weekClassAry = this.weekClass;
