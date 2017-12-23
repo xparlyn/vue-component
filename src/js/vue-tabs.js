@@ -76,7 +76,7 @@
 			setOffset: function(value) {
 				this.navStyle.transform = 'translateX(-' + value + 'px)';
 			},
-			update: function() {
+			update: VueUtil.throttle(function() {
 				if (this.$refs.nav && this.$refs.navScroll) {
 					var navWidth = this.$refs.nav.offsetWidth;
 					var containerWidth = this.$refs.navScroll.offsetWidth;
@@ -95,7 +95,7 @@
 						}
 					}
 				}
-			},
+			}),
 			scrollYMouseWheel: function(event) {
 				if (this.scrollable) {
 					event.preventDefault();

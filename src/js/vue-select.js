@@ -251,24 +251,21 @@
 				this.$refs.reference && this.$nextTick(this.$refs.reference.focus);
 			},
 			handleIconHide: function() {
-				var icon = this.$el.querySelector('.vue-input__icon');
+				var icon = this.$refs.reference.$refs.icon;
 				if (icon) {
 					VueUtil.removeClass(icon, 'is-reverse');
 				}
 			},
 			handleIconShow: function() {
-				var icon = this.$el.querySelector('.vue-input__icon');
+				var icon = this.$refs.reference.$refs.icon;
 				if (icon && !VueUtil.hasClass(icon, 'vue-icon-error')) {
 					VueUtil.addClass(icon, 'is-reverse');
 				}
 			},
 			handleMenuEnter: function() {
 				if (!this.dropdownUl) {
-					this.dropdownUl = this.$refs.popper.$el.querySelector('.vue-select-dropdown__wrap');
+					this.dropdownUl = this.$refs.popper.$el;
 					this.getOverflows();
-				}
-				if (!this.multiple && this.dropdownUl) {
-					this.resetMenuScroll();
 				}
 			},
 			getOverflows: function() {
@@ -277,13 +274,6 @@
 					var popperRect = this.$refs.popper.$el.getBoundingClientRect();
 					this.bottomOverflowBeforeHidden = selectedRect.bottom - popperRect.bottom;
 					this.topOverflowBeforeHidden = selectedRect.top - popperRect.top;
-				}
-			},
-			resetMenuScroll: function() {
-				if (this.bottomOverflow > 0) {
-					this.dropdownUl.scrollTop += this.bottomOverflow;
-				} else if (this.topOverflow < 0) {
-					this.dropdownUl.scrollTop += this.topOverflow;
 				}
 			},
 			getOption: function(value) {

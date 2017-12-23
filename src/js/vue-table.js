@@ -485,11 +485,9 @@
 			var height = this.height;
 			if (!VueUtil.isString(height) && !VueUtil.isNumber(height)) return;
 			var bodyWrapper = this.table.$refs.bodyWrapper;
-			if (this.table.$el && bodyWrapper) {
-				var body = bodyWrapper.querySelector('.vue-table__body');
-				if (body) {
-					this.scrollY = body.offsetHeight > bodyWrapper.offsetHeight;
-				}
+			var body = this.table.$refs.tableBody.$el;
+			if (body.offsetHeight) {
+				this.scrollY = body.offsetHeight > bodyWrapper.offsetHeight;
 			}
 		}
 	};
@@ -791,7 +789,7 @@
 					name: 'gutter',
 					width: 0
 				}
-			}, []) : '']), createElement('tbody', null, [self._l(selfData, function(row, $index) {
+			}, []) : '']), createElement('tbody', {ref: 'tbody'}, [self._l(selfData, function(row, $index) {
 				$index = storeData.indexOf(row);
 				return [createElement('tr', {
 					style: self.rowStyle ? self.getRowStyle(row, $index) : null,
@@ -862,7 +860,9 @@
 		data: function() {
 			return {
 				tooltipContent: '',
-				hoverFlg: true
+				hoverFlg: true,
+				currentRow: null,
+				hoverRow: null
 			};
 		},
 		delta: {
@@ -896,7 +896,8 @@
 				var self = this;
 				var delta = self.$options.delta;
 				self.hoverFlg = false;
-				delta.size = parseInt(VueUtil.getStyle(this.$parent.$el.querySelector('.vue-table__body .vue-table__row'), 'height'), 10) || 40;
+				delta.size = 40;
+				if (VueUtil.isElement(this.$refs.tbody)) delta.size = this.$refs.tbody.children[0].offsetHeight;
 				delta.remain = Math.floor(this.$parent.height * 1 / delta.size) + 10;
 				delta.keeps = delta.remain;
 				if (delta.total <= delta.keeps) return;
@@ -926,29 +927,29 @@
 				}
 			}),
 			resetCurrentRow: VueUtil.throttle(function(currentRow) {
-				if (!this.highlight || !this.$el.querySelector) return;
-				var self = this;
-				var el = self.$el;
-				if (!VueUtil.isDef(currentRow)) currentRow = self.store.states.currentRow;
-				var oldCurrentRow = el.querySelector('.current-row');
+				if (!this.highlight || !VueUtil.isElement(this.$refs.tbody)) return;
+				var tbody = this.$refs.tbody;
+				if (!VueUtil.isDef(currentRow)) currentRow = this.store.states.currentRow;
+				var oldCurrentRow = this.currentRow;
 				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
-				var data = self.$parent.$refs.tableBody.$options.delta.data;
-				var rows = el.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
+				var data = this.$parent.$refs.tableBody.$options.delta.data;
+				var rows = tbody.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
 				var currentRow = rows[data.indexOf(currentRow)];
 				currentRow && currentRow.classList.add('current-row');
+				this.currentRow = currentRow;
 			}, 3),
 			resetHoverRow: VueUtil.throttle(function(hoverRow) {
-				if (!this.$el.querySelector) return;
-				var self = this;
-				var el = self.$el;
-				var oldHoverRow = el.querySelector('.hover-row');
+				if (!VueUtil.isElement(this.$refs.tbody)) return;
+				var tbody = this.$refs.tbody;
+				var oldHoverRow = this.hoverRow;
 				oldHoverRow && oldHoverRow.classList.remove('hover-row');
 				if (!VueUtil.isDef(hoverRow)) return;
-				var data = self.$parent.$refs.tableBody.$options.delta.data;
-				var storeData = self.store.states.data;
-				var rows = el.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
-				var newRow = rows[data.indexOf(storeData[hoverRow])];
-				newRow && newRow.classList.add('hover-row');
+				var data = this.$parent.$refs.tableBody.$options.delta.data;
+				var storeData = this.store.states.data;
+				var rows = tbody.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
+				var newHoverRow = rows[data.indexOf(storeData[hoverRow])];
+				newHoverRow && newHoverRow.classList.add('hover-row');
+				this.hoverRow = newHoverRow;
 			}, 3),
 			getCell: function(event) {
 				var cell = event.target;
@@ -1664,7 +1665,7 @@
 		}
 	};
 	var VueTable = {
-		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border, \'vue-table--enable-row-hover\': !store.states.isComplex, \'vue-table--enable-row-transition\': true || (store.states.data || []).length !== 0 && (store.states.data || []).length < 100}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :store="store" :layout="layout" :border="border" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :context="context" :store="store" :layout="layout" :expand-class-name="expandClassName" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || emptyLabel}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showFooter"><table-footer ref="tableFooter" :store="store" :layout="layout" :border="border" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="leftFixedCount > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body ref="fixedTableBody" fixed="left" :store="store" :layout="layout" :highlight="highlightCurrentRow" :row-class-name="rowClassName" :expand-class-name="expandClassName" :row-style="rowStyle" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showFooter"><table-footer fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedCount > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body ref="rightFixedTableBody" fixed="right" :store="store" :layout="layout" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showFooter"><table-footer fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedCount > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-show="contextMenu" v-model="showContextMenu" :store="store"></table-context-menu></div>',
+		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border, \'vue-table--enable-row-hover\': !store.states.isComplex, \'vue-table--enable-row-transition\': true || (store.states.data || []).length !== 0 && (store.states.data || []).length < 100}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :store="store" :layout="layout" :border="border" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :context="context" :store="store" :layout="layout" :expand-class-name="expandClassName" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || emptyLabel}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showFooter"><table-footer ref="tableFooter" :store="store" :layout="layout" :border="border" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="leftFixedCount > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body ref="fixedTableBody" fixed="left" :store="store" :layout="layout" :highlight="highlightCurrentRow" :row-class-name="rowClassName" :expand-class-name="expandClassName" :row-style="rowStyle" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showFooter"><table-footer fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedCount > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body ref="rightFixedTableBody" fixed="right" :store="store" :layout="layout" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showFooter"><table-footer fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedCount > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-if="contextMenu" v-model="showContextMenu" :store="store"></table-context-menu></div>',
 		name: 'VueTable',
 		props: {
 			data: {
@@ -1887,7 +1888,9 @@
 						event.preventDefault();
 						var wheelDelta = event.wheelDelta || -event.detail;
 						var scrollTop = self.bodyScroll.top;
-						var wheel = (parseInt(VueUtil.getStyle(self.$el.querySelector('.vue-table__body .vue-table__row'), 'height'), 10) || 40) * 3;
+						var wheel = 40;
+						if (VueUtil.isElement(self.$refs.tableBody.tbody)) wheel = self.$refs.tableBody.tbody.children[0].offsetHeight;
+						wheel = wheel * 3;
 						if (wheelDelta < 0) {
 							scrollTop += wheel;
 						} else {
@@ -2019,7 +2022,8 @@
 				if (this.height) {
 					var delta = this.$refs.tableBody.$options.delta;
 					if (val) {
-						delta.size = parseInt(VueUtil.getStyle(this.$el.querySelector('.vue-table__body .vue-table__row'), 'height'), 10) || 40;
+						delta.size = 40;
+						if (VueUtil.isElement(this.$refs.tableBody.tbody)) delta.size = this.$refs.tableBody.tbody.children[0].offsetHeight;
 						delta.remain = Math.floor(this.height * 1 / delta.size) + 10;
 						delta.keeps = delta.remain;
 					} else {

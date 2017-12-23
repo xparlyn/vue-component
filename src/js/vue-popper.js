@@ -14,11 +14,11 @@
 		element.style.display = 'block';
 		var calcWidthToForceRepaint = element.offsetWidth;
 		var styles = getComputedStyle(element);
-		var x = parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
-		var y = parseFloat(styles.marginLeft) + parseFloat(styles.marginRight);
+		var x = element.offsetHeight + parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
+		var y = element.offsetWidth + parseFloat(styles.marginLeft) + parseFloat(styles.marginRight);
 		var result = {
-			width: element.offsetWidth + y,
-			height: element.offsetHeight + x
+			width: y,
+			height: x
 		};
 		element.style.display = _display;
 		element.style.visibility = _visibility;
@@ -109,7 +109,7 @@
 		}
 		return this;
 	}
-	Popper.prototype.update = function() {
+	Popper.prototype.update = VueUtil.throttle(function() {
 		var data = {
 			instance: this,
 			styles: {}
@@ -123,7 +123,7 @@
 		if (VueUtil.isFunction(this.state.updateCallback)) {
 			this.state.updateCallback(data);
 		}
-	}
+	})
 	Popper.prototype.onCreate = function(callback) {
 		callback(this);
 		return this;
