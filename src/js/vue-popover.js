@@ -13,10 +13,6 @@
 		name: 'VuePopover',
 		mixins: [VuePopper],
 		props: {
-			openDelay: {
-				type: Number,
-				default: 150
-			},
 			trigger: {
 				type: String,
 				default: 'click',
@@ -107,17 +103,17 @@
 			},
 			handleMouseEnter: function() {
 				var self = this;
-				clearTimeout(self.timer);
-				self.timer = setTimeout(function() {
+				cancelAnimationFrame(self.timer);
+				self.timer = requestAnimationFrame(function() {
 					self.showPopper = true;
-				}, self.openDelay);
+				});
 			},
 			handleMouseLeave: function() {
 				var self = this;
-				clearTimeout(self.timer);
-				self.timer = setTimeout(function() {
+				cancelAnimationFrame(self.timer);
+				self.timer = requestAnimationFrame(function() {
 					self.showPopper = false;
-				}, self.openDelay);
+				});
 			},
 			handleDocumentClick: function(e) {
 				var reference = this.reference || this.$refs.reference;

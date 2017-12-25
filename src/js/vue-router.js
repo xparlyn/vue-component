@@ -2131,9 +2131,10 @@ function poll (
   if (instances[key]) {
     cb(instances[key]);
   } else if (isValid()) {
-    setTimeout(function () {
+    var poller = requestAnimationFrame(function () {
       poll(cb, instances, key, isValid);
-    }, 16);
+      cancelAnimationFrame(poller);
+    });
   }
 }
 

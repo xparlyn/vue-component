@@ -73,12 +73,9 @@
 		mounted: function() {
 			var self = this;
 			if (self.duration > 0) {
-				var timer = setTimeout(function() {
-					if (!self.closed) {
-						self.close();
-						clearTimeout(timer);
-					}
-				}, self.duration);
+				VueUtil.debounce(self.duration, function() {
+					!self.closed && self.close();
+				})();
 			}
 		}
 	};

@@ -233,26 +233,39 @@
 		setCookie(name, '1', -1);
 	};
 	var performance = function(delay, callback, throttleflg) {
-		if (!isFunction(callback)) {
-			callback = delay;
-			delay = 16;
-		};
+		if (!isFunction(callback)) callback = delay;
 		if (!isFunction(callback)) return function() {};
-		if (!isNumber(delay)) delay = 16;
 		var timer = null;
-		return function() {
-			var self = this;
-			var args = arguments;
-			if (throttleflg) {
-				if (timer) return false;
-			} else {
-				clearTimeout(timer);
+		if (!isNumber(delay)) {
+			return function() {
+				var self = this;
+				var args = arguments;
+				if (throttleflg) {
+					if (timer) return false;
+				} else {
+					cancelAnimationFrame(timer);
+				}
+				timer = requestAnimationFrame(function() {
+					callback.apply(self, args);
+					cancelAnimationFrame(timer);
+					timer = null;
+				});
 			}
-			timer = setTimeout(function() { 
-				callback.apply(self, args);
-				clearTimeout(timer);
-				timer = null;
-			}, delay);
+		} else {
+			return function() {
+				var self = this;
+				var args = arguments;
+				if (throttleflg) {
+					if (timer) return false;
+				} else {
+					clearTimeout(timer);
+				}
+				timer = setTimeout(function() {
+					callback.apply(self, args);
+					clearTimeout(timer);
+					timer = null;
+				}, delay);
+			}
 		}
 	}
 	var throttle = function(delay, callback) {

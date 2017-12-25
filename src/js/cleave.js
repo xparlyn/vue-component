@@ -509,9 +509,10 @@
 		updateValueState: function() {
 			var owner = this;
 			if (owner.isAndroid) {
-				setTimeout(function() {
+				var timer = requestAnimationFrame(function() {
 					owner.element.value = owner.properties.result;
-				}, 1);
+					cancelAnimationFrame(timer);
+				});
 				return;
 			}
 			owner.element.value = owner.properties.result;

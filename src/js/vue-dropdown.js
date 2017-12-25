@@ -51,17 +51,17 @@
 		methods: {
 			show: function() {
 				var self = this;
-				clearTimeout(self.timer);
-				self.timer = setTimeout(function() {
+				cancelAnimationFrame(self.timer);
+				self.timer = requestAnimationFrame(function() {
 					self.visible = true;
-				}, 150);
+				});
 			},
 			hide: function() {
 				var self = this;
-				clearTimeout(self.timer);
-				self.timer = setTimeout(function() {
+				cancelAnimationFrame(self.timer);
+				self.timer = requestAnimationFrame(function() {
 					self.visible = false;
-				}, 150);
+				});
 			},
 			handleClick: function() {
 				this.visible = !this.visible;

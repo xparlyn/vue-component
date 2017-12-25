@@ -1791,7 +1791,10 @@ if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
 } else {
   /* istanbul ignore next */
   macroTimerFunc = function () {
-    setTimeout(flushCallbacks, 0);
+    var timer = requestAnimationFrame(function() {
+      flushCallbacks();
+      cancelAnimationFrame(timer);
+    });
   };
 }
 
@@ -7873,9 +7876,10 @@ function setSelected (el, binding, vm) {
   actuallySetSelected(el, binding, vm);
   /* istanbul ignore if */
   if (isIE || isEdge) {
-    setTimeout(function () {
+    var timer = requestAnimationFrame(function () {
       actuallySetSelected(el, binding, vm);
-    }, 0);
+      cancelAnimationFrame(timer);
+    });
   }
 }
 

@@ -227,10 +227,6 @@
 			showAllLevels: {
 				type: Boolean,
 				default: true
-			},
-			debounce: {
-				type: Number,
-				default: 300
 			}
 		},
 		data: function() {
@@ -437,7 +433,8 @@
 		},
 		created: function() {
 			var self = this;
-			self.debouncedInputChange = VueUtil.debounce(self.debounce, function(value) {
+			self.debouncedInputChange = VueUtil.debounce(function(value) {
+				console.log('handleInputChange')
 				self.handleInputChange(value);
 			});
 		},

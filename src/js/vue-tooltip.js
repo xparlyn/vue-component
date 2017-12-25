@@ -37,7 +37,7 @@
 					return this.node;
 				}
 			}).$mount();
-			self.debounceClose = VueUtil.debounce(100, function() {
+			self.debounceClose = VueUtil.debounce(function() {
 				self.handleClosePopper();
 			});
 		},

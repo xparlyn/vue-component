@@ -70,17 +70,17 @@
 			},
 			handleMouseenter: function() {
 				var self = this;
-				var timer = setTimeout(function() {
+				var timer = requestAnimationFrame(function() {
 					self.rootMenu.openMenu(self.index, self.indexPath);
-					clearTimeout(timer);
-				}, 300);
+					cancelAnimationFrame(timer);
+				});
 			},
 			handleMouseleave: function() {
 				var self = this;
-				var timer = setTimeout(function() {
+				var timer = requestAnimationFrame(function() {
 					self.rootMenu.closeMenu(self.index, self.indexPath);
-					clearTimeout(timer);
-				}, 300);
+					cancelAnimationFrame(timer);
+				});
 			},
 			initEvents: function() {
 				var triggerElm;

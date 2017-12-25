@@ -7,14 +7,53 @@
 	}
 })(this, function() {
 	'use strict';
-	var dragEl, parentEl, ghostEl, cloneEl, rootEl, nextEl, lastDownEl, scrollEl, scrollParentEl, scrollCustomFn, lastEl, lastCSS, lastParentCSS, oldIndex, newIndex, activeGroup, putSortable, autoScroll = {}, tapEvt, touchEvt, moved, R_SPACE = /\s+/g, R_FLOAT = /left|right|inline/, expando = 'Sortable' + (new Date).getTime(), win = window, document = win.document, parseInt = win.parseInt, setTimeout = win.setTimeout, $ = win.jQuery || win.Zepto, Polymer = win.Polymer, captureMode = false, passiveMode = false, supportDraggable = ('draggable' in document.createElement('div')), supportCssPointerEvents = (function(el) {
+	var dragEl;
+	var parentEl;
+	var ghostEl;
+	var cloneEl;
+	var rootEl;
+	var nextEl;
+	var lastDownEl;
+	var scrollEl;
+	var scrollParentEl;
+	var scrollCustomFn;
+	var lastEl;
+	var lastCSS;
+	var lastParentCSS;
+	var oldIndex;
+	var newIndex;
+	var activeGroup;
+	var putSortable;
+	var autoScroll = {};
+	var tapEvt;
+	var touchEvt;
+	var moved;
+	var R_SPACE = /\s+/g;
+	var R_FLOAT = /left|right|inline/;
+	var expando = 'Sortable' + (new Date).getTime();
+	var win = window;
+	var document = win.document;
+	var parseInt = win.parseInt;
+	var requestAnimationFrame = win.requestAnimationFrame;
+	var cancelAnimationFrame = win.cancelAnimationFrame;
+	var Polymer = win.Polymer;
+	var captureMode = false;
+	var passiveMode = false;
+	var supportDraggable = ('draggable' in document.createElement('div'));
+	var supportCssPointerEvents = (function(el) {
 		if (!!navigator.userAgent.match(/(?:Trident.*rv[ :]?11\.|msie)/i)) {
 			return false;
 		}
 		el = document.createElement('x');
 		el.style.cssText = 'pointer-events:auto';
 		return el.style.pointerEvents === 'auto';
-	})(), _silent = false, abs = Math.abs, min = Math.min, savedInputChecked = [], touchDragOverListeners = [], _autoScroll = _throttle(function(evt, options, rootEl) {
+	})();
+	var _silent = false;
+	var abs = Math.abs;
+	var min = Math.min;
+	var savedInputChecked = [];
+	var touchDragOverListeners = [];
+	var _autoScroll = _throttle(function(evt, options, rootEl) {
 		if (rootEl && options.scroll) {
 			var _this = rootEl[expando], el, rect, sens = options.scrollSensitivity, speed = options.scrollSpeed, x = evt.clientX, y = evt.clientY, winWidth = innerWidth, winHeight = innerHeight, vx, vy, scrollOffsetX, scrollOffsetY;
 			if (scrollParentEl !== rootEl) {
@@ -63,7 +102,8 @@
 				}
 			}
 		}
-	}, 30), _prepareGroup = function(options) {
+	});
+	var _prepareGroup = function(options) {
 		function toFn(value, pull) {
 			if (value === void 0 || value === true) {
 				value = group.name;
@@ -126,14 +166,12 @@
 			ignore: 'a, img',
 			filter: null,
 			preventOnFilter: true,
-			animation: 0,
 			setData: function(dataTransfer, dragEl) {
 				dataTransfer.setData('Text', dragEl.textContent);
 			},
 			dropBubble: false,
 			dragoverBubble: false,
 			dataIdAttr: 'data-id',
-			delay: 0,
 			forceFallback: false,
 			fallbackClass: 'sortable-fallback',
 			fallbackOnBody: false,
@@ -239,22 +277,11 @@
 				_on(ownerDocument, 'touchcancel', _this._onDrop);
 				_on(ownerDocument, 'selectstart', _this);
 				options.supportPointer && _on(ownerDocument, 'pointercancel', _this._onDrop);
-				if (options.delay) {
-					_on(ownerDocument, 'mouseup', _this._disableDelayedDrag);
-					_on(ownerDocument, 'touchend', _this._disableDelayedDrag);
-					_on(ownerDocument, 'touchcancel', _this._disableDelayedDrag);
-					_on(ownerDocument, 'mousemove', _this._disableDelayedDrag);
-					_on(ownerDocument, 'touchmove', _this._disableDelayedDrag);
-					options.supportPointer && _on(ownerDocument, 'pointermove', _this._disableDelayedDrag);
-					_this._dragStartTimer = setTimeout(dragStartFn, options.delay);
-				} else {
-					dragStartFn();
-				}
+				dragStartFn();
 			}
 		},
 		_disableDelayedDrag: function() {
 			var ownerDocument = this.el.ownerDocument;
-			clearTimeout(this._dragStartTimer);
 			_off(ownerDocument, 'mouseup', this._disableDelayedDrag);
 			_off(ownerDocument, 'touchend', this._disableDelayedDrag);
 			_off(ownerDocument, 'touchcancel', this._disableDelayedDrag);
@@ -279,10 +306,10 @@
 			}
 			try {
 				if (document.selection) {
-					var emptyTimer = setTimeout(function() {
+					var emptyTimer = requestAnimationFrame(function() {
 						document.selection.empty();
-						clearTimeout(emptyTimer);
-					}, 0);
+						cancelAnimationFrame(emptyTimer);
+					});
 				} else {
 					getSelection().removeAllRanges();
 				}
@@ -472,8 +499,6 @@
 							el.appendChild(dragEl);
 							parentEl = el;
 						}
-						this._animate(dragRect, dragEl);
-						target && this._animate(targetRect, target);
 					}
 				} else if (target && !target.animated && target !== dragEl && (target.parentNode[expando] !== void 0)) {
 					if (lastEl !== target) {
@@ -509,10 +534,10 @@
 							after = (moveVector === 1);
 						}
 						_silent = true;
-						var unsilentTimer = setTimeout(function() {
+						var unsilentTimer = requestAnimationFrame(function() {
 							_unsilent();
-							clearTimeout(unsilentTimer);
-						}, 30);
+							cancelAnimationFrame(unsilentTimer);
+						});
 						_cloneHide(activeSortable, isOwner);
 						if (!dragEl.contains(el)) {
 							if (after && !nextSibling) {
@@ -522,30 +547,8 @@
 							}
 						}
 						parentEl = dragEl.parentNode;
-						this._animate(dragRect, dragEl);
-						this._animate(targetRect, target);
 					}
 				}
-			}
-		},
-		_animate: function(prevRect, target) {
-			var ms = this.options.animation;
-			if (ms) {
-				var currentRect = target.getBoundingClientRect();
-				if (prevRect.nodeType === 1) {
-					prevRect = prevRect.getBoundingClientRect();
-				}
-				_css(target, 'transition', 'none');
-				_css(target, 'transform', 'translate3d(' + (prevRect.left - currentRect.left) + 'px,' + (prevRect.top - currentRect.top) + 'px,0)');
-				target.offsetWidth;
-				_css(target, 'transition', 'all ' + ms + 'ms');
-				_css(target, 'transform', 'translate3d(0,0,0)');
-				clearTimeout(target.animated);
-				target.animated = setTimeout(function() {
-					_css(target, 'transition', '');
-					_css(target, 'transform', '');
-					target.animated = false;
-				}, ms);
 			}
 		},
 		_offUpEvents: function() {
@@ -564,7 +567,6 @@
 			var options = this.options;
 			clearInterval(this._loopId);
 			clearInterval(autoScroll.pid);
-			clearTimeout(this._dragStartTimer);
 			_cancelNextTick(this._cloneId);
 			_cancelNextTick(this._dragStartId);
 			_off(document, 'mouseover', this);
@@ -720,7 +722,6 @@
 				if (cloneEl.state) {
 					if (sortable.options.group.revertClone) {
 						rootEl.insertBefore(cloneEl, nextEl);
-						sortable._animate(dragEl, cloneEl);
 					} else {
 						rootEl.insertBefore(cloneEl, dragEl);
 					}
@@ -873,21 +874,21 @@
 		}
 		return false;
 	}
-	function _throttle(callback, ms) {
+	function _throttle(callback) {
 		var args, _this;
 		return function() {
 			if (args === void 0) {
 				args = arguments;
 				_this = this;
-				var timer = setTimeout(function() {
+				var timer = requestAnimationFrame(function() {
 					if (args.length === 1) {
 						callback.call(_this, args[0]);
 					} else {
 						callback.apply(_this, args);
 					}
 					args = void 0;
-					clearTimeout(timer);
-				}, ms);
+					cancelAnimationFrame(timer);
+				});
 			}
 		}
 	}
@@ -904,8 +905,6 @@
 	function _clone(el) {
 		if (Polymer && Polymer.dom) {
 			return Polymer.dom(el).cloneNode(true);
-		} else if ($) {
-			return $(el).clone(true)[0];
 		} else {
 			return el.cloneNode(true);
 		}
@@ -919,10 +918,10 @@
 		}
 	}
 	function _nextTick(fn) {
-		return setTimeout(fn, 0);
+		return requestAnimationFrame(fn);
 	}
 	function _cancelNextTick(id) {
-		return clearTimeout(id);
+		return cancelAnimationFrame(id);
 	}
 	_on(document, 'touchmove', function(evt) {
 		if (Sortable.active) {
