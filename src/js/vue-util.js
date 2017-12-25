@@ -232,40 +232,34 @@
 	var removeCookie = function(name) {
 		setCookie(name, '1', -1);
 	};
-	var throttle = function(callback, totalrun) {
+	var performance = function(delay, callback, throttleflg) {
+		if (!isFunction(callback)) {
+			callback = delay;
+			delay = 16;
+		};
 		if (!isFunction(callback)) return function() {};
+		if (!isNumber(delay)) delay = 16;
 		var timer = null;
-		var runtime = 0;
-		if (!isNumber(totalrun)) totalrun = 1;
 		return function() {
-			var args = arguments;
 			var self = this;
-			if (runtime < totalrun) {
-				callback.apply(self, args)
-				runtime++;
-			}
-			if (timer) return false
-			timer = setTimeout(function() { 
-				callback.apply(self, args)
+			var args = arguments;
+			if (throttleflg) {
+				if (timer) return false;
+			} else {
 				clearTimeout(timer);
-				timer = null;
-				runtime = 0;
-			}, 16);
-		}
-	};
-	var debounce = function(delay, callback) {
-		if (!isFunction(callback)) return function() {};
-		if (!isNumber(delay)) delay = 0;
-		var timer = null;
-		return function() {
-			var self = this;
-			var args = arguments;
-			clearTimeout(timer);
-			timer = setTimeout(function() {
+			}
+			timer = setTimeout(function() { 
 				callback.apply(self, args);
 				clearTimeout(timer);
+				timer = null;
 			}, delay);
-		};
+		}
+	}
+	var throttle = function(delay, callback) {
+		return performance(delay, callback, true);
+	};
+	var debounce = function(delay, callback) {
+		return performance(delay, callback);
 	};
 	var resizeListener = function(el, fn, removeFlg) {
 		if (!isFunction(fn)) {
@@ -304,7 +298,7 @@
 					});
 				}
 			};
-			var scrollListener = throttle(function(event) {
+			var scrollListener = debounce(function(event) {
 				resetTrigger(el);
 				resizeListeners(el, event);
 			});

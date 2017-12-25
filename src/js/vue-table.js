@@ -481,24 +481,23 @@
 		this.fixedBodyHeight = null;
 		this.gutterWidth = VueUtil.scrollBarWidth();
 		VueUtil.merge(this, options);
-		this.updateScrollY = function() {
-			var height = this.height;
-			if (!VueUtil.isString(height) && !VueUtil.isNumber(height)) return;
-			var bodyWrapper = this.table.$refs.bodyWrapper;
-			var body = this.table.$refs.tableBody.$el;
-			if (body.offsetHeight) {
-				this.scrollY = body.offsetHeight > bodyWrapper.offsetHeight;
-			}
-		}
 	};
+	TableLayout.prototype.updateScrollY = function() {
+		if (!VueUtil.isNumber(this.height)) return;
+		var tbody = this.table.$refs.tableBody.$refs.tbody;
+		if (VueUtil.isElement(tbody)) {
+			var bodyWrapper = this.table.$refs.bodyWrapper;
+			this.scrollY = tbody.offsetHeight > bodyWrapper.offsetHeight;
+		}
+	}
 	TableLayout.prototype.setHeight = function(value) {
 		var prop = 'height';
 		var el = this.table.$el;
+		if (!el) return;
 		if (VueUtil.isString(value) && /^\d+$/.test(value)) {
 			value = Number(value);
 		}
 		this.height = value;
-		if (!el) return;
 		if (VueUtil.isNumber(value)) {
 			el.style[prop] = value + 'px';
 		} else if (VueUtil.isString(value)) {
@@ -514,7 +513,7 @@
 		if (this.showHeader && !headerWrapper) return;
 		if (!this.showHeader) {
 			this.headerHeight = 0;
-			if (VueUtil.isDef(this.height)) {
+			if (VueUtil.isNumber(this.height)) {
 				this.bodyHeight = height;
 			}
 			this.fixedBodyHeight = this.scrollX ? height - this.gutterWidth : height;
@@ -527,7 +526,7 @@
 			}
 			var hfHeight = headerHeight + footerHeight;
 			var bodyHeight = height - hfHeight;
-			if (VueUtil.isDef(this.height)) {
+			if (VueUtil.isNumber(this.height)) {
 				this.bodyHeight = bodyHeight;
 			}
 			this.fixedBodyHeight = this.scrollX ? bodyHeight - this.gutterWidth : bodyHeight;
@@ -757,7 +756,7 @@
 				if (((self.fixed === true || self.fixed === 'left') && self.store.states.fixedColumns.length > 0)
 					|| (self.fixed === 'right' && self.store.states.rightFixedColumns.length > 0)) {
 					delta = self.$parent.$refs.tableBody.$options.delta;
-					self.$nextTick(self.resetCurrentRow);
+					self.$nextTick(self.doResetCurrentRow);
 				}
 			} else {
 				self.scrollFilter(storeData, delta);
@@ -851,10 +850,10 @@
 		},
 		watch: {
 			'store.states.hoverRow': function(newVal) {
-				this.$parent.$refs.tableBody.hoverFlg && this.resetHoverRow(newVal);
+				this.doResetHoverRow(newVal);
 			},
 			'store.states.currentRow': function(newVal) {
-				this.resetCurrentRow(newVal);
+				this.doResetCurrentRow(newVal);
 			}
 		},
 		data: function() {
@@ -897,8 +896,8 @@
 				var delta = self.$options.delta;
 				self.hoverFlg = false;
 				delta.size = 40;
-				if (VueUtil.isElement(this.$refs.tbody)) delta.size = this.$refs.tbody.children[0].offsetHeight;
-				delta.remain = Math.floor(this.$parent.height * 1 / delta.size) + 10;
+				if (VueUtil.isElement(this.$refs.tbody)) delta.size = this.$refs.tbody.firstElementChild.offsetHeight;
+				delta.remain = Math.floor(this.$parent.height * 1 / delta.size) + 11;
 				delta.keeps = delta.remain;
 				if (delta.total <= delta.keeps) return;
 				var overs = Math.floor(offset / delta.size) - 6;
@@ -913,7 +912,7 @@
 				delta.start = start;
 				this.forceUpdate();
 				self.$nextTick(function() {
-					self.resetCurrentRow();
+					self.doResetCurrentRow();
 					self.hoverFlg = true;
 				});
 			},
@@ -926,7 +925,16 @@
 					this.$parent.$refs.rightFixedTableBody.$forceUpdate();
 				}
 			}),
-			resetCurrentRow: VueUtil.throttle(function(currentRow) {
+			doResetCurrentRow: VueUtil.throttle(function(currentRow) {
+				this.resetCurrentRow(currentRow);
+				if (this.store.states.fixedColumns.length > 0) {
+					this.$parent.$refs.fixedTableBody.resetCurrentRow(currentRow);
+				}
+				if (this.store.states.rightFixedColumns.length > 0) {
+					this.$parent.$refs.rightFixedTableBody.resetCurrentRow(currentRow);
+				}
+			}),
+			resetCurrentRow: function(currentRow) {
 				if (!this.highlight || !VueUtil.isElement(this.$refs.tbody)) return;
 				var tbody = this.$refs.tbody;
 				if (!VueUtil.isDef(currentRow)) currentRow = this.store.states.currentRow;
@@ -937,8 +945,18 @@
 				var currentRow = rows[data.indexOf(currentRow)];
 				currentRow && currentRow.classList.add('current-row');
 				this.currentRow = currentRow;
-			}, 3),
-			resetHoverRow: VueUtil.throttle(function(hoverRow) {
+			},
+			doResetHoverRow: VueUtil.throttle(function(hoverRow) {
+				if (!this.$parent.$refs.tableBody.hoverFlg) return;
+				this.resetHoverRow(hoverRow);
+				if (this.store.states.fixedColumns.length > 0) {
+					this.$parent.$refs.fixedTableBody.resetHoverRow(hoverRow);
+				}
+				if (this.store.states.rightFixedColumns.length > 0) {
+					this.$parent.$refs.rightFixedTableBody.resetHoverRow(hoverRow);
+				}
+			}),
+			resetHoverRow: function(hoverRow) {
 				if (!VueUtil.isElement(this.$refs.tbody)) return;
 				var tbody = this.$refs.tbody;
 				var oldHoverRow = this.hoverRow;
@@ -950,7 +968,7 @@
 				var newHoverRow = rows[data.indexOf(storeData[hoverRow])];
 				newHoverRow && newHoverRow.classList.add('hover-row');
 				this.hoverRow = newHoverRow;
-			}, 3),
+			},
 			getCell: function(event) {
 				var cell = event.target;
 				while (cell && cell.tagName.toUpperCase() !== 'HTML') {
@@ -1889,7 +1907,7 @@
 						var wheelDelta = event.wheelDelta || -event.detail;
 						var scrollTop = self.bodyScroll.top;
 						var wheel = 40;
-						if (VueUtil.isElement(self.$refs.tableBody.tbody)) wheel = self.$refs.tableBody.tbody.children[0].offsetHeight;
+						if (VueUtil.isElement(self.$refs.tableBody.$refs.tbody)) wheel = self.$refs.tableBody.$refs.tbody.firstElementChild.offsetHeight;
 						wheel = wheel * 3;
 						if (wheelDelta < 0) {
 							scrollTop += wheel;
@@ -2023,7 +2041,7 @@
 					var delta = this.$refs.tableBody.$options.delta;
 					if (val) {
 						delta.size = 40;
-						if (VueUtil.isElement(this.$refs.tableBody.tbody)) delta.size = this.$refs.tableBody.tbody.children[0].offsetHeight;
+						if (VueUtil.isElement(this.$refs.tableBody.$refs.tbody)) delta.size = this.$refs.tableBody.$refs.tbody.firstElementChild.offsetHeight;
 						delta.remain = Math.floor(this.height * 1 / delta.size) + 10;
 						delta.keeps = delta.remain;
 					} else {

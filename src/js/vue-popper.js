@@ -93,7 +93,6 @@
 			position: this.state.position,
 			top: 0
 		});
-		this.update();
 		this._setupEventListeners();
 		return this;
 	}
@@ -109,7 +108,7 @@
 		}
 		return this;
 	}
-	Popper.prototype.update = VueUtil.throttle(function() {
+	Popper.prototype.update = function() {
 		var data = {
 			instance: this,
 			styles: {}
@@ -123,7 +122,7 @@
 		if (VueUtil.isFunction(this.state.updateCallback)) {
 			this.state.updateCallback(data);
 		}
-	})
+	}
 	Popper.prototype.onCreate = function(callback) {
 		callback(this);
 		return this;
@@ -622,7 +621,7 @@
 				}
 			},
 			showPopper: function(val) {
-				val ? this.updatePopper() : this.destroyPopper();
+				val ? this.$nextTick(this.updatePopper) : this.$nextTick(this.destroyPopper);
 				this.$emit('input', val);
 			}
 		},
