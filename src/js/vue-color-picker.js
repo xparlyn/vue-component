@@ -558,7 +558,7 @@
 		}
 	};
 	var PickerDropdown = {
-		template: '<transition @after-leave="doDestroy"><div class="vue-color-dropdown" v-show="showPopper"><div class="vue-color-dropdown__main-wrapper"><hue-slider ref="hue" :color="color" vertical style="float: right;"></hue-slider><sv-panel ref="sl" :color="color"></sv-panel></div><alpha-slider v-if="showAlpha" ref="alpha" :color="color"></alpha-slider><div class="vue-color-dropdown__btns"><span class="vue-color-dropdown__value">{{currentColor}}</span><a href="JavaScript:" class="vue-color-dropdown__link-btn" @click="$emit(\'clear\')">{{$t(\'vue.colorpicker.clear\')}}</a><button class="vue-color-dropdown__btn" @click="confirmValue">{{$t(\'vue.colorpicker.confirm\')}}</button></div></div></transition>',
+		template: '<transition @after-leave="doDestroy"><div class="vue-color-dropdown" v-show="showPopper"><div class="vue-color-dropdown__main-wrapper"><hue-slider ref="hue" :color="color" vertical style="float: right;"></hue-slider><sv-panel ref="sl" :color="color"></sv-panel></div><alpha-slider v-if="showAlpha" ref="alpha" :color="color"></alpha-slider><div class="vue-color-dropdown__btns"><vue-row type="flex" justify="space-between"><vue-col :span="14"><vue-input size="small" class="vue-color-dropdown__value" v-model="currentColor" @blur="formatColor"></vue-input></vue-col><vue-col :span="8"><vue-button type="text" class="vue-color-dropdown__link-btn" @click="$emit(\'clear\')">{{$t(\'vue.colorpicker.clear\')}}</vue-button><vue-button class="vue-color-dropdown__btn" @click="confirmValue">{{$t(\'vue.colorpicker.confirm\')}}</vue-button></vue-col></vue-row></div></div></transition>',
 		mixins: [VuePopper],
 		components: {
 			SvPanel: SvPanel,
@@ -571,15 +571,17 @@
 			},
 			showAlpha: Boolean
 		},
-		computed: {
-			currentColor: function() {
-				var parent = this.$parent;
-				return !parent.value && !parent.showPanelColor ? '' : parent.color.value;
+		data: function() {
+			return {
+				currentColor: null
 			}
 		},
 		methods: {
 			confirmValue: function() {
 				this.$emit('pick');
+			},
+			formatColor: function() {
+				this.$parent.color.fromString(this.currentColor);
 			}
 		},
 		mounted: function() {
@@ -587,6 +589,9 @@
 			this.referenceElm = this.$parent.$el;
 		},
 		watch: {
+			'$parent.color.value': function(val) {
+				this.currentColor = val;
+			},
 			showPopper: function(val) {
 				var self = this;
 				if (val === true) {

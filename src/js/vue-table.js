@@ -731,18 +731,7 @@
 	};
 	var TableBody = {
 		props: {
-			store: {
-				required: true
-			},
-			context: {},
-			layout: {
-				required: true
-			},
-			rowClassName: [String, Function],
-			rowStyle: [Object, Function],
-			fixed: String,
-			highlight: Boolean,
-			expandClassName: [String, Function]
+			fixed: String
 		},
 		render: function(createElement) {
 			var self = this;
@@ -824,7 +813,7 @@
 						column: column,
 						$index: $index,
 						store: self.store,
-						_self: self.context || self.$parent.$vnode.context
+						_self: self.$parent.$vnode.context
 					})])
 				}), !self.fixed && (self.layout.scrollX || self.layout.scrollY) && self.layout.gutterWidth ? createElement('td', {
 					class: 'vue-table__cell gutter'
@@ -854,6 +843,26 @@
 			'store.states.currentRow': function(newVal) {
 				this.doResetCurrentRow(newVal);
 			}
+		},
+		computed: {
+			store: function() {
+				return this.$parent.store;
+			},
+			layout: function() {
+				return this.$parent.layout;
+			},
+			rowClassName: function() {
+				return this.$parent.rowClassName;
+			},
+			rowStyle: function() {
+				return this.$parent.rowStyle;
+			},
+			expandClassName: function() {
+				return this.$parent.expandClassName;
+			},
+			highlight: function() {
+				return this.$parent.highlightCurrentRow;
+			},
 		},
 		data: function() {
 			return {
@@ -1069,9 +1078,8 @@
 		}
 	};
 	var TableHeader = {
-		name: 'VueTableHeader',
 		render: function(createElement) {
-			if (!this.store.table.showHeader
+			if (!this.$parent.showHeader
 				|| ((this.fixed === 'left') && this.store.states.fixedColumns.length === 0)
 				|| (this.fixed === 'right' && this.store.states.rightFixedColumns.length === 0)) return null;
 			var self = this;
@@ -1122,7 +1130,7 @@
 						class: ['cell', (column.filteredValue && column.filteredValue.length > 0) || column.order ? 'highlight' : ''],
 						style: {'width': column.renderHeader ? '100%' : '', 'padding': column.renderHeader ? 0 : ''},
 					}, [column.renderHeader ? column.renderHeader.call(self._renderProxy, createElement) : column.label,
-					column.sortable && !column.renderHeader ? createElement('span', {
+						column.sortable && !column.renderHeader ? createElement('span', {
 						class: 'vue-table__sort-wrapper',
 						on: {
 							click: function(e) {
@@ -1147,19 +1155,20 @@
 			})])]);
 		},
 		props: {
-			fixed: String,
-			store: {
-				required: true
+			fixed: String
+		},
+		computed: {
+			store: function() {
+				return this.$parent.store;
 			},
-			layout: {
-				required: true
+			layout: function() {
+				return this.$parent.layout;
 			},
-			border: Boolean,
-			defaultSort: {
-				type: Array,
-				default: function() {
-					return [];
-				}
+			border: function() {
+				return this.$parent.border;
+			},
+			defaultSort: function() {
+				return this.$parent.defaultSort;
 			}
 		},
 		created: function() {
@@ -1361,9 +1370,8 @@
 		}
 	};
 	var TableFooter = {
-		name: 'VueTableFooter',
 		render: function(createElement) {
-			if (!this.store.table.showFooter
+			if (!this.$parent.showFooter
 				|| ((this.fixed === 'left') && this.store.states.fixedColumns.length === 0)
 				|| (this.fixed === 'right' && this.store.states.rightFixedColumns.length === 0)) return null;
 			var self = this;
@@ -1404,17 +1412,18 @@
 		},
 		props: {
 			fixed: String,
-			store: {
-				required: true
-			},
-			layout: {
-				required: true
-			},
-			border: Boolean
 		},
 		data: function() {
 			return {
 				aggregates: []
+			}
+		},
+		computed: {
+			store: function() {
+				return this.$parent.store;
+			},
+			layout: function() {
+				return this.$parent.layout;
 			}
 		},
 		watch: {
@@ -1449,9 +1458,6 @@
 		},
 		props: {
 			visible: Boolean,
-			store: {
-				required: true
-			}
 		},
 		model: {
 			prop: 'visible'
@@ -1462,6 +1468,9 @@
 			}
 		},
 		computed: {
+			store: function() {
+				return this.$parent.store;
+			},
 			labelColumns: function() {
 				var labelColumns = [];
 				var colColumns = [];
@@ -1495,7 +1504,7 @@
 				var params = {};
 				params.fileName = this.fileName;
 				params.original = flg;
-				this.store.table.exportCsv(params);
+				this.$parent.exportCsv(params);
 			},
 			noPin: function(tag) {
 				var column = tag.value;
@@ -1503,7 +1512,7 @@
 			},
 			removePin: function(column) {
 				column.fixed = false;
-				this.store.table.doLayout();
+				this.$parent.doLayout();
 			},
 			leftPin: function(columns) {
 				if (columns.length <= 0) {
@@ -1514,7 +1523,7 @@
 							layoutFLg = true;
 						}
 					});
-					if (layoutFLg) this.store.table.doLayout();
+					if (layoutFLg) this.$parent.doLayout();
 					return;
 				}
 				var self = this;
@@ -1528,7 +1537,7 @@
 						colColumn.fixedIndex = index;
 					});
 				});
-				this.store.table.doLayout();
+				this.$parent.doLayout();
 			},
 			rightPin: function(columns) {
 				if (columns.length <= 0) {
@@ -1539,7 +1548,7 @@
 							layoutFLg = true;
 						}
 					});
-					if (layoutFLg) this.store.table.doLayout();
+					if (layoutFLg) this.$parent.doLayout();
 					return;
 				}
 				var self = this;
@@ -1553,7 +1562,7 @@
 						colColumn.fixedIndex = index;
 					});
 				});
-				this.store.table.doLayout();
+				this.$parent.doLayout();
 			},
 			sortColumn: function(column, descFlg) {
 				column.sortable = true;
@@ -1645,7 +1654,7 @@
 				VueUtil.loop(column.colColumns, function(colColumn) {
 					colColumn.visible = !colColumn.visible;
 				});
-				this.store.table.doLayout();
+				this.$parent.doLayout();
 			}
 		},
 		mounted: function() {
@@ -1665,7 +1674,7 @@
 		}
 	};
 	var VueTable = {
-		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :store="store" :layout="layout" :border="border" :default-sort="defaultSort" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :context="context" :store="store" :layout="layout" :expand-class-name="expandClassName" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || emptyLabel}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showFooter"><table-footer ref="tableFooter" :store="store" :layout="layout" :border="border" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="leftFixedCount > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body ref="fixedTableBody" fixed="left" :store="store" :layout="layout" :highlight="highlightCurrentRow" :row-class-name="rowClassName" :expand-class-name="expandClassName" :row-style="rowStyle" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showFooter"><table-footer fixed="left" :border="border" :store="store" :layout="layout" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedCount > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body ref="rightFixedTableBody" fixed="right" :store="store" :layout="layout" :row-class-name="rowClassName" :row-style="rowStyle" :highlight="highlightCurrentRow" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showFooter"><table-footer fixed="right" :border="border" :store="store" :layout="layout" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedCount > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-if="contextMenu" v-model="showContextMenu" :store="store"></table-context-menu></div>',
+		template: '<div :class="[\'vue-table\', {\'vue-table--fit\': fit, \'vue-table--striped\': stripe, \'vue-table--border\': border}]" @mouseleave="handleMouseLeave($event)" :style="{width: layout.bodyWidth <= 0 ? \'0px\' : \'\'}"><div class="hidden-columns" ref="hiddenColumns"><slot></slot></div><div class="vue-table__main"><div class="vue-table__header-wrapper" ref="headerWrapper" v-show="showHeader"><table-header ref="tableHeader" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__body-wrapper" ref="bodyWrapper" :style="[bodyHeight]"><table-body ref="tableBody" :style="{width: bodyWidth}"></table-body><div :style="{width: bodyWidth}" class="vue-table__empty-block" v-show="!data || data.length === 0"><span class="vue-table__empty-text"><slot name="empty">{{emptyText || emptyLabel}}</slot></span></div></div><div class="vue-table__footer-wrapper" ref="footerWrapper" v-show="showFooter"><table-footer ref="tableFooter" :style="{width: layout.bodyWidth ? layout.bodyWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed" v-show="leftFixedCount > 0" :style="[{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="fixedHeaderWrapper" v-show="showHeader"><table-header fixed="left" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="fixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body ref="fixedTableBody" fixed="left" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="fixedFooterWrapper" v-show="showFooter"><table-footer fixed="left" :style="{width: layout.fixedWidth ? layout.fixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right" v-show="rightFixedCount > 0" :style="[{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}, {right: layout.scrollY ? (border ? layout.gutterWidth : (layout.gutterWidth || 1)) + \'px\' : \'\'}, fixedHeight]"><div class="vue-table__fixed-header-wrapper" ref="rightFixedHeaderWrapper" v-show="showHeader"><table-header fixed="right" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-header></div><div class="vue-table__fixed-body-wrapper" ref="rightFixedBodyWrapper" :style="[{top: layout.headerHeight + \'px\'}, fixedBodyHeight]"><table-body ref="rightFixedTableBody" fixed="right" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-body></div><div class="vue-table__fixed-footer-wrapper" ref="rightFixedFooterWrapper" v-show="showFooter"><table-footer fixed="right" :style="{width: layout.rightFixedWidth ? layout.rightFixedWidth + \'px\' : \'\'}"></table-footer></div></div><div class="vue-table__fixed-right-patch" v-show="rightFixedCount > 0" :style="{width: layout.scrollY ? layout.gutterWidth + \'px\' : \'0\', height: layout.headerHeight + \'px\'}"></div><div class="vue-table__column-resize-proxy" ref="resizeProxy" v-show="resizeProxyVisible"></div><table-context-menu v-if="contextMenu" v-model="showContextMenu""></table-context-menu></div>',
 		name: 'VueTable',
 		props: {
 			data: {
