@@ -439,10 +439,10 @@
 				}
 			},
 			onchange: function(callback) {
-				document.addEventListener(fn.fullscreenchange, callback);
+				on(document, fn.fullscreenchange, callback);
 			},
 			onerror: function(callback) {
-				document.addEventListener(fn.fullscreenerror, callback);
+				on(document, fn.fullscreenerror, callback);
 			},
 			raw: fn
 		};
