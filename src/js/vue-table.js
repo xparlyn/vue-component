@@ -746,6 +746,7 @@
 		},
 		render: function(createElement) {
 			var self = this;
+			if (!VueUtil.isDef(self.$options.delta)) this.createDelta();
 			var delta = self.$options.delta;
 			var columns = self.store.states.columns;
 			var storeData = self.store.states.data;
@@ -861,19 +862,27 @@
 				hoverRow: null
 			};
 		},
-		delta: {
-			start: 0,
-			end: 0,
-			total: 0,
-			keeps: 0,
-			allPadding: 0,
-			paddingTop: 0,
-			size: 0,
-			remain: 0,
-			data: [],
-			hoverFlg: true
-		},
 		methods: {
+			createDelta: function() {
+				if (this.fixed) return;
+				var delta = this.$options.delta = Object.create(null);
+				delta.start = 0;
+				delta.end = 0;
+				delta.total = 0;
+				delta.keeps = 0;
+				delta.allPadding = 0;
+				delta.paddingTop = 0;
+				delta.size = 0;
+				delta.remain = 0;
+				delta.data = [];
+				delta.hoverFlg = true;
+				var table = this.$parent;
+				if (table.height && table.lazyload) {
+					delta.remain = Math.floor(table.height * 1 / delta.size) + 10;
+					delta.end = delta.remain;
+					delta.keeps = delta.remain;
+				}
+			},
 			scrollFilter: function(slots, delta) {
 				delta.data = [];
 				if (delta.keeps === 0 || slots.length <= delta.keeps) {
@@ -1060,15 +1069,6 @@
 			},
 			handleExpandClick: function(row) {
 				this.store.commit('toggleRowExpanded', row);
-			}
-		},
-		mounted: function() {
-			var table = this.$parent;
-			if (table.height && table.lazyload && !this.fixed) {
-				var delta = this.$options.delta;
-				delta.remain = Math.floor(table.height * 1 / delta.size) + 10;
-				delta.end = delta.remain;
-				delta.keeps = delta.remain;
 			}
 		}
 	};

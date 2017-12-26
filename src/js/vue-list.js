@@ -17,17 +17,6 @@
 				remain: 0
 			}
 		},
-		delta: {
-			start: 0,
-			end: 0,
-			total: 0,
-			keeps: 0,
-			allPadding: 0,
-			paddingTop: 0,
-			remain: 0,
-			size: 20,
-			setFlg: false
-		},
 		props: {
 			height: {
 				type: Number,
@@ -85,27 +74,27 @@
 				}
 				return result;
 			},
-			init: function() {
-				var slots = this.$slots.default;
-				var delta = this.$options.delta;
+			createDelta: function(slots) {
+				var delta = this.$options.delta = Object.create(null);
+				delta.start = 0;
+				delta.total = 0;
+				delta.allPadding = 0;
+				delta.paddingTop = 0;
+				delta.size = 20;
 				delta.remain = Math.floor(this.height * 1 / delta.size);
 				delta.end = delta.remain;
 				delta.keeps = delta.remain;
-				if (slots && slots.length <= delta.remain) {
+				if (slots.length <= delta.remain) {
 					delta.end = slots.length;
 					delta.keeps = slots.length;
 				}
-				delta.setFlg = true;
-				this.updateZone(0);
 			}
 		},
 		render: function(createElement) {
 			var slots = this.$slots.default;
 			if (!VueUtil.isArray(slots)) return null;
+			if (!VueUtil.isDef(this.$options.delta)) this.createDelta(slots);
 			var delta = this.$options.delta;
-			if (slots && !delta.setFlg) {
-				this.init();
-			}
 			var showList = this.filter(slots);
 			var paddingTop = delta.paddingTop;
 			var allPadding = delta.allPadding;
@@ -131,7 +120,8 @@
 			self.$on('item-click', self.handleItemClick);
 			if (self.defaultSelected) {
 				self.$nextTick(function() {
-					self.$slots.default[self.defaultActivedIndex].componentInstance.handleClick();
+					var defaultSlot = self.$slots.default[self.defaultActivedIndex];
+					defaultSlot && defaultSlot.componentInstance && defaultSlot.componentInstance.handleClick();
 				});
 			}
 		}
