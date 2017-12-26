@@ -192,6 +192,31 @@
 		};
 		on(el, event, listener, useCapture);
 	};
+	var removeNode = function(node) {
+		node && node.parentElement && node.parentElement.removeChild(node);
+	};
+	var insertNodeAt = function(fatherNode, node, position) {
+		if (!isNumber(position)) position = 0;
+		var refNode = (position === 0) ? fatherNode.firstElementChild : fatherNode.children[position - 1].nextElementSibling;
+		fatherNode.insertBefore(node, refNode);
+	};
+	var scrollBarWidth = function() {
+		var outer = document.createElement('div');
+		outer.className = 'vue-scrollbar__wrap';
+		outer.style.visibility = 'hidden';
+		outer.style.width = '100px';
+		outer.style.position = 'absolute';
+		outer.style.top = '-9999px';
+		document.body.appendChild(outer);
+		var widthNoScroll = outer.offsetWidth;
+		outer.style.overflow = 'scroll';
+		var inner = document.createElement('div');
+		inner.style.width = '100%';
+		outer.appendChild(inner);
+		var widthWithScroll = inner.offsetWidth;
+		removeNode(outer);
+		return widthNoScroll - widthWithScroll;
+	};
 	var hasClass = function(el, clazz) {
 		if (!isElement(el) || !isString(clazz)) return false;
 		return (new RegExp('(\\s|^)' + clazz + '(\\s|$)')).test(el.className);
@@ -252,6 +277,7 @@
 				});
 			}
 		} else {
+			if (delay === 500) debugger
 			return function() {
 				var self = this;
 				var args = arguments;
@@ -345,42 +371,29 @@
 	var removeResizeListener = function(el, fn) {
 		resizeListener(el, fn, true);
 	};
-	var setLang = function(lang) {
-		if (isDef(lang)) Vue.config.lang = lang;
+	var addTouchStart = function(el, fn) {
+		on(el, 'mousedown', fn);
+		on(el, 'touchstart', fn);
 	};
-	var setLocale = function(lang, langObjs) {
-		langObjs = merge({}, Vue.locale(lang), langObjs);
-		Vue.locale(lang, langObjs);
+	var removeTouchStart = function(el, fn) {
+		off(el, 'mousedown', fn);
+		off(el, 'touchstart', fn);
 	};
-	var produceModel = function() {
-		Vue.config.productionTip = false;
-		Vue.config.devtools = false;
-		Vue.config.silent = true;
+	var addTouchMove = function(el, fn) {
+		on(el, 'mousemove', fn);
+		on(el, 'touchmove', fn);
 	};
-	var removeNode = function(node) {
-		node && node.parentElement && node.parentElement.removeChild(node);
+	var removeTouchMove = function(el, fn) {
+		off(el, 'mousemove', fn);
+		off(el, 'touchmove', fn);
 	};
-	var insertNodeAt = function(fatherNode, node, position) {
-		if (!isDef(position)) position = 0;
-		var refNode = (position === 0) ? fatherNode.children[0] : fatherNode.children[position - 1].nextSibling
-		fatherNode.insertBefore(node, refNode)
+	var addTouchEnd = function(el, fn) {
+		on(el, 'mouseup', fn);
+		on(el, 'touchend', fn);
 	};
-	var scrollBarWidth = function() {
-		var outer = document.createElement('div');
-		outer.className = 'vue-scrollbar__wrap';
-		outer.style.visibility = 'hidden';
-		outer.style.width = '100px';
-		outer.style.position = 'absolute';
-		outer.style.top = '-9999px';
-		document.body.appendChild(outer);
-		var widthNoScroll = outer.offsetWidth;
-		outer.style.overflow = 'scroll';
-		var inner = document.createElement('div');
-		inner.style.width = '100%';
-		outer.appendChild(inner);
-		var widthWithScroll = inner.offsetWidth;
-		removeNode(outer);
-		return widthNoScroll - widthWithScroll;
+	var removeTouchEnd = function(el, fn) {
+		off(el, 'mouseup', fn);
+		off(el, 'touchend', fn);
 	};
 	var screenfull = function() {
 		var fn = (function() {
@@ -458,32 +471,20 @@
 		}
 		screenfull.toggle();
 	};
-	var addTouchStart = function(el, fn) {
-		on(el, 'mousedown', fn);
-		on(el, 'touchstart', fn);
-	};
-	var removeTouchStart = function(el, fn) {
-		off(el, 'mousedown', fn);
-		off(el, 'touchstart', fn);
-	};
-	var addTouchMove = function(el, fn) {
-		on(el, 'mousemove', fn);
-		on(el, 'touchmove', fn);
-	};
-	var removeTouchMove = function(el, fn) {
-		off(el, 'mousemove', fn);
-		off(el, 'touchmove', fn);
-	};
-	var addTouchEnd = function(el, fn) {
-		on(el, 'mouseup', fn);
-		on(el, 'touchend', fn);
-	};
-	var removeTouchEnd = function(el, fn) {
-		off(el, 'mouseup', fn);
-		off(el, 'touchend', fn);
-	};
 	var getSystemInfo = function() {
 		return SystemInfo;
+	};
+	var setLang = function(lang) {
+		if (isString(lang)) Vue.config.lang = lang;
+	};
+	var setLocale = function(lang, langObjs) {
+		langObjs = merge({}, Vue.locale(lang), langObjs);
+		Vue.locale(lang, langObjs);
+	};
+	var produceModel = function() {
+		Vue.config.productionTip = false;
+		Vue.config.devtools = false;
+		Vue.config.silent = true;
 	};
 	var popupManager = {
 		instances: {},
@@ -780,6 +781,9 @@
 		on: on,
 		off: off,
 		once: once,
+		removeNode: removeNode,
+		insertNodeAt: insertNodeAt,
+		scrollBarWidth: scrollBarWidth,
 		hasClass: hasClass,
 		addClass: addClass,
 		removeClass: removeClass,
@@ -792,20 +796,17 @@
 		debounce: debounce,
 		addResizeListener: addResizeListener,
 		removeResizeListener: removeResizeListener,
-		setLang: setLang,
-		setLocale: setLocale,
-		produceModel: produceModel,
-		removeNode: removeNode,
-		insertNodeAt: insertNodeAt,
-		scrollBarWidth: scrollBarWidth,
-		screenfull: screenfull,
 		addTouchStart: addTouchStart,
 		addTouchMove: addTouchMove,
 		addTouchEnd: addTouchEnd,
 		removeTouchStart: removeTouchStart,
 		removeTouchMove: removeTouchMove,
 		removeTouchEnd: removeTouchEnd,
+		screenfull: screenfull,
 		getSystemInfo: getSystemInfo,
+		setLang: setLang,
+		setLocale: setLocale,
+		produceModel: produceModel,
 		nextZIndex: popupManager.nextZIndex,
 		component: {
 			menumixin: menumixin,
