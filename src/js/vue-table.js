@@ -875,7 +875,6 @@
 				delta.size = 0;
 				delta.remain = 0;
 				delta.data = [];
-				delta.hoverFlg = true;
 				var table = this.$parent;
 				if (table.height && table.lazyload) {
 					delta.remain = Math.floor(table.height * 1 / delta.size) + 10;
@@ -901,7 +900,6 @@
 			updateZone: function(offset) {
 				var self = this;
 				var delta = self.$options.delta;
-				delta.hoverFlg = false;
 				delta.size = 40;
 				if (VueUtil.isElement(self.$refs.tbody)) delta.size = self.$refs.tbody.firstElementChild.offsetHeight;
 				delta.remain = Math.floor(self.$parent.height * 1 / delta.size) + 11;
@@ -920,7 +918,6 @@
 				self.forceUpdate();
 				self.$nextTick(function() {
 					self.doResetCurrentRow();
-					delta.hoverFlg = true;
 				});
 			},
 			forceUpdate: VueUtil.throttle(function() {
@@ -934,7 +931,6 @@
 				this.$parent.$refs.rightFixedTableBody.resetCurrentRow(currentRow);
 			}),
 			doResetHoverRow: VueUtil.throttle(function(hoverRow) {
-				if (!this.$parent.$refs.tableBody.$options.delta.hoverFlg) return;
 				this.$parent.$refs.tableBody.resetHoverRow(hoverRow);
 				this.$parent.$refs.fixedTableBody.resetHoverRow(hoverRow);
 				this.$parent.$refs.rightFixedTableBody.resetHoverRow(hoverRow);
