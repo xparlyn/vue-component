@@ -201,21 +201,24 @@
 		fatherNode.insertBefore(node, refNode);
 	};
 	var scrollBarWidth = function() {
-		var outer = document.createElement('div');
-		outer.className = 'vue-scrollbar__wrap';
-		outer.style.visibility = 'hidden';
-		outer.style.width = '100px';
-		outer.style.position = 'absolute';
-		outer.style.top = '-9999px';
-		document.body.appendChild(outer);
-		var widthNoScroll = outer.offsetWidth;
-		outer.style.overflow = 'scroll';
-		var inner = document.createElement('div');
-		inner.style.width = '100%';
-		outer.appendChild(inner);
-		var widthWithScroll = inner.offsetWidth;
-		removeNode(outer);
-		return widthNoScroll - widthWithScroll;
+		if (!isDef(document.__scrollBarWidth__)) {
+			var outer = document.createElement('div');
+			outer.className = 'vue-scrollbar__wrap';
+			outer.style.visibility = 'hidden';
+			outer.style.width = '100px';
+			outer.style.position = 'absolute';
+			outer.style.top = '-9999px';
+			document.body.appendChild(outer);
+			var widthNoScroll = outer.offsetWidth;
+			outer.style.overflow = 'scroll';
+			var inner = document.createElement('div');
+			inner.style.width = '100%';
+			outer.appendChild(inner);
+			var widthWithScroll = inner.offsetWidth;
+			removeNode(outer);
+			document.__scrollBarWidth__ = widthNoScroll - widthWithScroll;
+		}
+		return document.__scrollBarWidth__;
 	};
 	var hasClass = function(el, clazz) {
 		if (!isElement(el) || !isString(clazz)) return false;
