@@ -483,10 +483,8 @@
 	TableLayout.prototype.updateScrollY = function() {
 		if (!VueUtil.isNumber(this.height)) return;
 		var tbody = this.table.$refs.tableBody.$refs.tbody;
-		if (VueUtil.isElement(tbody)) {
-			var bodyWrapper = this.table.$refs.bodyWrapper;
-			this.scrollY = tbody.offsetHeight > bodyWrapper.offsetHeight;
-		}
+		var bodyHeight = this.table.$refs.bodyWrapper.offsetHeight;
+		VueUtil.isElement(tbody) && (this.scrollY = tbody.offsetHeight > bodyHeight);
 	}
 	TableLayout.prototype.setHeight = function(value) {
 		var prop = 'height';
@@ -507,8 +505,6 @@
 	}
 	TableLayout.prototype.updateHeight = function() {
 		var height = this.table.$el ? this.table.$el.clientHeight : 0;
-		var headerWrapper = this.table.$refs.headerWrapper;
-		if (this.showHeader && !headerWrapper) return;
 		if (!this.showHeader) {
 			this.headerHeight = 0;
 			if (VueUtil.isNumber(this.height)) {
@@ -516,6 +512,7 @@
 			}
 			this.fixedBodyHeight = this.scrollX ? height - this.gutterWidth : height;
 		} else {
+			var headerWrapper = this.table.$refs.headerWrapper;
 			var headerHeight = this.headerHeight = headerWrapper.offsetHeight;
 			var footerHeight = 0;
 			var footerWrapper = this.table.$refs.footerWrapper;
