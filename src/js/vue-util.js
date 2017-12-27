@@ -280,7 +280,6 @@
 				});
 			}
 		} else {
-			if (delay === 500) debugger
 			return function() {
 				var self = this;
 				var args = arguments;
