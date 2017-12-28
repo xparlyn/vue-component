@@ -17,7 +17,7 @@
 	position: absolute;
 	top: 50%;
 	z-index: 10;
-	transform: translateY(-50%);
+	transform: translate3d(0, -50%, 0);
 	text-align: center;
 	font-size: 12px;
 }
@@ -38,7 +38,7 @@
 	list-style: none;
 	bottom: 0;
 	left: 50%;
-	transform: translateX(-50%);
+	transform: translate3d(-50%, 0, 0);
 	margin: 0;
 	padding: 0;
 	z-index: 2;
@@ -96,11 +96,11 @@
 }
 .carousel-arrow-left-enter,
 .carousel-arrow-left-leave-active {
-	transform: translateY(-50%) translateX(-10px);
+	transform: translate3d(-10px, -50%, 0);
 	opacity: 0;
 }
 .carousel-arrow-right-enter,
 .carousel-arrow-right-leave-active {
-	transform: translateY(-50%) translateX(10px);
+	transform: translate3d(10px, -50%, 0);
 	opacity: 0;
 }

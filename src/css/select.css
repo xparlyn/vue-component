@@ -30,18 +30,18 @@
 	border-color: #409eff;
 }
 .vue-select .vue-input .vue-input__icon {
-	transform: rotateZ(180deg);
+	transform: rotate3d(0,0,1,180deg);
 }
 .vue-select .vue-input .vue-input__icon.is-show-check,
 .vue-select .vue-input .vue-input__icon.is-show-close {
 	cursor: pointer;
 }
 .vue-select .vue-input .vue-input__icon.is-show-check {
-	transform: rotateZ(0);
+	transform: rotate3d(0,0,0);
 }
 .vue-select .vue-input .vue-input__icon.is-reverse,
 .vue-select__tags {
-	transform: rotateZ(0);
+	transform: rotate3d(0,0,0);
 }
 .vue-select .vue-input .vue-input__icon.is-show-close:hover {
 	color: #97a8be;

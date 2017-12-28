@@ -21,7 +21,7 @@
 	position: relative;
 	cursor: pointer;
 	font-size: 12px;
-	transform: translateY(-50%) scale(.75,.75);
+	transform: translate3d(0, -50%, 0) scale3d(.75,.75,.75);
 	height: 18px;
 	width: 18px;
 	line-height: 18px;

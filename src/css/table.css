@@ -187,7 +187,7 @@
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	transform: translate(-50%,-50%);
+	transform: translate3d(-50%,-50%,0);
 	color: #5e7382;
 }
 .vue-table__expand-column .cell {
@@ -213,7 +213,7 @@
 	margin-top: -5px;
 }
 .vue-table__expand-icon--expanded {
-	transform: rotate(90deg);
+	transform: rotate3d(0,0,1,90deg);
 }
 .vue-table--fit {
 	border-right: 0;

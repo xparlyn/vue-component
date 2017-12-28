@@ -43,7 +43,7 @@
 	border-color: #0190fe;
 }
 .vue-checkbox__input.is-checked .vue-checkbox__inner::after {
-	transform: rotate(45deg) scaleY(1);
+	transform: rotate3d(0,0,1,45deg);
 }
 .vue-checkbox__input.is-disabled .vue-checkbox__inner {
 	background-color: #eef1f6;
@@ -98,7 +98,6 @@
 	left: 5px;
 	position: absolute;
 	top: 1px;
-	transform: rotate(45deg) scaleY(0);
 	width: 4px;
 	transform-origin: center;
 }

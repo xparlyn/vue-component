@@ -2,7 +2,7 @@
 	position: fixed;
 	top: 27%;
 	left: 50%;
-	transform: translateX(-50%);
+	transform: translate3d(-50%, 0, 0);
 	background-color: #fff;
 	width: 420px;
 	border-radius: 3px;
@@ -82,7 +82,7 @@
 .vue-message-box__status {
 	position: absolute;
 	top: 50%;
-	transform: translateY(-50%);
+	transform: translate3d(0, -50%, 0);
 	font-size: 36px!important;
 }
 .vue-message-box__status.vue-icon-success {

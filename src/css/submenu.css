@@ -25,7 +25,7 @@
 	padding: 0 45px;
 }
 .vue-submenu.is-opened>.vue-submenu__title .vue-submenu__icon-arrow {
-	transform: rotateZ(180deg);
+	transform: rotate3d(0,0,1,180deg);
 }
 .vue-submenu.is-active .vue-submenu__title {
 	border-bottom-color: #409eff;

@@ -30,7 +30,7 @@
 	background: #409eff;
 }
 .vue-radio__input.is-checked .vue-radio__inner::after {
-	transform: translate(-50%,-50%) scale(1);
+	transform: translate3d(-50%,-50%,0);
 }
 .vue-radio__input.is-disabled .vue-radio__inner {
 	background-color: #eef1f6;
@@ -75,7 +75,6 @@
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	transform: translate(-50%,-50%) scale(0);
 }
 .vue-radio__original {
 	display: none;

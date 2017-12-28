@@ -40,7 +40,7 @@
 .vue-slider__runway.disabled .vue-slider__button.dragging,
 .vue-slider__runway.disabled .vue-slider__button.hover,
 .vue-slider__runway.disabled .vue-slider__button:hover {
-	transform: scale(1);
+	transform: scale3d(1,1,1);
 	cursor: not-allowed;
 }
 .vue-slider__input {
@@ -60,7 +60,7 @@
 	position: absolute;
 	z-index: 1001;
 	top: -16px;
-	transform: translateX(-50%);
+	transform: translate3d(-50%, 0, 0);
 	background-color: transparent;
 	text-align: center;
 	-webkit-user-select: none;
@@ -82,7 +82,7 @@
 .vue-slider__button.dragging,
 .vue-slider__button.hover,
 .vue-slider__button:hover {
-	transform: scale(1.5);
+	transform: scale3d(1.5,1.5,1.5);
 	background-color: #1c8de0;
 }
 .vue-slider__stop {
@@ -91,7 +91,7 @@
 	height: 4px;
 	border-radius: 100%;
 	background-color: #bfcbd9;
-	transform: translateX(-50%);
+	transform: translate3d(-50%, 0, 0);
 }
 .vue-slider.is-vertical {
 	position: relative;
@@ -109,10 +109,8 @@
 .vue-slider.is-vertical .vue-slider__button-wrapper {
 	top: auto;
 	left: -16px;
-	-ms-transform: translateY(50%);
-	transform: translateY(50%);
+	transform: translate3d(0, 50%, 0);
 }
 .vue-slider.is-vertical .vue-slider__stop {
-	-ms-transform: translateY(50%);
-	transform: translateY(50%);
+	transform: translate3d(0, 50%, 0);
 }

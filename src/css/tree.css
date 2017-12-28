@@ -14,7 +14,7 @@
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	transform: translate(-50%,-50%);
+	transform: translate3d(-50%,-50%,0);
 	color: #5e7382;
 }
 .vue-tree-node {
@@ -57,14 +57,14 @@
 	border-right-width: 0;
 	border-left-color: #97a8be;
 	border-left-width: 7px;
-	transform: rotate(0);
+	transform: rotate3d(0,0,0);
 	transition: transform .3s;
 }
 .vue-tree-node__expand-icon:hover {
 	border-left-color: #999;
 }
 .vue-tree-node__expand-icon.expanded {
-	transform: rotate(90deg);
+	transform: rotate3d(0,0,1,90deg);
 }
 .vue-tree-node__expand-icon.is-leaf {
 	border-color: transparent;

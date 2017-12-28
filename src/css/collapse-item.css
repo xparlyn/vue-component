@@ -2,7 +2,7 @@
 	margin-bottom: -1px;
 }
 .vue-collapse-item.is-active>.vue-collapse-item__header .vue-collapse-item__header__arrow {
-	transform: rotate(90deg);
+	transform: rotate3d(0,0,1,90deg);
 }
 .vue-collapse-item__header {
 	height: 43px;

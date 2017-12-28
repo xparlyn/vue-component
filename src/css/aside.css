@@ -82,33 +82,33 @@
 }
 @keyframes aside-right-in {
 	0% {
-		transform: translateX(110%);
+		transform: translate3d(110%, 0, 0);
 	}
 	to {
-		transform: translateX(0);
+		transform: translate3d(0, 0, 0);
 	}
 }
 @keyframes aside-right-out {
 	0% {
-		transform: translateX(0);
+		transform: translate3d(0, 0, 0);
 	}
 	to {
-		transform: translateX(110%);
+		transform:translate3d(110%, 0, 0);
 	}
 }
 @keyframes aside-left-in {
 	0% {
-		transform: translateX(-110%);
+		transform: translate3d(-110%, 0, 0);
 	}
 	to {
-		transform: translateX(0);
+		transform: translate3d(0, 0, 0);
 	}
 }
 @keyframes aside-left-out {
 	0% {
-		transform: translateX(0);
+		transform: translate3d(0, 0, 0);
 	}
 	to {
-		transform: translateX(-110%);
+		transform: translate3d(-110%, 0, 0);
 	}
 }

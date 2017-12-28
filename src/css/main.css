@@ -244,7 +244,7 @@
 .vue-icon-refresh:before {
 	content: "\e849";
 }
-.vue-icon-arrows-alt:before {
+.vue-icon-direction:before {
 	content: "\e84a";
 }
 .vue-icon-home:before {
@@ -276,6 +276,12 @@
 }
 .vue-icon-sort-desc:before {
 	content: "\e854";
+}
+.vue-icon-enlarge:before {
+	content: "\e855";
+}
+.vue-icon-shrink:before {
+	content: "\e856";
 }
 .vue-icon-loading {
 	animation: rotating 1s linear infinite;
@@ -316,10 +322,10 @@
 }
 @keyframes rotating {
 	0% {
-		transform: rotateZ(0);
+		transform: rotate3d(0,0,0);
 	}
 	to {
-		transform: rotateZ(360deg);
+		transform: rotate3d(0,0,1,360deg);
 	}
 }
 @keyframes resizeanim {

@@ -129,7 +129,7 @@
 	cursor: pointer;
 	opacity: .75;
 	color: #48576a;
-	transform: scale(.7);
+	transform: scale3d(.7,.7,.7);
 }
 .vue-upload-list__item .vue-icon-close:hover {
 	opacity: 1;
@@ -220,13 +220,13 @@
 	height: 24px;
 	background: #67c23a;
 	text-align: center;
-	transform: rotate(45deg);
+	transform: rotate3d(0,0,1,45deg);
 	box-shadow: 0 0 1pc 1px rgba(0,0,0,.2);
 }
 .vue-upload-list--picture-card .vue-upload-list__item-status-label i {
 	font-size: 12px;
 	margin-top: 11px;
-	transform: rotate(-45deg) scale(.8);
+	transform: rotate3d(0,0,1,-45deg) scale3d(.8,.8,.8);
 }
 .vue-upload-list--picture-card .vue-upload-list__item-actions {
 	position: absolute;
@@ -269,7 +269,7 @@
 .vue-upload-list--picture-card .vue-progress {
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%,-50%);
+	transform: translate3d(-50%,-50%,0);
 	bottom: auto;
 	width: 126px;
 }
@@ -334,13 +334,13 @@
 	height: 26px;
 	background: #67c23a;
 	text-align: center;
-	transform: rotate(45deg);
+	transform: rotate3d(0,0,1,45deg);
 	box-shadow: 0 1px 1px #ccc;
 }
 .vue-upload-list--picture .vue-upload-list__item-status-label i {
 	font-size: 12px;
 	margin-top: 12px;
-	transform: rotate(-45deg) scale(.8);
+	transform: rotate3d(0,0,1,-45deg) scale3d(.8,.8,.8);
 }
 .vue-upload-list--picture .vue-progress {
 	position: relative;

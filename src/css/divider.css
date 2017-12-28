@@ -12,5 +12,5 @@
 	left: 50%;
 	background: #fff;
 	padding: 0 10px;
-	transform: translateX(-50%);
+	transform: translate3d(-50%, 0, 0);
 }

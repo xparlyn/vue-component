@@ -483,8 +483,7 @@
 	TableLayout.prototype.updateScrollY = function() {
 		if (!VueUtil.isNumber(this.height)) return;
 		var tbody = this.table.$refs.tableBody.$refs.tbody;
-		var bodyHeight = this.table.$refs.bodyWrapper.offsetHeight;
-		VueUtil.isElement(tbody) && (this.scrollY = tbody.offsetHeight > bodyHeight);
+		VueUtil.isElement(tbody) && (this.scrollY = tbody.offsetHeight > this.table.$refs.bodyWrapper.offsetHeight);
 	}
 	TableLayout.prototype.setHeight = function(value) {
 		var prop = 'height';
