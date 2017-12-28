@@ -283,6 +283,9 @@
 .vue-icon-shrink:before {
 	content: "\e856";
 }
+.vue-icon-switch:before {
+	content: "\e857";
+}
 .vue-icon-loading {
 	animation: rotating 1s linear infinite;
 }
