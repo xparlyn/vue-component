@@ -51,7 +51,7 @@
 		return isObject(node) && node.hasOwnProperty('componentOptions');
 	};
 	var toString = function(val) {
-		return !isDef(val) ? '' : typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val);
+		return !isDef(val) ? '' : typeof val === 'object' ? JSON.stringify(val) : String(val);
 	};
 	var toDate = function(date) {
 		return (!isDef(date) || isNaN(new Date(date).getTime())) ? null : new Date(date);

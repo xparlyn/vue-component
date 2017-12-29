@@ -1294,6 +1294,7 @@
 							self.draggingColumn = null;
 							self.dragState = {};
 							self.$parent.resizeProxyVisible = false;
+							self.$parent.doLayout();
 						}
 						VueUtil.removeTouchMove(document, handleMouseMove);
 						VueUtil.removeTouchEnd(document, handleMouseUp);
@@ -1309,7 +1310,7 @@
 			},
 			handleMouseMove: function(event, column) {
 				var target = event.target;
-				while (target && target.tagName !== 'TH') {
+				while (target && !VueUtil.hasClass(target, 'vue-table__column')) {
 					target = target.parentNode;
 				}
 				if (!column || !column.resizable)
@@ -1336,10 +1337,10 @@
 				event.stopPropagation();
 				column.order = givenOrder || this.toggleOrder(column.order);
 				var target = event.target;
-				while (target && target.tagName !== 'TH') {
+				while (target && !VueUtil.hasClass(target, 'vue-table__column')) {
 					target = target.parentNode;
 				}
-				if (target && target.tagName === 'TH') {
+				if (target && VueUtil.hasClass(target, 'vue-table__column')) {
 					if (target.classList.contains('noclick')) {
 						target.classList.remove('noclick');
 						return;
