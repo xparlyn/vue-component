@@ -324,11 +324,8 @@
 	height: 200%;
 }
 @keyframes rotating {
-	0% {
-		transform: rotate3d(0,0,0);
-	}
 	to {
-		transform: rotate3d(0,0,1,360deg);
+		transform: rotate(1turn);
 	}
 }
 @keyframes resizeanim {

@@ -57,7 +57,7 @@
 	border-right-width: 0;
 	border-left-color: #97a8be;
 	border-left-width: 7px;
-	transform: rotate3d(0,0,0);
+	transform: rotate3d(0,0,0,0);
 	transition: transform .3s;
 }
 .vue-tree-node__expand-icon:hover {

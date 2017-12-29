@@ -109,8 +109,8 @@
 			}, [
 					createElement('div', {
 						'style': {
-							'padding-top': paddingTop + 'px',
-							'padding-bottom': allPadding - paddingTop + 'px'
+							'margin-top': paddingTop + 'px',
+							'margin-bottom': allPadding - paddingTop + 'px'
 						}
 					}, showList)
 				]);

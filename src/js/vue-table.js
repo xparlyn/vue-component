@@ -757,8 +757,8 @@
 					border: '0'
 				},
 				style: {
-					'padding-top': paddingTop + 'px',
-					'padding-bottom': allPadding - paddingTop + 'px'
+					'margin-top': paddingTop + 'px',
+					'margin-bottom': allPadding - paddingTop + 'px'
 				}
 			}, [createElement('colgroup', null, [self._l(columns, function(column) {
 				return createElement('col', {
