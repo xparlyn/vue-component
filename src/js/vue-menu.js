@@ -45,8 +45,7 @@
 		watch: {
 			defaultActive: function(value) {
 				var item = this.items[value];
-				if (!item)
-					return;
+				if (!item) return;
 				this.activedIndex = value;
 				this.initOpenedMenu();
 			},
@@ -58,8 +57,7 @@
 				handler: function(value) {
 					if (this.router) {
 						var item = this.items[value.path];
-						if (!item)
-							return;
+						if (!item) return;
 						this.activedIndex = value.path;
 						this.initOpenedMenu();
 					}
@@ -118,8 +116,7 @@
 				var self = this;
 				var index = self.activedIndex;
 				var activeItem = self.items[index];
-				if (!activeItem || self.mode === 'horizontal')
-					return;
+				if (!activeItem || self.mode === 'horizontal') return;
 				var indexPath = activeItem.indexPath;
 				VueUtil.loop(indexPath, function(index) {
 					var submenu = self.submenus[index];

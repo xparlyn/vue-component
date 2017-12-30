@@ -21,7 +21,8 @@
 				type: Function,
 				default: function() {}
 			},
-			type: String
+			type: String,
+			router: Boolean
 		},
 		data: function() {
 			return {
@@ -32,6 +33,14 @@
 			};
 		},
 		methods: {
+			routeToItem: function(item) {
+				var route = item.name;
+				try {
+					this.$router.push(route);
+				} catch (e) {
+					throw e;
+				}
+			},
 			scrollPrev: function() {
 				var currentOffset = this.getCurrentScrollOffset();
 				if (!currentOffset) return;
@@ -76,7 +85,7 @@
 			setOffset: function(value) {
 				this.navStyle.transform = 'translateX(-' + value + 'px)';
 			},
-			update: VueUtil.throttle(function() {
+			update: function() {
 				if (this.$refs.nav && this.$refs.navScroll) {
 					var navWidth = this.$refs.nav.offsetWidth;
 					var containerWidth = this.$refs.navScroll.offsetWidth;
@@ -95,7 +104,7 @@
 						}
 					}
 				}
-			}),
+			},
 			scrollYMouseWheel: function(event) {
 				if (this.scrollable) {
 					event.preventDefault();
@@ -109,7 +118,7 @@
 			}
 		},
 		updated: function() {
-			this.update();
+			this.$nextTick(this.update);
 		},
 		render: function(createElement) {
 			var type = this.type;
@@ -121,6 +130,8 @@
 			var scrollable = this.scrollable;
 			var scrollNext = this.scrollNext;
 			var scrollPrev = this.scrollPrev;
+			var router = this.router;
+			var routeToItem = this.routeToItem;
 			var scrollBtn = scrollable ? [createElement('span', {
 				'class': ['vue-tabs__nav-prev', scrollable.prev ? '' : 'is-disabled'],
 				on: {
@@ -153,6 +164,7 @@
 					refInFor: true,
 					on: {
 						'click': function click(ev) {
+							router && routeToItem(pane);
 							onTabClick(pane, tabName, ev);
 						}
 					}
@@ -179,8 +191,8 @@
 			VueUtil.addResizeListener(this.update);
 		},
 		beforeDestroy: function() {
-			if (this.$el && this.update) VueUtil.removeResizeListener(this.update);
 			VueUtil.off(this.$refs.navScroll, this.mouseWheel, this.scrollYMouseWheel);
+			VueUtil.removeResizeListener(this.update);
 		}
 	};
 	var VueTabs = {
@@ -194,7 +206,8 @@
 			addable: Boolean,
 			value: {},
 			editable: Boolean,
-			tabBottom: Boolean
+			tabBottom: Boolean,
+			router: Boolean
 		},
 		data: function() {
 			return {
@@ -259,6 +272,7 @@
 			var editable = this.editable;
 			var addable = this.addable;
 			var tabBottom = this.tabBottom;
+			var router = this.router;
 			var newButton = editable || addable ? createElement('vue-button', {
 				'class': 'vue-tabs__new-tab',
 				attrs: {
@@ -276,7 +290,8 @@
 					onTabRemove: handleTabRemove,
 					editable: editable,
 					type: type,
-					panes: panes
+					panes: panes,
+					router: router
 				},
 				ref: 'nav'
 			};
@@ -285,7 +300,7 @@
 			}, [newButton, createElement('tab-nav', navData, [])]);
 			var panels = createElement('div', {
 				'class': 'vue-tabs__content'
-			}, [this.$slots.default])
+			}, [this.$slots.default]);
 			return createElement('div', {
 				'class': {
 					'vue-tabs': true,

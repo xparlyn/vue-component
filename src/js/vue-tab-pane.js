@@ -9,7 +9,7 @@
 })(this, function(Vue, VueUtil) {
 	'use strict';
 	var VueTabPane = {
-		template: '<div class="vue-tab-pane" v-show="active"><slot></slot></div>',
+		template: '<div class="vue-tab-pane" v-if="active"><router-view v-if="router"></router-view><slot v-else></slot></div>',
 		name: 'VueTabPane',
 		componentName: 'VueTabPane',
 		props: {
@@ -30,6 +30,9 @@
 			},
 			active: function() {
 				return this.$parent.currentName === (this.name || this.index);
+			},
+			router: function() {
+				return this.$parent.router;
 			}
 		},
 		mounted: function() {
