@@ -314,7 +314,7 @@
 			if (isParentShow(el)) el = document.body;
 		}
 		if (!isArray(el.__resizeListeners__)) {
-			var resetTrigger = function(el) {
+			var resetTrigger = throttle(function(el) {
 				var trigger = el.__resizeTrigger__;
 				var expand = trigger.firstElementChild;
 				var contract = trigger.lastElementChild;
@@ -325,7 +325,7 @@
 				expandChild.style.height = expand.offsetHeight + 1 + 'px';
 				expand.scrollLeft = expand.scrollWidth;
 				expand.scrollTop = expand.scrollHeight;
-			};
+			});
 			var resizeListeners = function(el, event) {
 				if (el.offsetWidth !== el.__resizeLast__.width || el.offsetHeight !== el.__resizeLast__.height) {
 					el.__resizeLast__.width = el.offsetWidth;

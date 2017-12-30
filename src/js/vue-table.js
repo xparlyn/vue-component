@@ -1847,7 +1847,7 @@
 				refs.rightFixedBodyWrapper.scrollTop = this.bodyScroll.top;
 			},
 			isCellHidden: function(index, fixed) {
-				if (fixed === true || fixed === 'left') {
+				if (fixed === 'left') {
 					return index >= this.leftFixedCount;
 				}
 				if (fixed === 'right') {
