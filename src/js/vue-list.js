@@ -61,13 +61,13 @@
 			filter: function(slots) {
 				var delta = this.$options.delta;
 				if (delta.keeps === 0 || slots.length <= delta.keeps) {
-					delta.paddingTop = 0;
-					delta.allPadding = 0;
+					delta.marginTop = 0;
+					delta.marginBottom = 0;
 					return slots;
 				}
 				delta.total = slots.length;
-				delta.paddingTop = delta.size * delta.start;
-				delta.allPadding = delta.size * (delta.total - delta.keeps);
+				delta.marginTop = delta.size * delta.start;
+				delta.marginBottom = delta.size * (delta.total - delta.keeps - delta.start);
 				var result = [];
 				for (var i = delta.start, j = delta.end; i < j; i++) {
 					result.push(slots[i]);
@@ -78,8 +78,8 @@
 				var delta = this.$options.delta = Object.create(null);
 				delta.start = 0;
 				delta.total = 0;
-				delta.allPadding = 0;
-				delta.paddingTop = 0;
+				delta.marginTop = 0;
+				delta.marginBottom = 0;
 				delta.size = 20;
 				delta.remain = Math.floor(this.height * 1 / delta.size);
 				delta.end = delta.remain;
@@ -96,8 +96,6 @@
 			if (!VueUtil.isDef(this.$options.delta)) this.createDelta(slots);
 			var delta = this.$options.delta;
 			var showList = this.filter(slots);
-			var paddingTop = delta.paddingTop;
-			var allPadding = delta.allPadding;
 			return createElement('div', {
 				'class': ['vue-list'],
 				'style': {
@@ -109,8 +107,8 @@
 			}, [
 					createElement('div', {
 						'style': {
-							'margin-top': paddingTop + 'px',
-							'margin-bottom': allPadding - paddingTop + 'px'
+							'margin-top': delta.marginTop + 'px',
+							'margin-bottom':  delta.marginBottom + 'px'
 						}
 					}, showList)
 				]);

@@ -201,22 +201,18 @@
 		fatherNode.insertBefore(node, refNode);
 	};
 	var scrollBarWidth = function() {
-		if (!isDef(document.__scrollBarWidth__)) {
-			var outer = document.createElement('div');
-			outer.className = 'vue-scrollbar__wrap';
-			outer.style.visibility = 'hidden';
-			outer.style.width = '100px';
-			outer.style.position = 'absolute';
-			outer.style.top = '-9999px';
-			document.body.appendChild(outer);
-			var widthNoScroll = outer.offsetWidth;
-			outer.style.overflow = 'scroll';
+		if (!isNumber(document.__scrollBarWidth__)) {
 			var inner = document.createElement('div');
 			inner.style.width = '100%';
+			var outer = document.createElement('div');
+			outer.style.visibility = 'hidden';
+			outer.style.width = '100px';
+			outer.style.overflow = 'scroll';
 			outer.appendChild(inner);
-			var widthWithScroll = inner.offsetWidth;
+			document.body.appendChild(outer);
+			document.__scrollBarWidth__ = outer.offsetWidth - inner.offsetWidth;
+			removeNode(inner);
 			removeNode(outer);
-			document.__scrollBarWidth__ = widthNoScroll - widthWithScroll;
 		}
 		return document.__scrollBarWidth__;
 	};

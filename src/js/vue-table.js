@@ -747,8 +747,6 @@
 				self.scrollFilter(storeData, delta);
 			}
 			if (delta.data.length === 0) return null;
-			var paddingTop = delta.paddingTop;
-			var allPadding = delta.allPadding;
 			return createElement('table', {
 				class: 'vue-table__body',
 				attrs: {
@@ -757,8 +755,8 @@
 					border: '0'
 				},
 				style: {
-					'margin-top': paddingTop + 'px',
-					'margin-bottom': allPadding - paddingTop + 'px'
+					'margin-top': delta.marginTop + 'px',
+					'margin-bottom': delta.marginBottom + 'px'
 				}
 			}, [createElement('colgroup', null, [self._l(columns, function(column) {
 				return createElement('col', {
@@ -875,8 +873,8 @@
 				delta.end = 0;
 				delta.total = 0;
 				delta.keeps = 0;
-				delta.allPadding = 0;
-				delta.paddingTop = 0;
+				delta.marginTop = 0;
+				delta.marginBottom = 0;
 				delta.size = 0;
 				delta.remain = 0;
 				delta.data = [];
@@ -890,13 +888,13 @@
 			scrollFilter: function(slots, delta) {
 				delta.data = [];
 				if (delta.keeps === 0 || slots.length <= delta.keeps) {
-					delta.paddingTop = 0;
-					delta.allPadding = 0;
+					delta.marginTop = 0;
+					delta.marginBottom = 0;
 					delta.data = slots;
 				} else {
 					delta.total = slots.length;
-					delta.paddingTop = delta.size * delta.start;
-					delta.allPadding = delta.size * (delta.total - delta.keeps);
+					delta.marginTop = delta.size * delta.start;
+					delta.marginBottom = delta.size * (delta.total - delta.keeps - delta.start);
 					for (var i = delta.start, j = delta.end; i < j; i++) {
 						delta.data.push(slots[i]);
 					}
