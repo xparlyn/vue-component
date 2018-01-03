@@ -9,7 +9,7 @@
 })(this, function(Vue) {
 	'use strict';
 	var VueAlert = {
-		template: '<div :class="[\'vue-alert\', typeClass]" v-show="visible"><i :class="[\'vue-alert__icon\', iconClass, \'is-big\']" v-if="showIcon"></i><div class="vue-alert__content"><span class="vue-alert__title is-bold" v-if="title">{{title}}</span><div class="vue-alert__description"><slot></slot></div><i :class="[\'vue-alert__closebtn\', {\'is-customed\': closeText !== \'\', \'vue-icon-close\': closeText === \'\'}]" v-show="closable" @click="close()">{{closeText}}</i></div></div>',
+		template: '<div :class="[\'vue-alert\', typeClass]" v-if="visible"><i :class="[\'vue-alert__icon\', iconClass, \'is-big\']" v-if="showIcon"></i><div class="vue-alert__content"><span class="vue-alert__title is-bold" v-if="title">{{title}}</span><div class="vue-alert__description"><slot></slot></div><i :class="[\'vue-alert__closebtn\', {\'is-customed\': closeText !== \'\', \'vue-icon-close\': closeText === \'\'}]" v-if="closable" @click="close()">{{closeText}}</i></div></div>',
 		name: 'VueAlert',
 		props: {
 			title: {

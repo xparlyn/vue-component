@@ -758,8 +758,9 @@
 					'margin-top': delta.marginTop + 'px',
 					'margin-bottom': delta.marginBottom + 'px'
 				}
-			}, [createElement('colgroup', null, [self._l(columns, function(column) {
+			}, [createElement('colgroup', null, [self._l(columns, function(column, columnIndex) {
 				return createElement('col', {
+					key: columnIndex,
 					attrs: {
 						name: column.id,
 						width: column.realWidth || column.width || 80
@@ -795,6 +796,7 @@
 					class: ['vue-table__row', self.getRowClass(row, $index)]
 				}, [self._l(columns, function(column, cellIndex) {
 					return createElement('td', {
+						key: cellIndex,
 						class: ['vue-table__cell', $index % 2 === 1 ? 'grey' : '', column.align, column.getCellClass($index, cellIndex, row) || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : ''],
 						on: {
 							mouseenter: function(e) {
@@ -1086,8 +1088,9 @@
 					cellpadding: '0',
 					border: '0'
 				}
-			}, [createElement('colgroup', null, [self._l(columns, function(column) {
+			}, [createElement('colgroup', null, [self._l(columns, function(column, columnIndex) {
 				return createElement('col', {
+					key: columnIndex,
 					attrs: {
 						name: column.id,
 						width: column.realWidth || column.width || 80
@@ -1099,8 +1102,9 @@
 					width: self.layout.gutterWidth
 				}
 			}, []) : '']), createElement('thead', null, [self._l(columnRows, function(columns, rowIndex) {
-				return createElement('tr', {class: ['vue-table__row']}, [self._l(columns, function(column, cellIndex) {
+				return createElement('tr', {class: ['vue-table__row'], key:rowIndex}, [self._l(columns, function(column, cellIndex) {
 					return column.colspan ? null : createElement('th', {
+						key: cellIndex,
 						attrs: {
 							colspan: column.colspanNum
 						},
@@ -1379,8 +1383,9 @@
 					cellpadding: '0',
 					border: '0'
 				}
-			}, [createElement('colgroup', null, [self._l(columns, function(column) {
+			}, [createElement('colgroup', null, [self._l(columns, function(column, columnIndex) {
 				return createElement('col', {
+					key: columnIndex,
 					attrs: {
 						name: column.id,
 						width: column.realWidth || column.width || 80
@@ -1393,6 +1398,7 @@
 				}
 			}, []) : '']), createElement('tfoot', null, [createElement('tr', {class: ['vue-table__row']}, [self._l(columns, function(column, cellIndex) {
 				return createElement('th', {
+					key: cellIndex,
 					attrs: {
 						colspan: column.colSpan,
 						rowspan: column.rowSpan

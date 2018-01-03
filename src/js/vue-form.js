@@ -83,8 +83,8 @@
 					} else if (self.notifyMessage) {
 						var createElement = self.$createElement;
 						self.$notify.error({
-							message: createElement('div', null, [self._l(errorMsgs, function(errorMsg) {
-								return [createElement('span', null, [errorMsg]), createElement('br', null, [])];
+							message: createElement('div', null, [self._l(errorMsgs, function(errorMsg, errorIndex) {
+								return [createElement('span', {key: errorIndex}, [errorMsg]), createElement('br', null, [])];
 							})]),
 							duration: 0
 						});

@@ -111,7 +111,7 @@
 				, popperClass = self.popperClass;
 			var menus = self._l(activeOptions, function(menu, menuIndex) {
 				var isFlat = false;
-				var items = self._l(menu, function(item) {
+				var items = self._l(menu, function(item, itemIndex) {
 					var events = {
 						on: {}
 					};
@@ -133,6 +133,7 @@
 						}
 					}
 					return createElement('li', {
+						key: itemIndex,
 						class: {
 							'vue-cascader-menu__item': !0,
 							'vue-cascader-menu__item--extensible': item.children,
@@ -147,6 +148,7 @@
 					menuStyle.minWidth = self.inputWidth + 'px';
 				}
 				return createElement('ul', {
+					key: menuIndex,
 					class: {
 						'vue-cascader-menu': true,
 						'vue-cascader-menu--flexible': isFlat

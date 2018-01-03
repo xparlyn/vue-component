@@ -154,6 +154,7 @@
 				var btnClose = closable ? createElement('span', {'class': 'vue-icon-close', on: {'click': function click(ev) {onTabRemove(pane, ev);}}}, []) : null;
 				var tabLabelContent = pane.$slots.label || pane.label;
 				return createElement('div', {
+					key: index,
 					'class': {
 						'vue-tabs__item': true,
 						'is-active': pane.active,
