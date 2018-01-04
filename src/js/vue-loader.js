@@ -11,14 +11,6 @@
 	var identity = function(value) {
 		return value;
 	};
-	var parseComponentURL = function(url) {
-		var urlSpl = url.split('.');
-		var suffix = '.' + urlSpl[urlSpl.length - 1];
-		var comp = url.match(new RegExp("(.*?)([^/]+?)\\\/?(\\" + suffix + ")?(\\?.*|#.*|$)"));
-		return {
-			url: comp[1] + comp[2] + (comp[3] === undefined ? '/index.vue' : comp[3]) + comp[4]
-		};
-	};
 	var resolveURL = function(baseURL, url) {
 		if (url.substr(0, 2) === './' || url.substr(0, 3) === '../') {
 			return baseURL + url;
@@ -267,8 +259,7 @@
 		}
 	};
 	var VueLoader = function(url) {
-		var comp = parseComponentURL(url);
-		return httpVueLoader.load(comp.url);
+		return httpVueLoader.load(url);
 	};
 	return VueLoader;
 });
