@@ -787,7 +787,7 @@
 							return self.handleContextMenu(e, row)
 						},
 						mouseenter: function(e) {
-							return self.handleMouseEnter($index)
+							return self.handleMouseEnter(row)
 						},
 						mouseleave: function(e) {
 							return self.handleMouseLeave()
@@ -940,30 +940,29 @@
 				this.$parent.$refs.fixedTableBody.resetHoverRow(hoverRow);
 				this.$parent.$refs.rightFixedTableBody.resetHoverRow(hoverRow);
 			}),
-			resetCurrentRow: function(currentRow) {
+			resetCurrentRow: function(currentRowObj) {
 				if (!this.highlight || !VueUtil.isElement(this.$refs.tbody)) return;
 				var tbody = this.$refs.tbody;
-				if (!VueUtil.isDef(currentRow)) currentRow = this.store.states.currentRow;
 				var oldCurrentRow = this.currentRow;
 				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
+				if (!VueUtil.isDef(currentRowObj)) currentRowObj = this.store.states.currentRow;
 				var data = this.$parent.$refs.tableBody.$options.delta.data;
 				var rows = tbody.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
-				var currentRow = rows[data.indexOf(currentRow)];
+				var currentRow = rows[data.indexOf(currentRowObj)];
 				currentRow && currentRow.classList.add('current-row');
 				this.currentRow = currentRow;
 			},
-			resetHoverRow: function(hoverRow) {
+			resetHoverRow: function(hoverRowObj) {
 				if (!VueUtil.isElement(this.$refs.tbody)) return;
 				var tbody = this.$refs.tbody;
 				var oldHoverRow = this.hoverRow;
 				oldHoverRow && oldHoverRow.classList.remove('hover-row');
-				if (!VueUtil.isDef(hoverRow)) return;
+				if (!VueUtil.isDef(hoverRowObj)) return;
 				var data = this.$parent.$refs.tableBody.$options.delta.data;
-				var storeData = this.store.states.data;
 				var rows = tbody.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
-				var newHoverRow = rows[data.indexOf(storeData[hoverRow])];
-				newHoverRow && newHoverRow.classList.add('hover-row');
-				this.hoverRow = newHoverRow;
+				var hoverRow = rows[data.indexOf(hoverRowObj)];
+				hoverRow && hoverRow.classList.add('hover-row');
+				this.hoverRow = hoverRow;
 			},
 			getCell: function(event) {
 				var cell = event.target;
@@ -1043,8 +1042,8 @@
 				var oldHoverState = this.$parent.hoverState;
 				this.$parent.$emit('cell-mouse-leave', oldHoverState.row, oldHoverState.column, oldHoverState.cell, event);
 			},
-			handleMouseEnter: function(index) {
-				this.store.commit('setHoverRow', index);
+			handleMouseEnter: function(row) {
+				this.store.commit('setHoverRow', row);
 			},
 			handleMouseLeave: function() {
 				this.store.commit('setHoverRow', null);

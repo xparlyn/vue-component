@@ -750,51 +750,6 @@
 		}
 		return getScrollParent(el.parentNode);
 	};
-	var loadVueToComponent = function(url, callbackFn) {
-		Vue.http.get(url).then(function(response) {
-			var tmpDiv = document.createElement('DIV');
-			tmpDiv.innerHTML = response.bodyText;
-			var vueScript = tmpDiv.querySelector('script');
-			var newScript = document.createElement('script');
-			newScript.innerHTML = "(function(context, definition) {'use strict';context.__loadVue__ = definition(context.Vue, context.VueUtil);})(this, function(Vue, VueUtil) {" + vueScript.innerHTML + "});";
-			document.body.appendChild(newScript).parentNode.removeChild(newScript);
-			if (isDef(__loadVue__)) {
-				__loadVue__.template = tmpDiv.querySelector('template').innerHTML;
-				Vue.component(__loadVue__.name, __loadVue__);
-				if (isFunction(callbackFn)) {
-					callbackFn();
-				}
-				delete window.__loadVue__;
-			}
-		});
-	};
-	var loadVueToMount = function(url, mountElement, callbackFn) {
-		if (isElement(mountElement)) {
-			mountElement.innerHTML = '';
-			Vue.http.get(url).then(function(response) {
-				var tmpDiv = document.createElement('DIV');
-				tmpDiv.innerHTML = response.bodyText;
-				var vueScript = tmpDiv.querySelector('script');
-				var newScript = document.createElement('script');
-				newScript.innerHTML = "(function(context, definition) {'use strict';context.__loadVue__ = definition(context.Vue, context.VueUtil);})(this, function(Vue, VueUtil) {" + vueScript.innerHTML + "});";
-				mountElement.appendChild(newScript).parentNode.removeChild(newScript);
-				if (isDef(__loadVue__)) {
-					__loadVue__.template = tmpDiv.querySelector('template').innerHTML;
-					var elementId = mountElement.id;
-					if (isDef(elementId)) {
-						var newMount = new Vue(__loadVue__).$mount('#'+elementId);
-					} else {
-						var newMount = new Vue(__loadVue__);
-						mountElement.appendChild(newMount.$mount().$el);
-					}
-					if (isFunction(callbackFn)) {
-						callbackFn(newMount.$data, newMount);
-					}
-					delete window.__loadVue__;
-				}
-			});
-		}
-	};
 	return {
 		isDef: isDef,
 		isString: isString,
@@ -851,8 +806,6 @@
 		setLocale: setLocale,
 		produceModel: produceModel,
 		nextZIndex: popupManager.nextZIndex,
-		loadVueToComponent: loadVueToComponent,
-		loadVueToMount: loadVueToMount,
 		component: {
 			menumixin: menumixin,
 			emitter: emitter,

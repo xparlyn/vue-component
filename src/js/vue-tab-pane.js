@@ -9,7 +9,7 @@
 })(this, function(Vue, VueUtil) {
 	'use strict';
 	var VueTabPane = {
-		template: '<div class="vue-tab-pane" v-if="active"><router-view v-if="router"></router-view><slot v-else></slot></div>',
+		template: '<div class="vue-tab-pane" v-show="active"><router-view v-if="router"></router-view><slot v-else></slot></div>',
 		name: 'VueTabPane',
 		componentName: 'VueTabPane',
 		props: {
