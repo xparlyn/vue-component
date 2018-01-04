@@ -11,8 +11,9 @@
 	var identity = function(value) {
 		return value;
 	};
-	var parseComponentURL = function(url, suffix) {
-		suffix = '.' + (suffix || 'vue');
+	var parseComponentURL = function(url) {
+		var urlspl = url.split('.');
+		var suffix = '.' + urlspl[urlspl.length - 1];
 		var comp = url.match(new RegExp("(.*?)([^/]+?)\\\/?(\\" + suffix + ")?(\\?.*|#.*|$)"));
 		return {
 			url: comp[1] + comp[2] + (comp[3] === undefined ? '/index.vue' : comp[3]) + comp[4]
@@ -264,10 +265,10 @@
 			js: identity,
 			css: identity
 		}
-	}
-	var VueLoader = function(url, suffix) {
-		var comp = parseComponentURL(url, suffix);
+	};
+	var VueLoader = function(url) {
+		var comp = parseComponentURL(url);
 		return httpVueLoader.load(comp.url);
-	}
+	};
 	return VueLoader;
 });
