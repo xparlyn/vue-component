@@ -44,7 +44,7 @@
 				this.Minheight = parseInt(VueUtil.getStyle(el, 'minHeight'));
 				VueUtil.addTouchStart(this._dragobj, BindAsEventListener(this, this.Start, true));
 				for (var i = 0, j = this._body.length; i < j; i++) {
-					VueUtil.addTouchStart(this._body[i], BindAsEventListener(this, this.Cancelbubble));
+					VueUtil.addTouchStart(this._body[i], BindAsEventListener(this, this.Cancelbubble, false));
 				}
 				VueUtil.addTouchStart(this._resize, BindAsEventListener(this, this.Start, false));
 			},
@@ -114,15 +114,20 @@
 		Vue.directive('draggable', {
 			inserted: function(el, binding) {
 				var cancelObj = [];
-				var resizeObj = null;
 				var cancelSelectors = el.getAttribute('draggable-cancel-selector');
 				if (cancelSelectors) {
 					var cancelSelectorAry = cancelSelectors.split(',');
 					for (var i = 0, j = cancelSelectorAry.length; i < j; i++) {
 						var cancelSelector = cancelSelectorAry[i];
+						if (VueUtil.hasClass(el, cancelSelector.split('.')[1])) {
+							cancelObj.push(el);
+							break;
+						}
 						cancelObj.push(el.querySelector(cancelSelector));
 					}
 				}
+				if (cancelObj.indexOf(el) !== -1) return;
+				var resizeObj = null;
 				var resizeFlg = el.getAttribute('draggable-resize');
 				if (resizeFlg) {
 					resizeObj = document.createElement('DIV');

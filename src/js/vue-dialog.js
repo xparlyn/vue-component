@@ -41,7 +41,11 @@
 				default: '15%'
 			},
 			cleannessModal: Boolean,
-			beforeClose: Function
+			beforeClose: Function,
+			draggable: {
+				type: Boolean,
+				default: true
+			}
 		},
 		watch: {
 			visibledialog: function(val) {
@@ -93,7 +97,7 @@
 				return this.size === 'full' ? {} : {'top': this.top};
 			},
 			draggableCancelSelector: function() {
-				return this.size === 'full' ? '.vue-dialog__header, .vue-dialog__body, .vue-dialog__footer' : '.vue-dialog__headerbtn, .vue-dialog__body, .vue-dialog__footer';
+				return (this.size === 'full' || this.draggable === false) ? '.vue-dialog' : '.vue-dialog__headerbtn, .vue-dialog__body, .vue-dialog__footer';
 			}
 		},
 		methods: {
