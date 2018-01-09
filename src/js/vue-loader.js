@@ -179,7 +179,14 @@
 						this.template = new TemplateContext(this,it);
 						break;
 					case 'SCRIPT':
-						this.script = new ScriptContext(this,it);
+						var srcStr = it.getAttribute('src');
+						if (srcStr) {
+							var newScript = document.createElement('script');
+							newScript.setAttribute('src', srcStr);
+							this.getHead().appendChild(newScript);
+						} else {
+							this.script = new ScriptContext(this,it);
+						}
 						break;
 					case 'STYLE':
 						this.styles.push(new StyleContext(this,it));
