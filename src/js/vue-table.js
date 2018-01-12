@@ -822,7 +822,7 @@
 					row: row,
 					$index: $index,
 					store: self.store
-				}) : ''])]) : '']
+				}) : ''])]) : null]
 			}).concat(self._self.$parent.$slots.append).concat(createElement('vue-tooltip', {
 				attrs: {
 					effect: self.$parent.tooltipEffect,

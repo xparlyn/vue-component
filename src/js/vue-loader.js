@@ -8,6 +8,7 @@
 })(this, function(Vue) {
 	'use strict';
 	var scopeIndex = 0;
+	var scriptCache = Object.create(null);;
 	var identity = function(value) {
 		return value;
 	};
@@ -181,9 +182,12 @@
 					case 'SCRIPT':
 						var srcStr = it.getAttribute('src');
 						if (srcStr) {
-							var newScript = document.createElement('script');
-							newScript.setAttribute('src', srcStr);
-							this.getHead().appendChild(newScript);
+							if (!scriptCache[srcStr]) {
+								var newScript = document.createElement('script');
+								newScript.setAttribute('src', srcStr);
+								this.getHead().appendChild(newScript);
+								scriptCache[srcStr] = true;
+							}
 						} else {
 							this.script = new ScriptContext(this,it);
 						}
