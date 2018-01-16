@@ -704,9 +704,6 @@
 			var self = this;
 			self.popperElm = self.$el;
 			self.referenceElm = self.cell;
-			VueUtil.on(self.table.$refs.bodyWrapper, 'scroll', function() {
-				self.updatePopper();
-			});
 			self.$watch('showPopper', function(value) {
 				if (self.column)
 					self.column.filterOpened = value;
@@ -716,13 +713,6 @@
 					self.dropdown.close(self);
 				}
 			});
-		},
-		watch: {
-			showPopper: function(val) {
-				if (val === true) {
-					this.popperJS._popper.style.zIndex = VueUtil.nextZIndex();
-				}
-			}
 		}
 	};
 	var TableBody = {

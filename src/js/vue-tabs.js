@@ -189,11 +189,11 @@
 		},
 		mounted: function() {
 			VueUtil.on(this.$refs.navScroll, this.mouseWheel, this.scrollYMouseWheel);
-			VueUtil.addResizeListener(this.update);
+			VueUtil.addResizeListener(this.$el, this.update);
 		},
 		beforeDestroy: function() {
 			VueUtil.off(this.$refs.navScroll, this.mouseWheel, this.scrollYMouseWheel);
-			VueUtil.removeResizeListener(this.update);
+			VueUtil.removeResizeListener(this.$el, this.update);
 		}
 	};
 	var VueTabs = {

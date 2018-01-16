@@ -170,7 +170,7 @@
 			var self = this;
 			self.updateItems();
 			self.$nextTick(function() {
-				VueUtil.addResizeListener(self.resetItemPosition);
+				VueUtil.addResizeListener(self.$el, self.resetItemPosition);
 				if (self.initialIndex < self.items.length && self.initialIndex >= 0) {
 					self.activeIndex = self.initialIndex;
 				}
@@ -179,7 +179,7 @@
 		},
 		beforeDestroy: function() {
 			if (this.$el)
-				VueUtil.removeResizeListener(this.resetItemPosition);
+				VueUtil.removeResizeListener(this.$el, this.resetItemPosition);
 		}
 	};
 	Vue.component(VueCarousel.name, VueCarousel);

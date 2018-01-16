@@ -303,16 +303,6 @@
 			fn = el;
 			el = document.body;
 		}
-		if (el !== document.body) {
-			var isParentShow = function(el) {
-				var parent = el.parentNode;
-				if (!parent) return true;
-				if (parent === document) return true;
-				if ((getStyle(parent, 'display')) === 'none') return false;
-				return isParentShow(el.parentNode);
-			};
-			if (isParentShow(el)) el = document.body;
-		}
 		if (!isArray(el.__resizeListeners__)) {
 			var resetTrigger = function(el) {
 				var trigger = el.__resizeTrigger__;

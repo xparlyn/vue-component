@@ -531,7 +531,7 @@
 		},
 		mounted: function() {
 			var self = this;
-			VueUtil.addResizeListener(self.handleResize);
+			VueUtil.addResizeListener(self.$el, self.handleResize);
 			if (self.remote && self.multiple) {
 				self.resetInputHeight();
 			}
@@ -543,7 +543,7 @@
 		},
 		beforeDestroy: function() {
 			if (this.$el && this.handleResize)
-				VueUtil.removeResizeListener(this.handleResize);
+				VueUtil.removeResizeListener(this.$el, this.handleResize);
 		}
 	};
 	Vue.component(VueSelect.name, VueSelect);

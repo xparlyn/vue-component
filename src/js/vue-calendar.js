@@ -148,11 +148,11 @@
 		},
 		mounted: function() {
 			this.emitChangeMonth(this.currentMonth);
-			VueUtil.addResizeListener(this.changeEventCardWidth);
+			VueUtil.addResizeListener(this.$el, this.changeEventCardWidth);
 		},
 		beforeDestroy: function() {
 			if (this.$el)
-				VueUtil.removeResizeListener(this.changeEventCardWidth);
+				VueUtil.removeResizeListener(this.$el, this.changeEventCardWidth);
 		},
 		data: function() {
 			return {
