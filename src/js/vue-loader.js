@@ -8,7 +8,7 @@
 })(this, function(Vue) {
 	'use strict';
 	var scopeIndex = 0;
-	var scriptCache = Object.create(null);;
+	var scriptCache = {};;
 	var identity = function(value) {
 		return value;
 	};

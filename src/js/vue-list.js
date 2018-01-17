@@ -75,7 +75,7 @@
 				return result;
 			},
 			createDelta: function(slots) {
-				var delta = this.$options.delta = Object.create(null);
+				var delta = this.$options.delta = {};
 				delta.start = 0;
 				delta.total = 0;
 				delta.marginTop = 0;

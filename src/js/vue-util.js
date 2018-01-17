@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.35.9278';
+	var version ='1.35.9282';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -467,7 +467,7 @@
 		if (isString(lang)) Vue.config.lang = lang;
 	};
 	var setLocale = function(lang, langObjs) {
-		langObjs = merge({}, Vue.locale(lang), langObjs);
+		merge(langObjs, Vue.locale(lang));
 		Vue.locale(lang, langObjs);
 	};
 	var produceModel = function() {
@@ -583,8 +583,7 @@
 				return parent;
 			},
 			paddingStyle: function() {
-				if (this.rootMenu.mode !== 'vertical')
-					return {};
+				if (this.rootMenu.mode !== 'vertical') return {};
 				var padding = 20;
 				var parent = this.$parent;
 				while (parent && parent.$options.componentName !== 'VueMenu') {

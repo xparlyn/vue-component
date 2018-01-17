@@ -63,33 +63,35 @@
 			},
 			validate: function(callback) {
 				var self = this;
-				var valid = true;
-				var count = 0;
-				var errorMsgs = [];
-				VueUtil.loop(this.fields, function(field, index) {
-					field.validate('', function(errors) {
-						if (errors) {
-							valid = false;
-							errorMsgs.push(errors);
-						}
-						if (VueUtil.isFunction(callback) && ++count === self.fields.length) {
-							callback(valid);
-						}
-					});
-				});
-				if (errorMsgs.length > 0) {
-					if (VueUtil.isFunction(self.customMessageMethod)) {
-						self.customMessageMethod(errorMsgs);
-					} else if (self.notifyMessage) {
-						var createElement = self.$createElement;
-						self.$notify.error({
-							message: createElement('div', null, [self._l(errorMsgs, function(errorMsg, errorIndex) {
-								return [createElement('span', {key: errorIndex}, [errorMsg]), createElement('br', null, [])];
-							})]),
-							duration: 0
+				self.$nextTick(function(){
+					var valid = true;
+					var count = 0;
+					var errorMsgs = [];
+					VueUtil.loop(self.fields, function(field, index) {
+						field.validate('', function(errors) {
+							if (errors) {
+								valid = false;
+								errorMsgs.push(errors);
+							}
+							if (VueUtil.isFunction(callback) && ++count === self.fields.length) {
+								callback(valid);
+							}
 						});
+					});
+					if (errorMsgs.length > 0) {
+						if (VueUtil.isFunction(self.customMessageMethod)) {
+							self.customMessageMethod(errorMsgs);
+						} else if (self.notifyMessage) {
+							var createElement = self.$createElement;
+							self.$notify.error({
+								message: createElement('div', null, [self._l(errorMsgs, function(errorMsg, errorIndex) {
+									return [createElement('span', {key: errorIndex}, [errorMsg]), createElement('br', null, [])];
+								})]),
+								duration: 0
+							});
+						}
 					}
-				}
+				});
 			},
 			validateField: function(prop, cb) {
 				var field = this.fields.filter(function(field) {

@@ -208,13 +208,13 @@
 				}
 			}
 			if (self.$refs.label) {
-				VueUtil.addResizeListener(self.$parent.$el, self.resetLabelWidth);
+				VueUtil.addResizeListener(self.form.$el, self.resetLabelWidth);
 			}
 		},
 		beforeDestroy: function() {
 			this.dispatch('VueForm', 'vue.form.removeField', [this]);
 			if (this.$refs.label) {
-				VueUtil.removeResizeListener(this.$parent.$el, this.resetLabelWidth);
+				VueUtil.removeResizeListener(this.form.$el, this.resetLabelWidth);
 			}
 		}
 	};

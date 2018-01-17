@@ -584,7 +584,7 @@
 		var leafOnly = arguments.length > 1 && VueUtil.isDef(arguments[1]) ? arguments[1] : false;
 		var checkedKeys = arguments[2];
 		var allNodes = self._getAllNodes().sort(function(a, b) {return b.level - a.level});
-		var cache = Object.create(null);
+		var cache = {};
 		var keys = Object.keys(checkedKeys);
 		VueUtil.loop(allNodes, function(node) {
 			node.setChecked(false, false)

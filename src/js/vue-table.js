@@ -249,7 +249,7 @@
 		while (index--) {
 			var column = columns[index];
 			var aggregate = '';
-			var resultMap = Object.create(null);
+			var resultMap = {};
 			resultMap.max = '';
 			resultMap.min = '';
 			resultMap.sum = '';
@@ -297,7 +297,7 @@
 		var states = this.states;
 		var labelColumns = [];
 		var colColumns = [];
-		var tableColumns = states.columns;
+		var tableColumns = states._columns;
 		var i = tableColumns.length;
 		while (i--) {
 			var column = tableColumns[i];
@@ -884,7 +884,7 @@
 		methods: {
 			createDelta: function() {
 				if (this.fixed) return;
-				var delta = this.$options.delta = Object.create(null);
+				var delta = this.$options.delta = {};
 				delta.start = 0;
 				delta.end = 0;
 				delta.total = 0;
@@ -1510,8 +1510,7 @@
 				this.$parent.exportCsv(params);
 			},
 			noPin: function(tag) {
-				var column = tag.value;
-				this.removePin(column);
+				this.removePin(tag.value);
 			},
 			removePin: function(column) {
 				column.fixed = false;
