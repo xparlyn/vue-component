@@ -11,6 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
+	var version ='1.35.9278';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -796,6 +797,7 @@
 		setLocale: setLocale,
 		produceModel: produceModel,
 		nextZIndex: popupManager.nextZIndex,
+		version: version,
 		component: {
 			menumixin: menumixin,
 			emitter: emitter,

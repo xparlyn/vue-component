@@ -13,6 +13,7 @@
 		this.states = {
 			_columns: [],
 			columns: [],
+			labelColumns: [],
 			fixedColumns: [],
 			rightFixedColumns: [],
 			_data: null,
@@ -292,6 +293,28 @@
 			this.states.aggregates[index] = resultMap;
 		}
 	}
+	TableStore.prototype.updateLabelColumns = function() {
+		var states = this.states;
+		var labelColumns = [];
+		var colColumns = [];
+		var tableColumns = states.columns;
+		var i = tableColumns.length;
+		while (i--) {
+			var column = tableColumns[i];
+			if (column.colspan) {
+				colColumns.push(column);
+			} else {
+				if (colColumns.length > 0) {
+					colColumns.reverse();
+					column.colColumns = [].concat(colColumns);
+					colColumns = [];
+				}
+				labelColumns.push(column);
+			}
+		}
+		labelColumns.reverse();
+		states.labelColumns = labelColumns;
+	}
 	TableStore.prototype.updateColumns = function() {
 		var states = this.states;
 		var columns = [];
@@ -329,6 +352,7 @@
 		states.columns = [].concat(states.fixedColumns).concat(columns.filter(function(column) {
 			return !column.fixed
 		})).concat(states.rightFixedColumns);
+		this.updateLabelColumns();
 	}
 	TableStore.prototype.sortData = function(data, states) {
 		var sortingColumns = states.sortingColumns;
@@ -1249,7 +1273,7 @@
 					self.$parent.resizeProxyVisible = true;
 					var tableEl = self.$parent.$el;
 					var tableLeft = tableEl.getBoundingClientRect().left;
-					var columnEl = event.target;
+					var columnEl = event.currentTarget;
 					var columnRect = columnEl.getBoundingClientRect();
 					var minLeft = columnRect.left - tableLeft + 30;
 					columnEl.classList.add('noclick');
@@ -1277,9 +1301,16 @@
 							var finalLeft = parseInt(resizeProxy.style.left, 10);
 							var startLeft = self.dragState.startLeft;
 							var startColumnLeft = self.dragState.startColumnLeft;
-							var columnWidth = finalLeft - startColumnLeft;
+							var draggingColumnNum = 1;
+							if (VueUtil.isArray(column.colColumns)) {
+								draggingColumnNum = draggingColumnNum + column.colColumns.length;
+							}
+							var columnWidth = parseInt((finalLeft - startColumnLeft) / draggingColumnNum);
 							column.width = column.realWidth = columnWidth;
-							self.$parent.$emit('header-dragend', column.width, startLeft - startColumnLeft, column, event);
+							VueUtil.loop(column.colColumns, function(colColumn){
+								colColumn.width = colColumn.realWidth = columnWidth;
+							});
+							self.$parent.$emit('header-dragend', finalLeft - startColumnLeft, startLeft - startColumnLeft, column, event);
 							document.body.style.cursor = '';
 							self.dragging = false;
 							self.draggingColumn = null;
@@ -1462,25 +1493,7 @@
 				return this.$parent.store;
 			},
 			labelColumns: function() {
-				var labelColumns = [];
-				var colColumns = [];
-				var tableColumns = this.tableColumns;
-				var i = tableColumns.length;
-				while (i--) {
-					var column = tableColumns[i];
-					if (column.colspan) {
-						colColumns.push(column);
-					} else {
-						if (colColumns.length > 0) {
-							colColumns.reverse();
-							column.colColumns = [].concat(colColumns);
-							colColumns = [];
-						}
-						labelColumns.push(column);
-					}
-				}
-				labelColumns.reverse();
-				return labelColumns;
+				return this.$parent.store.states.labelColumns;
 			}
 		},
 		methods: {
