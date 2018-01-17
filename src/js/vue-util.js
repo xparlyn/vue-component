@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.35.9282';
+	var version ='1.35.9288';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -467,8 +467,7 @@
 		if (isString(lang)) Vue.config.lang = lang;
 	};
 	var setLocale = function(lang, langObjs) {
-		merge(langObjs, Vue.locale(lang));
-		Vue.locale(lang, langObjs);
+		Vue.locale(lang, merge({}, Vue.locale(lang), langObjs));
 	};
 	var produceModel = function() {
 		Vue.config.productionTip = false;
