@@ -38,14 +38,14 @@
 .vue-tag--info {
 	background-color: #d1f0f4;
 	border-color: #d1f0f4;
-	color: #19b4c8;
+	color: #6fb3e0;
 }
 .vue-tag--info .vue-tag__close:hover {
-	background-color:#19b4c8;
+	background-color:#6fb3e0;
 	color: #fff;
 }
 .vue-tag--info.is-hit {
-	border-color: #19b4c8;
+	border-color: #6fb3e0;
 }
 .vue-tag--success {
 	background-color: #e1f3d8;

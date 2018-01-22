@@ -60,7 +60,7 @@
 	background-color: #67c23a;
 }
 .vue-alert--info-dark {
-	background-color: #19b4c8;
+	background-color: #6fb3e0;
 }
 .vue-alert--warning-dark {
 	background-color: #eb9e05;
@@ -75,7 +75,7 @@
 .vue-alert--info .vue-alert__closebtn,
 .vue-alert--info .vue-alert__description,
 .vue-alert--info .vue-alert__icon {
-	color: #19b4c8;
+	color: #6fb3e0;
 }
 .vue-alert--info {
 	background-color: #d1f0f4;

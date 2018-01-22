@@ -244,19 +244,19 @@
 }
 .vue-button--info {
 	color: #fff;
-	background-color: #19b4c8;
-	border-color: #19b4c8;
+	background-color: #6fb3e0;
+	border-color: #6fb3e0;
 }
 .vue-button--info:focus,
 .vue-button--info:hover {
-	background: #47c3d3;
-	border-color: #47c3d3;
+	background: #8bc2e6;
+	border-color: #8bc2e6;
 	color: #fff;
 }
 .vue-button--info.is-active,
 .vue-button--info:active {
-	background: #75d2de;
-	border-color: #75d2de;
+	background: #a8d1ec;
+	border-color: #a8d1ec;
 	color: #fff;
 }
 .vue-button--info:active {
@@ -270,13 +270,13 @@
 .vue-button--info.is-plain:focus,
 .vue-button--info.is-plain:hover {
 	background: #fff;
-	border-color: #19b4c8;
-	color: #19b4c8;
+	border-color: #6fb3e0;
+	color: #6fb3e0;
 }
 .vue-button--info.is-plain:active {
 	background: #fff;
-	border-color: #75d2de;
-	color: #75d2de;
+	border-color: #a8d1ec;
+	color: #a8d1ec;
 	outline: 0;
 }
 .vue-button--large {
