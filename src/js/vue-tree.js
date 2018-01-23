@@ -1,6 +1,8 @@
 (function(context, definition) {
 	'use strict';
-	if (typeof define === 'function' && define.amd) {
+	if (typeof exports === 'object' && typeof module !== 'undefined') {
+		module.exports = definition();
+	} else if (typeof define === 'function' && define.amd) {
 		define(['Vue', 'VueUtil'], definition);
 	} else {
 		context.VueTree = definition(context.Vue, context.VueUtil);

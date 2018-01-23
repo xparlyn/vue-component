@@ -1,5 +1,7 @@
 ﻿(function(context, definition) {
-	if (typeof define === 'function' && define.amd) {
+	if (typeof exports === 'object' && typeof module !== 'undefined') {
+		module.exports = definition();
+	} else if (typeof define === 'function' && define.amd) {
 		define(['Vue', 'VueUtil', 'VueDatePicker'], definition);
 	} else {
 		context.VueCalendar = definition(context.Vue, context.VueUtil, context.VueDatePicker);
