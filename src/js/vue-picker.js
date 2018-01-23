@@ -1,8 +1,6 @@
 (function(context, definition) {
 	'use strict';
-	if (typeof exports === 'object' && typeof module !== 'undefined') {
-		module.exports = definition();
-	} else if (typeof define === 'function' && define.amd) {
+	if (typeof define === 'function' && define.amd) {
 		define(['Vue', 'VueUtil', 'VuePopper'], definition);
 	} else {
 		context.VuePicker = definition(context.Vue, context.VueUtil, context.VuePopper);
