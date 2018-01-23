@@ -1834,6 +1834,9 @@
 			setCurrentRow: function(row) {
 				this.store.commit('setCurrentRow', row);
 			},
+			getCurrentRow: function() {
+				return this.store.states.currentRow;
+			},
 			toggleRowSelection: function(row, selected) {
 				if (this.store.toggleRowSelection(row, selected)) {
 					this.$emit('selection-change', this.store.states.selection);
