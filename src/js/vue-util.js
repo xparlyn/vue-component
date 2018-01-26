@@ -255,7 +255,8 @@
 		document.cookie = name + '=' + value + ';expires=' + date;
 	};
 	var removeCookie = function(name) {
-		setCookie(name, '1', -1);
+		var val = getCookie(name);
+		setCookie(name, val, -1);
 	};
 	var performance = function(delay, callback, throttleflg) {
 		if (!isFunction(callback)) callback = delay;
