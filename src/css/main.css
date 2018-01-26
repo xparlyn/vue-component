@@ -286,6 +286,51 @@
 .vue-icon-switch:before {
 	content: "\e857";
 }
+.vue-icon-sort:before {
+	content: "\e858";
+}
+.vue-icon-cart-o:before {
+	content: "\e859";
+}
+.vue-icon-copy:before {
+	content: "\e85a";
+}
+.vue-icon-cart:before {
+	content: "\e85b";
+}
+.vue-icon-tags:before {
+	content: "\e85c";
+}
+.vue-icon-tag:before {
+	content: "\e85e";
+}
+.vue-icon-phone:before {
+	content: "\e85f";
+}
+.vue-icon-bar-chart:before {
+	content: "\e860";
+}
+.vue-icon-phone-o:before {
+	content: "\e861";
+}
+.vue-icon-truck-o:before {
+	content: "\e862";
+}
+.vue-icon-pie-chart:before {
+	content: "\e863";
+}
+.vue-icon-stats-chart:before {
+	content: "\e864";
+}
+.vue-icon-truck:before {
+	content: "\e865";
+}
+.vue-icon-clipboard:before {
+	content: "\e866";
+}
+.vue-icon-users:before {
+	content: "\e867";
+}
 .vue-icon-loading {
 	animation: rotating 1s linear infinite;
 }
