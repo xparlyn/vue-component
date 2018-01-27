@@ -301,6 +301,9 @@
 .vue-icon-tags:before {
 	content: "\e85c";
 }
+.vue-icon-bell:before {
+	content: "\e85d";
+}
 .vue-icon-tag:before {
 	content: "\e85e";
 }
