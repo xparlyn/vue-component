@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.36.9327';
+	var version ='1.36.9340';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -172,20 +172,16 @@
 		}
 		return res;
 	};
-	var on = (function() {
-		return function(el, event, handler, useCapture) {
-			if (el && event && handler) {
-				el.addEventListener(event, handler, useCapture);
-			}
+	var on = function(el, event, handler, useCapture) {
+		if (el && event && handler) {
+			el.addEventListener(event, handler, useCapture);
 		}
-	})();
-	var off = (function() {
-		return function(el, event, handler, useCapture) {
-			if (el && event) {
-				el.removeEventListener(event, handler, useCapture);
-			}
+	};
+	var off = function(el, event, handler, useCapture) {
+		if (el && event) {
+			el.removeEventListener(event, handler, useCapture);
 		}
-	})();
+	};
 	var once = function(el, event, handler, useCapture) {
 		var listener = function() {
 			isFunction(handler) && handler.apply(this, arguments);
@@ -219,23 +215,20 @@
 	};
 	var hasClass = function(el, clazz) {
 		if (!isElement(el) || !isString(clazz)) return false;
-		return (new RegExp('(\\s|^)' + clazz + '(\\s|$)')).test(el.className);
+		return el.classList.contains(clazz);
 	};
 	var addClass = function(el, clazz) {
-		if (isElement(el) && isString(clazz) && !hasClass(el, clazz)) el.className += ' ' + clazz;
+		if (isElement(el) && isString(clazz)) el.classList.add(clazz);
 	};
 	var removeClass = function(el, clazz) {
-		if (hasClass(el, clazz)) {
-			el.className = el.className.replace((new RegExp('(\\s|^)' + clazz + '(\\s|$)')), ' ');
-		}
+		if (isElement(el) && isString(clazz)) el.classList.remove(clazz);
 	};
 	var getStyle = function(el, styleName) {
 		if (!isElement(el) || !isString(styleName)) return null;
 		if (styleName === 'float') {
 			styleName = 'cssFloat';
 		}
-		var computed = getComputedStyle(el, '');
-		return computed[styleName];
+		return getComputedStyle(el, null)[styleName];
 	};
 	var setStyle = function(el, styleName, value) {
 		if (!isElement(el) || !isString(styleName)) return;
@@ -336,8 +329,8 @@
 					resetTrigger(el);
 				}
 			};
-			if (getComputedStyle(el).position === 'static') {
-				el.style.position = 'relative';
+			if (getStyle(el, 'position') === 'static') {
+				setStyle(el, 'position', 'relative');
 			}
 			var resizeTrigger = el.__resizeTrigger__ = document.createElement('div');
 			resizeTrigger.className = 'resize-triggers';
