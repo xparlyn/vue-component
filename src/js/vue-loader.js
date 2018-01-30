@@ -45,8 +45,6 @@
 					var scopedSelectors = [];
 					rule.selectorText.split(/\s*,\s*/).forEach(function(sel) {
 						scopedSelectors.push(scopeName + ' ' + sel);
-						var segments = sel.match(/([^ :]+)(.+)?/);
-						scopedSelectors.push(segments[1] + scopeName + (segments[2] || ''));
 					});
 					var scopedRule = scopedSelectors.join(',') + rule.cssText.substr(rule.selectorText.length);
 					sheet.deleteRule(i);
@@ -74,15 +72,13 @@
 			var hasTemplate = this.template !== null;
 			var scoped = this.elt.hasAttribute('scoped');
 			if (scoped) {
-				if (!hasTemplate)
-					return;
+				if (!hasTemplate) return;
 				this.elt.removeAttribute('scoped');
 			}
 			this.withBase(function() {
 				this.component.getHead().appendChild(this.elt);
 			});
-			if (scoped)
-				this.scopeStyles(this.elt, '[' + this.component.getScopeId() + ']');
+			if (scoped) this.scopeStyles(this.elt, '[' + this.component.getScopeId() + ']');
 			return Promise.resolve();
 		},
 		getContent: function() {

@@ -390,6 +390,12 @@
 					this.columnConfig.visible = newVal;
 					this.owner.doLayout();
 				}
+			},
+			colspan: function(newVal) {
+				if (this.columnConfig) {
+					this.columnConfig.colspan = newVal;
+					this.owner.doLayout();
+				}
 			}
 		},
 		mounted: function() {
