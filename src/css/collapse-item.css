@@ -23,6 +23,7 @@
 }
 .vue-collapse-item__wrap {
 	will-change: height;
+	width: 100%;
 	background-color: #fbfdff;
 	overflow: hidden;
 	border-bottom: 1px solid #dfe6ec;
