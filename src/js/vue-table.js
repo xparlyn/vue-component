@@ -917,11 +917,10 @@
 				}
 			},
 			updateZone: function(offset) {
-				var self = this;
-				var delta = self.$options.delta;
+				var delta = this.$options.delta;
 				delta.size = 40;
-				if (VueUtil.isElement(self.$refs.tbody)) delta.size = self.$refs.tbody.firstElementChild.offsetHeight;
-				delta.remain = Math.floor(self.$parent.height * 1 / delta.size) + 11;
+				if (VueUtil.isElement(this.$refs.tbody)) delta.size = this.$refs.tbody.firstElementChild.offsetHeight;
+				delta.remain = Math.floor(this.$parent.height * 1 / delta.size) + 11;
 				delta.keeps = delta.remain;
 				if (delta.total <= delta.keeps) return;
 				var overs = Math.floor(offset / delta.size) - 6;
@@ -934,10 +933,8 @@
 				}
 				delta.end = end;
 				delta.start = start;
-				self.forceUpdate();
-				self.$nextTick(function() {
-					self.doResetCurrentRow();
-				});
+				this.forceUpdate();
+				this.$nextTick(this.doResetCurrentRow);
 			},
 			forceUpdate: VueUtil.throttle(function() {
 				this.$parent.$refs.tableBody.$forceUpdate();

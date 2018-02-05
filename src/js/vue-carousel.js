@@ -178,8 +178,8 @@
 			});
 		},
 		beforeDestroy: function() {
-			if (this.$el)
-				VueUtil.removeResizeListener(this.$el, this.resetItemPosition);
+			this.pauseTimer();
+			this.$el && VueUtil.removeResizeListener(this.$el, this.resetItemPosition);
 		}
 	};
 	Vue.component(VueCarousel.name, VueCarousel);

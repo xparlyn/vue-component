@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.36.9356';
+	var version ='1.36.9377';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -98,15 +98,14 @@
 	};
 	var addDate = function(src, num, type) {
 		src = toDate(src);
-		if (!isDate(src)) return null;
+		if (!isDate(src) || !isNumber(num)) return null;
 		if (type !== 'week' && type !== 'day' && type !== 'month' && type !== 'year') type = 'day';
 		var result = new Date();
 		switch (type.toLowerCase()) {
 			case 'week':
 				var week = 7;
 			case 'day':
-				var DAY_DURATION = 86400000;
-				result.setTime(src.getTime() + DAY_DURATION * num * (week || 1));
+				result.setTime(src.getTime() + 86400000 * num * (week || 1));
 				break;
 			case 'month':
 				var year = src.getFullYear();
