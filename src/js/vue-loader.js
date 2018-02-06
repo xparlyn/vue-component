@@ -8,7 +8,7 @@
 })(this, function(Vue) {
 	'use strict';
 	var scopeIndex = 0;
-	var scriptCache = {};;
+	var scriptCache = {};
 	var identity = function(value) {
 		return value;
 	};
@@ -36,21 +36,43 @@
 				this.component.getHead().removeChild(tmpBaseElt);
 		},
 		scopeStyles: function(styleElt, scopeName) {
-			function process() {
+			var resetStyle = function(rules) {
+				var scopedRuleAry = [];
+				for (var i = 0, j = rules.length; i < j; ++i) {
+					var rule = rules[i];
+					var scopedRule = null;
+					if (rule.type === 1) {
+						var scopedSelectors = [];
+						rule.selectorText.split(/\s*,\s*/).forEach(function(sel) {
+							scopedSelectors.push(scopeName + ' ' + sel);
+						});
+						scopedRule = scopedSelectors.join(',') + rule.cssText.substr(rule.selectorText.length);
+					}
+					if (rule.type === 4) {
+						scopedRule = '@media ' + rule.conditionText + '{';
+						resetStyle(rule.cssRules).forEach(function(subScopedRule) {
+							if (subScopedRule) {
+								scopedRule = scopedRule + subScopedRule;
+							}
+						});
+						scopedRule = scopedRule + '}';
+					}
+					scopedRuleAry.push(scopedRule);
+				}
+				return scopedRuleAry;
+			};
+			var process = function() {
 				var sheet = styleElt.sheet;
 				var rules = sheet.cssRules;
-				for (var i = 0; i < rules.length; ++i) {
-					var rule = rules[i];
-					if (rule.type !== 1) continue;
-					var scopedSelectors = [];
-					rule.selectorText.split(/\s*,\s*/).forEach(function(sel) {
-						scopedSelectors.push(scopeName + ' ' + sel);
-					});
-					var scopedRule = scopedSelectors.join(',') + rule.cssText.substr(rule.selectorText.length);
-					sheet.deleteRule(i);
-					sheet.insertRule(scopedRule, i);
+				var scopedRuleAry = resetStyle(rules);
+				for (var i = 0, j = rules.length; i < j; ++i) {
+					var scopedRule = scopedRuleAry[i];
+					if (scopedRule) {
+						sheet.deleteRule(i);
+						sheet.insertRule(scopedRule, i);
+					}
 				}
-			}
+			};
 			try {
 				process();
 			} catch (ex) {
