@@ -185,6 +185,11 @@
 				return style;
 			}
 		},
+		watch: {
+			events: function(val) {
+				this.$nextTick(this.changeEventCardWidth);
+			}
+		},
 		methods: {
 			changeEventCardWidth: function() {
 				var eventCard = this.$refs.eventCard;
@@ -193,7 +198,7 @@
 					VueUtil.loop(eventCard, function(card) {
 						card.defaultWidth = defaultWidth;
 					});
-				} else {
+				} else if(VueUtil.isDef(eventCard)) {
 					eventCard.defaultWidth = defaultWidth;
 				}
 			},

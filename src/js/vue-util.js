@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.36.9384';
+	var version ='1.36.9393';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -142,7 +142,7 @@
 		return result;
 	};
 	var loop = function(arr, fn) {
-		(isArray(arr) || isNodeList(arr)) && Array.prototype.forEach.call(arr, fn);
+		arr.length && Array.prototype.forEach.call(arr, fn);
 	};
 	var ownPropertyLoop = function (obj, fn) {
 		isDef(obj) && loop(Object.keys(obj), fn);

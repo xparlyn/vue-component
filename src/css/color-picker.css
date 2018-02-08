@@ -125,34 +125,6 @@
 	font-size: 12px;
 	color: #1f2d3d;
 }
-.vue-color-dropdown__btn {
-	border: 1px solid #dcdcdc;
-	color: #333;
-	line-height: 24px;
-	border-radius: 2px;
-	padding: 0 20px;
-	cursor: pointer;
-	background-color: transparent;
-	outline: 0;
-	font-size: 12px;
-}
-.vue-color-dropdown__btn[disabled] {
-	color: #ccc;
-	cursor: not-allowed;
-}
-.vue-color-dropdown__btn:hover {
-	color: #409eff;
-	border-color: #409eff;
-}
-.vue-color-dropdown__link-btn {
-	cursor: pointer;
-	color: #409eff;
-	text-decoration: none;
-	font-size: 12px;
-}
-.vue-color-dropdown__link-btn:hover {
-	color: #66b1ff;
-}
 .vue-color-picker {
 	display: inline-block;
 	position: relative;
