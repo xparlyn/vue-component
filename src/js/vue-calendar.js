@@ -193,7 +193,7 @@
 		methods: {
 			changeEventCardWidth: function() {
 				var eventCard = this.$refs.eventCard;
-				var defaultWidth = this.$refs.eventsDay[0].offsetWidth;
+				var defaultWidth = parseFloat(VueUtil.getStyle(this.$refs.eventsDay[0], 'width'));
 				if (VueUtil.isArray(eventCard)) {
 					VueUtil.loop(eventCard, function(card) {
 						card.defaultWidth = defaultWidth;
