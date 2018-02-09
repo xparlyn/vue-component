@@ -334,6 +334,12 @@
 .vue-icon-users:before {
 	content: "\e867";
 }
+.vue-icon-save:before {
+	content: "\e868";
+}
+.vue-icon-save-o:before {
+	content: "\e869";
+}
 .vue-icon-loading {
 	animation: rotating 1s linear infinite;
 }
