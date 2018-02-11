@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.36.9420';
+	var version ='1.37.9428';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -142,7 +142,7 @@
 		return result;
 	};
 	var loop = function(arr, fn) {
-		arr.length && Array.prototype.forEach.call(arr, fn);
+		arr.length && isFunction(fn) && Array.prototype.forEach.call(arr, fn);
 	};
 	var ownPropertyLoop = function (obj, fn) {
 		isDef(obj) && loop(Object.keys(obj), fn);
@@ -152,8 +152,8 @@
 		return str.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '');
 	};
 	var merge = function(target) {
-		for (var i = 1, j = arguments.length; i < j; i++) {
-			var source = arguments[i] || {};
+		loop(arguments, function(source, index) {
+			if (index === 0 ) return;
 			ownPropertyLoop(source, function(prop) {
 				if (isObject(target[prop]) && isObject(source[prop])) {
 					target[prop] = merge({}, target[prop], source[prop]);
@@ -161,14 +161,14 @@
 					isDef(source[prop]) && (target[prop] = source[prop]);
 				}
 			});
-		}
+		});
 		return target;
 	};
 	var arrayToObject = function(arr) {
 		var res = {};
-		for (var i = 0, j = arr.length; i < j; i++) {
-			res = merge(res, arr[i]);
-		}
+		loop(arr, function(obj) {
+			merge(res, obj);
+		});
 		return res;
 	};
 	var on = function(el, event, handler, useCapture) {

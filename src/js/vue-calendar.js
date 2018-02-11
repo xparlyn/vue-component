@@ -465,6 +465,11 @@
 					this.$refs.fullCalendar.emitChangeMonth(new Date)
 				}
 			},
+			getDate: function () {
+				if (this.$refs.fullCalendar) {
+					return this.$refs.fullCalendar.currentMonth;
+				}
+			},
 			dayclick: function(day, events, jsEvent) {
 				this.$emit('dayclick', day, events, jsEvent);
 			},
