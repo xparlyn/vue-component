@@ -110,6 +110,7 @@
 				default: 'default'
 			},
 			label: String,
+			printLabel: String,
 			className: [String, Function],
 			labelClassName: String,
 			property: String,
@@ -200,6 +201,7 @@
 			var column = getDefaultColumn(type, {
 				id: columnId,
 				label: self.label,
+				printLabel: self.printLabel,
 				className: self.className,
 				labelClassName: self.labelClassName,
 				property: self.prop || self.property,

@@ -1750,7 +1750,7 @@
 					if (columns) {
 						columnOrder = columns.map(function(v) {
 							if (VueUtil.isString(v)) return v;
-							column.push(VueUtil.isDef(v.label) ? v.label : v.property);
+							column.push(VueUtil.isDef(v.printLabel) ? v.printLabel : VueUtil.isDef(v.label) ? v.label : v.property);
 							return v.property;
 						});
 						if (column.length > 0) appendLine(content, column, options);
