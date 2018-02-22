@@ -48,7 +48,7 @@
 				if (!this.parent.multiple) {
 					return this.value === this.parent.value;
 				} else {
-					return this.parent.value.indexOf(this.value) > -1;
+					return this.parent.value.indexOf(this.value) !== -1;
 				}
 			},
 			itemHover: function() {

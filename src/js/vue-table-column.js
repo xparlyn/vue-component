@@ -85,7 +85,7 @@
 			renderCell: function(createElement, data, proxy) {
 				var row = data.row;
 				var store = data.store;
-				var expanded = store.states.expandRows.indexOf(row) > -1;
+				var expanded = store.states.expandRows.indexOf(row) !== -1;
 				return createElement('div', {
 					class: 'vue-table__expand-icon ' + (expanded ? 'vue-table__expand-icon--expanded' : ''),
 					on: {
@@ -121,6 +121,7 @@
 				default: false
 			},
 			sortMethod: Function,
+			sortColumns: Array,
 			resizable: {
 				type: Boolean,
 				default: true
@@ -166,23 +167,24 @@
 			}
 		},
 		created: function() {
-			var slots = this.$slots.default;
-			this.customRender = this.$options.render;
-			this.$options.render = function(createElement) {
+			var self = this;
+			var slots = self.$slots.default;
+			self.customRender = self.$options.render;
+			self.$options.render = function(createElement) {
 				return createElement('div', slots)
 			}
-			var columnId = this.columnId = ((this.$parent.tableId || (this.$parent.columnId + '_')) + 'column_' + columnIdSeed++);
-			var parent = this.$parent;
-			var owner = this.owner;
-			var type = this.type;
-			var width = this.width;
+			var columnId = self.columnId = ((self.$parent.tableId || (self.$parent.columnId + '_')) + 'column_' + columnIdSeed++);
+			var parent = self.$parent;
+			var owner = self.owner;
+			var type = self.type;
+			var width = self.width;
 			if (VueUtil.isDef(width)) {
 				width = parseInt(width, 10);
 				if (isNaN(width)) {
 					width = null;
 				}
 			}
-			var minWidth = this.minWidth;
+			var minWidth = self.minWidth;
 			if (VueUtil.isDef(minWidth)) {
 				minWidth = parseInt(minWidth, 10);
 				if (isNaN(minWidth)) {
@@ -197,40 +199,40 @@
 			};
 			var column = getDefaultColumn(type, {
 				id: columnId,
-				label: this.label,
-				className: this.className,
-				labelClassName: this.labelClassName,
-				property: this.prop || this.property,
+				label: self.label,
+				className: self.className,
+				labelClassName: self.labelClassName,
+				property: self.prop || self.property,
 				type: type,
 				renderCell: null,
-				renderHeader: this.renderHeader,
+				renderHeader: self.renderHeader,
 				minWidth: minWidth,
 				width: width,
-				visible: this.visible,
-				context: this.context,
-				align: this.align ? 'is-' + this.align : null,
-				headerAlign: this.headerAlign ? 'is-' + this.headerAlign : 'is-center',
-				sortable: this.sortable === '' ? true : this.sortable,
-				sortMethod: this.sortMethod,
-				resizable: this.resizable,
-				showOverflowTooltip: this.showOverflowTooltip,
-				formatter: this.formatter,
-				selectable: this.selectable,
-				fixed: this.fixed === '' ? true : this.fixed,
+				visible: self.visible,
+				context: self.context,
+				align: self.align ? 'is-' + self.align : null,
+				headerAlign: self.headerAlign ? 'is-' + self.headerAlign : 'is-center',
+				sortable: self.sortable === '' ? true : self.sortable,
+				sortMethod: self.sortMethod,
+				resizable: self.resizable,
+				showOverflowTooltip: self.showOverflowTooltip,
+				formatter: self.formatter,
+				selectable: self.selectable,
+				fixed: self.fixed === '' ? true : self.fixed,
 				fixedIndex: -1,
-				filterMethod: this.filterMethod,
-				filters: this.filters,
-				filterable: this.filters || this.filterMethod,
-				filterMultiple: this.filterMultiple,
+				filterMethod: self.filterMethod,
+				filters: self.filters,
+				filterable: self.filters || self.filterMethod,
+				filterMultiple: self.filterMultiple,
 				filterOpened: false,
-				filteredValue: this.filteredValue || [],
-				filterPlacement: this.filterPlacement || 'bottom',
-				aggregate: this.aggregate,
-				aggregateLabel: this.aggregateLabel,
-				colspan: this.colspan,
+				filteredValue: self.filteredValue || [],
+				filterPlacement: self.filterPlacement || 'bottom',
+				aggregate: self.aggregate,
+				aggregateLabel: self.aggregateLabel,
+				colspan: self.colspan,
 				getCellClass: function(rowIndex, cellIndex, rowData) {
 					var classes = [];
-					var className = this.className;
+					var className = self.className;
 					if (VueUtil.isString(className)) {
 						classes.push(className);
 					} else if (VueUtil.isFunction(className)) {
@@ -240,10 +242,13 @@
 				}
 			});
 			VueUtil.merge(column, forced[type] || {});
-			this.columnConfig = column;
+			self.columnConfig = column;
 			var renderCell = column.renderCell;
 			var renderHeader = column.renderHeader;
-			var self = this;
+			column.sortColumns = null;
+			if (self.$scopedSlots.default) {
+				column.sortColumns = self.sortColumns;
+			}
 			column.renderHeader = function() {
 				if (self.$scopedSlots.header) {
 					column.renderHeader = function() {

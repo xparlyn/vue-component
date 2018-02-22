@@ -40,7 +40,7 @@
 				if (VueUtil.isBoolean(this.model)) {
 					return this.model;
 				} else if (VueUtil.isArray(this.model)) {
-					return this.model.indexOf(this.label) > -1;
+					return this.model.indexOf(this.label) !== -1;
 				} else if (VueUtil.isDef(this.model)) {
 					return this.model === this.trueLabel;
 				}

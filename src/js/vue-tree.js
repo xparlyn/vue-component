@@ -203,7 +203,7 @@
 	Node.prototype.removeChild = function(child) {
 		var self = this;
 		var index = self.childNodes.indexOf(child);
-		if (index > -1) {
+		if (index !== -1) {
 			self.store && self.store.deregisterNode(child);
 			child.parent = null;
 			self.childNodes.splice(index, 1);
@@ -592,7 +592,7 @@
 		for (var i = 0, j = allNodes.length; i < j; i++) {
 			var node = allNodes[i];
 			var nodeKey = node.data[key] + '';
-			var checked = keys.indexOf(nodeKey) > -1;
+			var checked = keys.indexOf(nodeKey) !== -1;
 			if (!checked) {
 				if (node.checked && !cache[nodeKey]) {
 					node.setChecked(false, false);

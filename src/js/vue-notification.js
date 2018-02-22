@@ -142,26 +142,26 @@
 		if (isBottom) {
 			if (isLeft) {
 				var leftBottomDist = offHeight;
-				for (var i = 0, len = leftBottomInstances.length; i < len; i++) {
-					leftBottomDist += leftBottomInstances[i].$el.offsetHeight + offHeight;
-				}
+				VueUtil.loop(leftBottomInstances, function(leftBottomInstance) {
+					leftBottomDist += leftBottomInstance.dom.offsetHeight + offHeight;
+				});
 				instance.bottom = leftBottomDist;
 				leftBottomInstances.push(instance);
 			}
 			if (isCenterX) {
 				instance.isBottom = true;
 				var centerBottomDist = offHeight;
-				for (var i = 0, len = centerBottomInstances.length; i < len; i++) {
-					centerBottomDist += centerBottomInstances[i].$el.offsetHeight + offHeight;
-				}
+				VueUtil.loop(centerBottomInstances, function(centerBottomInstance) {
+					centerBottomDist += centerBottomInstance.dom.offsetHeight + offHeight;
+				});
 				instance.bottom = centerBottomDist;
 				centerBottomInstances.push(instance);
 			}
 			if (isRight) {
 				var rightBottomDist = offHeight;
-				for (var i = 0, len = rightBottomInstances.length; i < len; i++) {
-					rightBottomDist += rightBottomInstances[i].$el.offsetHeight + offHeight;
-				}
+				VueUtil.loop(rightBottomInstances, function(rightBottomInstance) {
+					rightBottomDist += rightBottomInstance.dom.offsetHeight + offHeight;
+				});
 				instance.bottom = rightBottomDist;
 				rightBottomInstances.push(instance);
 			}
@@ -169,26 +169,26 @@
 		if (isTop) {
 			if (isLeft) {
 				var leftTopDist = offHeight;
-				for (var i = 0, len = leftTopInstances.length; i < len; i++) {
-					leftTopDist += leftTopInstances[i].$el.offsetHeight + offHeight;
-				}
+				VueUtil.loop(leftTopInstances, function(leftTopInstance) {
+					leftTopDist += leftTopInstance.dom.offsetHeight + offHeight;
+				});
 				instance.top = leftTopDist;
 				leftTopInstances.push(instance);
 			}
 			if (isCenterX) {
 				instance.isTop = true;
 				var centerTopDist = offHeight;
-				for (var i = 0, len = centerTopInstances.length; i < len; i++) {
-					centerTopDist += centerTopInstances[i].$el.offsetHeight + offHeight;
-				}
+				VueUtil.loop(centerTopInstances, function(centerTopInstance) {
+					centerTopDist += centerTopInstance.dom.offsetHeight + offHeight;
+				});
 				instance.top = centerTopDist;
 				centerTopInstances.push(instance);
 			}
 			if (isRight) {
 				var rightTopDist = offHeight;
-				for (var i = 0, len = rightTopInstances.length; i < len; i++) {
-					rightTopDist += rightTopInstances[i].$el.offsetHeight + offHeight;
-				}
+				VueUtil.loop(rightTopInstances, function(rightTopInstance) {
+					rightTopDist += rightTopInstance.dom.offsetHeight + offHeight;
+				});
 				instance.top = rightTopDist;
 				rightTopInstances.push(instance);
 			}
@@ -207,8 +207,7 @@
 		};
 	});
 	Notification.close = function(id, userOnClose) {
-		for (var i = 0, len = instances.length; i < len; i++) {
-			var instance = instances[i];
+		VueUtil.loop(instances, function(instance, i) {
 			if (id === instance.id) {
 				if (VueUtil.isFunction(userOnClose)) {
 					userOnClose(instance);
@@ -226,53 +225,59 @@
 					if (isLeft) {
 						var lbi = leftBottomInstances.indexOf(instance);
 						leftBottomInstances.splice(lbi, 1);
-						for (var lbj = leftBottomInstances.length; lbi < lbj; lbi++) {
-							leftBottomInstances[lbi].dom.style.bottom = parseInt(leftBottomInstances[lbi].dom.style.bottom, 10) - removedHeight + 'px';
-						}
+						VueUtil.loop(leftBottomInstances, function(leftBottomInstance, index) {
+							if (index < lbi) return;
+							leftBottomInstance.dom.style.bottom = parseInt(leftBottomInstance.dom.style.bottom, 10) - removedHeight + 'px';
+						});
 					}
 					if (isCenterX) {
 						var cbi = centerBottomInstances.indexOf(instance);
 						centerBottomInstances.splice(cbi, 1);
-						for (var cbj = centerBottomInstances.length; cbi < cbj; cbi++) {
-							centerBottomInstances[cbi].dom.style.bottom = parseInt(centerBottomInstances[cbi].dom.style.bottom, 10) - removedHeight + 'px';
-						}
+						VueUtil.loop(centerBottomInstances, function(centerBottomInstance, index) {
+							if (index < cbi) return;
+							centerBottomInstance.dom.style.bottom = parseInt(centerBottomInstance.dom.style.bottom, 10) - removedHeight + 'px';
+						});
 					}
 					if (isRight) {
 						var rbi = rightBottomInstances.indexOf(instance);
 						rightBottomInstances.splice(rbi, 1);
-						for (var rbj = rightBottomInstances.length; rbi < rbj; rbi++) {
-							rightBottomInstances[rbi].dom.style.bottom = parseInt(rightBottomInstances[rbi].dom.style.bottom, 10) - removedHeight + 'px';
-						}
+						VueUtil.loop(rightBottomInstances, function(rightBottomInstance, index) {
+							if (index < rbi) return;
+							rightBottomInstance.dom.style.bottom = parseInt(rightBottomInstance.dom.style.bottom, 10) - removedHeight + 'px';
+						});
 					}
 				}
 				if (isTop) {
 					if (isLeft) {
 						var lti = leftTopInstances.indexOf(instance);
 						leftTopInstances.splice(lti, 1);
-						for (var ltj = leftTopInstances.length; lti < ltj; lti++) {
-							leftTopInstances[lti].dom.style.top = parseInt(leftTopInstances[lti].dom.style.top, 10) - removedHeight + 'px';
-						}
+						VueUtil.loop(leftTopInstances, function(leftTopInstance, index) {
+							if (index < lti) return;
+							leftTopInstance.dom.style.top = parseInt(leftTopInstance.dom.style.top, 10) - removedHeight + 'px';
+						});
 					}
 					if (isCenterX) {
 						var cti = centerTopInstances.indexOf(instance);
 						centerTopInstances.splice(cti, 1);
-						for (var ctj = centerTopInstances.length; cti < ctj; cti++) {
-							centerTopInstances[cti].dom.style.top = parseInt(centerTopInstances[cti].dom.style.top, 10) - removedHeight + 'px';
-						}
+						VueUtil.loop(centerTopInstances, function(centerTopInstance, index) {
+							if (index < cti) return;
+							centerTopInstance.dom.style.top = parseInt(centerTopInstance.dom.style.top, 10) - removedHeight + 'px';
+						});
 					}
 					if (isRight) {
 						var rti = rightTopInstances.indexOf(instance);
 						rightTopInstances.splice(rti, 1);
-						for (var rtj = rightTopInstances.length; rti < rtj; rti++) {
-							rightTopInstances[rti].dom.style.top = parseInt(rightTopInstances[rti].dom.style.top, 10) - removedHeight + 'px';
-						}
+						VueUtil.loop(rightTopInstances, function(rightTopInstance, index) {
+							if (index < rti) return;
+							rightTopInstance.dom.style.top = parseInt(rightTopInstance.dom.style.top, 10) - removedHeight + 'px';
+						});
 					}
 				}
 				instance.vm.visible = false;
 				instances.splice(i, 1);
-				break;
 			}
-		}
+			return;
+		});
 	};
 	Vue.prototype.$notify = Notification;
 	Vue.notify = Notification;

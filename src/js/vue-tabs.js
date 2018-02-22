@@ -258,7 +258,7 @@
 			removePanes: function(item) {
 				var panes = this.panes;
 				var index = panes.indexOf(item);
-				if (index > -1) {
+				if (index !== -1) {
 					panes.splice(index, 1);
 				}
 			}

@@ -63,18 +63,7 @@
 			if (states.defaultExpandAll) {
 				states.expandRows = states.data.slice(0);
 			}
-			if (table.$refs.tableBody && table.$refs.tableBody.$options.delta.keeps !== 0 && !table.fixed) {
-				var delta = table.$refs.tableBody.$options.delta;
-				var dataLen = data.length;
-				delta.start = 0;
-				if (dataLen <= delta.remain) {
-					delta.end = dataLen;
-					delta.keeps = dataLen;
-				} else {
-					delta.end = delta.remain;
-					delta.keeps = delta.remain;
-				}
-			}
+			VueUtil.isVueComponent(table.$refs.tableBody) && table.$refs.tableBody.resetDelta(data.length);
 			Vue.nextTick(function() {
 				table.updateScrollY();
 				table.resizeZone();
@@ -129,19 +118,7 @@
 			if (!silent) {
 				self.table.$emit('filter-change', filters);
 			}
-			var table = this.table;
-			if (table.$refs.tableBody && table.$refs.tableBody.$options.delta.keeps !== 0 && !table.fixed) {
-				var delta = table.$refs.tableBody.$options.delta;
-				var dataLen = data.length;
-				delta.start = 0;
-				if (dataLen <= delta.remain) {
-					delta.end = dataLen;
-					delta.keeps = dataLen;
-				} else {
-					delta.end = delta.remain;
-					delta.keeps = delta.remain;
-				}
-			}
+			this.table.$refs.tableBody.resetDelta(data.length);
 			Vue.nextTick(function() {
 				table.updateScrollY();
 				table.resizeZone();
@@ -244,10 +221,8 @@
 			'min': Vue.t('vue.table.minText'),
 			'max': Vue.t('vue.table.maxText'),
 		};
-		this.states.aggregates = [];
-		var index = columns.length;
-		while (index--) {
-			var column = columns[index];
+		var aggregates = this.states.aggregates = [];
+		VueUtil.loop(columns, function(column) {
 			var aggregate = '';
 			var resultMap = {};
 			resultMap.max = '';
@@ -255,6 +230,7 @@
 			resultMap.sum = '';
 			resultMap.average = '';
 			resultMap.label = '';
+			resultMap.property = column.property;
 			var aggregateType = column.aggregate.toLowerCase();
 			var aggregateLabel = labelMap[aggregateType];
 			if (VueUtil.isDef(column.aggregateLabel)) aggregateLabel = column.aggregateLabel;
@@ -290,8 +266,8 @@
 				}
 				resultMap.label = aggregate;
 			}
-			this.states.aggregates[index] = resultMap;
-		}
+			aggregates.push(resultMap);
+		});
 	}
 	TableStore.prototype.updateLabelColumns = function() {
 		var states = this.states;
@@ -427,7 +403,7 @@
 			if (selected && index === -1) {
 				selection.push(row);
 				changed = true;
-			} else if (!selected && index > -1) {
+			} else if (!selected && index !== -1) {
 				selection.splice(index, 1);
 				changed = true;
 			}
@@ -751,8 +727,8 @@
 			var storeData = self.store.states.data;
 			if (self.fixed) {
 				if (((self.fixed === 'left') && self.store.states.fixedColumns.length > 0)
-					|| (self.fixed === 'right' && self.store.states.rightFixedColumns.length > 0)) {
-					delta = self.$parent.$refs.tableBody.$options.delta;
+				|| (self.fixed === 'right' && self.store.states.rightFixedColumns.length > 0)) {
+					delta = self.tableBody.$options.delta;
 					self.$nextTick(self.doResetCurrentRow);
 				} else {
 					return null;
@@ -794,9 +770,6 @@
 						dblclick: function(e) {
 							return self.handleDoubleClick(e, row)
 						},
-						click: function(e) {
-							return self.handleClick(e, row)
-						},
 						contextmenu: function(e) {
 							return self.handleContextMenu(e, row)
 						},
@@ -813,8 +786,11 @@
 						key: cellIndex,
 						class: ['vue-table__cell', $index % 2 === 1 ? 'grey' : '', column.align, column.getCellClass($index, cellIndex, row) || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : ''],
 						on: {
+							click: function(e) {
+								return self.handleClick(e, row, column)
+							},
 							mouseenter: function(e) {
-								return self.handleCellMouseEnter(e, row)
+								return self.handleCellMouseEnter(e, row, column)
 							},
 							mouseleave: self.handleCellMouseLeave
 						}
@@ -827,7 +803,7 @@
 					})])
 				}), !self.fixed && (self.layout.scrollX || self.layout.scrollY) && self.layout.gutterWidth ? createElement('td', {
 					class: 'vue-table__cell gutter'
-				}, []) : '']), self.store.states.expandRows.indexOf(row) > -1 ? createElement('tr', {class: ['vue-table__row', 'vue-table__expanded-row']}, [createElement('td', {
+				}, []) : '']), self.store.states.expandRows.indexOf(row) !== -1 ? createElement('tr', {class: ['vue-table__row', 'vue-table__expanded-row']}, [createElement('td', {
 					attrs: {
 						colspan: columns.length
 					},
@@ -873,6 +849,15 @@
 			highlight: function() {
 				return this.$parent.highlightCurrentRow;
 			},
+			tableBody: function() {
+				return this.$parent.$refs.tableBody;
+			},
+			fixedTableBody: function() {
+				return this.$parent.$refs.fixedTableBody;
+			},
+			rightFixedTableBody: function() {
+				return this.$parent.$refs.rightFixedTableBody;
+			}
 		},
 		data: function() {
 			return {
@@ -901,6 +886,19 @@
 					delta.keeps = delta.remain;
 				}
 			},
+			resetDelta: function(dataLen) {
+				if (this.fixed) return;
+				var delta = this.$options.delta;
+				if (delta.keeps === 0) return;
+				delta.start = 0;
+				if (dataLen <= delta.remain) {
+					delta.end = dataLen;
+					delta.keeps = dataLen;
+				} else {
+					delta.end = delta.remain;
+					delta.keeps = delta.remain;
+				}
+			},
 			scrollFilter: function(slots, delta) {
 				delta.data = [];
 				if (delta.keeps === 0 || slots.length <= delta.keeps) {
@@ -917,7 +915,9 @@
 				}
 			},
 			updateZone: function(offset) {
+				if (this.fixed) return;
 				var delta = this.$options.delta;
+				if (delta.keeps === 0) return;
 				delta.size = 40;
 				if (VueUtil.isElement(this.$refs.tbody)) delta.size = this.$refs.tbody.firstElementChild.offsetHeight;
 				delta.remain = Math.floor(this.$parent.height * 1 / delta.size) + 11;
@@ -937,19 +937,19 @@
 				this.$nextTick(this.doResetCurrentRow);
 			},
 			forceUpdate: VueUtil.throttle(function() {
-				this.$parent.$refs.tableBody.$forceUpdate();
-				this.$parent.$refs.fixedTableBody.$forceUpdate();
-				this.$parent.$refs.rightFixedTableBody.$forceUpdate();
+				this.tableBody.$forceUpdate();
+				this.fixedTableBody.$forceUpdate();
+				this.rightFixedTableBody.$forceUpdate();
 			}),
 			doResetCurrentRow: VueUtil.throttle(function(currentRow) {
-				this.$parent.$refs.tableBody.resetCurrentRow(currentRow);
-				this.$parent.$refs.fixedTableBody.resetCurrentRow(currentRow);
-				this.$parent.$refs.rightFixedTableBody.resetCurrentRow(currentRow);
+				this.tableBody.resetCurrentRow(currentRow);
+				this.fixedTableBody.resetCurrentRow(currentRow);
+				this.rightFixedTableBody.resetCurrentRow(currentRow);
 			}),
 			doResetHoverRow: VueUtil.throttle(function(hoverRow) {
-				this.$parent.$refs.tableBody.resetHoverRow(hoverRow);
-				this.$parent.$refs.fixedTableBody.resetHoverRow(hoverRow);
-				this.$parent.$refs.rightFixedTableBody.resetHoverRow(hoverRow);
+				this.tableBody.resetHoverRow(hoverRow);
+				this.fixedTableBody.resetHoverRow(hoverRow);
+				this.rightFixedTableBody.resetHoverRow(hoverRow);
 			}),
 			resetCurrentRow: function(currentRowObj) {
 				if (!this.highlight || !VueUtil.isElement(this.$refs.tbody)) return;
@@ -957,7 +957,7 @@
 				var oldCurrentRow = this.currentRow;
 				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
 				if (!VueUtil.isDef(currentRowObj)) currentRowObj = this.store.states.currentRow;
-				var data = this.$parent.$refs.tableBody.$options.delta.data;
+				var data = this.tableBody.$options.delta.data;
 				var rows = tbody.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
 				var currentRow = rows[data.indexOf(currentRowObj)];
 				currentRow && currentRow.classList.add('current-row');
@@ -969,7 +969,7 @@
 				var oldHoverRow = this.hoverRow;
 				oldHoverRow && oldHoverRow.classList.remove('hover-row');
 				if (!VueUtil.isDef(hoverRowObj)) return;
-				var data = this.$parent.$refs.tableBody.$options.delta.data;
+				var data = this.tableBody.$options.delta.data;
 				var rows = tbody.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
 				var hoverRow = rows[data.indexOf(hoverRowObj)];
 				hoverRow && hoverRow.classList.add('hover-row');
@@ -982,13 +982,6 @@
 						return cell;
 					}
 					cell = cell.parentNode;
-				}
-				return null;
-			},
-			getColumnByCell: function(cell) {
-				var matches = (cell.className || '').match(/vue-table_[^\s]+/gm);
-				if (matches) {
-					return this.store.getColumnById(matches[0]);
 				}
 				return null;
 			},
@@ -1019,11 +1012,10 @@
 				}
 				return classes.join(' ');
 			},
-			handleCellMouseEnter: function(event, row) {
+			handleCellMouseEnter: function(event, row, column) {
 				var table = this.$parent;
 				var cell = this.getCell(event);
 				if (cell) {
-					var column = this.getColumnByCell(cell);
 					var hoverState = table.hoverState = {cell: cell, column: column, row: row};
 					table.$emit('cell-mouse-enter', hoverState.row, hoverState.column, hoverState.cell, event);
 				}
@@ -1048,8 +1040,7 @@
 					tooltip.handleClosePopper();
 				}
 				var cell = this.getCell(event);
-				if (!cell)
-					return;
+				if (!cell) return;
 				var oldHoverState = this.$parent.hoverState;
 				this.$parent.$emit('cell-mouse-leave', oldHoverState.row, oldHoverState.column, oldHoverState.cell, event);
 			},
@@ -1065,15 +1056,11 @@
 			handleDoubleClick: function(event, row) {
 				this.$parent.$emit('row-dblclick', row, event);
 			},
-			handleClick: function(event, row) {
+			handleClick: function(event, row, column) {
 				var table = this.$parent;
 				var cell = this.getCell(event);
-				var column;
 				if (cell) {
-					column = this.getColumnByCell(cell);
-					if (column) {
-						table.$emit('cell-click', row, column, cell, event);
-					}
+					table.$emit('cell-click', row, column, cell, event);
 				}
 				this.store.commit('setCurrentRow', row);
 				table.$emit('row-click', row, event, column);
@@ -1183,25 +1170,7 @@
 			this.filterPanels = {};
 		},
 		mounted: function() {
-			var self = this;
-			var sortingColumns = self.store.states.sortingColumns;
-			VueUtil.loop(self.defaultSort, function(sort) {
-				var columns = self.store.states.columns;
-				var i = columns.length;
-				while (i--) {
-					var column = columns[i];
-					if (column.property === sort.prop) {
-						column.order = sort.order;
-						sortingColumns.push(column);
-						break;
-					}
-				}
-			});
-			if (sortingColumns.length > 0) {
-				self.$nextTick(function() {
-					self.store.commit('changeSortCondition');
-				});
-			}
+			this.setDefaultSortColumn();
 		},
 		beforeDestroy: function() {
 			var panels = this.filterPanels;
@@ -1212,6 +1181,24 @@
 			});
 		},
 		methods: {
+			setDefaultSortColumn: function() {
+				if (this.fixed) return;
+				var self = this;
+				var sortingColumns = self.store.states.sortingColumns;
+				VueUtil.loop(self.defaultSort, function(sort) {
+					VueUtil.loop(self.store.states.columns, function(column) {
+						if (column.property === sort.prop) {
+							column.order = sort.order;
+							sortingColumns.push(column);
+						}
+					});
+				});
+				if (sortingColumns.length > 0) {
+					self.$nextTick(function() {
+						self.store.commit('changeSortCondition');
+					});
+				}
+			},
 			convertToRows: function(columns) {
 				var rows = [[]];
 				var colspan = 1;
@@ -1732,25 +1719,31 @@
 				}
 				if (!VueUtil.isDef(params.original)) params.original = true;
 				var columns = params.original ? this.store.states._columns : this.store.states.columns;
+				columns = columns.filter(function(column) {
+					return (column.property !== 'selectionColumn'
+						&& column.property !== 'indexColumn'
+						&& column.property !== 'expandColumn')
+				});
 				var datas = params.original ? this.store.states._data : this.store.states.data;
 				var footer = [];
 				if (this.showFooter) {
-					footer = this.store.states.aggregates.map(function(aggregate) {
+					footer = this.store.states.aggregates.filter(function(aggregate) {
+						return (aggregate.property !== 'selectionColumn'
+							&& aggregate.property !== 'indexColumn'
+							&& aggregate.property !== 'expandColumn')
+					}).map(function(aggregate) {
 						return aggregate.label;
 					});
 				}
 				var appendLine = function(content, row, options) {
 					var separator = options.separator;
-					var quoted = options.quoted
 					var line = row.map(function(data) {
-						if (!quoted) return data;
-						data = VueUtil.isString(data) ? data.replace(/"/g, '"') : data;
-						return '"' + data + '"';
+						return '"' + VueUtil.toString(data).replace(/"/g, '""') + '"';
 					});
 					content.push(line.join(separator));
 				};
 				var tableDataToCsv = function(columns, datas, footer, options) {
-					options = VueUtil.merge({}, {separator: ',', quoted: false}, options);
+					options = VueUtil.merge({}, {separator: ','}, options);
 					var columnOrder;
 					var content = [];
 					var column = [];
@@ -1880,9 +1873,7 @@
 						}
 					}
 					if (self.bodyScroll.top !== scrollTop) {
-						if (refs.tableBody && refs.tableBody.$options.delta.keeps !== 0) {
-							refs.tableBody.updateZone(scrollTop);
-						}
+						refs.tableBody.updateZone(scrollTop);
 						self.bodyScroll.top = scrollTop;
 						refs.fixedBodyWrapper.scrollTop = scrollTop;
 						refs.rightFixedBodyWrapper.scrollTop = scrollTop;
@@ -1950,11 +1941,8 @@
 			},
 			resizeZone: function() {
 				var refs = this.$refs;
-				if (refs.tableBody && refs.tableBody.$options.delta.keeps !== 0 && !this.fixed) {
-					var scrollTop = this.bodyScroll.top;
-					refs.tableBody.updateZone(scrollTop);
-				}
-				if (refs.tableFooter && this.showFooter && !this.fixed) {
+				refs.tableBody.updateZone(this.bodyScroll.top);
+				if (this.showFooter) {
 					this.store.getAggregate(this.store.states.columns, this.store.states.data);
 					refs.tableFooter.aggregates = this.store.states.aggregates
 				}
@@ -2033,12 +2021,9 @@
 				if (this.height) {
 					var delta = this.$refs.tableBody.$options.delta;
 					if (val) {
-						delta.size = 40;
-						if (VueUtil.isElement(this.$refs.tableBody.$refs.tbody)) delta.size = this.$refs.tableBody.$refs.tbody.firstElementChild.offsetHeight;
-						delta.remain = Math.floor(this.height * 1 / delta.size) + 10;
-						delta.keeps = delta.remain;
+						delta.keeps = this.height * 1;
 					} else {
-						delta.size = delta.remain = delta.keeps = 0;
+						delta.keeps = 0;
 					}
 					this.doLayout();
 				}

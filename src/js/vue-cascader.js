@@ -383,7 +383,7 @@
 					var label = option[self.labelKey];
 					var keywordIndex = label.toLowerCase().indexOf(inputValue.toLowerCase());
 					var labelPart = label.slice(keywordIndex, inputValue.length + keywordIndex);
-					var node = keywordIndex > -1 ? self.highlightKeyword(label, labelPart) : label;
+					var node = keywordIndex !== -1 ? self.highlightKeyword(label, labelPart) : label;
 					return index === 0 ? node : [' / ', node];
 				});
 			},

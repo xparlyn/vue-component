@@ -17,7 +17,7 @@
 				type: String,
 				default: 'click',
 				validator: function(value) {
-					return ['click', 'focus', 'hover', 'manual'].indexOf(value) > -1
+					return ['click', 'focus', 'hover', 'manual'].indexOf(value) !== -1
 				}
 			},
 			title: String,

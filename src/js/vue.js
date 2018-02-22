@@ -1732,7 +1732,7 @@ function flushCallbacks () {
   pending = false;
   while (callbacks.length) {
     callbacks[0]();
-    callbacks.splice(0,1);
+    callbacks.shift();
   }
 }
 

@@ -15,7 +15,7 @@
 			type: {
 				type: String,
 				default: 'line',
-				validator: function(val) {return ['line', 'circle'].indexOf(val) > -1;}
+				validator: function(val) {return ['line', 'circle'].indexOf(val) !== -1;}
 			},
 			percentage: {
 				type: Number,

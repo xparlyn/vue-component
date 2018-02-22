@@ -40,7 +40,7 @@
 		},
 		computed: {
 			isActive: function() {
-				return this.$parent.activeNames.indexOf(this.name) > -1;
+				return this.$parent.activeNames.indexOf(this.name) !== -1;
 			},
 			headerExpand: function() {
 				return this.$parent.expandOnClickHeader;

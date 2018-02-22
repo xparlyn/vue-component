@@ -193,7 +193,7 @@
 						immediate: true,
 						handler: function(value) {
 							if (VueUtil.isArray(value)) {
-								this.$parent.internalPageSize = value.indexOf(this.$parent.pageSize) > -1 ? this.$parent.pageSize : this.pageSizes[0];
+								this.$parent.internalPageSize = value.indexOf(this.$parent.pageSize) !== -1 ? this.$parent.pageSize : this.pageSizes[0];
 							}
 						}
 					}

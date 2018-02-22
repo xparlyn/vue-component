@@ -94,8 +94,7 @@
 				return old ? VueUtil.isArray(old) ? old.concat(fn) : [old, fn] : fn;
 			},
 			concatClass: function(a, b) {
-				if (a && a.indexOf(b) > -1)
-					return a;
+				if (a && a.indexOf(b) !== -1) return a;
 				return a ? b ? (a + ' ' + b) : a : (b || '');
 			},
 			handleShowPopper: function() {

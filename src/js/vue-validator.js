@@ -144,7 +144,7 @@
 		}
 		var custom = ['integer', 'float', 'array', 'regexp', 'object', 'method', 'email', 'number', 'date', 'url', 'hex'];
 		var ruleType = rule.type;
-		if (custom.indexOf(ruleType) > -1) {
+		if (custom.indexOf(ruleType) !== -1) {
 			if (!types[ruleType](value)) {
 				errors.push(options.messages.default);
 			}

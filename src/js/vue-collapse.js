@@ -52,7 +52,7 @@
 				} else {
 					var activeNames = this.activeNames.slice(0);
 					var index = activeNames.indexOf(item.name);
-					if (index > -1) {
+					if (index !== -1) {
 						activeNames.splice(index, 1);
 					} else {
 						activeNames.push(item.name);

@@ -315,9 +315,9 @@
 				});
 			},
 			handleIconClick: function(event) {
-				if (this.iconClass.indexOf('vue-icon-error') > -1) {
+				if (this.iconClass.indexOf('vue-icon-error') !== -1) {
 					this.deleteSelected(event);
-				} else if (this.iconClass.indexOf('vue-icon-success') > -1) {
+				} else if (this.iconClass.indexOf('vue-icon-success') !== -1) {
 					var value = [];
 					VueUtil.loop(this.options, function(option) {
 						if (!option.disabled) {
@@ -400,7 +400,7 @@
 				if (this.multiple) {
 					var value = this.value.slice(0);
 					var optionIndex = value.indexOf(option.value);
-					if (optionIndex > -1) {
+					if (optionIndex !== -1) {
 						value.splice(optionIndex, 1);
 					} else if (this.multipleLimit <= 0 || value.length < this.multipleLimit) {
 						value.push(option.value);
@@ -486,7 +486,7 @@
 			},
 			deleteTag: function(event, tag) {
 				var index = this.selected.indexOf(tag);
-				if (index > -1 && !this.disabled) {
+				if (index !== -1 && !this.disabled) {
 					var value = this.value.slice(0);
 					value.splice(index, 1);
 					this.$emit('input', value);
@@ -503,7 +503,7 @@
 				this.optionsCount--;
 				this.filteredOptionsCount--;
 				var index = this.options.indexOf(option);
-				if (index > -1) {
+				if (index !== -1) {
 					this.options.splice(index, 1);
 				}
 				this.broadcast('VueOption', 'resetIndex');

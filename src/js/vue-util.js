@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.37.9428';
+	var version ='1.37.9440';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -50,6 +50,9 @@
 	};
 	var isVNode = function(node) {
 		return isObject(node) && node.hasOwnProperty('componentOptions');
+	};
+	var isVueComponent = function(node) {
+		return isObject(node) && node.hasOwnProperty('$root');
 	};
 	var toString = function(val) {
 		return !isDef(val) ? '' : typeof val === 'object' ? JSON.stringify(val) : String(val);
@@ -142,7 +145,7 @@
 		return result;
 	};
 	var loop = function(arr, fn) {
-		arr.length && isFunction(fn) && Array.prototype.forEach.call(arr, fn);
+		isDef(arr) && arr.length && isFunction(fn) && Array.prototype.forEach.call(arr, fn);
 	};
 	var ownPropertyLoop = function (obj, fn) {
 		isDef(obj) && loop(Object.keys(obj), fn);
@@ -171,22 +174,24 @@
 		});
 		return res;
 	};
-	var on = function(el, event, handler, useCapture) {
+	var on = function(el, event, handler, options) {
 		if (el && event && handler) {
-			el.addEventListener(event, handler, useCapture);
+			if (!isDef(options)) options = {passive: false};
+			el.addEventListener(event, handler, options);
 		}
 	};
-	var off = function(el, event, handler, useCapture) {
+	var off = function(el, event, handler, options) {
 		if (el && event) {
-			el.removeEventListener(event, handler, useCapture);
+			if (!isDef(options)) options = {passive: false};
+			el.removeEventListener(event, handler, options);
 		}
 	};
-	var once = function(el, event, handler, useCapture) {
+	var once = function(el, event, handler, options) {
 		var listener = function() {
 			isFunction(handler) && handler.apply(this, arguments);
-			off(el, event, listener, useCapture);
+			off(el, event, listener, options);
 		};
-		on(el, event, listener, useCapture);
+		on(el, event, listener, options);
 	};
 	var removeNode = function(node) {
 		node && node.parentElement && node.parentElement.removeChild(node);
@@ -227,7 +232,7 @@
 		if (styleName === 'float') {
 			styleName = 'cssFloat';
 		}
-		return getComputedStyle(el, null)[styleName];
+		return el.style[styleName] || getComputedStyle(el, null)[styleName];
 	};
 	var setStyle = function(el, styleName, value) {
 		if (!isElement(el) || !isString(styleName)) return;
@@ -254,22 +259,7 @@
 		if (!isFunction(callback)) callback = delay;
 		if (!isFunction(callback)) return function() {};
 		var timer = null;
-		if (!isNumber(delay)) {
-			return function() {
-				var self = this;
-				var args = arguments;
-				if (throttleflg) {
-					if (timer) return false;
-				} else {
-					cancelAnimationFrame(timer);
-				}
-				timer = requestAnimationFrame(function() {
-					callback.apply(self, args);
-					cancelAnimationFrame(timer);
-					timer = null;
-				});
-			}
-		} else {
+		if (isNumber(delay)) {
 			return function() {
 				var self = this;
 				var args = arguments;
@@ -283,6 +273,21 @@
 					clearTimeout(timer);
 					timer = null;
 				}, delay);
+			}
+		} else {
+			return function() {
+				var self = this;
+				var args = arguments;
+				if (throttleflg) {
+					if (timer) return false;
+				} else {
+					cancelAnimationFrame(timer);
+				}
+				timer = requestAnimationFrame(function() {
+					callback.apply(self, args);
+					cancelAnimationFrame(timer);
+					timer = null;
+				});
 			}
 		}
 	}
@@ -745,6 +750,7 @@
 		isNodeList: isNodeList,
 		isElement: isElement,
 		isVNode: isVNode,
+		isVueComponent: isVueComponent,
 		toString: toString,
 		toDate: toDate,
 		formatDate: formatDate,

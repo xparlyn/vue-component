@@ -676,7 +676,7 @@
 				};
 				var placement = this.popperJS._popper.getAttribute('x-placement').split('-')[0];
 				var origin = placementMap[placement];
-				this.popperJS._popper.style.transformOrigin = ['top', 'bottom'].indexOf(placement) > -1 ? 'center ' + origin : origin + ' center';
+				this.popperJS._popper.style.transformOrigin = ['top', 'bottom'].indexOf(placement) !== -1 ? 'center ' + origin : origin + ' center';
 			},
 			appendArrow: function(element) {
 				if (this.appended) return;
