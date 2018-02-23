@@ -301,8 +301,7 @@
 								var result = null;
 								for (var i = 0, j = paths.length; i < j; i++) {
 									var path = paths[i];
-									if (!current)
-										break;
+									if (!current) break;
 									if (i === j - 1) {
 										result = current[path];
 										break;

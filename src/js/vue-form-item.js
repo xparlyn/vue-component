@@ -90,8 +90,7 @@
 				path = path.replace(/\[(\w+)\]/g, '.$1');
 				path = path.replace(/^\./, '');
 				var keyArr = path.split('.');
-				var i = 0;
-				for (var len = keyArr.length; i < len - 1; ++i) {
+				for (var i = 0, len = keyArr.length; i < len - 1; ++i) {
 					var key = keyArr[i];
 					tempObj = tempObj[key];
 					if (!VueUtil.isDef(tempObj)) {

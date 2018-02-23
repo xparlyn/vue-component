@@ -1,11 +1,11 @@
 (function(context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context.VueLoader = definition(context.Vue);
+		context.VueLoader = definition(context.Vue, context.VueUtil);
 	}
-})(this, function(Vue) {
+})(this, function(Vue, VueUtil) {
 	'use strict';
 	var scopeIndex = 0;
 	var scriptCache = {};
@@ -38,19 +38,18 @@
 		scopeStyles: function(styleElt, scopeName) {
 			var resetStyle = function(rules) {
 				var scopedRuleAry = [];
-				for (var i = 0, j = rules.length; i < j; ++i) {
-					var rule = rules[i];
+				VueUtil.loop(rules, function(rule) {
 					var scopedRule = null;
 					if (rule.type === 1) {
 						var scopedSelectors = [];
-						rule.selectorText.split(/\s*,\s*/).forEach(function(sel) {
+						VueUtil.loop(rule.selectorText.split(/\s*,\s*/), function(sel) {
 							scopedSelectors.push(scopeName + ' ' + sel);
 						});
 						scopedRule = scopedSelectors.join(',') + rule.cssText.substr(rule.selectorText.length);
 					}
 					if (rule.type === 4) {
 						scopedRule = '@media ' + rule.conditionText + '{';
-						resetStyle(rule.cssRules).forEach(function(subScopedRule) {
+						VueUtil.loop(resetStyle(rule.cssRules), function(subScopedRule) {
 							if (subScopedRule) {
 								scopedRule = scopedRule + subScopedRule;
 							}
@@ -58,20 +57,17 @@
 						scopedRule = scopedRule + '}';
 					}
 					scopedRuleAry.push(scopedRule);
-				}
+				});
 				return scopedRuleAry;
 			};
 			var process = function() {
 				var sheet = styleElt.sheet;
 				var rules = sheet.cssRules;
 				var scopedRuleAry = resetStyle(rules);
-				for (var i = 0, j = rules.length; i < j; ++i) {
-					var scopedRule = scopedRuleAry[i];
-					if (scopedRule) {
-						sheet.deleteRule(i);
-						sheet.insertRule(scopedRule, i);
-					}
-				}
+				VueUtil.loop(scopedRuleAry, function(scopedRule, i) {
+					sheet.deleteRule(i);
+					sheet.insertRule(scopedRule, i);
+				});
 			};
 			try {
 				process();

@@ -453,9 +453,10 @@
 	TableStore.prototype.commit = function(name) {
 		var mutations = this.mutations;
 		var args = [];
-		for (var i = 1, j = arguments.length; i < j; i++) {
-			args.push(arguments[i]);
-		}
+		VueUtil.loop(arguments, function(arg, index) {
+			if (index === 0) return;
+			args.push(arg);
+		});
 		if (mutations[name]) {
 			mutations[name].apply(this, [this.states].concat(args));
 		} else {
@@ -1193,11 +1194,6 @@
 						}
 					});
 				});
-				if (sortingColumns.length > 0) {
-					self.$nextTick(function() {
-						self.store.commit('changeSortCondition');
-					});
-				}
 			},
 			convertToRows: function(columns) {
 				var rows = [[]];
@@ -2008,7 +2004,13 @@
 			data: {
 				immediate: true,
 				handler: function(val) {
-					this.store.commit('setData', val);
+					var store = this.store;
+					store.commit('setData', val);
+					if (store.states.sortingColumns.length > 0) {
+						this.$nextTick(function() {
+							store.commit('changeSortCondition');
+						});
+					}
 				}
 			},
 			showHeader: function(val) {

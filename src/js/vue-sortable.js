@@ -144,11 +144,11 @@
 					var readonlyProperties = ['Move'].concat(eventsListened, eventsToEmit).map(function(evt) {
 						return 'on' + evt;
 					});
-					for (var property in newOptionValue) {
+					VueUtil.ownPropertyLoop(newOptionValue, function(property) {
 						if (readonlyProperties.indexOf(property) === -1) {
 							this._sortable.option(property, newOptionValue[property]);
 						}
-					}
+					});
 				},
 				deep: true
 			},

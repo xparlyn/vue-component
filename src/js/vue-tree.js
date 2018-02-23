@@ -589,15 +589,14 @@
 		VueUtil.loop(allNodes, function(node) {
 			node.setChecked(false, false)
 		});
-		for (var i = 0, j = allNodes.length; i < j; i++) {
-			var node = allNodes[i];
+		VueUtil.loop(allNodes, function(node) {
 			var nodeKey = node.data[key] + '';
 			var checked = keys.indexOf(nodeKey) !== -1;
 			if (!checked) {
 				if (node.checked && !cache[nodeKey]) {
 					node.setChecked(false, false);
 				}
-				continue;
+				return;
 			}
 			var parent = node.parent;
 			while (parent && parent.level > 0) {
@@ -606,7 +605,7 @@
 			}
 			if (node.isLeaf || self.checkStrictly) {
 				node.setChecked(true, false);
-				continue;
+				return;
 			}
 			node.setChecked(true, true);
 			if (leafOnly) {
@@ -622,7 +621,7 @@
 				};
 				traverse(node);
 			}
-		}
+		});
 	};
 	TreeStore.prototype.setCheckedNodes = function(array) {
 		var self = this;
