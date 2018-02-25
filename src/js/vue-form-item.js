@@ -104,7 +104,7 @@
 				};
 			},
 			labelStyleWidth: function() {
-				if (this.form.labelPosition === 'top' || this.form.labelResponsive) return '';
+				if (this.form.labelPosition === 'top' || (this.form.labelResponsive && VueUtil.getStyle(this.$refs.label, 'display') === 'inline-block')) return '';
 				var labelWidth = this.labelWidth || this.form.labelWidth;
 				return labelWidth;
 			},
