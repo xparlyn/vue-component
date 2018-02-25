@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.38.9459';
+	var version ='1.38.9474';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -156,7 +156,7 @@
 	};
 	var merge = function(target) {
 		loop(arguments, function(source, index) {
-			if (index === 0 ) return;
+			if (index === 0) return;
 			ownPropertyLoop(source, function(prop) {
 				if (isObject(target[prop]) && isObject(source[prop])) {
 					target[prop] = merge({}, target[prop], source[prop]);

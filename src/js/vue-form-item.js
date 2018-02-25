@@ -10,7 +10,7 @@
 })(this, function(Vue, VueUtil, VueValidator) {
 	'use strict';
 	var VueFormItem = {
-		template: '<div :class="[\'vue-form-item\', {\'is-notify\': form.notifyMessage || form.customMessageMethod,\'is-error\': validateState === \'error\',\'is-validating\': validateState === \'validating\',\'is-required\': isRequired || required}]"><label :for="prop" class="vue-form-item__label" :style="labelStyle" v-if="label" ref="label">{{label + form.labelSuffix}}</label><div class="vue-form-item__content" :style="contentStyle" ref="content"><slot></slot><div class="vue-form-item__error" v-if="validateState === \'error\' && showMessage && form.showMessage && !form.notifyMessage && !form.customMessageMethod">{{validateMessage}}</div></div></div>',
+		template: '<div :class="[\'vue-form-item\', {\'is-notify\': form.notifyMessage || form.customMessageMethod,\'is-error\': validateState === \'error\',\'is-validating\': validateState === \'validating\',\'is-required\': isRequired || required}]"><label :for="prop" :class="[\'vue-form-item__label\', {\'is-responsive\': form.labelResponsive}]" :style="labelStyle" v-if="label" ref="label">{{label + form.labelSuffix}}</label><div class="vue-form-item__content" :style="contentStyle" ref="content"><slot></slot><div class="vue-form-item__error" v-if="validateState === \'error\' && showMessage && form.showMessage && !form.notifyMessage && !form.customMessageMethod">{{validateMessage}}</div></div></div>',
 		name: 'VueFormItem',
 		componentName: 'VueFormItem',
 		mixins: [VueUtil.component.emitter],
@@ -104,8 +104,7 @@
 				};
 			},
 			labelStyleWidth: function() {
-				if (this.form.labelPosition === 'top' || (this.form.labelResponsive && VueUtil.getStyle(this.$refs.label, 'display') === 'inline-block'))
-					return '';
+				if (this.form.labelPosition === 'top' || this.form.labelResponsive) return '';
 				var labelWidth = this.labelWidth || this.form.labelWidth;
 				return labelWidth;
 			},

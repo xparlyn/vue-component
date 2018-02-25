@@ -66,7 +66,7 @@
 	padding-top: 8px;
 }
 @media (max-width: 768px) {
-	.vue-form-item__label {
+	.vue-form-item__label.is-responsive {
 		float:none;
 		display: inline-block;
 		padding: 0 0 10px;
