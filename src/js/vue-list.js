@@ -46,7 +46,9 @@
 			},
 			updateZone: function(offset) {
 				var delta = this.$options.delta;
+				if (!VueUtil.isDef(delta)) return;
 				if (delta.total <= delta.keeps) return;
+				offset = offset || 0;
 				var overs = Math.floor(offset / delta.size);
 				var start = overs ? overs : 0;
 				var end = overs ? (overs + delta.keeps) : delta.keeps;
@@ -104,19 +106,18 @@
 				'on': {
 					'scroll': this.handleScroll
 				}
-			}, [
-					createElement('div', {
-						'style': {
-							'margin-top': delta.marginTop + 'px',
-							'margin-bottom':  delta.marginBottom + 'px'
-						}
-					}, showList)
-				]);
+			}, [createElement('div', {
+					'style': {
+						'margin-top': delta.marginTop + 'px',
+						'margin-bottom':  delta.marginBottom + 'px'
+					}
+				}, showList)
+			]);
 		},
 		mounted: function() {
 			var self = this;
 			self.$on('item-click', self.handleItemClick);
-			if (self.defaultSelected) {
+			if (self.defaultSelected && self.$slots.default) {
 				self.$nextTick(function() {
 					var defaultSlot = self.$slots.default[self.defaultActivedIndex];
 					defaultSlot && defaultSlot.componentInstance && defaultSlot.componentInstance.handleClick();

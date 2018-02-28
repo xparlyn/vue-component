@@ -79,20 +79,10 @@
 	width: 1px;
 	height: 100%;
 }
-.vue-table .vue-table__column>.cell {
-	position: relative;
-	display: inline-block;
-	vertical-align: middle;
-}
 .vue-table .vue-table__column {
 	overflow: hidden;
 	background-color: #eef1f6;
 	text-align: left;
-}
-.vue-table .vue-table__column>div {
-	display: inline-block;
-	line-height: 40px;
-	overflow: hidden;
 }
 .vue-table .vue-table__column.required>div::before {
 	width: 8px;
@@ -103,9 +93,13 @@
 	vertical-align: middle;
 }
 .vue-table .vue-table__column>.cell {
+	position: relative;
+	display: inline-block;
+	vertical-align: middle;
 	word-wrap: normal;
 	text-overflow: ellipsis;
 	line-height: 20px;
+	overflow: hidden;
 }
 .vue-table .vue-table__column>.cell.highlight {
 	color: #409eff;
@@ -327,8 +321,11 @@
 	margin-left: 5px;
 	cursor: pointer;
 }
-.vue-table__column-filter-trigger i {
+.vue-table__column-filter-trigger .vue-icon-filter {
 	color: #97a8be;
+}
+.vue-table__column-filter-trigger .vue-icon-filter.is-filtered {
+	color: #1f2d3d;
 }
 .vue-table__body .vue-table__cell {
 	background-color: #fff;
@@ -365,6 +362,7 @@
 	margin: 0;
 	list-style: none;
 	min-width: 100px;
+	overflow-x: hidden;
 }
 .vue-table-filter__list-item {
 	line-height: 36px;
@@ -372,49 +370,12 @@
 	cursor: pointer;
 	font-size: 14px;
 }
-.vue-table-filter__list-item:hover {
-	background-color: #e4e8f1;
-	color: #48576a;
-}
-.vue-table-filter__list-item.is-active {
-	background-color: #409eff;
-	color: #fff;
-}
-.vue-table-filter__content {
-	min-width: 100px;
-}
 .vue-table-filter__bottom {
 	border-top: 1px solid #d1dbe5;
 	padding: 8px;
 }
-.vue-table-filter__bottom button {
-	background: 0 0;
-	border: none;
-	color: #8391a5;
-	cursor: pointer;
-	font-size: 14px;
+.vue-table-filter__bottom .vue-button {
 	padding: 0 3px;
-}
-.vue-table-filter__bottom button:hover {
-	color: #409eff;
-}
-.vue-table-filter__bottom button:focus {
-	outline: 0;
-}
-.vue-table-filter__bottom button.is-disabled {
-	color: #bfcbd9;
-	cursor: not-allowed;
-}
-.vue-table-filter__checkbox-group {
-	padding: 10px;
-}
-.vue-table-filter__checkbox-group .vue-checkbox {
-	display: block;
-	margin-bottom: 8px;
-	margin-left: 5px;
-}
-.vue-table-filter__checkbox-group .vue-checkbox:last-child {
-	margin-bottom: 0;
 }
 .vue-table-context-menu .vue-dialog__header {
 	padding: 15px 20px 10px;

@@ -60,6 +60,15 @@
 	line-height: 36px;
 	font-size: 14px;
 }
+.vue-input--large .vue-input__icon {
+	line-height: 42px;
+}
+.vue-input--small .vue-input__icon {
+	line-height: 30px;
+}
+.vue-input--mini .vue-input__icon {
+	line-height: 22px;
+}
 .vue-input__icon+.vue-input__inner {
 	padding-right: 35px;
 }

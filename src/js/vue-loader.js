@@ -65,8 +65,10 @@
 				var rules = sheet.cssRules;
 				var scopedRuleAry = resetStyle(rules);
 				VueUtil.loop(scopedRuleAry, function(scopedRule, i) {
-					sheet.deleteRule(i);
-					sheet.insertRule(scopedRule, i);
+					if (VueUtil.isDef(scopedRule)) {
+						sheet.deleteRule(i);
+						sheet.insertRule(scopedRule, i);
+					}
 				});
 			};
 			try {

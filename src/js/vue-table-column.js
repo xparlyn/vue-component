@@ -117,12 +117,8 @@
 			prop: String,
 			width: {},
 			minWidth: {},
-			sortable: {
-				type: [String, Boolean],
-				default: false
-			},
+			sortable: Boolean,
 			sortMethod: Function,
-			sortColumns: Array,
 			resizable: {
 				type: Boolean,
 				default: true
@@ -138,14 +134,9 @@
 				type: Boolean,
 				default: true
 			},
+			filterable: Boolean,
 			filterMethod: Function,
 			filteredValue: Array,
-			filters: Array,
-			filterPlacement: String,
-			filterMultiple: {
-				type: Boolean,
-				default: true
-			},
 			aggregate: {
 				type: String,
 				default: ''
@@ -214,7 +205,7 @@
 				context: self.context,
 				align: self.align ? 'is-' + self.align : null,
 				headerAlign: self.headerAlign ? 'is-' + self.headerAlign : 'is-center',
-				sortable: self.sortable === '' ? true : self.sortable,
+				sortable: self.sortable,
 				sortMethod: self.sortMethod,
 				resizable: self.resizable,
 				showOverflowTooltip: self.showOverflowTooltip,
@@ -223,12 +214,9 @@
 				fixed: self.fixed === '' ? true : self.fixed,
 				fixedIndex: -1,
 				filterMethod: self.filterMethod,
-				filters: self.filters,
-				filterable: self.filters || self.filterMethod,
-				filterMultiple: self.filterMultiple,
+				filterable: self.filterable,
 				filterOpened: false,
 				filteredValue: self.filteredValue || [],
-				filterPlacement: self.filterPlacement || 'bottom',
 				aggregate: self.aggregate,
 				aggregateLabel: self.aggregateLabel,
 				colspan: self.colspan,
@@ -247,10 +235,6 @@
 			self.columnConfig = column;
 			var renderCell = column.renderCell;
 			var renderHeader = column.renderHeader;
-			column.sortColumns = null;
-			if (self.$scopedSlots.default) {
-				column.sortColumns = self.sortColumns;
-			}
 			column.renderHeader = function() {
 				if (self.$scopedSlots.header) {
 					column.renderHeader = function() {
@@ -343,16 +327,6 @@
 			property: function(newVal) {
 				if (this.columnConfig) {
 					this.columnConfig.property = newVal;
-				}
-			},
-			filters: function(newVal) {
-				if (this.columnConfig) {
-					this.columnConfig.filters = newVal;
-				}
-			},
-			filterMultiple: function(newVal) {
-				if (this.columnConfig) {
-					this.columnConfig.filterMultiple = newVal;
 				}
 			},
 			align: function(newVal) {
