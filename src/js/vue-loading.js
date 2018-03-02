@@ -77,7 +77,7 @@
 				});
 			} else {
 				if (el.domVisible) {
-					el.instance.$on('after-leave', function() {
+					el.instance.$once('after-leave', function() {
 						el.domVisible = false;
 						if (binding.modifiers.fullscreen && el.originalOverflow !== 'hidden') {
 							document.body.style.overflow = el.originalOverflow;
