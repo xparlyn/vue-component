@@ -58,14 +58,17 @@
 		if (!VueUtil.isDef(loadingBarInstance)) loadingBarInstance = newInstance();
 		loadingBarInstance.update(options);
 	};
-	var destroyInstance = VueUtil.debounce(500, function() {
+	var destroyInstance = VueUtil.debounce(500, function(fn) {
 		if (VueUtil.isDef(loadingBarInstance)) {
 			loadingBarInstance.destroy();
 			loadingBarInstance = null;
+			if (VueUtil.isFunction(fn)) {
+				fn();
+			}
 		}
 	});
 	var VueLoadingBar = {
-		start: function() {
+		start: function(fn) {
 			if (VueUtil.isDef(loadingBarInstance)) return;
 			var percent = 0;
 			updateInstance({percent: percent});
@@ -77,20 +80,26 @@
 				}
 				updateInstance({percent: percent});
 			}, 200);
+			if (VueUtil.isFunction(fn)) {
+				fn();
+			}
 		},
-		update: function(percent) {
+		update: function(percent, fn) {
 			clearInterval(intervaler);
 			updateInstance({percent: percent});
+			if (VueUtil.isFunction(fn)) {
+				fn();
+			}
 		},
-		finish: VueUtil.debounce(function() {
+		finish: VueUtil.debounce(function(fn) {
 			clearInterval(intervaler);
 			updateInstance({percent: 100});
-			destroyInstance();
+			destroyInstance(fn);
 		}),
-		error: VueUtil.debounce(function() {
+		error: VueUtil.debounce(function(fn) {
 			clearInterval(intervaler);
 			updateInstance({percent: 100, status: 'error'});
-			destroyInstance();
+			destroyInstance(fn);
 		})
 	}
 	Vue.loadingBar = VueLoadingBar;
