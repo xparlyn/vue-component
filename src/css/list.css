@@ -3,3 +3,10 @@
 	border: 1px solid #ddd;
 	overflow-y: auto;
 }
+.vue-list-item:hover {
+	background: #eef1f6;
+}
+.vue-list-item.is-active {
+	background: #edf7ff;
+	color: #409eff;
+}

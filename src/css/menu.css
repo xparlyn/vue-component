@@ -109,3 +109,76 @@
 .vue-menu--horizontal.vue-menu--dark .vue-submenu .vue-menu-item.is-active {
 	color: #409eff;
 }
+.vue-menu-item {
+	height: 56px;
+	line-height: 56px;
+	font-size: 14px;
+	color: #48576a;
+	padding: 0 20px;
+	cursor: pointer;
+	position: relative;
+	white-space: nowrap;
+}
+.vue-menu-item.is-active {
+	color: #409eff;
+}
+.vue-menu-item [class^=vue-icon-] {
+	vertical-align: baseline;
+	margin-right: 10px;
+}
+.vue-menu-item:first-child {
+	margin-left: 0;
+}
+.vue-menu-item:last-child {
+	margin-right: 0;
+}
+.vue-menu-item-group>ul {
+	padding: 0;
+}
+.vue-menu-item-group__title {
+	padding-top: 15px;
+	line-height: normal;
+	font-size: 14px;
+	padding-left: 20px;
+	color: #97a8be;
+}
+.vue-submenu__title {
+	height: 56px;
+	line-height: 56px;
+	font-size: 14px;
+	color: #48576a;
+	padding: 0 20px;
+	cursor: pointer;
+	white-space: nowrap;
+	position: relative;
+}
+.vue-submenu [class^=vue-icon-] {
+	vertical-align: baseline;
+	margin-right: 10px;
+}
+.vue-submenu .vue-menu {
+	background-color: #e4e8f1;
+}
+.vue-submenu .vue-menu-item:hover,
+.vue-submenu__title:hover {
+	background-color: #d1dbe5;
+}
+.vue-submenu .vue-menu-item {
+	height: 50px;
+	line-height: 50px;
+	padding: 0 45px;
+}
+.vue-submenu.is-opened>.vue-submenu__title .vue-submenu__icon-arrow {
+	transform: rotate3d(0,0,1,180deg);
+}
+.vue-submenu.is-active .vue-submenu__title {
+	border-bottom-color: #409eff;
+}
+.vue-submenu__icon-arrow {
+	position: absolute;
+	top: 50%;
+	right: 20px;
+	margin-top: -7px;
+	transition: transform .3s;
+	font-size: 12px;
+}

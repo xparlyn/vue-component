@@ -156,3 +156,6 @@
 .vue-tabs--border-card .vue-tabs__new-tab+.vue-tabs__nav-wrap{
 	border-left: 1px solid #d1dbe5;
 }
+.vue-tab-pane{
+	width: 100%;
+}

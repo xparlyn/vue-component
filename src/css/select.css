@@ -109,3 +109,76 @@
 .vue-select__tag .vue-icon-close {
 	font-size: 12px;
 }
+.vue-select-dropdown {
+	position: absolute;
+	z-index: 1001;
+	border: 1px solid #d1dbe5;
+	border-radius: 2px;
+	background-color: #fff;
+	box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
+	margin: 5px 0;
+}
+.vue-select-dropdown .vue-scrollbar.is-empty .vue-select-dropdown__list {
+	padding: 0;
+}
+.vue-select-dropdown.is-multiple .vue-select-dropdown__item.selected {
+	color: #409eff;
+	background-color: #fff;
+}
+.vue-select-dropdown.is-multiple .vue-select-dropdown__item.selected.hover,
+.vue-select-dropdown.is-multiple .vue-select-dropdown__item.selected:hover,
+.vue-select-dropdown__item.hover,
+.vue-select-dropdown__item:hover {
+	background-color: #e4e8f1;
+}
+.vue-select-dropdown.is-multiple .vue-select-dropdown__item.selected::after {
+	position: absolute;
+	right: 10px;
+	font-family: component;
+	content: '\e808';
+	font-size: 11px;
+}
+.vue-select-dropdown__empty {
+	padding: 10px 0;
+	margin: 0;
+	text-align: center;
+	color: #999;
+	font-size: 14px;
+}
+.vue-select-dropdown__list {
+	max-height: 198px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	overflow: auto;
+}
+.vue-select-dropdown__item {
+	font-size: 14px;
+	padding: 8px 10px;
+	position: relative;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: #48576a;
+	height: 36px;
+	line-height: 1.5;
+	cursor: pointer;
+}
+.vue-select-dropdown__item.selected {
+	color: #fff;
+	background-color: #409eff;
+}
+.vue-select-dropdown__item.selected.hover,
+.vue-select-dropdown__item.selected:hover {
+	background-color: #1c8de0;
+}
+.vue-select-dropdown__item span {
+	line-height: 1.5!important;
+}
+.vue-select-dropdown__item.is-disabled {
+	color: #bfcbd9;
+	cursor: not-allowed;
+}
+.vue-select-dropdown__item.is-disabled:hover {
+	background-color: #fff;
+}
