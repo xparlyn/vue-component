@@ -104,7 +104,7 @@
 		this._popper.style.transform = '';
 		this._removeEventListeners();
 		if (this._options.removeOnDestroy) {
-			this._popper.parentElement.removeChild(this._popper);
+			VueUtil.removeNode(this._popper);
 		}
 		return this;
 	}
@@ -593,10 +593,6 @@
 			visibleArrow: Boolean,
 			autoWidth: Boolean,
 			transition: String,
-			appendToBody: {
-				type: Boolean,
-				default: true
-			},
 			options: {
 				type: Object,
 				default: function() {
@@ -609,7 +605,8 @@
 		data: function() {
 			return {
 				showPopper: false,
-				currentPlacement: ''
+				currentPlacement: '',
+				appendElement: null
 			};
 		},
 		watch: {
@@ -629,6 +626,12 @@
 			stop: function(e) {
 				e.stopPropagation()
 			},
+			findeAbsoluteParent: function(element) {
+				if (element === document.body) return;
+				var elementPosition = VueUtil.getStyle(element, 'position');
+				if (elementPosition === 'absolute' && element.parentNode) this.appendElement = element.parentNode;
+				this.findeAbsoluteParent(element.parentNode);
+			},
 			createPopper: function() {
 				var self = this;
 				self.currentPlacement = self.currentPlacement || self.placement;
@@ -639,7 +642,9 @@
 				if (!reference && self.$slots.reference && self.$slots.reference[0]) reference = self.referenceElm = self.$slots.reference[0].elm;
 				if (!popper || !reference) return;
 				if (self.visibleArrow) self.appendArrow(popper);
-				if (self.appendToBody) document.body.appendChild(self.popperElm);
+				self.appendElement = self.referenceElm.parentNode;
+				self.findeAbsoluteParent(self.referenceElm);
+				self.appendElement.appendChild(self.popperElm);
 				if (self.popperJS && self.popperJS.destroy) self.popperJS.destroy();
 				options.placement = self.currentPlacement;
 				options.offset = self.offset;
@@ -688,11 +693,9 @@
 			}
 		},
 		beforeDestroy: function() {
+			VueUtil.off(this.popperElm, 'click', self.stop);
+			VueUtil.removeNode(this.popperElm);
 			this.doDestroy();
-			if (this.popperElm && this.popperElm.parentNode === document.body) {
-				VueUtil.off(this.popperElm, 'click', self.stop);
-				document.body.removeChild(this.popperElm);
-			}
 		},
 		deactivated: function() {
 			this.$options.beforeDestroy[0].call(this);

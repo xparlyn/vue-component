@@ -13,6 +13,7 @@
 		componentName: 'VueList',
 		data: function() {
 			return {
+				defaultSlotLen: 0,
 				activedIndex: null,
 				remain: 0
 			}
@@ -95,7 +96,10 @@
 		render: function(createElement) {
 			var slots = this.$slots.default;
 			if (!VueUtil.isArray(slots)) return null;
-			if (!VueUtil.isDef(this.$options.delta)) this.createDelta(slots);
+			if (!VueUtil.isDef(this.$options.delta) || this.defaultSlotLen !== slots.length) {
+				this.createDelta(slots);
+				this.defaultSlotLen = slots.length;
+			}
 			var delta = this.$options.delta;
 			var showList = this.filter(slots);
 			return createElement('div', {

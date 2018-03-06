@@ -7,8 +7,24 @@
 	}
 })(this, function(Vue, VueUtil) {
 	'use strict';
+	var promiseLoop = function(arr, cb) {
+		var realResult = []
+		var result = Promise.resolve()
+		arr.reverse();
+		arr.forEach(function(a, index) {
+			result = result.then(function() {
+				return cb(a).then(function(res) {
+					realResult.push(res)
+				})
+			})
+		})
+		return result.then(function() {
+			return realResult
+		})
+	};
 	var scopeIndex = 0;
-	var scriptCache = {};
+	var scriptCache = [];
+	var scriptScopedCache = [];
 	var identity = function(value) {
 		return value;
 	};
@@ -124,6 +140,18 @@
 		setContent: function(content) {
 			this.elt.textContent = content;
 		},
+		addContent: function(content) {
+			this.elt.textContent = content + this.elt.textContent;
+		},
+		asynReadContent: function(url) {
+			return new Promise(function(resolve, reject) {
+				Vue.http.get(url).then(function(reqponse) {
+					resolve(reqponse.bodyText);
+				}, function(reqponse) {
+					reject(reqponse.status);
+				});
+			});
+		},
 		compile: function(module) {
 			var childModuleRequire = function(childURL) {
 				return httpVueLoader.require(resolveURL(this.component.baseURI, childURL));
@@ -187,6 +215,7 @@
 		},
 		load: function(componentURL) {
 			return httpVueLoader.httpRequest(componentURL).then(function(responseText) {
+				scriptScopedCache = [];
 				this.baseURI = componentURL.substr(0, componentURL.lastIndexOf('/') + 1);
 				var doc = document.implementation.createHTMLDocument('');
 				doc.body.innerHTML = (this.baseURI ? '<base href="' + this.baseURI + '">' : '') + responseText;
@@ -197,15 +226,20 @@
 						break;
 					case 'SCRIPT':
 						var srcStr = it.getAttribute('src');
+						var scoped = it.getAttribute('scoped');
 						if (srcStr) {
-							if (!scriptCache[srcStr]) {
-								var newScript = document.createElement('script');
-								newScript.setAttribute('src', srcStr);
-								this.getHead().appendChild(newScript);
-								scriptCache[srcStr] = true;
+							if (VueUtil.isDef(scoped)) {
+								if (scriptScopedCache.indexOf(srcStr) === -1) scriptScopedCache.push(srcStr);
+							} else {
+								if (scriptCache.indexOf(srcStr) === -1) {
+									var newScript = document.createElement('script');
+									newScript.setAttribute('src', srcStr);
+									this.getHead().appendChild(newScript);
+									scriptCache.push(srcStr);
+								}
 							}
 						} else {
-							this.script = new ScriptContext(this,it);
+							this.script = new ScriptContext(this, it);
 						}
 						break;
 					case 'STYLE':
@@ -255,6 +289,11 @@
 		load: function(url) {
 			return function() {
 				return new Component().load(url).then(function(component) {
+					return promiseLoop(scriptScopedCache, component.script.asynReadContent).then(function(responseText){
+						component.script.addContent(responseText);
+						return component;
+					});
+				}).then(function(component) {
 					return component.normalize();
 				}).then(function(component) {
 					return component.compile();

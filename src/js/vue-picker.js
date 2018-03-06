@@ -205,7 +205,7 @@
 			},
 			displayValue: function(val) {
 				this.$emit('change', val);
-				this.dispatch('ElFormItem', 'el.form.change');
+				this.dispatch('VueFormItem', 'vue.form.change');
 			}
 		},
 		computed: {
