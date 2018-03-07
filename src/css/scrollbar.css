@@ -2,9 +2,9 @@
 	overflow: hidden;
 	position: relative;
 }
-.vue-scrollbar:active .vue-scrollbar__bar,
-.vue-scrollbar:focus .vue-scrollbar__bar,
-.vue-scrollbar:hover .vue-scrollbar__bar {
+.vue-scrollbar:active>.vue-scrollbar__bar,
+.vue-scrollbar:focus>.vue-scrollbar__bar,
+.vue-scrollbar:hover>.vue-scrollbar__bar {
 	opacity: 1;
 }
 .vue-scrollbar__wrap {
@@ -21,10 +21,12 @@
 	height: 0;
 	cursor: pointer;
 	border-radius: inherit;
-	background-color: rgba(193,193,193,.7);
+	background-color: rgba(150,150,150,0.3);
 }
+.vue-scrollbar__thumb:active,
+.vue-scrollbar__thumb:focus,
 .vue-scrollbar__thumb:hover {
-	background-color: #c1c1c1;
+	background-color: rgba(150,150,150,0.5);
 }
 .vue-scrollbar__bar {
 	position: absolute;
@@ -35,15 +37,15 @@
 	opacity: 0;
 }
 .vue-scrollbar__bar.is-horizontal {
-	height: 6px;
-	left: 2px;
+	height: 7px;
+	left: 0;
 }
 .vue-scrollbar__bar.is-horizontal>div {
 	height: 100%;
 }
 .vue-scrollbar__bar.is-vertical {
-	width: 6px;
-	top: 2px;
+	width: 7px;
+	top: 0;
 }
 .vue-scrollbar__bar.is-vertical>div {
 	width: 100%;
