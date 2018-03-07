@@ -184,7 +184,9 @@
 				ref: "wrap",
 				style: {marginBottom: gutter, marginRight: gutter, height: viewHeight, width: viewWidth},
 				on: {
-					scroll: self.handleScroll
+					scroll: self.handleScroll,
+					mouseenter: self.handleScroll,
+					mouseleave: self.handleScroll
 				},
 				class: [self.wrapClass, 'vue-scrollbar__wrap']
 			}, [view]);
