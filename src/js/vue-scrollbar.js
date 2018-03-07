@@ -12,7 +12,7 @@
 		name: 'Bar',
 		props: {
 			vertical: Boolean,
-			size: String,
+			size: Number,
 			move: Number
 		},
 		computed: {
@@ -54,9 +54,10 @@
 				var move = obj.move;
 				var size = obj.size;
 				var bar = obj.bar;
+				if (size === 0) move = 0;
 				var style = {};
 				var translate = "translate" + bar.axis + "(" + move + "%)";
-				style[bar.size] = size;
+				style[bar.size] = size + "%";
 				style.transform = translate;
 				style.msTransform = translate;
 				style.webkitTransform = translate;
@@ -116,7 +117,7 @@
 				document.onselectstart = null;
 			}
 		},
-		destroyed: function() {
+		beforeDestroy: function() {
 			VueUtil.off(document, 'mouseup', this.mouseUpDocumentHandler);
 		}
 	};
@@ -126,11 +127,10 @@
 			Bar: Bar
 		},
 		props: {
-			native: Boolean,
-			wrapStyle: {},
 			wrapClass: {},
 			viewClass: {},
-			viewStyle: {},
+			height: Number,
+			width: Number,
 			noresize: Boolean,
 			tag: {
 				type: String,
@@ -139,8 +139,8 @@
 		},
 		data: function() {
 			return {
-				sizeWidth: '0',
-				sizeHeight: '0',
+				sizeWidth: 0,
+				sizeHeight: 0,
 				moveX: 0,
 				moveY: 0
 			};
@@ -148,86 +148,89 @@
 		computed: {
 			wrap: function() {
 				return this.$refs.wrap;
+			},
+			resizeElement: function() {
+				var view = this.$refs.resize;
+				if (VueUtil.isDef(view) && VueUtil.isElement(view.$el)) {
+					return view.$el;
+				}
+				return view;
 			}
 		},
 		render: function(createElement) {
 			var self = this;
-			var gutter = VueUtil.scrollBarWidth();
-			var style = self.wrapStyle;
-			if (gutter) {
-				var gutterWith = "-" + gutter + "px";
-				var gutterStyle = 'margin-bottom: ' + gutterWith + '; margin-right: ' + gutterWith + ';';
-				if (VueUtil.isArray(self.wrapStyle)) {
-					style = VueUtil.arrayToObject(self.wrapStyle);
-					style.marginRight = style.marginBottom = gutterWith;
-				} else if (VueUtil.isString(self.wrapStyle)) {
-					style += gutterStyle;
-				} else {
-					style = gutterStyle;
-				}
+			var viewHeight = null;
+			var viewWidth = null;
+			var scrollHeight = null;
+			var scrollWidth = null;
+			var gutter = -VueUtil.scrollBarWidth() + 'px';
+			if (VueUtil.isNumber(self.height)) {
+				viewHeight = scrollHeight = self.height + 'px';
+			}
+			if (VueUtil.isNumber(self.width)) {
+				viewWidth = scrollWidth = self.width + 'px';
+			}
+			if (!VueUtil.isDef(scrollWidth)) {
+				viewHeight = self.height + VueUtil.scrollBarWidth() + 'px';
+			}
+			if (!VueUtil.isDef(scrollHeight)) {
+				viewWidth = self.width + VueUtil.scrollBarWidth() + 'px';
 			}
 			var view = createElement(self.tag, {
 				class: ['vue-scrollbar__view', self.viewClass],
-				style: self.viewStyle,
 				ref: 'resize'
 			}, self.$slots.default);
 			var wrap = createElement('div', {
 				ref: "wrap",
-				style: style,
+				style: {marginBottom: gutter, marginRight: gutter, height: viewHeight, width: viewWidth},
 				on: {
-					'scroll': self.handleScroll
+					scroll: self.handleScroll
 				},
-				class: [self.wrapClass, 'vue-scrollbar__wrap', gutter ? '' : 'vue-scrollbar__wrap--hidden-default']
-			}, [[view]]);
-			var nodes;
-			if (!self.native) {
-				nodes = [wrap, createElement(Bar, {
-					attrs: {
-						move: self.moveX,
-						size: self.sizeWidth
-					}
-				}, []), createElement(Bar, {
-					attrs: {
-						vertical: true,
-						move: self.moveY,
-						size: self.sizeHeight
-					}
-				}, []),];
-			} else {
-				nodes = [createElement('div', {
-					ref: "wrap",
-					class: [self.wrapClass, "vue-scrollbar__wrap"],
-					style: style
-				}, [[view]])];
-			}
+				class: [self.wrapClass, 'vue-scrollbar__wrap']
+			}, [view]);
+			var nodes = [wrap, createElement(Bar, {
+				style: {width: scrollWidth},
+				attrs: {
+					move: self.moveX,
+					size: self.sizeWidth
+				}
+			}, []), createElement(Bar, {
+				style: {height: scrollHeight},
+				attrs: {
+					vertical: true,
+					move: self.moveY,
+					size: self.sizeHeight
+				}
+			}, [])];
 			return createElement('div', {
 				class: 'vue-scrollbar'
 			}, nodes);
 		},
 		methods: {
-			handleScroll: function() {
+			handleScroll: VueUtil.debounce(function(e) {
 				var wrap = this.wrap;
-				if (!wrap) return;
 				this.moveY = wrap.scrollTop * 100 / wrap.clientHeight;
 				this.moveX = wrap.scrollLeft * 100 / wrap.clientWidth;
-			},
-			update: function() {
+				this.$nextTick(this.update)
+			}),
+			update: VueUtil.debounce(function() {
 				var wrap = this.wrap;
-				if (!wrap) return;
 				var heightPercentage = wrap.clientHeight * 100 / wrap.scrollHeight;
 				var widthPercentage = wrap.clientWidth * 100 / wrap.scrollWidth;
-				this.sizeHeight = heightPercentage < 100 ? heightPercentage + '%' : '';
-				this.sizeWidth = widthPercentage < 100 ? widthPercentage + '%' : '';
+				this.sizeHeight = heightPercentage < 100 ? heightPercentage : 0;
+				this.sizeWidth = widthPercentage < 100 ? widthPercentage : 0;
+			}),
+			goTop: function() {
+				this.wrap.scrollTop = 0;
+				this.handleScroll();
 			}
 		},
 		mounted: function() {
-			if (this.native) return;
-			this.$nextTick(this.update);
-			!this.noresize && this.$refs.resize && VueUtil.addResizeListener(this.$refs.resize, this.update);
+			this.$nextTick(this.handleScroll);
+			!this.noresize && this.resizeElement && VueUtil.addResizeListener(this.resizeElement, this.update);
 		},
-		destroyed: function() {
-			if (this.native) return;
-			!this.noresize && this.$refs.resize && VueUtil.removeResizeListener(this.$refs.resize, this.update);
+		beforeDestroy: function() {
+			!this.noresize && this.resizeElement && VueUtil.removeResizeListener(this.resizeElement, this.update);
 		}
 	};
 	Vue.component(VueScrollbar.name, VueScrollbar);
