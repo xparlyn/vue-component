@@ -43,13 +43,16 @@
 				this.Minwidth = parseInt(VueUtil.getStyle(el, 'minWidth'));
 				this.Minheight = parseInt(VueUtil.getStyle(el, 'minHeight'));
 				VueUtil.addTouchStart(this._dragobj, BindAsEventListener(this, this.Start, true));
-				for (var i = 0, j = this._body.length; i < j; i++) {
-					VueUtil.addTouchStart(this._body[i], BindAsEventListener(this, this.Cancelbubble, false));
-				}
 				VueUtil.addTouchStart(this._resize, BindAsEventListener(this, this.Start, false));
 			},
+			isCancel: function(el) {
+				if (this._body.indexOf(el) !== -1) return true;
+				if (this._dragobj === el) return false;
+				return this.isCancel(el.parentElement);
+			},
 			Cancelbubble: function(e) {
-				document.all ? (e.cancelBubble = true) : (e.stopPropagation())
+				VueUtil.isBoolean(e.cancelBubble) && (e.cancelBubble = true);
+				VueUtil.isFunction(e.stopPropagation) && e.stopPropagation();
 			},
 			Changebg: function(o, x1, x2) {
 				o.style.backgroundPosition = (o.style.backgroundPosition == x1) ? x2 : x1;
@@ -61,7 +64,7 @@
 					clientX = e.touches[0].clientX;
 					clientY = e.touches[0].clientY;
 				}
-				if (!VueUtil.isDef(clientX) || !VueUtil.isDef(clientY)) return;
+				if (!VueUtil.isDef(clientX) || !VueUtil.isDef(clientY) || this.isCancel(e.srcElement)) return;
 				if (!isdrag) this.Cancelbubble(e);
 				this._Css = isdrag ? {
 					x: "left",
