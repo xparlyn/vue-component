@@ -118,7 +118,7 @@
 					exportData: '数据导出',
 					fileName: '文件名',
 					exportOrgData: '导出原始数据',
-					exportHandleData: '导出处理后的数据'
+					exportHandleData: '导出数据'
 				},
 				tree: {
 					emptyText: '暂无数据'
@@ -235,7 +235,7 @@
 					exportData: 'データ出力',
 					fileName: 'ファイル名',
 					exportOrgData: '元データ出力',
-					exportHandleData: '処理のデータ出力'
+					exportHandleData: 'データ出力'
 				},
 				tree: {
 					emptyText: 'データなし'
@@ -352,7 +352,7 @@
 					exportData: 'Data Export',
 					fileName: 'File Name',
 					exportOrgData: 'Original Data Export',
-					exportHandleData: 'Handle Data Export'
+					exportHandleData: 'Data Export'
 				},
 				tree: {
 					emptyText: 'No Data'
