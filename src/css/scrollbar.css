@@ -30,8 +30,8 @@
 }
 .vue-scrollbar__bar {
 	position: absolute;
-	right: 2px;
-	bottom: 2px;
+	right: 1px;
+	bottom: 1px;
 	z-index: 1;
 	border-radius: 4px;
 	opacity: 0;
