@@ -8,7 +8,10 @@
 	opacity: 1;
 }
 .vue-scrollbar__wrap {
-	overflow: scroll;
+	overflow: hidden;
+}
+.vue-scrollbar__view {
+	overflow: visible;
 }
 .vue-scrollbar__wrap--hidden-default::-webkit-scrollbar {
 	width: 0;
@@ -17,9 +20,6 @@
 .vue-scrollbar__thumb {
 	position: relative;
 	display: block;
-	width: 0;
-	height: 0;
-	cursor: pointer;
 	border-radius: inherit;
 	background-color: rgba(150,150,150,0.3);
 }
@@ -40,13 +40,13 @@
 	height: 7px;
 	left: 0;
 }
-.vue-scrollbar__bar.is-horizontal>div {
+.vue-scrollbar__bar.is-horizontal>.vue-scrollbar__thumb {
 	height: 100%;
 }
 .vue-scrollbar__bar.is-vertical {
 	width: 7px;
 	top: 0;
 }
-.vue-scrollbar__bar.is-vertical>div {
+.vue-scrollbar__bar.is-vertical>.vue-scrollbar__thumb {
 	width: 100%;
 }

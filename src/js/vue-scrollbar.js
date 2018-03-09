@@ -155,34 +155,28 @@
 					return view.$el;
 				}
 				return view;
+			},
+			mouseWheelEvent: function() {
+				return VueUtil.getSystemInfo().browser.toLowerCase() === 'firefox' ? 'DOMMouseScroll' : 'mousewheel';
 			}
 		},
 		render: function(createElement) {
 			var self = this;
 			var viewHeight = null;
 			var viewWidth = null;
-			var scrollHeight = null;
-			var scrollWidth = null;
-			var gutter = -VueUtil.scrollBarWidth() + 'px';
 			if (VueUtil.isNumber(self.height)) {
-				viewHeight = scrollHeight = self.height + 'px';
+				viewHeight =  self.height + 'px';
 			}
 			if (VueUtil.isNumber(self.width)) {
-				viewWidth = scrollWidth = self.width + 'px';
-			}
-			if (!VueUtil.isDef(scrollWidth)) {
-				viewHeight = self.height + VueUtil.scrollBarWidth() + 'px';
-			}
-			if (!VueUtil.isDef(scrollHeight)) {
-				viewWidth = self.width + VueUtil.scrollBarWidth() + 'px';
+				viewWidth =  self.width + 'px';
 			}
 			var view = createElement(self.tag, {
 				class: ['vue-scrollbar__view', self.viewClass],
 				ref: 'resize'
-			}, self.$slots.default);
+			}, [self.$slots.default]);
 			var wrap = createElement('div', {
 				ref: "wrap",
-				style: {marginBottom: gutter, marginRight: gutter, height: viewHeight, width: viewWidth},
+				style: {height: viewHeight, width: viewWidth},
 				on: {
 					scroll: self.handleScroll,
 					mouseenter: self.handleScroll,
@@ -191,13 +185,13 @@
 				class: [self.wrapClass, 'vue-scrollbar__wrap']
 			}, [view]);
 			var nodes = [wrap, createElement(Bar, {
-				style: {width: scrollWidth},
+				style: {width: viewWidth},
 				attrs: {
 					move: self.moveX,
 					size: self.sizeWidth
 				}
 			}, []), createElement(Bar, {
-				style: {height: scrollHeight},
+				style: {height: viewHeight},
 				attrs: {
 					vertical: true,
 					move: self.moveY,
@@ -209,19 +203,41 @@
 			}, nodes);
 		},
 		methods: {
+			isMouseWheelCancel: function(el) {
+				if (el === this.wrap) return false;
+				var overflowY = VueUtil.getStyle(el, 'overflowY');
+				if (['auto', 'scroll'].indexOf(overflowY) !== -1 && el.scrollHeight > el.clientHeight) return true;
+				return this.isMouseWheelCancel(el.parentElement);
+			},
+			scrollMouseWheel: function(event) {
+				console.log(event)
+				if (this.isMouseWheelCancel(event.srcElement)) return;
+				event.stopPropagation();
+				event.preventDefault();
+				var wheelDelta = event.wheelDelta || -event.detail;
+				var scrollTop = this.wrap.scrollTop;
+				var wheel = 90;
+				if (wheelDelta < 0) {
+					scrollTop += wheel;
+				} else {
+					scrollTop -= wheel;
+				}
+				this.wrap.scrollTop = scrollTop;
+				this.handleScroll();
+			},
 			handleScroll: VueUtil.debounce(function(e) {
 				var wrap = this.wrap;
 				this.moveY = wrap.scrollTop * 100 / wrap.clientHeight;
 				this.moveX = wrap.scrollLeft * 100 / wrap.clientWidth;
 				this.$nextTick(this.update)
 			}),
-			update: VueUtil.debounce(function() {
+			update: function() {
 				var wrap = this.wrap;
 				var heightPercentage = wrap.clientHeight * 100 / wrap.scrollHeight;
 				var widthPercentage = wrap.clientWidth * 100 / wrap.scrollWidth;
 				this.sizeHeight = heightPercentage < 100 ? heightPercentage : 0;
 				this.sizeWidth = widthPercentage < 100 ? widthPercentage : 0;
-			}),
+			},
 			goTop: function() {
 				this.wrap.scrollTop = 0;
 				this.handleScroll();
@@ -229,9 +245,11 @@
 		},
 		mounted: function() {
 			this.$nextTick(this.handleScroll);
+			VueUtil.on(this.wrap, this.mouseWheelEvent, this.scrollMouseWheel);
 			!this.noresize && this.resizeElement && VueUtil.addResizeListener(this.resizeElement, this.update);
 		},
 		beforeDestroy: function() {
+			VueUtil.off(this.wrap, this.mouseWheelEvent, this.scrollMouseWheel);
 			!this.noresize && this.resizeElement && VueUtil.removeResizeListener(this.resizeElement, this.update);
 		}
 	};
