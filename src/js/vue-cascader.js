@@ -436,7 +436,6 @@
 		created: function() {
 			var self = this;
 			self.debouncedInputChange = VueUtil.debounce(function(value) {
-				console.log('handleInputChange')
 				self.handleInputChange(value);
 			});
 		},
