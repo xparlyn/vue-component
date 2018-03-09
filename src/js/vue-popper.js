@@ -609,6 +609,11 @@
 				appendElement: null
 			};
 		},
+		computed: {
+			isNotIE: function() {
+				return VueUtil.getSystemInfo().browser.toLowerCase() !== 'ie';
+			}
+		},
 		watch: {
 			value: {
 				immediate: true,
@@ -659,7 +664,7 @@
 					self.popperJS.onUpdate(options.onUpdate);
 				}
 				self.popperJS._popper.style.zIndex = VueUtil.nextZIndex();
-				VueUtil.on(self.popperElm, 'click', self.stop);
+				self.isNotIE && VueUtil.on(self.popperElm, 'click', self.stop);
 			},
 			updatePopper: function() {
 				this.popperJS ? this.popperJS.update() : this.createPopper();
@@ -693,7 +698,7 @@
 			}
 		},
 		beforeDestroy: function() {
-			VueUtil.off(this.popperElm, 'click', self.stop);
+			this.isNotIE && VueUtil.off(this.popperElm, 'click', this.stop);
 			VueUtil.removeNode(this.popperElm);
 			this.doDestroy();
 		},
