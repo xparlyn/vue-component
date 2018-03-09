@@ -158,6 +158,9 @@
 			},
 			mouseWheelEvent: function() {
 				return VueUtil.getSystemInfo().browser.toLowerCase() === 'firefox' ? 'DOMMouseScroll' : 'mousewheel';
+			},
+			isIE: function() {
+				return VueUtil.getSystemInfo().browser.toLowerCase() === 'ie';
 			}
 		},
 		render: function(createElement) {
@@ -205,13 +208,13 @@
 		methods: {
 			isMouseWheelCancel: function(el) {
 				if (el === this.wrap) return false;
-				var overflowY = VueUtil.getStyle(el, 'overflowY');
+				if (this.isIE && el.querySelectorAll('.vue-scrollbar__wrap').length >0) return true;
+				var overflowY = VueUtil.getStyle(el, 'overflow-y');
 				if (['auto', 'scroll'].indexOf(overflowY) !== -1 && el.scrollHeight > el.clientHeight) return true;
 				return this.isMouseWheelCancel(el.parentElement);
 			},
 			scrollMouseWheel: function(event) {
-				console.log(event)
-				if (this.isMouseWheelCancel(event.srcElement)) return;
+				if (this.isMouseWheelCancel(event.target)) return;
 				event.stopPropagation();
 				event.preventDefault();
 				var wheelDelta = event.wheelDelta || -event.detail;

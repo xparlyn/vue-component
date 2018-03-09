@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.41.9581';
+	var version ='1.41.9586';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -732,7 +732,10 @@
 				return document.documentElement;
 			}
 		}
-		if (['scroll', 'auto'].indexOf(getStyle(parent, 'overflow')) !== -1 || ['scroll', 'auto'].indexOf(getStyle(parent, 'overflow-x')) !== -1 || ['scroll', 'auto'].indexOf(getStyle(parent, 'overflow-y')) !== -1) {
+		if (['scroll', 'auto'].indexOf(getStyle(parent, 'overflow')) !== -1
+		 || ['scroll', 'auto'].indexOf(getStyle(parent, 'overflow-x')) !== -1
+		 || ['scroll', 'auto'].indexOf(getStyle(parent, 'overflow-y')) !== -1
+		 || hasClass(parent, 'vue-scrollbar__wrap')) {
 			return parent;
 		}
 		return getScrollParent(el.parentNode);

@@ -64,7 +64,7 @@
 					clientX = e.touches[0].clientX;
 					clientY = e.touches[0].clientY;
 				}
-				if (!VueUtil.isDef(clientX) || !VueUtil.isDef(clientY) || this.isCancel(e.srcElement)) return;
+				if (!VueUtil.isDef(clientX) || !VueUtil.isDef(clientY) || this.isCancel(e.target)) return;
 				if (!isdrag) this.Cancelbubble(e);
 				this._Css = isdrag ? {
 					x: "left",
