@@ -156,7 +156,7 @@
 				return view;
 			},
 			mouseWheelEvent: function() {
-				return VueUtil.isFirefox === 'firefox' ? 'DOMMouseScroll' : 'mousewheel';
+				return VueUtil.isFirefox ? 'DOMMouseScroll' : 'mousewheel';
 			},
 		},
 		render: function(createElement) {
