@@ -1879,7 +1879,7 @@
 						refs.footerWrapper.scrollLeft = scrollLeft;
 					}
 				};
-				var mouseWheel = VueUtil.getSystemInfo().browser.toLowerCase() === 'firefox' ? 'DOMMouseScroll' : 'mousewheel';
+				var mouseWheel = VueUtil.isFirefox ? 'DOMMouseScroll' : 'mousewheel';
 				VueUtil.on(refs.bodyWrapper, 'scroll', bodyScroll);
 				VueUtil.on(refs.bodyWrapper, mouseWheel, scrollYMouseWheel);
 				VueUtil.on(refs.fixedBodyWrapper, mouseWheel, scrollYMouseWheel);

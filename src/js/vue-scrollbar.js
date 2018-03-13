@@ -13,7 +13,8 @@
 		props: {
 			vertical: Boolean,
 			size: Number,
-			move: Number
+			move: Number,
+			disSize: Number
 		},
 		computed: {
 			bar: function() {
@@ -56,11 +57,13 @@
 				var bar = obj.bar;
 				if (size === 0) move = 0;
 				var style = {};
-				var translate = "translate" + bar.axis + "(" + move + "%)";
-				style[bar.size] = size + "%";
-				style.transform = translate;
-				style.msTransform = translate;
-				style.webkitTransform = translate;
+				if (bar.axis === 'Y') {
+					style.marginTop = move + 'px';
+				}
+				if (bar.axis === 'X') {
+					style.marginLeft = move + 'px';
+				}
+				style[bar.size] = size + "px";
 				return style;
 			};
 			return createElement("div", {
@@ -89,17 +92,13 @@
 			clickTrackHandler: function(e) {
 				var offset = Math.abs(e.target.getBoundingClientRect()[this.bar.direction] - e[this.bar.client]);
 				var thumbHalf = this.$refs.thumb[this.bar.offset] / 2;
-				var thumbPositionPercentage = (offset - thumbHalf) * 100 / this.$el[this.bar.offset];
-				this.wrap[this.bar.scroll] = thumbPositionPercentage * this.wrap[this.bar.scrollSize] / 100;
+				this.wrap[this.bar.scroll] = (offset - thumbHalf) / (this.$el[this.bar.offset] + this.disSize) * this.wrap[this.bar.scrollSize];
 			},
 			startDrag: function(e) {
 				e.stopImmediatePropagation();
 				this.cursorDown = true;
 				VueUtil.on(document, 'mousemove', this.mouseMoveDocumentHandler);
 				VueUtil.on(document, 'mouseup', this.mouseUpDocumentHandler);
-				document.onselectstart = function() {
-					return false;
-				}
 			},
 			mouseMoveDocumentHandler: function(e) {
 				if (this.cursorDown === false) return;
@@ -107,14 +106,12 @@
 				if (!prevPage) return;
 				var offset = (this.$el.getBoundingClientRect()[this.bar.direction] - e[this.bar.client]) * -1;
 				var thumbClickPosition = this.$refs.thumb[this.bar.offset] - prevPage;
-				var thumbPositionPercentage = (offset - thumbClickPosition) * 100 / this.$el[this.bar.offset];
-				this.wrap[this.bar.scroll] = thumbPositionPercentage * this.wrap[this.bar.scrollSize] / 100;
+				this.wrap[this.bar.scroll] = (offset - thumbClickPosition) / (this.$el[this.bar.offset] + this.disSize) * this.wrap[this.bar.scrollSize];
 			},
 			mouseUpDocumentHandler: function(e) {
 				this.cursorDown = false;
 				this[this.bar.axis] = 0;
 				VueUtil.off(document, 'mousemove', this.mouseMoveDocumentHandler);
-				document.onselectstart = null;
 			}
 		},
 		beforeDestroy: function() {
@@ -142,7 +139,9 @@
 				sizeWidth: 0,
 				sizeHeight: 0,
 				moveX: 0,
-				moveY: 0
+				moveY: 0,
+				disSizeX: 0,
+				disSizeY: 0
 			};
 		},
 		computed: {
@@ -157,11 +156,8 @@
 				return view;
 			},
 			mouseWheelEvent: function() {
-				return VueUtil.getSystemInfo().browser.toLowerCase() === 'firefox' ? 'DOMMouseScroll' : 'mousewheel';
+				return VueUtil.isFirefox === 'firefox' ? 'DOMMouseScroll' : 'mousewheel';
 			},
-			isIE: function() {
-				return VueUtil.getSystemInfo().browser.toLowerCase() === 'ie';
-			}
 		},
 		render: function(createElement) {
 			var self = this;
@@ -191,14 +187,16 @@
 				style: {width: viewWidth},
 				attrs: {
 					move: self.moveX,
-					size: self.sizeWidth
+					size: self.sizeWidth,
+					disSize: self.disSizeX
 				}
 			}, []), createElement(Bar, {
 				style: {height: viewHeight},
 				attrs: {
 					vertical: true,
 					move: self.moveY,
-					size: self.sizeHeight
+					size: self.sizeHeight,
+					disSize: self.disSizeY
 				}
 			}, [])];
 			return createElement('div', {
@@ -208,16 +206,16 @@
 		methods: {
 			isMouseWheelCancel: function(el) {
 				if (el === this.wrap) return false;
-				if (this.isIE && el.querySelectorAll('.vue-scrollbar__wrap').length >0) return true;
-				var overflowY = VueUtil.getStyle(el, 'overflow-y');
+				if (VueUtil.isIE && el.querySelectorAll('.vue-scrollbar__wrap').length >0) return true;
+				var overflowY = VueUtil.getStyle(el, 'overflowY');
 				if (['auto', 'scroll'].indexOf(overflowY) !== -1 && el.scrollHeight > el.clientHeight) return true;
 				return this.isMouseWheelCancel(el.parentElement);
 			},
-			scrollMouseWheel: function(event) {
-				if (this.isMouseWheelCancel(event.target)) return;
-				event.stopPropagation();
-				event.preventDefault();
-				var wheelDelta = event.wheelDelta || -event.detail;
+			scrollMouseWheel: function(e) {
+				if (this.isMouseWheelCancel(e.target)) return;
+				e.stopPropagation();
+				e.preventDefault();
+				var wheelDelta = e.wheelDelta || -e.detail;
 				var scrollTop = this.wrap.scrollTop;
 				var wheel = 90;
 				if (wheelDelta < 0) {
@@ -228,37 +226,72 @@
 				this.wrap.scrollTop = scrollTop;
 				this.handleScroll();
 			},
-			touchStart: function(event) {
-				this.handleScroll();
+			touchStart: function(e) {
+				e.stopPropagation();
+				var touches = e.touches[0];
 				if (!VueUtil.isDef(this.$options.tocuhPlace)) {
-					this.$options.tocuhPlace = {tocuhX:0, tocuhY:0};
+					this.$options.tocuhPlace = {};
 				}
-				var touches = event.touches[0]
 				this.$options.tocuhPlace.tocuhX = touches.clientX;
 				this.$options.tocuhPlace.tocuhY = touches.clientY;
+				this.cursorDown = true;
 			},
-			touchMove: function(event) {
-				var touches = event.touches[0]
+			touchMove: function(e) {
+				if (this.cursorDown === false) return;
+				e.stopPropagation();
+				var touches = e.touches[0];
+				console.log(this.$options.tocuhPlace.tocuhX - touches.clientX)
 				var scrollLeft = this.wrap.scrollLeft + (this.$options.tocuhPlace.tocuhX - touches.clientX);
 				var scrollTop = this.wrap.scrollTop + (this.$options.tocuhPlace.tocuhY - touches.clientY);
 				this.wrap.scrollLeft = scrollLeft;
 				this.wrap.scrollTop = scrollTop;
-				this.$options.tocuhPlace.tocuhX = touches.clientX;
-				this.$options.tocuhPlace.tocuhY = touches.clientY;
-				this.handleScroll();
+			},
+			touchEnd: function(e) {
+				this.cursorDown = false;
+				e.stopPropagation();
 			},
 			handleScroll: VueUtil.debounce(function(e) {
+				this.update();
 				var wrap = this.wrap;
-				this.moveY = wrap.scrollTop * 100 / wrap.clientHeight;
-				this.moveX = wrap.scrollLeft * 100 / wrap.clientWidth;
-				this.$nextTick(this.update)
+				var moveY = wrap.scrollTop / wrap.scrollHeight * wrap.clientHeight;
+				var moveX = wrap.scrollLeft / wrap.scrollWidth * wrap.clientWidth;
+				var sizeHeight = this.sizeHeight;
+				var sizeWidth = this.sizeWidth;
+				var minHeight = wrap.clientHeight * 0.1;
+				var minWidth = wrap.clientWidth * 0.1;
+				if (sizeHeight < minHeight && sizeHeight !== 0) {
+					moveY = wrap.scrollTop / wrap.scrollHeight * (wrap.clientHeight - minHeight + sizeHeight);
+					this.sizeHeight = minHeight;
+					this.disSizeY = sizeHeight - minHeight;
+				}
+				if (sizeWidth < minWidth && sizeWidth !== 0) {
+					moveX = wrap.scrollLeft / wrap.scrollWidth * (wrap.clientHeight - minWidth + sizeWidth);
+					this.sizeWidth = minWidth;
+					this.disSizeX = sizeWidth - minWidth;
+				}
+				if (this.moveY !== moveY) {
+					this.moveY = moveY;
+					var isTop = (wrap.scrollTop === 0);
+					var isBottom = (wrap.scrollHeight - wrap.scrollTop === wrap.clientHeight);
+					this.$emit('scrollY', e, wrap.scrollTop, isTop, isBottom);
+				}
+				if (this.moveX !== moveX) {
+					this.moveX = moveX;
+					var isLeft = (wrap.scrollLeft === 0);
+					var isRight = (wrap.scrollWidth - wrap.scrollLeft === wrap.clientWidth);
+					this.$emit('scrollX', e, wrap.scrollLeft, isLeft, isRight);
+				}
 			}),
 			update: function() {
 				var wrap = this.wrap;
 				var heightPercentage = wrap.clientHeight * 100 / wrap.scrollHeight;
 				var widthPercentage = wrap.clientWidth * 100 / wrap.scrollWidth;
-				this.sizeHeight = heightPercentage < 100 ? heightPercentage : 0;
-				this.sizeWidth = widthPercentage < 100 ? widthPercentage : 0;
+				var sizeHeight = heightPercentage < 100 ? wrap.clientHeight * heightPercentage / 100 : 0;
+				var sizeWidth = widthPercentage < 100 ? wrap.clientWidth * widthPercentage / 100 : 0;
+				this.sizeHeight = sizeHeight;
+				this.sizeWidth = sizeWidth;
+				this.disSizeX = 0;
+				this.disSizeY = 0;
 			},
 			goTop: function() {
 				this.wrap.scrollTop = 0;
@@ -270,12 +303,14 @@
 			VueUtil.on(this.wrap, this.mouseWheelEvent, this.scrollMouseWheel);
 			VueUtil.on(this.wrap, 'touchstart', this.touchStart);
 			VueUtil.on(this.wrap, 'touchmove', this.touchMove);
+			VueUtil.on(this.wrap, 'touchend', this.touchEnd);
 			!this.noresize && this.resizeElement && VueUtil.addResizeListener(this.resizeElement, this.update);
 		},
 		beforeDestroy: function() {
 			VueUtil.off(this.wrap, this.mouseWheelEvent, this.scrollMouseWheel);
 			VueUtil.off(this.wrap, 'touchstart', this.touchStart);
 			VueUtil.off(this.wrap, 'touchmove',this.touchMove);
+			VueUtil.off(this.wrap, 'touchend', this.touchEnd);
 			!this.noresize && this.resizeElement && VueUtil.removeResizeListener(this.resizeElement, this.update);
 		}
 	};

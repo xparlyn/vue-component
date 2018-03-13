@@ -33,8 +33,7 @@
 		},
 		data: function() {
 			return {
-				popoverWidth: null,
-				timer: null
+				popoverWidth: null
 			}
 		},
 		watch: {
@@ -103,17 +102,17 @@
 			},
 			handleMouseEnter: function() {
 				var self = this;
-				cancelAnimationFrame(self.timer);
-				self.timer = requestAnimationFrame(function() {
+				var timer = setTimeout(function(){
 					self.showPopper = true;
-				});
+					clearTimeout(timer);
+				}, 300);
 			},
 			handleMouseLeave: function() {
 				var self = this;
-				cancelAnimationFrame(self.timer);
-				self.timer = requestAnimationFrame(function() {
+				var timer = setTimeout(function(){
 					self.showPopper = false;
-				});
+					clearTimeout(timer);
+				}, 300);
 			},
 			handleDocumentClick: function(e) {
 				var reference = this.reference || this.$refs.reference;

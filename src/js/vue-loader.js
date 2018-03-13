@@ -94,10 +94,10 @@
 					styleElt.sheet.disabled = true;
 					styleElt.addEventListener('load', function onStyleLoaded() {
 						styleElt.removeEventListener('load', onStyleLoaded);
-						setTimeout(function() {
+						VueUtil.debounce(function() {
 							process();
 							styleElt.sheet.disabled = false;
-						});
+						})();
 					});
 					return;
 				}

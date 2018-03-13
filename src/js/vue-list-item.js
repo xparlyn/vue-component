@@ -24,12 +24,19 @@
 			}
 		},
 		computed: {
+			list: function() {
+				var parent = this.$parent;
+				while (parent.$options.componentName !== 'VueList') {
+					parent = parent.$parent;
+				}
+				return parent;
+			},
 			isActive: function() {
-				return this.$parent.activedIndex === this.index;
+				return this.list.activedIndex === this.index;
 			}
 		},
 		mounted: function() {
-			this.$parent.setItemIndex(this);
+			this.list.setItemIndex(this);
 		}
 	};
 	Vue.component(VueListItem.name, VueListItem);

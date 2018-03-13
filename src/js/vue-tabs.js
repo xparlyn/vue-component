@@ -184,7 +184,7 @@
 		},
 		computed: {
 			mouseWheel: function() {
-				return VueUtil.getSystemInfo().browser.toLowerCase() === 'firefox' ? 'DOMMouseScroll' : 'mousewheel';
+				return VueUtil.isFirefox ? 'DOMMouseScroll' : 'mousewheel';
 			}
 		},
 		mounted: function() {

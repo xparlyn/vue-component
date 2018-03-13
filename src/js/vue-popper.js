@@ -609,11 +609,6 @@
 				appendElement: null
 			};
 		},
-		computed: {
-			isNotIE: function() {
-				return VueUtil.getSystemInfo().browser.toLowerCase() !== 'ie';
-			}
-		},
 		watch: {
 			value: {
 				immediate: true,
@@ -664,7 +659,7 @@
 					self.popperJS.onUpdate(options.onUpdate);
 				}
 				self.popperJS._popper.style.zIndex = VueUtil.nextZIndex();
-				self.isNotIE && VueUtil.on(self.popperElm, 'click', self.stop);
+				!VueUtil.isIE && VueUtil.on(self.popperElm, 'click', self.stop);
 			},
 			updatePopper: function() {
 				this.popperJS ? this.popperJS.update() : this.createPopper();
@@ -698,7 +693,7 @@
 			}
 		},
 		beforeDestroy: function() {
-			this.isNotIE && VueUtil.off(this.popperElm, 'click', this.stop);
+			!VueUtil.isIE && VueUtil.off(this.popperElm, 'click', this.stop);
 			VueUtil.removeNode(this.popperElm);
 			this.doDestroy();
 		},

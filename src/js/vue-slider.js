@@ -124,12 +124,11 @@
 			onDragEnd: function() {
 				var self = this;
 				if (self.dragging) {
-					var timer = requestAnimationFrame(function() {
+					VueUtil.debounce(function() {
 						self.dragging = false;
 						self.hideTooltip();
 						self.setPosition(self.newPosition);
-						cancelAnimationFrame(timer);
-					});
+					})();
 					VueUtil.removeTouchMove(document, this.onDragging);
 					VueUtil.removeTouchEnd(document, this.onDragEnd);
 					VueUtil.off(document, 'contextmenu', self.onDragEnd);

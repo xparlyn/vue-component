@@ -36,7 +36,6 @@
 		data: function() {
 			return {
 				visible: false,
-				timer: null
 			};
 		},
 		mounted: function() {
@@ -51,17 +50,17 @@
 		methods: {
 			show: function() {
 				var self = this;
-				cancelAnimationFrame(self.timer);
-				self.timer = requestAnimationFrame(function() {
+				var timer = setTimeout(function(){
 					self.visible = true;
-				});
+					clearTimeout(timer);
+				}, 300);
 			},
 			hide: function() {
 				var self = this;
-				cancelAnimationFrame(self.timer);
-				self.timer = requestAnimationFrame(function() {
+				var timer = setTimeout(function(){
 					self.visible = false;
-				});
+					clearTimeout(timer);
+				}, 300);
 			},
 			handleClick: function() {
 				this.visible = !this.visible;

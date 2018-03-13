@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.41.9604';
+	var version ='1.41.9609';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -732,9 +732,8 @@
 				return document.documentElement;
 			}
 		}
-		if (['scroll', 'auto'].indexOf(getStyle(parent, 'overflow')) !== -1
-		 || ['scroll', 'auto'].indexOf(getStyle(parent, 'overflow-x')) !== -1
-		 || ['scroll', 'auto'].indexOf(getStyle(parent, 'overflow-y')) !== -1
+		if ((['scroll', 'auto'].indexOf(getStyle(parent, 'overflowX')) !== -1 && parent.scrollWidth > parent.clientWidth)
+		 || (['scroll', 'auto'].indexOf(getStyle(parent, 'overflowY')) !== -1 && parent.scrollHeight > parent.clientHeight)
 		 || hasClass(parent, 'vue-scrollbar__wrap')) {
 			return parent;
 		}
@@ -798,6 +797,9 @@
 		produceModel: produceModel,
 		nextZIndex: popupManager.nextZIndex,
 		version: version,
+		isIE: getSystemInfo().browser.toLowerCase() === 'ie',
+		isFirefox: getSystemInfo().browser.toLowerCase() === 'firefox',
+		isChrome: getSystemInfo().browser.toLowerCase() === 'chrome',
 		component: {
 			menumixin: menumixin,
 			emitter: emitter,

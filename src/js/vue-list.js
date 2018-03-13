@@ -15,7 +15,6 @@
 			return {
 				defaultSlotLen: 0,
 				activedIndex: null,
-				remain: 0
 			}
 		},
 		props: {
@@ -31,7 +30,8 @@
 			defaultSelected: {
 				type: Boolean,
 				default: true
-			}
+			},
+			scrollbar: Boolean
 		},
 		methods: {
 			setItemIndex: function(item) {
@@ -40,10 +40,14 @@
 			handleItemClick: function(itemObj) {
 				this.activedIndex = itemObj.index;
 			},
-			handleScroll: function(e) {
-				var scrollTop = this.$el.scrollTop;
+			handleScroll: function(e, scrollTop, isTop, isBottom) {
+				if (!VueUtil.isDef(scrollTop)) {
+					scrollTop = this.$el.scrollTop;
+					isTop = (scrollTop === 0);
+					isBottom = (scrollTop === this.$el.scrollHeight - this.$el.clientHeight);
+				}
 				this.updateZone(scrollTop);
-				this.$emit('scroll', e, scrollTop)
+				this.$emit('scroll', e, scrollTop, isTop, isBottom)
 			},
 			updateZone: function(offset) {
 				var delta = this.$options.delta;
@@ -102,21 +106,54 @@
 			}
 			var delta = this.$options.delta;
 			var showList = this.filter(slots);
-			return createElement('div', {
-				'class': ['vue-list'],
-				'style': {
-					'height': this.height * 1 + 'px'
-				},
-				'on': {
-					'scroll': this.handleScroll
-				}
-			}, [createElement('div', {
+			var style = {
+				'margin-top': delta.marginTop + 'px',
+				'margin-bottom':  delta.marginBottom + 'px'
+			};
+			if (VueUtil.isChrome) {
+				style = {
+					'padding-top': delta.marginTop + 'px',
+					'padding-bottom':  delta.marginBottom + 'px'
+				};
+			}
+			var list = null;
+			if (this.scrollbar) {
+				list = createElement('div', {
+					'class': ['vue-list'],
 					'style': {
-						'margin-top': delta.marginTop + 'px',
-						'margin-bottom':  delta.marginBottom + 'px'
+						'height': this.height * 1 + 'px'
 					}
-				}, showList)
-			]);
+				}, [createElement('vue-scrollbar', {
+						props: {
+							height: this.height * 1
+						},
+						'on': {
+							'scrollY': this.handleScroll
+						},
+						ref: "scrollbar"
+					}, [createElement('div', {
+						'style': style
+					}, showList)])
+				]);
+			} else {
+				list = createElement('div', {
+					'class': ['vue-list'],
+					'style': {
+						'height': this.height * 1 + 'px',
+						'overflow': 'auto'
+					},
+					'on': {
+						'scroll': this.handleScroll
+					}
+				}, [createElement('div', {
+						'style': {
+							'margin-top': delta.marginTop + 'px',
+							'margin-bottom':  delta.marginBottom + 'px'
+						}
+					}, showList)
+				]);
+			}
+			return list;
 		},
 		mounted: function() {
 			var self = this;
