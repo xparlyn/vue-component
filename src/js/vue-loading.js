@@ -36,17 +36,15 @@
 				if (binding.modifiers.fullscreen && binding.modifiers.lock) {
 					parent.style.overflow = 'hidden';
 				}
-				el.domVisible = true;
 				parent.appendChild(el.mask);
-				Vue.nextTick(function() {
-					el.instance.visible = true;
-					Vue.nextTick(function() {
-						if (binding.modifiers.fullscreen) {
-							el.instance.$el.focus();
-						}
-					});
-				});
+				el.domVisible = true;
+				el.instance.visible = true;
 				el.domInserted = true;
+				Vue.nextTick(function() {
+					if (binding.modifiers.fullscreen) {
+						el.instance.$el.focus();
+					}
+				});
 			}
 		};
 		var toggleLoading = function(el, binding) {

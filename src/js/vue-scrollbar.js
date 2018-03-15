@@ -173,9 +173,7 @@
 				ref: "wrap",
 				style: {height: viewHeight, width: viewWidth},
 				on: {
-					scroll: self.handleScroll,
-					mouseenter: self.handleScroll,
-					mouseleave: self.handleScroll
+					scroll: self.handleScroll
 				},
 				class: [self.wrapClass, 'vue-scrollbar__wrap']
 			}, [view]);
@@ -220,7 +218,6 @@
 					scrollTop -= wheel;
 				}
 				this.wrap.scrollTop = scrollTop;
-				this.handleScroll();
 			},
 			touchStart: function(e) {
 				if (this.isScrollCancel(e.target)) return;
@@ -292,18 +289,18 @@
 			},
 			goTop: function() {
 				this.wrap.scrollTop = 0;
-				this.handleScroll();
 			}
 		},
 		mounted: function() {
-			this.$nextTick(this.handleScroll);
 			VueUtil.on(this.wrap, this.mouseWheelEvent, this.scrollMouseWheel);
 			VueUtil.on(this.wrap, 'touchstart', this.touchStart);
+			VueUtil.addHoverListener(this.wrap, this.handleScroll);
 			!this.noresize && this.resizeElement && VueUtil.addResizeListener(this.resizeElement, this.update);
 		},
 		beforeDestroy: function() {
 			VueUtil.off(this.wrap, this.mouseWheelEvent, this.scrollMouseWheel);
 			VueUtil.off(this.wrap, 'touchstart', this.touchStart);
+			VueUtil.removeHoverListener(this.wrap, this.handleScroll);
 			!this.noresize && this.resizeElement && VueUtil.removeResizeListener(this.resizeElement, this.update);
 		}
 	};

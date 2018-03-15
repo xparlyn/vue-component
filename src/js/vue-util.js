@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.42.9626';
+	var version ='1.42.9633';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -357,6 +357,18 @@
 	};
 	var removeResizeListener = function(el, fn) {
 		resizeListener(el, fn, true);
+	};
+	var addHoverListener = function(el, inFn, outFn) {
+		if (!isFunction(inFn)) return;
+		on(el, 'mouseenter', inFn);
+		if (!isFunction(outFn)) outFn = inFn;
+		on(el, 'mouseleave', outFn);
+	};
+	var removeHoverListener = function(el, inFn, outFn) {
+		if (!isFunction(inFn)) return;
+		off(el, 'mouseenter', inFn);
+		if (!isFunction(outFn)) outFn = inFn;
+		off(el, 'mouseleave', outFn);
 	};
 	var addTouchStart = function(el, fn) {
 		on(el, 'mousedown', fn);
@@ -784,6 +796,8 @@
 		debounce: debounce,
 		addResizeListener: addResizeListener,
 		removeResizeListener: removeResizeListener,
+		addHoverListener: addHoverListener,
+		removeHoverListener: removeHoverListener,
 		addTouchStart: addTouchStart,
 		addTouchMove: addTouchMove,
 		addTouchEnd: addTouchEnd,
