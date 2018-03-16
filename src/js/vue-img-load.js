@@ -1,12 +1,12 @@
 (function(context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil'], definition);
+		define(['Vue'], definition);
 	} else {
-		context.VueImgLoad = definition(context.Vue, context.VueUtil);
+		context.VueImgLoad = definition(context.Vue);
 		delete context.VueImgLoad;
 	}
-})(this, function(Vue, VueUtil) {
+})(this, function(Vue) {
 	'use strict';
 	var imgload = function() {
 		Vue.directive('imgload', {
