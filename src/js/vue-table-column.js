@@ -142,7 +142,9 @@
 				default: ''
 			},
 			aggregateLabel: String,
-			colspan: Boolean
+			labelColspan: Boolean,
+			colspan: Boolean,
+			rowspan: Boolean
 		},
 		beforeCreate: function() {
 			this.row = {};
@@ -219,7 +221,8 @@
 				filteredValue: self.filteredValue || [],
 				aggregate: self.aggregate,
 				aggregateLabel: self.aggregateLabel,
-				colspan: self.colspan,
+				labelColspan: self.labelColspan,
+				rowspan: self.rowspan,
 				getCellClass: function(rowIndex, cellIndex, rowData) {
 					var classes = [];
 					var className = self.className;
@@ -371,9 +374,15 @@
 					this.owner.doLayout();
 				}
 			},
-			colspan: function(newVal) {
+			labelColspan: function(newVal) {
 				if (this.columnConfig) {
-					this.columnConfig.colspan = newVal;
+					this.columnConfig.labelColspan = newVal;
+					this.owner.doLayout();
+				}
+			},
+			rowspan: function(newVal) {
+				if (this.columnConfig) {
+					this.columnConfig.rowspan = newVal;
 					this.owner.doLayout();
 				}
 			}

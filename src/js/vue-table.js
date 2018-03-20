@@ -241,8 +241,8 @@
 				var precision = 0;
 				var valueCount = 0;
 				resultMap.count = data.length;
-				VueUtil.loop(data, function(item) {
-					var value = Number(item[column.property]);
+				VueUtil.loop(data, function(row) {
+					var value = Number(row[column.property]);
 					if (!isNaN(value)) {
 						var decimal = ('' + value).split('.')[1];
 						decimal && decimal.length > precision ? precision = decimal.length : null;
@@ -277,7 +277,7 @@
 		var i = tableColumns.length;
 		while (i--) {
 			var column = tableColumns[i];
-			if (column.colspan) {
+			if (column.labelColspan) {
 				colColumns.push(column);
 			} else {
 				if (colColumns.length > 0) {
@@ -330,37 +330,72 @@
 		})).concat(states.rightFixedColumns);
 		this.updateLabelColumns();
 	}
+	TableStore.prototype.rowspanData = function(data, states) {
+		VueUtil.loop(states.columns, function(column) {
+			if (column.rowspan) {
+				var val1 = null;
+				var val2 = null;
+				var startIndex = null;
+				var rowspanAry = [];
+				var rowspanStartAry = []
+				VueUtil.loop(data, function(row, index) {
+					val1 = row[column.property];
+					if (val1 === val2) {
+						rowspanAry.push(index);
+					}
+					val2 = val1;
+				});
+				var spanItem = null;
+				VueUtil.loop(rowspanAry, function(rowspan, index) {
+					var startSpan = rowspan - 1;
+					if (rowspanAry.indexOf(startSpan) === -1) {
+						spanItem = {};
+						spanItem.start = startSpan;
+						spanItem.spanNum = 2;
+						rowspanStartAry.push(spanItem)
+					} else {
+						spanItem.spanNum++;
+					}
+				});
+				column.rowspanAry = rowspanAry;
+				column.rowspanStartAry = rowspanStartAry;
+			}
+		});
+	}
 	TableStore.prototype.sortData = function(data, states) {
 		var sortingColumns = states.sortingColumns;
-		if (sortingColumns.length === 0) return data;
-		var orderBy = function(data, sortList) {
-			return data.slice(0).sort(function(data1, data2) {
-				var index = 0;
-				var column = sortList[index];
-				index++;
-				var sortBy = function() {
-					var value1 = data1[column.property];
-					var value2 = data2[column.property];
-					var sortOrder = 1;
-					if (column.order === "descending") {
-						sortOrder = -1
-					}
-					if (value1 === value2) {
-						if (index === sortList.length) return;
-						column = sortList[index];
-						index++;
-						return sortBy();
-					}
-					if (VueUtil.isFunction(column.sortMethod)) {
-						return sortMethod(value1, value2) ? sortOrder : -sortOrder;
-					} else {
-						return value1 > value2 ? sortOrder : -sortOrder;
-					}
-				};
-				return sortBy();
-			});
-		};
-		return orderBy(data, sortingColumns);
+		if (sortingColumns.length !== 0) {
+			var orderBy = function(data, sortList) {
+				return data.slice(0).sort(function(data1, data2) {
+					var index = 0;
+					var column = sortList[index];
+					index++;
+					var sortBy = function() {
+						var value1 = data1[column.property];
+						var value2 = data2[column.property];
+						var sortOrder = 1;
+						if (column.order === "descending") {
+							sortOrder = -1
+						}
+						if (value1 === value2) {
+							if (index === sortList.length) return;
+							column = sortList[index];
+							index++;
+							return sortBy();
+						}
+						if (VueUtil.isFunction(column.sortMethod)) {
+							return sortMethod(value1, value2) ? sortOrder : -sortOrder;
+						} else {
+							return value1 > value2 ? sortOrder : -sortOrder;
+						}
+					};
+					return sortBy();
+				});
+			};
+			data = orderBy(data, sortingColumns);
+		}
+		this.rowspanData(data, states);
+		return data;
 	}
 	TableStore.prototype.getColumnById = function(columnId) {
 		var column = null;
@@ -648,25 +683,40 @@
 					},
 					class: ['vue-table__row', self.getRowClass(row, $index)]
 				}, [self._l(columns, function(column, cellIndex) {
-					return createElement('td', {
-						key: cellIndex,
-						class: ['vue-table__cell', $index % 2 === 1 ? 'grey' : '', column.align, column.getCellClass($index, cellIndex, row) || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : ''],
-						on: {
-							click: function(e) {
-								return self.handleClick(e, row, column)
-							},
-							mouseenter: function(e) {
-								return self.handleCellMouseEnter(e, row, column)
-							},
-							mouseleave: self.handleCellMouseLeave
+					if (column.rowspan && column.rowspanAry && column.rowspanAry.indexOf($index) !== -1) {
+						return null;
+					} else {
+						var rowspanNum = null;
+						if (column.rowspan && column.rowspanStartAry) {
+							VueUtil.loop(column.rowspanStartAry, function(rowspan) {
+								if (rowspan.start === $index) {
+									rowspanNum = rowspan.spanNum;
+								}
+							});
 						}
-					}, [column.renderCell.call(self._renderProxy, createElement, {
-						row: row,
-						column: column,
-						$index: $index,
-						store: self.store,
-						_self: self.$parent.$vnode.context
-					})])
+						return createElement('td', {
+							key: cellIndex,
+							attrs: {
+								rowspan: rowspanNum
+							},
+							class: ['vue-table__cell', $index % 2 === 1 ? 'grey' : '', column.align, column.getCellClass($index, cellIndex, row) || '', self.$parent.isCellHidden(cellIndex, self.fixed) ? 'is-hidden' : ''],
+							on: {
+								click: function(e) {
+									return self.handleClick(e, row, column)
+								},
+								mouseenter: function(e) {
+									return self.handleCellMouseEnter(e, row, column)
+								},
+								mouseleave: self.handleCellMouseLeave
+							}
+						}, [column.renderCell.call(self._renderProxy, createElement, {
+							row: row,
+							column: column,
+							$index: $index,
+							store: self.store,
+							_self: self.$parent.$vnode.context
+						})])
+					}
 				}), !self.fixed && (self.layout.scrollX || self.layout.scrollY) && self.layout.gutterWidth ? createElement('td', {
 					class: 'vue-table__cell gutter'
 				}, []) : '']), self.store.states.expandRows.indexOf(row) !== -1 ? createElement('tr', {class: ['vue-table__row', 'vue-table__expanded-row']}, [createElement('td', {
@@ -712,8 +762,11 @@
 			expandClassName: function() {
 				return this.$parent.expandClassName;
 			},
-			highlight: function() {
+			highlightCurrent: function() {
 				return this.$parent.highlightCurrentRow;
+			},
+			highlightHover: function() {
+				return this.$parent.highlightHoverRow;
 			},
 			tableBody: function() {
 				return this.$parent.$refs.tableBody;
@@ -818,7 +871,7 @@
 				this.rightFixedTableBody.resetHoverRow(hoverRow);
 			}),
 			resetCurrentRow: function(currentRowObj) {
-				if (!this.highlight || !VueUtil.isElement(this.$refs.tbody)) return;
+				if (!this.highlightCurrent || !VueUtil.isElement(this.$refs.tbody)) return;
 				var tbody = this.$refs.tbody;
 				var oldCurrentRow = this.currentRow;
 				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
@@ -830,7 +883,7 @@
 				this.currentRow = currentRow;
 			},
 			resetHoverRow: function(hoverRowObj) {
-				if (!VueUtil.isElement(this.$refs.tbody)) return;
+				if (!this.highlightHover ||!VueUtil.isElement(this.$refs.tbody)) return;
 				var tbody = this.$refs.tbody;
 				var oldHoverRow = this.hoverRow;
 				oldHoverRow && oldHoverRow.classList.remove('hover-row');
@@ -1065,10 +1118,10 @@
 				}
 			}, []) : '']), createElement('thead', null, [self._l(columnRows, function(columns, rowIndex) {
 				return createElement('tr', {class: ['vue-table__row'], key:rowIndex}, [self._l(columns, function(column, cellIndex) {
-					return column.colspan ? null : createElement('th', {
+					return column.labelColspan ? null : createElement('th', {
 						key: cellIndex,
 						attrs: {
-							colspan: column.colspanNum
+							colspan: column.labelColspanNum
 						},
 						on: {
 							mousemove: function(e) {
@@ -1165,9 +1218,9 @@
 				var i = columns.length;
 				while (i--) {
 					var column = columns[i];
-					column.colspanNum = 1
-					if (!column.colspan) {
-						column.colspanNum = colspan;
+					column.labelColspanNum = 1
+					if (!column.labelColspan) {
+						column.labelColspanNum = colspan;
 						colspan = 1;
 					} else {
 						colspan++;
@@ -1642,6 +1695,10 @@
 			rowClassName: [String, Function],
 			rowStyle: [Object, Function],
 			highlightCurrentRow: Boolean,
+			highlightHoverRow: {
+				type: Boolean,
+				default: true
+			},
 			emptyText: String,
 			defaultExpandAll: Boolean,
 			defaultSort: {

@@ -7,6 +7,9 @@
 .vue-scrollbar:hover>.vue-scrollbar__bar {
 	opacity: 1;
 }
+.vue-scrollbar.touching>.vue-scrollbar__bar {
+	opacity: 0;
+}
 .vue-scrollbar__wrap {
 	overflow: hidden;
 }

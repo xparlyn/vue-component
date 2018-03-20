@@ -467,7 +467,7 @@
 					var self = this;
 					self.uploadFiles = fileList.map(function(item) {
 						item.uid = item.uid || (Date.now() + self.tempIndex++);
-						item.status = 'success';
+						item.status = self.autoUpload ? 'success' : 'ready';
 						return item;
 					});
 				}
