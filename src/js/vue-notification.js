@@ -193,7 +193,6 @@
 				rightTopInstances.push(instance);
 			}
 		}
-		instance.dom.style.display = "";
 		instances.push(instance);
 		document.body.appendChild(instance.vm.$el);
 		Vue.nextTick(function() {
