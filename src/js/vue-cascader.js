@@ -185,7 +185,7 @@
 		beforeDestroy: VuePopper.beforeDestroy
 	};
 	var VueCascader = {
-		template: '<span :class="[\'vue-cascader\', {\'is-opened\': menuVisible, \'is-disabled\': disabled},size ? \'vue-cascader--\' + size : \'\']" @click="handleClick" @mouseenter="inputHover = true" @mouseleave="inputHover = false" ref="reference" v-clickoutside="handleClickoutside"><vue-input ref="input" :autofocus="autofocus" :tabindex="tabindex" :readonly="!filterable" :placeholder="currentLabels.length ? \'\' : placeholderLang" v-model="inputValue" @change="debouncedInputChange" :validate-event="false" :size="size" :disabled="disabled"><template slot="icon"><i key="1" v-if="clearable && inputHover && currentLabels.length" class="vue-input__icon vue-icon-error vue-cascader__clearIcon" @click="clearValue"></i><i key="2" v-else :class="[\'vue-input__icon vue-icon-arrow-up\', {\'is-reverse\': menuVisible}]"></i></template></vue-input><span class="vue-cascader__label" v-show="inputValue === \'\'"><template v-if="showAllLevels"><template v-for="(label, index) in currentLabels">{{label}}<span v-if="index < currentLabels.length - 1"> / </span></template></template><template v-else>{{currentLabels[currentLabels.length - 1]}}</template></span></span>',
+		template: '<span :class="[\'vue-cascader\', {\'is-opened\': menuVisible, \'is-disabled\': disabled},size ? \'vue-cascader--\' + size : \'\']" @click="handleClick" @mouseenter="inputHover = true" @mouseleave="inputHover = false" ref="reference" v-clickoutside="handleClickoutside"><vue-input :text-align="textAlign" ref="input" :autofocus="autofocus" :tabindex="tabindex" :readonly="!filterable" :placeholder="currentLabels.length ? \'\' : placeholderLang" v-model="inputValue" @change="debouncedInputChange" :validate-event="false" :size="size" :disabled="disabled"><template slot="icon"><i key="1" v-if="clearable && inputHover && currentLabels.length" class="vue-input__icon vue-icon-error vue-cascader__clearIcon" @click="clearValue"></i><i key="2" v-else :class="[\'vue-input__icon vue-icon-arrow-up\', {\'is-reverse\': menuVisible}]"></i></template></vue-input><span class="vue-cascader__label" v-show="inputValue === \'\'"><template v-if="showAllLevels"><template v-for="(label, index) in currentLabels">{{label}}<span v-if="index < currentLabels.length - 1"> / </span></template></template><template v-else>{{currentLabels[currentLabels.length - 1]}}</template></span></span>',
 		name: 'VueCascader',
 		directives: {
 			Clickoutside: VueUtil.component.clickoutside()
@@ -225,6 +225,7 @@
 			filterable: Boolean,
 			size: String,
 			autofocus: Boolean,
+			textAlign: String,
 			tabindex: Number,
 			showAllLevels: {
 				type: Boolean,

@@ -193,10 +193,13 @@
 				rightTopInstances.push(instance);
 			}
 		}
+		instance.dom.style.display = "";
+		instance.dom.style.opacity = 0;
 		instances.push(instance);
 		document.body.appendChild(instance.vm.$el);
 		Vue.nextTick(function() {
 			instance.vm.visible = true;
+			instance.dom.style.opacity = 1;
 		});
 	};
 	VueUtil.loop(['success', 'warning', 'info', 'error'], function(type) {

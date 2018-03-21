@@ -9,15 +9,21 @@
 })(this, function(Vue) {
 	'use strict';
 	var imgload = function() {
+		var loadImg = function(el, binding) {
+			if (el.tagName === 'IMG') {
+				var img = new Image();
+				img.src = binding.value;
+				img.onload = function() {
+					el.src = img.src;
+				}
+			}
+		};
 		Vue.directive('imgload', {
 			bind: function(el, binding) {
-				if (el.tagName === 'IMG') {
-					var img = new Image();
-					img.src = binding.value;
-					img.onload = function() {
-						el.src = img.src;
-					}
-				}
+				loadImg(el, binding);
+			},
+			update: function(el, binding) {
+				loadImg(el, binding);
 			}
 		});
 	};

@@ -46,7 +46,7 @@
 		}
 	};
 	var VueAutocomplete = {
-		template: '<div class="vue-autocomplete" v-clickoutside="close"><vue-input :autofocus="autofocus" :tabindex="tabindex" ref="input" v-bind="$props" @compositionstart.native="handleComposition" @compositionupdate.native="handleComposition" @compositionend.native="handleComposition" @change="handleChange" @focus="handleFocus" @keydown.up.native.prevent="highlight(highlightedIndex - 1)" @keydown.down.native.prevent="highlight(highlightedIndex + 1)" @keydown.enter.native.prevent="handleKeyEnter" @keydown.native.tab="close"><template slot="prepend" v-if="$slots.prepend"><slot name="prepend"></slot></template><template slot="append" v-if="$slots.append"><slot name="append"></slot></template></vue-input><vue-autocomplete-suggestions :props="props" :class="[popperClass ? popperClass : \'\']" ref="suggestions" :suggestions="suggestions" v-if="suggestionVisible"></vue-autocomplete-suggestions></div>',
+		template: '<div class="vue-autocomplete" v-clickoutside="close"><vue-input :text-align="textAlign" :autofocus="autofocus" :tabindex="tabindex" ref="input" v-bind="$props" @compositionstart.native="handleComposition" @compositionupdate.native="handleComposition" @compositionend.native="handleComposition" @change="handleChange" @focus="handleFocus" @keydown.up.native.prevent="highlight(highlightedIndex - 1)" @keydown.down.native.prevent="highlight(highlightedIndex + 1)" @keydown.enter.native.prevent="handleKeyEnter" @keydown.native.tab="close"><template slot="prepend" v-if="$slots.prepend"><slot name="prepend"></slot></template><template slot="append" v-if="$slots.append"><slot name="append"></slot></template></vue-input><vue-autocomplete-suggestions :props="props" :class="[popperClass ? popperClass : \'\']" ref="suggestions" :suggestions="suggestions" v-if="suggestionVisible"></vue-autocomplete-suggestions></div>',
 		name: 'VueAutocomplete',
 		mixins: [VueUtil.component.emitter],
 		componentName: 'VueAutocomplete',
@@ -74,6 +74,7 @@
 			value: String,
 			autofocus: Boolean,
 			tabindex: Number,
+			textAlign: String,
 			fetchSuggestions: Function,
 			triggerOnFocus: {
 				type: Boolean,

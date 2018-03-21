@@ -135,7 +135,7 @@
 		}
 	};
 	var VuePicker = {
-		template: '<vue-input :class="[\'vue-date-editor\', \'vue-date-editor--\' + type]" :readonly="readonly" :autofocus="autofocus" :tabindex="tabindex" :disabled="disabled" :size="size" v-clickoutside="handleClose" :placeholder="placeholder" @mousedown.native="handleMouseDown" @blur="handleBlur" @keydown.native="handleKeydown" :value="displayValue" @change.native="displayValue = $event.target.value" :validateEvent="false" ref="reference"><i slot="icon" @click="handleClickIcon" :class="[\'vue-input__icon\', showClose ? \'vue-icon-close\' : triggerClass]" @mouseenter="handleMouseEnterIcon" @mouseleave="showClose = false" v-if="haveTrigger"></i></vue-input>',
+		template: '<vue-input :class="[\'vue-date-editor\', \'vue-date-editor--\' + type]" :readonly="readonly" :text-align="textAlign" :autofocus="autofocus" :tabindex="tabindex" :disabled="disabled" :size="size" v-clickoutside="handleClose" :placeholder="placeholder" @mousedown.native="handleMouseDown" @blur="handleBlur" @keydown.native="handleKeydown" :value="displayValue" @change.native="displayValue = $event.target.value" :validateEvent="false" ref="reference"><i slot="icon" @click="handleClickIcon" :class="[\'vue-input__icon\', showClose ? \'vue-icon-close\' : triggerClass]" @mouseenter="handleMouseEnterIcon" @mouseleave="showClose = false" v-if="haveTrigger"></i></vue-input>',
 		mixins: [VueUtil.component.emitter, NewPopper],
 		props: {
 			size: String,
@@ -147,6 +147,7 @@
 			placeholder: String,
 			disabled: Boolean,
 			autofocus: Boolean,
+			textAlign: String,
 			tabindex: Number,
 			clearable: {
 				type: Boolean,
