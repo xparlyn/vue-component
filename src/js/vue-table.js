@@ -330,35 +330,34 @@
 		})).concat(states.rightFixedColumns);
 		this.updateLabelColumns();
 	}
-	TableStore.prototype.rowspanData = function(data, states) {
-		VueUtil.loop(states.columns, function(column) {
+	TableStore.prototype.rowspanData = function(data) {
+		var columns = this.states.columns;
+		VueUtil.loop(columns, function(column) {
 			if (column.rowspan) {
 				var val1 = null;
 				var val2 = null;
 				var startIndex = null;
-				var rowspanAry = [];
-				var rowspanStartAry = []
+				column.rowspanAry = [];
+				column.rowspanStartAry = []
 				VueUtil.loop(data, function(row, index) {
 					val1 = row[column.property];
 					if (val1 === val2) {
-						rowspanAry.push(index);
+						column.rowspanAry.push(index);
 					}
 					val2 = val1;
 				});
 				var spanItem = null;
-				VueUtil.loop(rowspanAry, function(rowspan, index) {
+				VueUtil.loop(column.rowspanAry, function(rowspan, index) {
 					var startSpan = rowspan - 1;
-					if (rowspanAry.indexOf(startSpan) === -1) {
+					if (column.rowspanAry.indexOf(startSpan) === -1) {
 						spanItem = {};
 						spanItem.start = startSpan;
 						spanItem.spanNum = 2;
-						rowspanStartAry.push(spanItem)
+						column.rowspanStartAry.push(spanItem)
 					} else {
 						spanItem.spanNum++;
 					}
 				});
-				column.rowspanAry = rowspanAry;
-				column.rowspanStartAry = rowspanStartAry;
 			}
 		});
 	}
@@ -394,7 +393,6 @@
 			};
 			data = orderBy(data, sortingColumns);
 		}
-		this.rowspanData(data, states);
 		return data;
 	}
 	TableStore.prototype.getColumnById = function(columnId) {
@@ -638,6 +636,7 @@
 				self.scrollFilter(storeData, delta);
 			}
 			if (delta.data.length === 0) return null;
+			self.store.rowspanData(delta.data);
 			return createElement('table', {
 				class: 'vue-table__body',
 				attrs: {
@@ -662,8 +661,8 @@
 					name: 'gutter',
 					width: 0
 				}
-			}, []) : '']), createElement('tbody', {ref: 'tbody'}, [self._l(delta.data, function(row, $index) {
-				$index = storeData.indexOf(row);
+			}, []) : '']), createElement('tbody', {ref: 'tbody'}, [self._l(delta.data, function(row, index) {
+				var $index = storeData.indexOf(row);
 				return [createElement('tr', {
 					style: self.rowStyle ? self.getRowStyle(row, $index) : null,
 					key: $index,
@@ -683,13 +682,13 @@
 					},
 					class: ['vue-table__row', self.getRowClass(row, $index)]
 				}, [self._l(columns, function(column, cellIndex) {
-					if (column.rowspan && column.rowspanAry && column.rowspanAry.indexOf($index) !== -1) {
+					if (column.rowspan && column.rowspanAry.indexOf(index) !== -1) {
 						return null;
 					} else {
 						var rowspanNum = null;
-						if (column.rowspan && column.rowspanStartAry) {
+						if (column.rowspan) {
 							VueUtil.loop(column.rowspanStartAry, function(rowspan) {
-								if (rowspan.start === $index) {
+								if (rowspan.start === index) {
 									rowspanNum = rowspan.spanNum;
 								}
 							});
