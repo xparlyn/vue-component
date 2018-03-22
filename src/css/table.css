@@ -20,6 +20,7 @@
 	border: 1px solid #dfe6ec;
 	font-size: 14px;
 	color: #1f2d3d;
+	z-index: 0;
 }
 .vue-table .vue-table__cell,
 .vue-table .vue-table__column {
