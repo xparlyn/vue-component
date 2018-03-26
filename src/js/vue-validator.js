@@ -20,7 +20,7 @@
 			return true;
 		}
 		var isNativeStringType = function(type) {
-			return type === 'string' || type === 'url' || type === 'hex' || type === 'email' || type === 'pattern';
+			return type === 'string' || type === 'url' || type === 'hex' || type === 'email' || type === 'pattern' || type === 'ipv4';
 		};
 		if (isNativeStringType(type) && VueUtil.isString(value) && !value) {
 			return true;
@@ -92,6 +92,7 @@
 			email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
 			url: new RegExp('^(?!mailto:)(?:(?:http|https|ftp)://|//)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$', 'i'),
 			hex: /^#?([a-f0-9]{6}|[a-f0-9]{3})$/i,
+			ipv4: new RegExp('\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b'),
 		};
 		var types = {
 			integer: function(value) {
@@ -117,9 +118,6 @@
 				return VueUtil.isFunction(value.getTime) && VueUtil.isFunction(value.getMonth) && VueUtil.isFunction(value.getYear);
 			},
 			number: function(value) {
-				if (isNaN(value)) {
-					return false;
-				}
 				return VueUtil.isNumber(value);
 			},
 			object: function(value) {
@@ -137,12 +135,15 @@
 			hex: function(value) {
 				return VueUtil.isString(value) && !!value.match(pattern.hex);
 			},
+			ipv4: function(value) {
+				return VueUtil.isString(value) && !!value.match(pattern.ipv4);
+			}
 		};
 		if (rule.required && !VueUtil.isDef(value)) {
 			rulesRequired(rule, value, source, errors, options);
 			return;
 		}
-		var custom = ['integer', 'float', 'array', 'regexp', 'object', 'method', 'email', 'number', 'date', 'url', 'hex'];
+		var custom = ['integer', 'float', 'array', 'regexp', 'object', 'method', 'email', 'number', 'date', 'url', 'hex', 'ipv4'];
 		var ruleType = rule.type;
 		if (custom.indexOf(ruleType) !== -1) {
 			if (!types[ruleType](value)) {
@@ -352,6 +353,7 @@
 		url: validtorType,
 		date: validtorDate,
 		hex: validtorType,
+		ipv4: validtorType,
 		required: validtorRequired
 	};
 	var Schema = function(descriptor) {

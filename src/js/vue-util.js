@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.44.9688';
+	var version ='1.45.9696';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -22,7 +22,7 @@
 		return objType(obj) === 'String';
 	};
 	var isNumber = function(obj) {
-		return objType(obj) === 'Number';
+		return objType(obj) === 'Number' && obj === obj;
 	};
 	var isBoolean = function(obj) {
 		return objType(obj) === 'Boolean';
@@ -59,6 +59,17 @@
 	};
 	var toDate = function(date) {
 		return (!isDef(date) || isNaN(new Date(date).getTime())) ? null : new Date(date);
+	};
+	var formatNumber = function(number, dec, dsep, tsep) {
+		if (!isNumber(number)) return null;
+		if (!isNumber(dec)) dec = 2;
+		number = number.toFixed(dec);
+		if (!isString(dsep)) dsep = '.';
+		if (!isString(tsep)) tsep = ',';
+		var parts = number.split('.');
+		var fnums = parts[0];
+		var decimals = parts[1] ? dsep + parts[1] : '';
+		return fnums.replace(/(\d)(?=(?:\d{3})+$)/g, '$1' + tsep) + decimals;
 	};
 	var formatDate = function(date, format) {
 		date = toDate(date);
@@ -767,6 +778,7 @@
 		isVueComponent: isVueComponent,
 		toString: toString,
 		toDate: toDate,
+		formatNumber: formatNumber,
 		formatDate: formatDate,
 		parseDate: parseDate,
 		getDayCountOfMonth: getDayCountOfMonth,

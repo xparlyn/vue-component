@@ -357,13 +357,15 @@
 	background-color: #fff;
 	box-shadow: 0 2px 4px 0 rgba(0,0,0,.12),0 0 6px 0 rgba(0,0,0,.04);
 	margin: 2px 0;
+	padding: 0;
+	text-align: left;
 }
 .vue-table-filter__list {
 	padding: 0;
 	margin: 0;
 	list-style: none;
 	min-width: 100px;
-	overflow-x: hidden;
+	overflow: hidden;
 }
 .vue-table-filter__list-item {
 	line-height: 36px;

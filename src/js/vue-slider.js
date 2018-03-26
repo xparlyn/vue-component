@@ -263,7 +263,7 @@
 							this.oldValue = val.slice(0);
 						}
 					}
-				} else if (!this.range && VueUtil.isNumber(val) && !isNaN(val)) {
+				} else if (!this.range && VueUtil.isNumber(val)) {
 					if (val < this.min) {
 						this.$emit('input', this.min);
 					} else if (val > this.max) {
@@ -362,7 +362,7 @@
 				}
 				this.oldValue = [this.firstValue, this.secondValue];
 			} else {
-				if (!VueUtil.isNumber(this.value) || isNaN(this.value)) {
+				if (!VueUtil.isNumber(this.value)) {
 					this.firstValue = this.min;
 				} else {
 					this.firstValue = Math.min(this.max, Math.max(this.min, this.value));

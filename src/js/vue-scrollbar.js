@@ -226,7 +226,7 @@
 			touchStart: function(e) {
 				if (this.isScrollCancel(e.target)) return;
 				e.stopImmediatePropagation();
-				VueUtil.addClass(this.$el, 'touching');
+				VueUtil.addClass(this.$el, 'is-touch');
 				var touches = e.touches[0];
 				if (!VueUtil.isDef(this.$options.tocuhPlace)) {
 					this.$options.tocuhPlace = {};
@@ -237,7 +237,7 @@
 				VueUtil.on(document, 'touchend', this.touchEnd);
 			},
 			touchMove: function(e) {
-				VueUtil.removeClass(this.$el, 'touching');
+				VueUtil.addClass(this.$el, 'touching');
 				var touches = e.touches[0];
 				var scrollLeft = this.wrap.scrollLeft + (this.$options.tocuhPlace.tocuhX - touches.pageX);
 				var scrollTop = this.wrap.scrollTop + (this.$options.tocuhPlace.tocuhY - touches.pageY);
@@ -247,7 +247,7 @@
 				this.$options.tocuhPlace.tocuhY = touches.pageY;
 			},
 			touchEnd: function(e) {
-				VueUtil.addClass(this.$el, 'touching');
+				VueUtil.removeClass(this.$el, 'touching');
 				VueUtil.off(document, 'touchmove',this.touchMove);
 				VueUtil.off(document, 'touchend', this.touchEnd);
 			},
