@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.45.9696';
+	var version ='1.45.9703';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};

@@ -227,27 +227,51 @@
 				if (this.isScrollCancel(e.target)) return;
 				e.stopImmediatePropagation();
 				VueUtil.addClass(this.$el, 'is-touch');
+				var wrap = this.wrap;
 				var touches = e.touches[0];
-				if (!VueUtil.isDef(this.$options.tocuhPlace)) {
-					this.$options.tocuhPlace = {};
+				var tocuhPlace = this.$options.tocuhPlace;
+				if (!VueUtil.isDef(tocuhPlace)) {
+					tocuhPlace = this.$options.tocuhPlace = {};
 				}
-				this.$options.tocuhPlace.tocuhX = touches.pageX;
-				this.$options.tocuhPlace.tocuhY = touches.pageY;
+				tocuhPlace.startTime = e.timeStamp;
+				tocuhPlace.startY = wrap.scrollTop;
+				tocuhPlace.tocuhX = touches.pageX;
+				tocuhPlace.tocuhY = touches.pageY;
+				clearInterval(tocuhPlace.timer);
 				VueUtil.on(document, 'touchmove', this.touchMove);
 				VueUtil.on(document, 'touchend', this.touchEnd);
 			},
 			touchMove: function(e) {
 				VueUtil.addClass(this.$el, 'touching');
 				var touches = e.touches[0];
-				var scrollLeft = this.wrap.scrollLeft + (this.$options.tocuhPlace.tocuhX - touches.pageX);
-				var scrollTop = this.wrap.scrollTop + (this.$options.tocuhPlace.tocuhY - touches.pageY);
-				this.wrap.scrollLeft = scrollLeft;
-				this.wrap.scrollTop = scrollTop;
-				this.$options.tocuhPlace.tocuhX = touches.pageX;
-				this.$options.tocuhPlace.tocuhY = touches.pageY;
+				var wrap = this.wrap;
+				var tocuhPlace = this.$options.tocuhPlace;
+				var scrollLeft = tocuhPlace.tocuhX - touches.pageX;
+				var scrollTop = tocuhPlace.tocuhY - touches.pageY;
+				wrap.scrollLeft = wrap.scrollLeft + scrollLeft;
+				wrap.scrollTop = wrap.scrollTop + scrollTop;
+				tocuhPlace.tocuhX = touches.pageX;
+				tocuhPlace.tocuhY = touches.pageY;
 			},
 			touchEnd: function(e) {
-				VueUtil.removeClass(this.$el, 'touching');
+				var self = this;
+				var wrap = this.wrap;
+				var tocuhPlace = this.$options.tocuhPlace;
+				var timeStamp = e.timeStamp - tocuhPlace.startTime;
+				if (timeStamp <= 200) {
+					var moveY = Math.floor(((wrap.scrollTop - tocuhPlace.startY) * 100 / timeStamp) / 4);
+					tocuhPlace.timer = setInterval(function() {
+						var tmpScrollTop = wrap.scrollTop;
+						wrap.scrollTop = wrap.scrollTop + moveY;
+						moveY > 0 ? moveY-- : moveY++;
+						if (moveY === 0 || wrap.scrollTop === tmpScrollTop) {
+							VueUtil.removeClass(self.$el, 'touching');
+							clearInterval(tocuhPlace.timer);
+						}
+					}, 66);
+				} else {
+					VueUtil.removeClass(this.$el, 'touching');
+				}
 				VueUtil.off(document, 'touchmove',this.touchMove);
 				VueUtil.off(document, 'touchend', this.touchEnd);
 			},

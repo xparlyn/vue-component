@@ -289,10 +289,14 @@
 		load: function(url) {
 			return function() {
 				return new Component().load(url).then(function(component) {
-					return promiseLoop(scriptScopedCache, component.script.asynReadContent).then(function(responseText){
-						component.script.addContent(responseText);
+					if (VueUtil.isDef(component.script)) {
+						return promiseLoop(scriptScopedCache, component.script.asynReadContent).then(function(responseText){
+							component.script.addContent(responseText);
+							return component;
+						});
+					} else {
 						return component;
-					});
+					}
 				}).then(function(component) {
 					return component.normalize();
 				}).then(function(component) {
