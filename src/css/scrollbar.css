@@ -27,31 +27,28 @@
 	position: relative;
 	display: block;
 	border-radius: inherit;
-	background-color: rgba(150,150,150,0.3);
-}
-.vue-scrollbar__thumb:active,
-.vue-scrollbar__thumb:focus,
-.vue-scrollbar__thumb:hover {
-	background-color: rgba(150,150,150,0.5);
+	background-color: rgb(210, 210, 210);
 }
 .vue-scrollbar__bar {
 	position: absolute;
-	right: 1px;
-	bottom: 1px;
 	z-index: 1;
 	border-radius: 4px;
 	opacity: 0;
 }
 .vue-scrollbar__bar.is-horizontal {
-	height: 7px;
+	height: 8px;
 	left: 0;
+	right: 0;
+	bottom: 1px;
 }
 .vue-scrollbar__bar.is-horizontal>.vue-scrollbar__thumb {
 	height: 100%;
 }
 .vue-scrollbar__bar.is-vertical {
-	width: 7px;
+	width: 8px;
 	top: 0;
+	bottom: 0;
+	right: 1px;
 }
 .vue-scrollbar__bar.is-vertical>.vue-scrollbar__thumb {
 	width: 100%;
