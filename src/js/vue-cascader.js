@@ -175,10 +175,8 @@
 				type: String,
 				default: 'bottom-start'
 			},
-			appendToBody: VuePopper.props.appendToBody,
 			offset: VuePopper.props.offset,
-			boundariesPadding: VuePopper.props.boundariesPadding,
-			popperOptions: VuePopper.props.popperOptions
+			popperOptions: VuePopper.props.options
 		},
 		methods: VuePopper.methods,
 		data: VuePopper.data,

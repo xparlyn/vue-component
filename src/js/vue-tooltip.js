@@ -19,7 +19,7 @@
 			visibleArrow: {
 				default: true
 			},
-			popperOptions: {
+			options: {
 				default: function() {
 					return {
 						boundariesPadding: 10,

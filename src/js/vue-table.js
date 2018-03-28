@@ -706,7 +706,9 @@
 								mouseenter: function(e) {
 									return self.handleCellMouseEnter(e, row, column)
 								},
-								mouseleave: self.handleCellMouseLeave
+								mouseleave: function(e) {
+									return self.handleCellMouseLeave(e, row, column)
+								}
 							}
 						}, [column.renderCell.call(self._renderProxy, createElement, {
 							row: row,
@@ -714,7 +716,15 @@
 							$index: $index,
 							store: self.store,
 							_self: self.$parent.$vnode.context
-						})])
+						}), column.showOverflowTooltip ? createElement('vue-tooltip', {
+							attrs: {
+								effect: self.$parent.tooltipEffect,
+								placement: "top",
+								content: self.tooltipContent,
+								append: self.$parent.$el
+							},
+							ref: "tooltip"+column.property+$index
+						}, []) : null])
 					}
 				}), !self.fixed && (self.layout.scrollX || self.layout.scrollY) && self.layout.gutterWidth ? createElement('td', {
 					class: 'vue-table__cell gutter'
@@ -728,14 +738,7 @@
 					$index: $index,
 					store: self.store
 				}) : ''])]) : null]
-			}).concat(self._self.$parent.$slots.append).concat(createElement('vue-tooltip', {
-				attrs: {
-					effect: self.$parent.tooltipEffect,
-					placement: "top",
-					content: self.tooltipContent
-				},
-				ref: "tooltip"
-			}, []))])]);
+			}).concat(self._self.$parent.$slots.append)])]);
 		},
 		watch: {
 			'store.states.hoverRow': function(newVal) {
@@ -931,36 +934,32 @@
 				return classes.join(' ');
 			},
 			handleCellMouseEnter: function(event, row, column) {
-				var table = this.$parent;
 				var cell = this.getCell(event);
-				if (cell) {
-					var hoverState = table.hoverState = {cell: cell, column: column, row: row};
-					table.$emit('cell-mouse-enter', hoverState.row, hoverState.column, hoverState.cell, event);
-				}
+				if (!cell) return;
+				var table = this.$parent;
+				var hoverState = table.hoverState = {cell: cell, column: column, row: row};
+				table.$emit('cell-mouse-enter', hoverState.row, hoverState.column, hoverState.cell, event);
 				var cellChild = event.target.querySelector('.cell');
-				if (VueUtil.hasClass(cellChild, 'vue-tooltip') && cellChild.scrollWidth > cellChild.offsetWidth) {
-					var tooltip = this.$refs.tooltip;
-					var activateTooltip = VueUtil.debounce(function(tooltip) {
-						return tooltip.handleShowPopper();
-					});
+				if (column.showOverflowTooltip && cellChild.scrollWidth > cellChild.offsetWidth) {
+					var tooltip = this.$refs["tooltip"+column.property+this.store.states.data.indexOf(row)];
 					this.tooltipContent = cell.innerText;
 					tooltip.referenceElm = cell;
-					tooltip.$refs.popper.style.display = 'none';
-					tooltip.doDestroy();
 					tooltip.setExpectedState(true);
-					activateTooltip(tooltip);
+					tooltip.handleShowPopper();
 				}
 			},
-			handleCellMouseLeave: function(event) {
-				var tooltip = this.$refs.tooltip;
-				if (tooltip) {
+			handleCellMouseLeave: function(event, row, column) {
+				var cell = this.getCell(event);
+				if (!cell) return;
+				var table = this.$parent;
+				var oldHoverState = table.hoverState;
+				table.$emit('cell-mouse-leave', oldHoverState.row, oldHoverState.column, oldHoverState.cell, event);
+				var cellChild = event.target.querySelector('.cell');
+				if (column.showOverflowTooltip && cellChild.scrollWidth > cellChild.offsetWidth) {
+					var tooltip = this.$refs["tooltip"+column.property+this.store.states.data.indexOf(row)];
 					tooltip.setExpectedState(false);
 					tooltip.handleClosePopper();
 				}
-				var cell = this.getCell(event);
-				if (!cell) return;
-				var oldHoverState = this.$parent.hoverState;
-				this.$parent.$emit('cell-mouse-leave', oldHoverState.row, oldHoverState.column, oldHoverState.cell, event);
 			},
 			handleMouseEnter: function(row) {
 				this.store.commit('setHoverRow', row);

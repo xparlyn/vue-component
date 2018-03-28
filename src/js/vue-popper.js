@@ -580,10 +580,6 @@
 				type: String,
 				default: 'bottom'
 			},
-			boundariesPadding: {
-				type: Number,
-				default: 5
-			},
 			reference: {},
 			popper: {},
 			offset: {
@@ -593,10 +589,12 @@
 			visibleArrow: Boolean,
 			autoWidth: Boolean,
 			transition: String,
+			append: {},
 			options: {
 				type: Object,
 				default: function() {
 					return {
+						boundariesPadding: 5,
 						gpuAcceleration: false
 					};
 				}
@@ -644,6 +642,7 @@
 				if (self.visibleArrow) self.appendArrow(popper);
 				self.appendElement = self.referenceElm.parentNode;
 				self.findeAbsoluteParent(self.referenceElm);
+				if (VueUtil.isElement(self.append)) self.appendElement = self.append;
 				self.appendElement.appendChild(self.popperElm);
 				if (self.popperJS && self.popperJS.destroy) self.popperJS.destroy();
 				options.placement = self.currentPlacement;
