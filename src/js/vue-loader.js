@@ -64,7 +64,7 @@
 						scopedRule = scopedSelectors.join(',') + rule.cssText.substr(rule.selectorText.length);
 					}
 					if (rule.type === 4) {
-						scopedRule = '@media ' + rule.conditionText + '{';
+						scopedRule = '@media ' + (rule.conditionText || rule.media.mediaText) + '{';
 						VueUtil.loop(resetStyle(rule.cssRules), function(subScopedRule) {
 							if (subScopedRule) {
 								scopedRule = scopedRule + subScopedRule;

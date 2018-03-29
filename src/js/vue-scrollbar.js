@@ -276,6 +276,7 @@
 				VueUtil.off(document, 'touchend', this.touchEnd);
 			},
 			handleScroll: VueUtil.throttle(function(e) {
+				if (!VueUtil.isDef(e.touches)) VueUtil.removeClass(this.$el, 'is-touch');
 				this.update();
 				var wrap = this.wrap;
 				var moveY = wrap.scrollTop / wrap.scrollHeight * wrap.clientHeight;
