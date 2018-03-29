@@ -162,12 +162,7 @@
 			try {
 				Function('exports', 'require', 'VueLoader', 'module', this.getContent()).call(this.module.exports, this.module.exports, childModuleRequire, childLoader, this.module);
 			} catch (ex) {
-				if (!('lineNumber'in ex)) {
-					return Promise.reject(ex);
-				}
-				var vueFileData = responseText.replace(/\r?\n/g, '\n');
-				var lineNumber = vueFileData.substr(0, vueFileData.indexOf(script)).split('\n').length + ex.lineNumber - 1;
-				throw new (ex.constructor)(ex.message,url,lineNumber);
+				Vue.config.productionTip && console.error("[VueLoader error]: in '" + this.component.url + "'\n\n" + ex);
 			}
 			return Promise.resolve(this.module.exports);
 		}
@@ -201,6 +196,7 @@
 		this.script = null;
 		this.styles = [];
 		this._scopeId = '';
+		this.url = null;
 	};
 	Component.prototype = {
 		getHead: function() {
@@ -214,6 +210,7 @@
 			return this._scopeId;
 		},
 		load: function(componentURL) {
+			this.url = componentURL;
 			return httpVueLoader.httpRequest(componentURL).then(function(responseText) {
 				scriptScopedCache = [];
 				this.baseURI = componentURL.substr(0, componentURL.lastIndexOf('/') + 1);
