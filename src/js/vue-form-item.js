@@ -34,6 +34,21 @@
 			},
 			validateStatus: function(value) {
 				this.validateState = value;
+			},
+			label: {
+				immediate: true,
+				handler: function(val) {
+					var self = this;
+					if (VueUtil.isDef(val)) {
+						self.$nextTick(function() {
+							VueUtil.addResizeListener(self.form.$el, self.resetLabelWidth);
+						});
+					} else {
+						self.$nextTick(function() {
+							VueUtil.removeResizeListener(self.form.$el, self.resetLabelWidth);
+						});
+					}
+				}
 			}
 		},
 		computed: {
@@ -205,15 +220,9 @@
 					self.$on('vue.form.change', self.onFieldChange);
 				}
 			}
-			if (self.$refs.label) {
-				VueUtil.addResizeListener(self.form.$el, self.resetLabelWidth);
-			}
 		},
 		beforeDestroy: function() {
 			this.dispatch('VueForm', 'vue.form.removeField', [this]);
-			if (this.$refs.label) {
-				VueUtil.removeResizeListener(this.form.$el, this.resetLabelWidth);
-			}
 		}
 	};
 	Vue.component(VueFormItem.name, VueFormItem);
