@@ -133,12 +133,7 @@
 			rows: function() {
 				var date = new Date(this.year, this.month, 1);
 				var day = VueUtil.getFirstDayOfMonth(date);
-				var dateCountOfMonth = VueUtil.getDayCountOfMonth(date.getFullYear(), date.getMonth() + 1);
-				var dateCountOfLastMonth = VueUtil.getDayCountOfMonth(date.getFullYear(), (date.getMonth() === 0 ? 12 : date.getMonth()));
-				var offset = this.offsetDay;
 				var rows = this.tableRows;
-				var count = 1;
-				var firstDayPosition;
 				var startDate = this.startDate;
 				var disabledDate = this.disabledDate;
 				var now = this.clearHours(new Date());
@@ -166,7 +161,8 @@
 						}
 						cell.type = 'normal';
 						var index = i * 7 + j;
-						var time = startDate.getTime() + this.dayDuration * (index - offset);
+						var time = startDate.getTime() + this.dayDuration * (index - this.offsetDay);
+						var nowDate = VueUtil.addDate(startDate, index);
 						var minClearHoursDate = this.clearHours(this.minDate);
 						var maxClearHoursDate = this.clearHours(this.maxDate);
 						cell.inRange = time >= minClearHoursDate && time <= maxClearHoursDate;
@@ -176,27 +172,13 @@
 						if (isToday) {
 							cell.type = 'today';
 						}
-						if (i >= 0 && i <= 1) {
-							if (j + i * 7 >= (day + offset)) {
-								cell.text = count++;
-								if (count === 2) {
-									firstDayPosition = i * 7 + j;
-								}
-							} else {
-								cell.text = dateCountOfLastMonth - (day + offset - j % 7) + 1 + i * 7;
-								cell.type = 'prev-month';
-							}
-						} else {
-							if (count <= dateCountOfMonth) {
-								cell.text = count++;
-								if (count === 2) {
-									firstDayPosition = i * 7 + j;
-								}
-							} else {
-								cell.text = count++ - dateCountOfMonth;
-								cell.type = 'next-month';
-							}
+						if (nowDate.getMonth() < date.getMonth()) {
+							cell.type = 'prev-month';
 						}
+						if (nowDate.getMonth() > date.getMonth()) {
+							cell.type = 'next-month';
+						}
+						cell.text = nowDate.getDate();
 						cell.disabled = VueUtil.isFunction(disabledDate) && disabledDate(new Date(time));
 						cell.event = false;
 						if (cell.type === 'today' || cell.type === 'normal') {
@@ -224,7 +206,6 @@
 						row[end].end = isWeekActive;
 					}
 				}
-				rows.firstDayPosition = firstDayPosition;
 				return rows;
 			}
 		},
