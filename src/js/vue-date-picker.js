@@ -139,15 +139,18 @@
 				var now = this.clearHours(new Date());
 				for (var i = 0; i < 6; i++) {
 					var row = rows[i];
-					if (this.showWeekNumber) {
-						if (!row[0]) {
-							row[0] = {
+					for (var j = 0; j < 7; j++) {
+						var index = i * 7 + j;
+						var time = startDate.getTime() + this.dayDuration * (index - this.offsetDay);
+						var nowDate = VueUtil.addDate(startDate, index);
+						var minClearHoursDate = this.clearHours(this.minDate);
+						var maxClearHoursDate = this.clearHours(this.maxDate);
+						if (this.showWeekNumber && j === 0) {
+							row[j] = {
 								type: 'week',
-								text: VueUtil.getWeekNumber(new Date(startDate.getTime() + this.dayDuration * (i * 7 + 1)))
+								text: VueUtil.getWeekNumber(nowDate)
 							};
 						}
-					}
-					for (var j = 0; j < 7; j++) {
 						var cell = row[this.showWeekNumber ? j + 1 : j];
 						if (!cell) {
 							cell = {
@@ -160,11 +163,6 @@
 							};
 						}
 						cell.type = 'normal';
-						var index = i * 7 + j;
-						var time = startDate.getTime() + this.dayDuration * (index - this.offsetDay);
-						var nowDate = VueUtil.addDate(startDate, index);
-						var minClearHoursDate = this.clearHours(this.minDate);
-						var maxClearHoursDate = this.clearHours(this.maxDate);
 						cell.inRange = time >= minClearHoursDate && time <= maxClearHoursDate;
 						cell.start = this.minDate && time === minClearHoursDate;
 						cell.end = this.maxDate && time === maxClearHoursDate;
@@ -442,7 +440,7 @@
 		}
 	};
 	var DatePanel = {
-		template: '<transition @after-leave="$emit(\'doDestroy\')"><div v-show="visible" :class="[\'vue-picker-panel vue-date-picker\', {\'has-sidebar\': $slots.sidebar || shortcuts,\'has-time\': showTime}, popperClass]"><div class="vue-picker-panel__body-wrapper"><slot name="sidebar" class="vue-picker-panel__sidebar"></slot><div class="vue-picker-panel__sidebar" v-if="shortcuts"><button type="button" class="vue-picker-panel__shortcut" v-for="shortcut in shortcuts" @click="handleShortcutClick(shortcut)">{{shortcut.text}}</button></div><div class="vue-picker-panel__body"><div class="vue-date-picker__time-header" v-if="showTime"><span class="vue-date-picker__editor-wrap"><vue-input :placeholder="$t(\'vue.datepicker.selectDate\')" :value="visibleDate" size="small" @change.native="visibleDate = $event.target.value" /></span><span class="vue-date-picker__editor-wrap"><vue-input ref="input" @focus="timePickerVisible = !timePickerVisible" :placeholder="$t(\'vue.datepicker.selectTime\')" :value="visibleTime" size="small" @change.native="visibleTime = $event.target.value" /><time-picker ref="timepicker" :date="date" :picker-width="pickerWidth" @pick="handleTimePick" :visible="timePickerVisible" @mounted="$refs.timepicker.format=timeFormat"></time-picker></span></div><div class="vue-date-picker__header" v-show="currentView !== \'time\'"><button type="button" @click="prevYear" class="vue-picker-panel__icon-btn vue-date-picker__prev-btn vue-icon-d-arrow-left"></button><button type="button" @click="prevMonth" v-show="currentView === \'date\'" class="vue-picker-panel__icon-btn vue-date-picker__prev-btn vue-icon-arrow-left"></button><span @click="showYearPicker" class="vue-date-picker__header-label">{{yearLabel}}</span><span @click="showMonthPicker" v-show="currentView === \'date\'" :class="[\'vue-date-picker__header-label\', {active: currentView === \'month\'}]">{{monthLabel}}</span><button type="button" @click="nextYear" class="vue-picker-panel__icon-btn vue-date-picker__next-btn vue-icon-d-arrow-right"></button><button type="button" @click="nextMonth" v-show="currentView === \'date\'" class="vue-picker-panel__icon-btn vue-date-picker__next-btn vue-icon-arrow-right"></button></div><div class="vue-picker-panel__content"><date-table v-show="currentView === \'date\'" @pick="handleDatePick" :year="year" :month="month" :date="date" :week="week" :selection-mode="selectionMode" :first-day-of-week="firstDayOfWeek" :disabled-date="disabledDate"></date-table><year-table ref="yearTable" :year="year" :date="date" v-show="currentView === \'year\'" @pick="handleYearPick" :disabled-date="disabledDate"></year-table><month-table :month="month" :date="date" v-show="currentView === \'month\'" @pick="handleMonthPick" :disabled-date="disabledDate"></month-table></div></div></div><div class="vue-picker-panel__footer" v-show="footerVisible && currentView === \'date\'"><a href="JavaScript:" class="vue-picker-panel__link-btn" @click="changeToNow">{{nowLabel}}</a><button type="button" class="vue-picker-panel__btn" @click="confirm">{{confirmLabel}}</button></div></div></transition>',
+		template: '<transition @after-leave="$emit(\'doDestroy\')"><div v-show="visible" :class="[\'vue-picker-panel vue-date-picker\', {\'has-sidebar\': $slots.sidebar || shortcuts,\'has-time\': showTime}, popperClass]"><div class="vue-picker-panel__body-wrapper"><slot name="sidebar" class="vue-picker-panel__sidebar"></slot><div class="vue-picker-panel__sidebar" v-if="shortcuts"><button type="button" class="vue-picker-panel__shortcut" v-for="shortcut in shortcuts" @click="handleShortcutClick(shortcut)">{{shortcut.text}}</button></div><div class="vue-picker-panel__body"><div class="vue-date-picker__time-header" v-if="showTime"><span class="vue-date-picker__editor-wrap"><vue-input :placeholder="$t(\'vue.datepicker.selectDate\')" :value="visibleDate" size="small" @change.native="visibleDate = $event.target.value" /></span><span class="vue-date-picker__editor-wrap"><vue-input ref="input" @focus="timePickerVisible = !timePickerVisible" :placeholder="$t(\'vue.datepicker.selectTime\')" :value="visibleTime" size="small" @change.native="visibleTime = $event.target.value" /><time-picker ref="timepicker" :date="date" :picker-width="pickerWidth" @pick="handleTimePick" :visible="timePickerVisible" @mounted="$refs.timepicker.format=timeFormat"></time-picker></span></div><div class="vue-date-picker__header" v-show="currentView !== \'time\'"><button type="button" @click="prevYear" class="vue-picker-panel__icon-btn vue-date-picker__prev-btn vue-icon-d-arrow-left"></button><button type="button" @click="prevMonth" v-show="currentView === \'date\'" class="vue-picker-panel__icon-btn vue-date-picker__prev-btn vue-icon-arrow-left"></button><span @click="showYearPicker" class="vue-date-picker__header-label">{{yearLabel}}</span><span @click="showMonthPicker" v-show="currentView === \'date\'" :class="[\'vue-date-picker__header-label\', {active: currentView === \'month\'}]">{{monthLabel}}</span><button type="button" @click="nextYear" class="vue-picker-panel__icon-btn vue-date-picker__next-btn vue-icon-d-arrow-right"></button><button type="button" @click="nextMonth" v-show="currentView === \'date\'" class="vue-picker-panel__icon-btn vue-date-picker__next-btn vue-icon-arrow-right"></button></div><div class="vue-picker-panel__content"><date-table v-show="currentView === \'date\'" @pick="handleDatePick" :show-week-number="showWeekNumber" :year="year" :month="month" :date="date" :week="week" :selection-mode="selectionMode" :first-day-of-week="firstDayOfWeek" :disabled-date="disabledDate"></date-table><year-table ref="yearTable" :year="year" :date="date" v-show="currentView === \'year\'" @pick="handleYearPick" :disabled-date="disabledDate"></year-table><month-table :month="month" :date="date" v-show="currentView === \'month\'" @pick="handleMonthPick" :disabled-date="disabledDate"></month-table></div></div></div><div class="vue-picker-panel__footer" v-show="footerVisible && currentView === \'date\'"><a href="JavaScript:" class="vue-picker-panel__link-btn" @click="changeToNow">{{nowLabel}}</a><button type="button" class="vue-picker-panel__btn" @click="confirm">{{confirmLabel}}</button></div></div></transition>',
 		watch: {
 			showTime: function(val) {
 				var self = this;

@@ -43,6 +43,7 @@
 					month10: '10 月',
 					month11: '11 月',
 					month12: '12 月',
+					week: '周',
 					weeks: {
 						sun: '日',
 						mon: '一',
@@ -148,6 +149,7 @@
 					endDate: '終了日',
 					endTime: '終了時間',
 					year: '年',
+					week: '週',
 					month1: '一月',
 					month2: '二月',
 					month3: '三月',
@@ -265,6 +267,7 @@
 					endDate: 'End Date',
 					endTime: 'End Time',
 					year: '',
+					week: 'Wk',
 					month1: 'Jan',
 					month2: 'Feb',
 					month3: 'Mar',
