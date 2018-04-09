@@ -340,6 +340,12 @@
 .vue-icon-save-o:before {
 	content: "\e869";
 }
+.vue-icon-barcode:before {
+	content: "\e86a";
+}
+.vue-icon-qrcode:before {
+	content: "\e86b";
+}
 .vue-icon-loading {
 	animation: rotating 1s linear infinite;
 }
