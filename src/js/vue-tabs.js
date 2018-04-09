@@ -35,11 +35,7 @@
 		methods: {
 			routeToItem: function(item) {
 				var route = item.name;
-				try {
-					this.$router.push(route);
-				} catch (e) {
-					throw e;
-				}
+				this.$router && this.$router.push(route);
 			},
 			scrollPrev: function() {
 				var currentOffset = this.getCurrentScrollOffset();

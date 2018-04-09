@@ -82,7 +82,7 @@
 					clearTimeout(timer);
 				}, 300);
 			},
-			initEvents: function() {
+			bindEvents: function() {
 				var triggerElm;
 				if (this.rootMenu.mode === 'horizontal' && this.rootMenu.menuTrigger === 'hover') {
 					triggerElm = this.$el;
@@ -91,6 +91,17 @@
 				} else {
 					triggerElm = this.$refs['submenu-title'];
 					VueUtil.on(triggerElm, 'click', this.handleClick);
+				}
+			},
+			unBindEvents: function() {
+				var triggerElm;
+				if (this.rootMenu.mode === 'horizontal' && this.rootMenu.menuTrigger === 'hover') {
+					triggerElm = this.$el;
+					VueUtil.off(triggerElm, 'mouseenter', this.handleMouseenter);
+					VueUtil.off(triggerElm, 'mouseleave', this.handleMouseleave);
+				} else {
+					triggerElm = this.$refs['submenu-title'];
+					VueUtil.off(triggerElm, 'click', this.handleClick);
 				}
 			}
 		},
@@ -101,9 +112,10 @@
 		beforeDestroy: function() {
 			this.parentMenu.removeSubmenu(this);
 			this.rootMenu.removeSubmenu(this);
+			this.unBindEvents();
 		},
 		mounted: function() {
-			this.initEvents();
+			this.bindEvents();
 		}
 	};
 	Vue.component(VueSubMenu.name, VueSubMenu);

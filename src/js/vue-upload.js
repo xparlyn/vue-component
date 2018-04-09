@@ -326,6 +326,19 @@
 			},
 			getFormDataNode: function() {
 				return this.$refs.data;
+			},
+			messageHandle: function(event) {
+				if (!this.file) return;
+				var targetOrigin = new URL(this.action).origin;
+				if (event.origin !== targetOrigin) return;
+				var response = event.data;
+				if (response.result === 'success') {
+					this.onSuccess(response, this.file);
+				} else if (response.result === 'failed') {
+					this.onError(response, this.file);
+				}
+				this.submitting = false;
+				this.file = null;
 			}
 		},
 		created: function() {
@@ -333,19 +346,10 @@
 		},
 		mounted: function() {
 			var self = this;
-			VueUtil.on(document, 'message', function(event) {
-				if (!self.file) return;
-				var targetOrigin = new URL(self.action).origin;
-				if (event.origin !== targetOrigin) return;
-				var response = event.data;
-				if (response.result === 'success') {
-					self.onSuccess(response, self.file);
-				} else if (response.result === 'failed') {
-					self.onError(response, self.file);
-				}
-				self.submitting = false;
-				self.file = null;
-			});
+			VueUtil.on(document, 'message', this.messageHandle);
+		},
+		beforeDestroy: function() {
+			VueUtil.off(document, 'message', this.messageHandle);
 		},
 		render: function(createElement) {
 			var drag = this.drag;

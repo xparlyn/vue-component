@@ -38,9 +38,12 @@
 				visible: false,
 			};
 		},
+		beforeDestroy: function() {
+			this.unBindEvents();
+		},
 		mounted: function() {
 			this.$on('menu-item-click', this.handleMenuItemClick);
-			this.initEvent();
+			this.bindEvents();
 		},
 		watch: {
 			visible: function(val) {
@@ -65,12 +68,12 @@
 			handleClick: function() {
 				this.visible = !this.visible;
 			},
-			initEvent: function() {
-				var trigger = this.trigger
-					, show = this.show
-					, hide = this.hide
-					, handleClick = this.handleClick
-					, splitButton = this.splitButton;
+			bindEvents: function() {
+				var trigger = this.trigger;
+				var show = this.show;
+				var hide = this.hide;
+				var handleClick = this.handleClick;
+				var splitButton = this.splitButton;
 				var triggerElm = splitButton ? this.$refs.trigger.$el : this.$slots.default[0].elm;
 				if (trigger === 'hover') {
 					VueUtil.on(triggerElm, 'mouseenter', show);
@@ -81,6 +84,24 @@
 				} else if (trigger === 'click') {
 					VueUtil.on(triggerElm, 'click', handleClick);
 				}
+			},
+			unBindEvents: function() {
+				var trigger = this.trigger;
+				var show = this.show;
+				var hide = this.hide;
+				var handleClick = this.handleClick;
+				var splitButton = this.splitButton;
+				var triggerElm = splitButton ? this.$refs.trigger.$el : this.$slots.default[0].elm;
+				if (trigger === 'hover') {
+					VueUtil.off(triggerElm, 'mouseenter', show);
+					VueUtil.off(triggerElm, 'mouseleave', hide);
+					var dropdownElm = this.$slots.dropdown[0].elm;
+					VueUtil.off(dropdownElm, 'mouseenter', show);
+					VueUtil.off(dropdownElm, 'mouseleave', hide);
+				} else if (trigger === 'click') {
+					VueUtil.off(triggerElm, 'click', handleClick);
+				}
+				
 			},
 			handleMenuItemClick: function(command, instance) {
 				if (this.hideOnClick) {

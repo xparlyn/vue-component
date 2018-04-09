@@ -152,8 +152,7 @@
 			VueUtil.addResizeListener(this.$el, this.changeEventCardWidth);
 		},
 		beforeDestroy: function() {
-			if (this.$el)
-				VueUtil.removeResizeListener(this.$el, this.changeEventCardWidth);
+			this.$el && VueUtil.removeResizeListener(this.$el, this.changeEventCardWidth);
 		},
 		data: function() {
 			return {

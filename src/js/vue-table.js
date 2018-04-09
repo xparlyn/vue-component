@@ -538,15 +538,18 @@
 	}
 	TableLayout.prototype.updateHeight = function() {
 		var height = this.table.$el ? this.table.$el.clientHeight : 0;
+		this.headerHeight = 0;
 		if (!this.showHeader) {
-			this.headerHeight = 0;
 			if (VueUtil.isNumber(this.height)) {
 				this.bodyHeight = height;
 			}
 			this.fixedBodyHeight = this.scrollX ? height - this.gutterWidth : height;
 		} else {
 			var headerWrapper = this.table.$refs.headerWrapper;
-			var headerHeight = this.headerHeight = headerWrapper.offsetHeight;
+			if (VueUtil.isDef(headerWrapper)) {
+				this.headerHeight = headerWrapper.offsetHeight;
+			}
+			var headerHeight = this.headerHeight;
 			var footerHeight = 0;
 			var footerWrapper = this.table.$refs.footerWrapper;
 			if (this.table.showFooter && footerWrapper) {
@@ -1853,8 +1856,8 @@
 			updateScrollY: function() {
 				this.layout.updateScrollY();
 				var refs = this.$refs;
-				refs.fixedBodyWrapper.scrollTop = this.bodyScroll.top;
-				refs.rightFixedBodyWrapper.scrollTop = this.bodyScroll.top;
+				refs.fixedBodyWrapper && (refs.fixedBodyWrapper.scrollTop = this.bodyScroll.top);
+				refs.rightFixedBodyWrapper && (refs.rightFixedBodyWrapper.scrollTop = this.bodyScroll.top);
 			},
 			isCellHidden: function(index, fixed) {
 				if (fixed === 'left') {
@@ -1865,93 +1868,112 @@
 				}
 				return (index < this.leftFixedCount) || (index >= this.store.states.columns.length - this.rightFixedCount);
 			},
+			bodyScrollFn: function(event) {
+				var refs = this.$refs;
+				var scrollLeft = refs.bodyWrapper.scrollLeft;
+				var scrollTop = refs.bodyWrapper.scrollTop;
+				if (this.bodyScroll.left !== scrollLeft) {
+					this.bodyScroll.left = scrollLeft;
+					refs.headerWrapper.scrollLeft = scrollLeft;
+					refs.footerWrapper.scrollLeft = scrollLeft;
+					if (scrollLeft === 0) {
+						this.$emit('scroll-left');
+					}
+					if (scrollLeft === refs.bodyWrapper.scrollWidth - refs.bodyWrapper.clientWidth) {
+						this.$emit('scroll-right');
+					}
+				}
+				if (this.bodyScroll.top !== scrollTop) {
+					refs.tableBody.updateZone(scrollTop);
+					this.bodyScroll.top = scrollTop;
+					refs.fixedBodyWrapper.scrollTop = scrollTop;
+					refs.rightFixedBodyWrapper.scrollTop = scrollTop;
+					if (scrollTop === 0) {
+						this.$emit('scroll-top');
+					}
+					if (scrollTop === refs.bodyWrapper.scrollHeight - refs.bodyWrapper.clientHeight) {
+						this.$emit('scroll-bottom');
+					}
+				}
+			},
+			scrollYMouseWheel: function(event) {
+				var refs = this.$refs;
+				if (this.layout.scrollY) {
+					event.preventDefault();
+					var wheelDelta = event.wheelDelta || -event.detail;
+					var scrollTop = this.bodyScroll.top;
+					var wheel = 40;
+					if (VueUtil.isElement(refs.tableBody.$refs.tbody)) wheel = refs.tableBody.$refs.tbody.firstElementChild.offsetHeight;
+					wheel = wheel * 3;
+					if (wheelDelta < 0) {
+						scrollTop += wheel;
+					} else {
+						scrollTop -= wheel;
+					}
+					var scrollBottom = refs.bodyWrapper.scrollHeight - refs.bodyWrapper.clientHeight;
+					scrollTop < 0 ? scrollTop = 0 : null;
+					scrollTop > scrollBottom ? scrollTop = scrollBottom : null;
+					refs.bodyWrapper.scrollTop = scrollTop;
+					refs.fixedBodyWrapper.scrollTop = scrollTop;
+					refs.rightFixedBodyWrapper.scrollTop = scrollTop;
+				}
+			},
+			scrollXMouseWheel: function(event) {
+				var refs = this.$refs;
+				if (this.layout.scrollX) {
+					event.preventDefault();
+					var wheelDelta = event.wheelDelta || -event.detail;
+					var scrollLeft = this.bodyScroll.left;
+					if (wheelDelta < 0) {
+						scrollLeft += 80;
+					} else {
+						scrollLeft -= 80;
+					}
+					var scrollRight = refs.bodyWrapper.scrollWidth - refs.bodyWrapper.clientWidth;
+					scrollLeft < 0 ? scrollLeft = 0 : null;
+					scrollLeft > scrollRight ? scrollLeft = scrollRight : null;
+					refs.bodyWrapper.scrollLeft = scrollLeft;
+					refs.headerWrapper.scrollLeft = scrollLeft;
+					refs.footerWrapper.scrollLeft = scrollLeft;
+				}
+			},
 			bindEvents: function() {
-				var self = this;
-				var refs = self.$refs;
-				var bodyScroll = function() {
-					var scrollLeft = this.scrollLeft;
-					var scrollTop = this.scrollTop;
-					if (self.bodyScroll.left !== scrollLeft) {
-						self.bodyScroll.left = scrollLeft;
-						refs.headerWrapper.scrollLeft = scrollLeft;
-						refs.footerWrapper.scrollLeft = scrollLeft;
-						if (scrollLeft === 0) {
-							self.$emit('scroll-left');
-						}
-						if (scrollLeft === refs.bodyWrapper.scrollWidth - refs.bodyWrapper.clientWidth) {
-							self.$emit('scroll-right');
-						}
-					}
-					if (self.bodyScroll.top !== scrollTop) {
-						refs.tableBody.updateZone(scrollTop);
-						self.bodyScroll.top = scrollTop;
-						refs.fixedBodyWrapper.scrollTop = scrollTop;
-						refs.rightFixedBodyWrapper.scrollTop = scrollTop;
-						if (scrollTop === 0) {
-							self.$emit('scroll-top');
-						}
-						if (scrollTop === refs.bodyWrapper.scrollHeight - refs.bodyWrapper.clientHeight) {
-							self.$emit('scroll-bottom');
-						}
-					}
-				};
-				var scrollYMouseWheel = function(event) {
-					if (self.layout.scrollY) {
-						event.preventDefault();
-						var wheelDelta = event.wheelDelta || -event.detail;
-						var scrollTop = self.bodyScroll.top;
-						var wheel = 40;
-						if (VueUtil.isElement(self.$refs.tableBody.$refs.tbody)) wheel = self.$refs.tableBody.$refs.tbody.firstElementChild.offsetHeight;
-						wheel = wheel * 3;
-						if (wheelDelta < 0) {
-							scrollTop += wheel;
-						} else {
-							scrollTop -= wheel;
-						}
-						var scrollBottom = refs.bodyWrapper.scrollHeight - refs.bodyWrapper.clientHeight;
-						scrollTop < 0 ? scrollTop = 0 : null;
-						scrollTop > scrollBottom ? scrollTop = scrollBottom : null;
-						refs.bodyWrapper.scrollTop = scrollTop;
-						refs.fixedBodyWrapper.scrollTop = scrollTop;
-						refs.rightFixedBodyWrapper.scrollTop = scrollTop;
-					}
-				};
-				var scrollXMouseWheel = function(event) {
-					if (self.layout.scrollX) {
-						event.preventDefault();
-						var wheelDelta = event.wheelDelta || -event.detail;
-						var scrollLeft = self.bodyScroll.left;
-						if (wheelDelta < 0) {
-							scrollLeft += 80;
-						} else {
-							scrollLeft -= 80;
-						}
-						var scrollRight = refs.bodyWrapper.scrollWidth - refs.bodyWrapper.clientWidth;
-						scrollLeft < 0 ? scrollLeft = 0 : null;
-						scrollLeft > scrollRight ? scrollLeft = scrollRight : null;
-						refs.bodyWrapper.scrollLeft = scrollLeft;
-						refs.headerWrapper.scrollLeft = scrollLeft;
-						refs.footerWrapper.scrollLeft = scrollLeft;
-					}
-				};
+				var refs = this.$refs;
 				var mouseWheel = VueUtil.isFirefox ? 'DOMMouseScroll' : 'mousewheel';
-				VueUtil.on(refs.bodyWrapper, 'scroll', bodyScroll);
-				VueUtil.on(refs.bodyWrapper, mouseWheel, scrollYMouseWheel);
-				VueUtil.on(refs.fixedBodyWrapper, mouseWheel, scrollYMouseWheel);
-				VueUtil.on(refs.rightFixedBodyWrapper, mouseWheel, scrollYMouseWheel);
-				VueUtil.on(refs.headerWrapper, mouseWheel, scrollXMouseWheel);
-				VueUtil.on(refs.fixedHeaderWrapper, mouseWheel, scrollXMouseWheel);
-				VueUtil.on(refs.rightFixedHeaderWrapper, mouseWheel, scrollXMouseWheel);
-				VueUtil.on(refs.footerWrapper, mouseWheel, scrollXMouseWheel);
-				VueUtil.on(refs.fixedFooterWrapper, mouseWheel, scrollXMouseWheel);
-				VueUtil.on(refs.rightFixedFooterWrapper, mouseWheel, scrollXMouseWheel);
-				if (self.fit) {
-					VueUtil.addResizeListener(self.$el, self.doLayout);
+				VueUtil.on(refs.bodyWrapper, 'scroll', this.bodyScrollFn);
+				VueUtil.on(refs.bodyWrapper, mouseWheel, this.scrollYMouseWheel);
+				VueUtil.on(refs.fixedBodyWrapper, mouseWheel, this.scrollYMouseWheel);
+				VueUtil.on(refs.rightFixedBodyWrapper, mouseWheel, this.scrollYMouseWheel);
+				VueUtil.on(refs.headerWrapper, mouseWheel, this.scrollXMouseWheel);
+				VueUtil.on(refs.fixedHeaderWrapper, mouseWheel, this.scrollXMouseWheel);
+				VueUtil.on(refs.rightFixedHeaderWrapper, mouseWheel, this.scrollXMouseWheel);
+				VueUtil.on(refs.footerWrapper, mouseWheel, this.scrollXMouseWheel);
+				VueUtil.on(refs.fixedFooterWrapper, mouseWheel, this.scrollXMouseWheel);
+				VueUtil.on(refs.rightFixedFooterWrapper, mouseWheel, this.scrollXMouseWheel);
+				if (this.fit) {
+					VueUtil.addResizeListener(this.$el, this.doLayout);
+				}
+			},
+			unBindEvents: function() {
+				var refs = this.$refs;
+				var mouseWheel = VueUtil.isFirefox ? 'DOMMouseScroll' : 'mousewheel';
+				VueUtil.off(refs.bodyWrapper, 'scroll', this.bodyScrollFn);
+				VueUtil.off(refs.bodyWrapper, mouseWheel, this.scrollYMouseWheel);
+				VueUtil.off(refs.fixedBodyWrapper, mouseWheel, this.scrollYMouseWheel);
+				VueUtil.off(refs.rightFixedBodyWrapper, mouseWheel, this.scrollYMouseWheel);
+				VueUtil.off(refs.headerWrapper, mouseWheel, this.scrollXMouseWheel);
+				VueUtil.off(refs.fixedHeaderWrapper, mouseWheel, this.scrollXMouseWheel);
+				VueUtil.off(refs.rightFixedHeaderWrapper, mouseWheel, this.scrollXMouseWheel);
+				VueUtil.off(refs.footerWrapper, mouseWheel, this.scrollXMouseWheel);
+				VueUtil.off(refs.fixedFooterWrapper, mouseWheel, this.scrollXMouseWheel);
+				VueUtil.off(refs.rightFixedFooterWrapper, mouseWheel, this.scrollXMouseWheel);
+				if (this.fit) {
+					VueUtil.removeResizeListener(this.$el, this.doLayout);
 				}
 			},
 			resizeZone: function() {
 				var refs = this.$refs;
-				refs.tableBody.updateZone(this.bodyScroll.top);
+				refs.tableBody && refs.tableBody.updateZone(this.bodyScroll.top);
 				if (this.showFooter) {
 					this.store.getAggregate(this.store.states.columns, this.store.states.data);
 					refs.tableFooter.aggregates = this.store.states.aggregates
@@ -2055,9 +2077,7 @@
 			}
 		},
 		beforeDestroy: function() {
-			if (this.fit) {
-				VueUtil.removeResizeListener(this.$el, this.doLayout);
-			}
+			this.unBindEvents();
 		},
 		mounted: function() {
 			var self = this;

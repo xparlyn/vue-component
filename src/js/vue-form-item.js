@@ -41,6 +41,7 @@
 					var self = this;
 					if (VueUtil.isDef(val)) {
 						self.$nextTick(function() {
+							VueUtil.removeResizeListener(self.form.$el, self.resetLabelWidth);
 							VueUtil.addResizeListener(self.form.$el, self.resetLabelWidth);
 						});
 					} else {
@@ -223,6 +224,7 @@
 		},
 		beforeDestroy: function() {
 			this.dispatch('VueForm', 'vue.form.removeField', [this]);
+			VueUtil.removeResizeListener(this.form.$el, this.resetLabelWidth);
 		}
 	};
 	Vue.component(VueFormItem.name, VueFormItem);

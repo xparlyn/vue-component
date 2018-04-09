@@ -20,22 +20,22 @@
 				separator: ''
 			};
 		},
+		methods: {
+			linkToDo: function() {
+				var to = this.to;
+				if (to && this.$router) {
+					this.replace ? this.$router.replace(to) : this.$router.push(to);
+				} else {
+					this.$emit('click');
+				}
+			}
+		},
 		mounted: function() {
 			this.separator = this.$parent.separator;
-			var self = this;
-			var link = self.$refs.link;
-			if (self.to) {
-				VueUtil.on(link, 'click', function() {
-					var to = self.to;
-					if (self.$router) {
-						self.replace ? self.$router.replace(to) : self.$router.push(to);
-					}
-				});
-			} else {
-				VueUtil.on(link, 'click', function() {
-					self.$emit('click');
-				});
-			}
+			VueUtil.on(this.$refs.link, 'click', this.linkToDo);
+		},
+		beforeDestroy: function() {
+			VueUtil.off(this.$refs.link, 'click', this.linkToDo);
 		}
 	};
 	Vue.component(VueBreadcrumbItem.name, VueBreadcrumbItem);

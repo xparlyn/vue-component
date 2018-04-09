@@ -50,47 +50,85 @@
 				}
 			}
 		},
-		mounted: function() {
-			var self = this;
-			var reference = self.reference || self.$refs.reference;
-			var popper = self.popper || self.$refs.popper;
-			if (!reference && self.$slots.reference && self.$slots.reference[0]) {
-				reference = self.referenceElm = self.$slots.reference[0].elm;
-			}
-			if (self.trigger === 'click') {
-				VueUtil.on(reference, 'click', self.doToggle);
-				VueUtil.on(document, 'click', self.handleDocumentClick);
-			} else if (self.trigger === 'hover') {
-				VueUtil.on(reference, 'mouseenter', self.handleMouseEnter);
-				VueUtil.on(popper, 'mouseenter', self.handleMouseEnter);
-				VueUtil.on(reference, 'mouseleave', self.handleMouseLeave);
-				VueUtil.on(popper, 'mouseleave', self.handleMouseLeave);
-			} else if (self.trigger === 'focus') {
-				var found = false;
-				if ([].slice.call(reference.children).length) {
-					var children = reference.childNodes;
-					var len = children.length;
-					for (var i = 0; i < len; i++) {
-						if (children[i].nodeName === 'INPUT' || children[i].nodeName === 'TEXTAREA') {
-							VueUtil.on(children[i], 'focus', self.doShow);
-							VueUtil.on(children[i], 'blur', self.doClose);
-							found = true;
-							break;
+		methods: {
+			bindEvents: function() {
+				var self = this;
+				var reference = self.reference || self.$refs.reference;
+				var popper = self.popper || self.$refs.popper;
+				if (!reference && self.$slots.reference && self.$slots.reference[0]) {
+					reference = self.referenceElm = self.$slots.reference[0].elm;
+				}
+				if (self.trigger === 'click') {
+					VueUtil.on(reference, 'click', self.doToggle);
+					VueUtil.on(document, 'click', self.handleDocumentClick);
+				} else if (self.trigger === 'hover') {
+					VueUtil.on(reference, 'mouseenter', self.handleMouseEnter);
+					VueUtil.on(popper, 'mouseenter', self.handleMouseEnter);
+					VueUtil.on(reference, 'mouseleave', self.handleMouseLeave);
+					VueUtil.on(popper, 'mouseleave', self.handleMouseLeave);
+				} else if (self.trigger === 'focus') {
+					var found = false;
+					if ([].slice.call(reference.children).length) {
+						var children = reference.childNodes;
+						var len = children.length;
+						for (var i = 0; i < len; i++) {
+							if (children[i].nodeName === 'INPUT' || children[i].nodeName === 'TEXTAREA') {
+								VueUtil.on(children[i], 'focus', self.doShow);
+								VueUtil.on(children[i], 'blur', self.doClose);
+								found = true;
+								break;
+							}
 						}
 					}
+					if (found) return;
+					if (reference.nodeName === 'INPUT' || reference.nodeName === 'TEXTAREA') {
+						VueUtil.on(reference, 'focus', self.doShow);
+						VueUtil.on(reference, 'blur', self.doClose);
+					} else {
+						VueUtil.on(reference, 'mousedown', self.doShow);
+						VueUtil.on(reference, 'mouseup', self.doClose);
+					}
 				}
-				if (found)
-					return;
-				if (reference.nodeName === 'INPUT' || reference.nodeName === 'TEXTAREA') {
-					VueUtil.on(reference, 'focus', self.doShow);
-					VueUtil.on(reference, 'blur', self.doClose);
-				} else {
-					VueUtil.on(reference, 'mousedown', self.doShow);
-					VueUtil.on(reference, 'mouseup', self.doClose);
+			},
+			unBindEvents: function() {
+				var self = this;
+				var reference = self.reference || self.$refs.reference;
+				var popper = self.popper || self.$refs.popper;
+				if (!reference && self.$slots.reference && self.$slots.reference[0]) {
+					reference = self.referenceElm = self.$slots.reference[0].elm;
 				}
-			}
-		},
-		methods: {
+				if (self.trigger === 'click') {
+					VueUtil.off(reference, 'click', self.doToggle);
+					VueUtil.off(document, 'click', self.handleDocumentClick);
+				} else if (self.trigger === 'hover') {
+					VueUtil.off(reference, 'mouseenter', self.handleMouseEnter);
+					VueUtil.off(popper, 'mouseenter', self.handleMouseEnter);
+					VueUtil.off(reference, 'mouseleave', self.handleMouseLeave);
+					VueUtil.off(popper, 'mouseleave', self.handleMouseLeave);
+				} else if (self.trigger === 'focus') {
+					var found = false;
+					if ([].slice.call(reference.children).length) {
+						var children = reference.childNodes;
+						var len = children.length;
+						for (var i = 0; i < len; i++) {
+							if (children[i].nodeName === 'INPUT' || children[i].nodeName === 'TEXTAREA') {
+								VueUtil.off(children[i], 'focus', self.doShow);
+								VueUtil.off(children[i], 'blur', self.doClose);
+								found = true;
+								break;
+							}
+						}
+					}
+					if (found) return;
+					if (reference.nodeName === 'INPUT' || reference.nodeName === 'TEXTAREA') {
+						VueUtil.off(reference, 'focus', self.doShow);
+						VueUtil.off(reference, 'blur', self.doClose);
+					} else {
+						VueUtil.off(reference, 'mousedown', self.doShow);
+						VueUtil.off(reference, 'mouseup', self.doClose);
+					}
+				}
+			},
 			doToggle: function() {
 				this.showPopper = !this.showPopper;
 			},
@@ -125,16 +163,11 @@
 				this.showPopper = false;
 			}
 		},
+		mounted: function() {
+			this.bindEvents();
+		},
 		destroyed: function() {
-			var reference = this.reference;
-			VueUtil.off(reference, 'click', this.doToggle);
-			VueUtil.off(reference, 'mouseup', this.doClose);
-			VueUtil.off(reference, 'mousedown', this.doShow);
-			VueUtil.off(reference, 'focus', this.doShow);
-			VueUtil.off(reference, 'blur', this.doClose);
-			VueUtil.off(reference, 'mouseleave', this.handleMouseLeave);
-			VueUtil.off(reference, 'mouseenter', this.handleMouseEnter);
-			VueUtil.off(document, 'click', this.handleDocumentClick);
+			this.unBindEvents();
 		}
 	};
 	var directive = function(el, binding, vnode) {
