@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.45.9763';
+	var version ='1.45.9768';
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -61,7 +61,9 @@
 		return (!isDef(date) || isNaN(new Date(date).getTime())) ? null : new Date(date);
 	};
 	var formatNumber = function(number, dec, dsep, tsep) {
+		isDef(number) && (number = number*1);
 		if (!isNumber(number)) return null;
+		isDef(dec) && (dec = dec*1);
 		if (!isNumber(dec)) dec = 2;
 		number = number.toFixed(dec);
 		if (!isString(dsep)) dsep = '.';
@@ -82,6 +84,8 @@
 		return DateUtil.parse(str, format || 'yyyy-MM-dd');
 	};
 	var getDayCountOfMonth = function(year, month) {
+		isDef(year) && (year = year*1);
+		isDef(month) && (month = month*1);
 		if (!isNumber(year) || !isNumber(month)) return null;
 		month--;
 		if (month === 3 || month === 5 || month === 8 || month === 10) {
@@ -112,6 +116,7 @@
 	};
 	var addDate = function(src, num, type) {
 		src = toDate(src);
+		isDef(num) && (num = num*1);
 		if (!isDate(src) || !isNumber(num)) return null;
 		if (type !== 'week' && type !== 'day' && type !== 'month' && type !== 'year') type = 'day';
 		var result = new Date();
@@ -208,6 +213,7 @@
 		node && node.parentElement && node.parentElement.removeChild(node);
 	};
 	var insertNodeAt = function(fatherNode, node, position) {
+		isDef(position) && (position = position*1);
 		if (!isNumber(position)) position = 0;
 		var refNode = (position === 0) ? fatherNode.firstElementChild : fatherNode.children[position - 1].nextElementSibling;
 		fatherNode.insertBefore(node, refNode);
@@ -258,6 +264,7 @@
 		return null;
 	};
 	var setCookie = function(name, value, days) {
+		isDef(days) && (days = days*1);
 		if (!isNumber(days)) days = 1;
 		var date = addDate((new Date), days);
 		document.cookie = name + '=' + value + ';expires=' + date;
@@ -762,7 +769,7 @@
 		}
 		return getScrollParent(el.parentNode);
 	};
-	return {
+	var VueUtil = {
 		isDef: isDef,
 		isString: isString,
 		isNumber: isNumber,
@@ -835,4 +842,6 @@
 			getScrollParent: getScrollParent
 		}
 	}
+	 Vue.prototype.$vu = VueUtil;
+	return VueUtil;
 });
