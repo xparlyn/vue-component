@@ -11,12 +11,14 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.45.9768';
+	var version ='1.45.9775';
+	var _toString = Object.prototype.toString;
+	var _forEach = Array.prototype.forEach;
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
 	var objType = function(obj) {
-		return Object.prototype.toString.call(obj).slice(8, -1);
+		return _toString.call(obj).slice(8, -1);
 	};
 	var isString = function(obj) {
 		return objType(obj) === 'String';
@@ -161,7 +163,7 @@
 		return result;
 	};
 	var loop = function(arr, fn) {
-		isDef(arr) && arr.length && isFunction(fn) && Array.prototype.forEach.call(arr, fn);
+		isDef(arr) && arr.length && isFunction(fn) && _forEach.call(arr, fn);
 	};
 	var ownPropertyLoop = function (obj, fn) {
 		isDef(obj) && loop(Object.keys(obj), fn);
