@@ -346,6 +346,9 @@
 .vue-icon-qrcode:before {
 	content: "\e86b";
 }
+.vue-icon-scan:before {
+	content: "\e86c";
+}
 .vue-icon-loading {
 	animation: rotating 1s linear infinite;
 }
