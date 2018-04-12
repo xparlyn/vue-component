@@ -1194,7 +1194,6 @@
 		beforeDestroy: function() {
 			VueUtil.ownPropertyLoop(this.filterPanels, function(prop) {
 				if (VueUtil.isDef(panels[prop])) {
-					VueUtil.removeNode(panels[prop].$el);
 					panels[prop].$destroy();
 				}
 			});

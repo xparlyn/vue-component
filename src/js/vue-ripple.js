@@ -17,7 +17,7 @@
 					var el = this.$el.parentNode;
 					el.style.position = 'relative';
 					var animation = self.$refs.animation;
-					var size = el.clientWidth >el.clientHeight ? el.clientWidth : el.clientHeight;
+					var size = el.clientWidth > el.clientHeight ? el.clientWidth : el.clientHeight;
 					animation.style.height = animation.style.width = size + 'px';
 					var offset = el.getBoundingClientRect();
 					var x = clientX - offset.left + 'px';
@@ -52,7 +52,6 @@
 			},
 			unbind: function(el) {
 				VueUtil.off(el, 'mousedown', doRipple);
-				VueUtil.removeNode(el.ripple.$el);
 				el.ripple.$destroy();
 			}
 		});

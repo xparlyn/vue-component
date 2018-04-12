@@ -42,7 +42,6 @@
 			});
 		},
 		beforeDestroy: function() {
-			VueUtil.removeNode(this.popperVM.$el);
 			this.popperVM.$destroy();
 		},
 		render: function(createElement) {

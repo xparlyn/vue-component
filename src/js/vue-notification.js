@@ -66,7 +66,6 @@
 				}
 			},
 			doDestroy: function() {
-				VueUtil.removeNode(this.$el);
 				this.$destroy();
 			}
 		},
@@ -117,7 +116,6 @@
 		var isCenterY = positionY.indexOf('center') !== -1;
 		var isBottom = positionY.indexOf('bottom') !== -1;
 		if ((!isLeft && !isCenterX && !isRight) || (!isTop && !isCenterY && !isBottom)) {
-			VueUtil.removeNode(instance.dom);
 			instance.$destroy();
 			return;
 		}

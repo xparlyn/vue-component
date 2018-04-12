@@ -39,7 +39,6 @@
 			this.$parent.addPanes(this);
 		},
 		destroyed: function() {
-			VueUtil.removeNode(this.$el);
 			this.$parent.removePanes(this);
 		},
 		watch: {

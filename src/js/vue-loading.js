@@ -127,11 +127,7 @@
 			},
 			unbind: function(el, binding) {
 				if (el.domInserted) {
-					if (binding.modifiers.fullscreen || binding.modifiers.body) {
-						document.body.removeChild(el.mask);
-					} else {
-						VueUtil.removeNode(el.mask);
-					}
+					el.instance.$destroy();
 				}
 			}
 		});

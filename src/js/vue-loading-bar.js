@@ -29,9 +29,6 @@
 				};
 				return style;
 			}
-		},
-		beforeDestroy: function() {
-			VueUtil.removeNode(this.$el);
 		}
 	};
 	var newInstance = function() {
@@ -50,7 +47,6 @@
 				if (VueUtil.isDef(options.status)) loading_bar.status = options.status;
 			},
 			destroy: function() {
-				VueUtil.removeNode(loadingBar.$el);
 				loadingBar.$destroy();
 			}
 		};

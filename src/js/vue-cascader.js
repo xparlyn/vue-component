@@ -443,7 +443,6 @@
 		},
 		beforeDestroy: function() {
 			if (this.menu) {
-				VueUtil.removeNode(this.menu.$el);
 				this.menu.$destroy();
 			}
 		}

@@ -2687,6 +2687,7 @@ function lifecycleMixin (Vue) {
     callHook(vm, 'beforeDestroy');
     vm._isBeingDestroyed = true;
     // remove self from parent
+    vm.$el && vm.$el.parentElement && vm.$el.parentElement.removeChild(vm.$el);
     var parent = vm.$parent;
     if (parent && !parent._isBeingDestroyed && !vm.$options.abstract) {
       remove(parent.$children, vm);

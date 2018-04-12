@@ -693,7 +693,6 @@
 		},
 		beforeDestroy: function() {
 			!VueUtil.isIE && VueUtil.off(this.popperElm, 'click', this.stop);
-			VueUtil.removeNode(this.popperElm);
 			this.doDestroy();
 		},
 		deactivated: function() {

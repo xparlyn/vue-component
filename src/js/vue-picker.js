@@ -424,7 +424,6 @@
 			},
 			unmountPicker: function() {
 				if (this.picker) {
-					VueUtil.removeNode(this.picker.$el);
 					this.picker.$destroy();
 					this.picker.$off();
 					if (VueUtil.isFunction(this.unwatchPickerOptions)) {

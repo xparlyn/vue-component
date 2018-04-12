@@ -55,7 +55,6 @@
 				}
 			},
 			doDestroy: function() {
-				VueUtil.removeNode(this.$el);
 				this.$destroy();
 			}
 		},
