@@ -440,6 +440,12 @@
 		},
 		mounted: function() {
 			this.flatOptions = this.flattenOptions(this.options);
+		},
+		beforeDestroy: function() {
+			if (this.menu) {
+				VueUtil.removeNode(this.menu.$el);
+				this.menu.$destroy();
+			}
 		}
 	};
 	Vue.component(VueCascader.name, VueCascader);

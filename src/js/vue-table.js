@@ -1192,10 +1192,10 @@
 			this.setDefaultSortColumn();
 		},
 		beforeDestroy: function() {
-			var panels = this.filterPanels;
-			VueUtil.ownPropertyLoop(panels, function(prop) {
+			VueUtil.ownPropertyLoop(this.filterPanels, function(prop) {
 				if (VueUtil.isDef(panels[prop])) {
-					panels[prop].$destroy(true);
+					VueUtil.removeNode(panels[prop].$el);
+					panels[prop].$destroy();
 				}
 			});
 		},

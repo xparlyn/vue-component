@@ -18,12 +18,17 @@
 	border-radius: 50%;
 	background: currentColor;
 	opacity: 0;
-	transition: .3s cubic-bezier(0,0,.2,1);
 }
-.vue-ripple__animation--enter {
-	transition: none;
-	will-change: transform,opacity
+.ripple-fade-enter-active {
+	animation: ripple .5s;
 }
-.vue-ripple__animation--visible {
-	opacity: .5
+@keyframes ripple {
+	0% {
+		opacity: .3;
+		transform: translate(-50%, -50%) scale3d(.1,.1,.1);
+	}
+	to {
+		opacity: .3;
+		transform: translate(-50%, -50%) scale3d(2,2,2);
+	}
 }

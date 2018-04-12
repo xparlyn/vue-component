@@ -41,6 +41,10 @@
 				self.handleClosePopper();
 			});
 		},
+		beforeDestroy: function() {
+			VueUtil.removeNode(this.popperVM.$el);
+			this.popperVM.$destroy();
+		},
 		render: function(createElement) {
 			var self = this;
 			var effect = self.effect === 'light' ? 'light' : 'dark';

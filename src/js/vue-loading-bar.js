@@ -37,20 +37,21 @@
 	var newInstance = function() {
 		var div = document.createElement('loading-bar');
 		document.body.appendChild(div);
-		var loading_bar = new Vue({
-			el: div,
+		var loadingBar = new Vue({
 			components: {LoadingBar: LoadingBar},
 			mounted: function() {
 				this.$el.style.zIndex = VueUtil.nextZIndex();
 			}
-		}).$children[0];
+		}).$mount(div);
+		var loading_bar = loadingBar.$children[0];
 		return {
 			update: function(options) {
 				if (VueUtil.isDef(options.percent)) loading_bar.percent = options.percent;
 				if (VueUtil.isDef(options.status)) loading_bar.status = options.status;
 			},
 			destroy: function() {
-				loading_bar.$destroy();
+				VueUtil.removeNode(loadingBar.$el);
+				loadingBar.$destroy();
 			}
 		};
 	};

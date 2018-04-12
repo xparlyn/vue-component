@@ -10,33 +10,26 @@
 	'use strict';
 	var directive = function() {
 		var VueRipple = {
-			template: '<div v-show="visible" ref="container" :class="[\'vue-ripple__container\']"><div ref="animation" :class="[\'vue-ripple__animation\']"></div></div>',
+			template: '<div v-show="visible" class="vue-ripple__container"><transition name="ripple-fade" @after-enter="hiddenRipple"><div v-show="visible" ref="animation" class="vue-ripple__animation"></div></transition></div>',
 			methods: {
 				showRipple: function(clientX, clientY) {
 					var self = this;
 					var el = this.$el.parentNode;
+					el.style.position = 'relative';
 					var animation = self.$refs.animation;
-					if (el.originalPosition !== 'absolute') {
-						el.style.position = 'relative';
-					}
 					var size = el.clientWidth >el.clientHeight ? el.clientWidth : el.clientHeight;
-					animation.style.height = animation.style.width = size * 2 + 'px';
+					animation.style.height = animation.style.width = size + 'px';
 					var offset = el.getBoundingClientRect();
 					var x = clientX - offset.left + 'px';
 					var y = clientY - offset.top + 'px';
-					VueUtil.addClass(animation, 'vue-ripple__animation--enter');
-					VueUtil.addClass(animation, 'vue-ripple__animation--visible');
-					VueUtil.setStyle(animation, 'transform', 'translate(-50%, -50%) translate(' + x + ', ' + y + ') scale3d(.1,.1,.1)');
+					animation.style.left = x;
+					animation.style.top = y;
 					self.visible = true;
-					VueUtil.debounce(function() {
-						VueUtil.setStyle(animation, 'transform', 'translate(-50%, -50%) translate(' + x + ', ' + y + ') scale3d(1,1,1)');
-						VueUtil.removeClass(animation, 'vue-ripple__animation--enter');
-						VueUtil.debounce(300, function() {
-							VueUtil.removeClass(animation, 'vue-ripple__animation--visible');
-							el.style.position = el.originalPosition;
-							self.visible = false;
-						})(); 
-					})();
+				},
+				hiddenRipple: function() {
+					var el = this.$el.parentNode;
+					el.style.position = el.originalPosition;
+					this.visible = false;
 				}
 			},
 			data: function() {
@@ -53,12 +46,13 @@
 		Vue.directive('ripple', {
 			bind: function(el, binding) {
 				el.originalPosition = el.style.position;
-				el.ripple = new Vue(VueRipple);
-				el.appendChild(el.ripple.$mount().$el);
+				el.ripple = new Vue(VueRipple).$mount();
+				el.appendChild(el.ripple.$el);
 				VueUtil.on(el, 'mousedown', doRipple);
 			},
 			unbind: function(el) {
 				VueUtil.off(el, 'mousedown', doRipple);
+				VueUtil.removeNode(el.ripple.$el);
 				el.ripple.$destroy();
 			}
 		});
