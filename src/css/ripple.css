@@ -12,14 +12,12 @@
 	left: 0;
 	top: 0;
 	overflow: hidden;
-	pointer-events: none
+	pointer-events: none;
 }
 .vue-ripple__animation {
 	border-radius: 50%;
 	background: currentColor;
 	opacity: 0;
-}
-.ripple-fade-enter-active {
 	animation: ripple .5s;
 }
 @keyframes ripple {

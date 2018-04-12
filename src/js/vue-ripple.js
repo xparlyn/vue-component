@@ -9,50 +9,45 @@
 })(this, function(Vue, VueUtil) {
 	'use strict';
 	var directive = function() {
-		var VueRipple = {
-			template: '<div v-show="visible" class="vue-ripple__container"><transition name="ripple-fade" @after-enter="hiddenRipple"><div v-show="visible" ref="animation" class="vue-ripple__animation"></div></transition></div>',
-			methods: {
-				showRipple: function(clientX, clientY) {
-					var self = this;
-					var el = this.$el.parentNode;
-					el.style.position = 'relative';
-					var animation = self.$refs.animation;
-					var size = el.clientWidth > el.clientHeight ? el.clientWidth : el.clientHeight;
-					animation.style.height = animation.style.width = size + 'px';
-					var offset = el.getBoundingClientRect();
-					var x = clientX - offset.left + 'px';
-					var y = clientY - offset.top + 'px';
-					animation.style.left = x;
-					animation.style.top = y;
-					self.visible = true;
-				},
-				hiddenRipple: function() {
-					var el = this.$el.parentNode;
-					el.style.position = el.originalPosition;
-					this.visible = false;
-				}
-			},
-			data: function() {
-				return {
-					visible: false
-				};
-			}
-		};
-		var doRipple = function(e) {
+		var doRipple = VueUtil.throttle(function(e) {
 			var clientX = e.clientX;
 			var clientY = e.clientY;
-			this.ripple.showRipple(clientX, clientY);
-		};
+			var el = this;
+			el.style.position = 'relative';
+			var ripple = el.querySelector('.vue-ripple__container');
+			var animation = el.querySelector('.vue-ripple__animation');
+			var size = el.clientWidth > el.clientHeight ? el.clientWidth : el.clientHeight;
+			animation.style.height = animation.style.width = size + 'px';
+			var offset = el.getBoundingClientRect();
+			var x = clientX - offset.left + 'px';
+			var y = clientY - offset.top + 'px';
+			animation.style.left = x;
+			animation.style.top = y;
+			animation.style.display = "";
+			ripple.style.display = "";
+			VueUtil.debounce(500, function() {
+				animation.style.display = "none";
+				ripple.style.display = "none";
+				el.style.position = el.__originalPosition__;
+			})();
+		});
 		Vue.directive('ripple', {
 			bind: function(el, binding) {
-				el.originalPosition = el.style.position;
-				el.ripple = new Vue(VueRipple).$mount();
-				el.appendChild(el.ripple.$el);
-				VueUtil.on(el, 'mousedown', doRipple);
+				VueUtil.debounce(function() {
+					el.__originalPosition__ = el.style.position;
+					var ripple = el.__ripple__ = document.createElement('div');
+					ripple.className = "vue-ripple__container";
+					ripple.style.display = "none";
+					var animation = document.createElement('div');
+					animation.style.display = "none";
+					animation.className = "vue-ripple__animation";
+					ripple.appendChild(animation);
+					el.appendChild(ripple);
+					VueUtil.on(el, 'mousedown', doRipple);
+				})();
 			},
 			unbind: function(el) {
 				VueUtil.off(el, 'mousedown', doRipple);
-				el.ripple.$destroy();
 			}
 		});
 	};
