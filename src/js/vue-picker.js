@@ -425,7 +425,6 @@
 			unmountPicker: function() {
 				if (this.picker) {
 					this.picker.$destroy();
-					this.picker.$off();
 					if (VueUtil.isFunction(this.unwatchPickerOptions)) {
 						this.unwatchPickerOptions();
 					}
