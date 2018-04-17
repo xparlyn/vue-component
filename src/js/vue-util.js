@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.46.9805';
+	var version ='1.46.9811';
 	var _toString = Object.prototype.toString;
 	var _forEach = Array.prototype.forEach;
 	var isDef = function(v) {

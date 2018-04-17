@@ -1820,9 +1820,18 @@
 				};
 				exportFile(params.fileName, data);
 			},
-			columnFilter: function(column, value) {
+			columnFilter: function(columnProp, value) {
+				var filterColumn = null;
+				if (VueUtil.isString(columnProp)) {
+					VueUtil.loop(this.storce.states.columns, function(column){
+						if (VueUtil.isDef(filterColumn)) return;
+						if (column.property === columnProp) filterColumn = column;
+					});
+				} else {
+					filterColumn = columnProp;
+				}
 				this.store.commit('filterChange', {
-					column: column,
+					column: filterColumn,
 					values: value
 				});
 			},
