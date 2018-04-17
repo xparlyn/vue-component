@@ -1823,7 +1823,7 @@
 			columnFilter: function(columnProp, value) {
 				var filterColumn = null;
 				if (VueUtil.isString(columnProp)) {
-					VueUtil.loop(this.storce.states.columns, function(column){
+					VueUtil.loop(this.store.states.columns, function(column){
 						if (VueUtil.isDef(filterColumn)) return;
 						if (column.property === columnProp) filterColumn = column;
 					});
