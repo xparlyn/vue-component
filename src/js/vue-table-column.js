@@ -320,6 +320,7 @@
 			label: function(newVal) {
 				if (this.columnConfig) {
 					this.columnConfig.label = newVal;
+					this.owner.doLayout();
 				}
 			},
 			prop: function(newVal) {
