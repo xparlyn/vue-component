@@ -397,7 +397,7 @@
 	}
 	TableStore.prototype.getColumnById = function(columnId) {
 		var column = null;
-		var columns = this.states.columns;
+		var columns = this.states._columns;
 		var i = columns.length;
 		while (i--) {
 			var item = columns[i];
