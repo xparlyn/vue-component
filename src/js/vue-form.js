@@ -56,6 +56,14 @@
 			});
 		},
 		methods: {
+			isModify: function() {
+				var modifyFLg = false;
+				VueUtil.loop(this.fields, function(field) {
+					if (modifyFLg) return;
+					modifyFLg = field.isModify();
+				});
+				return modifyFLg;
+			},
 			resetFields: function() {
 				VueUtil.loop(this.fields, function(field) {
 					field.resetField();

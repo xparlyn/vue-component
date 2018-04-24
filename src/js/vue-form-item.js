@@ -179,6 +179,18 @@
 					prop.o[prop.k] = this.initialValue;
 				}
 			},
+			isModify: function() {
+				this.validateState = '';
+				this.validateMessage = '';
+				var model = this.form.model;
+				var value = this.fieldValue;
+				var path = this.prop;
+				if (path.indexOf(':') !== -1) {
+					path = path.replace(/:/, '.');
+				}
+				var prop = this.getPropByPath(model, path);
+				return (prop.o[prop.k] !== this.initialValue)
+			},
 			getRules: function() {
 				var formRules = this.form.rules;
 				var selfRuels = this.rules;
