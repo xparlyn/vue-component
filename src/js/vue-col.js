@@ -40,7 +40,7 @@
 			var self = this;
 			var classList = [];
 			VueUtil.loop(['span', 'offset', 'pull', 'push'], function(prop) {
-				if (self[prop]) {
+				if (VueUtil.isDef(self[prop])) {
 					classList.push(prop !== 'span' ? 'vue-col-' + prop + '-' + self[prop] : 'vue-col-' + self[prop]);
 				}
 			});

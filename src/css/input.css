@@ -6,6 +6,7 @@
 	position: relative;
 	font-size: 14px;
 	width: 100%;
+	display: inline-block;
 }
 .vue-input-group__append .vue-button,
 .vue-input-group__append .vue-input,
