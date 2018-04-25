@@ -56,6 +56,11 @@
 			});
 		},
 		methods: {
+			initValue: function() {
+				VueUtil.loop(this.fields, function(field) {
+					field.initValue();
+				});
+			},
 			isModify: function() {
 				var modifyFLg = false;
 				VueUtil.loop(this.fields, function(field) {

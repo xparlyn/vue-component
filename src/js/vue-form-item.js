@@ -97,7 +97,8 @@
 				validateMessage: '',
 				validateDisabled: false,
 				validator: {},
-				isRequired: false
+				isRequired: false,
+				initialValue: null
 			};
 		},
 		methods: {
@@ -191,6 +192,9 @@
 				var prop = this.getPropByPath(model, path);
 				return (prop.o[prop.k] !== this.initialValue)
 			},
+			initValue: function() {
+				this.initialValue = this.fieldValue
+			},
 			getRules: function() {
 				var formRules = this.form.rules;
 				var selfRuels = this.rules;
@@ -218,9 +222,7 @@
 			var self = this;
 			if (self.prop) {
 				self.dispatch('VueForm', 'vue.form.addField', [self]);
-				Object.defineProperty(self, 'initialValue', {
-					value: self.fieldValue
-				});
+				self.initValue();
 				var rules = self.getRules();
 				if (rules.length) {
 					rules.every(function(rule) {
