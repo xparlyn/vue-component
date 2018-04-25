@@ -383,7 +383,7 @@
 							return sortBy();
 						}
 						if (VueUtil.isFunction(column.sortMethod)) {
-							return sortMethod(value1, value2) ? sortOrder : -sortOrder;
+							return column.sortMethod(value1, value2) ? sortOrder : -sortOrder;
 						} else {
 							return value1 > value2 ? sortOrder : -sortOrder;
 						}
