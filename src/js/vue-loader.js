@@ -1,11 +1,11 @@
 (function(context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue', 'VueUtil'], definition);
+		define(['Vue', 'VueUtil', 'VueRouter', 'Vuex'], definition);
 	} else {
-		context.VueLoader = definition(context.Vue, context.VueUtil);
+		context.VueLoader = definition(context.Vue, context.VueUtil, context.VueRouter, context.Vuex);
 	}
-})(this, function(Vue, VueUtil) {
+})(this, function(Vue, VueUtil, VueRouter, Vuex) {
 	'use strict';
 	var promiseLoop = function(arr, cb) {
 		var realResult = []
@@ -160,7 +160,7 @@
 				return VueLoader(resolveURL(this.component.baseURI, childURL), childName);
 			}.bind(this);
 			try {
-				Function('exports', 'require', 'VueLoader', 'module', this.getContent()).call(this.module.exports, this.module.exports, childModuleRequire, childLoader, this.module);
+				Function('exports', 'require', 'Vue', 'VueUtil', 'VueRouter', 'Vuex', 'VueLoader', 'module', this.getContent()).call(this.module.exports, this.module.exports, childModuleRequire, Vue, VueUtil, VueRouter, Vuex, childLoader, this.module);
 			} catch (ex) {
 				Vue.config.productionTip && console.error("[VueLoader error]: in '" + this.component.url + "'\n\n" + ex);
 			}
