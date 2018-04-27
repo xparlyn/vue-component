@@ -1730,10 +1730,11 @@ var pending = false;
 
 function flushCallbacks () {
   pending = false;
-  while (callbacks.length) {
-    callbacks[0]();
-    callbacks.shift();
-  }
+  var copies = callbacks.slice(0);
+  callbacks = [];
+  copies.forEach(function(cb){
+    cb();
+  });
 }
 
 // Here we have async deferring wrappers using both micro and macro tasks.
