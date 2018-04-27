@@ -22,7 +22,6 @@
 			return realResult
 		})
 	};
-	var scopeIndex = 0;
 	var scriptCache = [];
 	var scriptScopedCache = [];
 	var identity = function(value) {
@@ -204,7 +203,7 @@
 		},
 		getScopeId: function() {
 			if (this._scopeId === '') {
-				this._scopeId = 'data-scope-' + (scopeIndex++).toString(36);
+				this._scopeId = 'scope-' + VueUtil.creationUuid();
 				this.template.getRootElt().setAttribute(this._scopeId, '');
 			}
 			return this._scopeId;

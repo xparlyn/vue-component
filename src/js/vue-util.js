@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version ='1.47.9859';
+	var version ='1.47.9865';
 	var _toString = Object.prototype.toString;
 	var _forEach = Array.prototype.forEach;
 	var isDef = function(v) {
@@ -191,6 +191,12 @@
 			merge(res, obj);
 		});
 		return res;
+	};
+	var creationUuid = function() {
+		var s4 = function() {
+			return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+		};
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 	};
 	var on = function(el, event, handler, options) {
 		if (el && event && handler) {
@@ -799,6 +805,7 @@
 		trim: trim,
 		merge: merge,
 		arrayToObject: arrayToObject,
+		creationUuid: creationUuid,
 		on: on,
 		off: off,
 		once: once,
