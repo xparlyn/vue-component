@@ -9,7 +9,7 @@
 })(this, function(Vue, VueUtil) {
 	'use strict';
 	var VueCarousel = {
-		template: '<div :class="[\'vue-carousel\', {\'vue-carousvue--card\': type === \'card\'}]" @mouseenter.stop="handleMouseEnter" @mouseleave.stop="handleMouseLeave"><div class="vue-carousel__container" :style="{height: height}"><transition name="carousel-arrow-left"><button v-if="arrow !== \'never\'" v-show="arrow === \'always\' || hover" @mouseenter="handleButtonEnter(\'left\')" @mouseleave="handleButtonLeave" @click.stop="throttledArrowClick(activeIndex - 1)" class="vue-carousel__arrow vue-carousel__arrow--left"><i class="vue-icon-arrow-left"></i></button></transition><transition name="carousel-arrow-right"><button v-if="arrow !== \'never\'" v-show="arrow === \'always\' || hover" @mouseenter="handleButtonEnter(\'right\')" @mouseleave="handleButtonLeave" @click.stop="throttledArrowClick(activeIndex + 1)" class="vue-carousel__arrow vue-carousel__arrow--right"><i class="vue-icon-arrow-right"></i></button></transition><slot></slot></div><ul v-if="indicatorPosition !== \'none\'" :class="[\'vue-carousel__indicators\', {\'vue-carousel__indicators--outside\': indicatorPosition === \'outside\' || type === \'card\'}]"><li v-for="(item, index) in items" :class="[\'vue-carousel__indicator\', {\'is-active\': index === activeIndex}]" @mouseenter="throttledIndicatorHover(index)" @click.stop="handleIndicatorClick(index)"><button class="vue-carousel__button"></button></li></ul></div>',
+		template: '<div :class="[\'vue-carousel\', {\'vue-carousvue--card\': type === \'card\'}]" @mouseenter.stop="handleMouseEnter" @mouseleave.stop="handleMouseLeave" @touchstart.stop="handleTouchStart"><div class="vue-carousel__container" :style="{height: height}"><transition name="carousel-arrow-left"><button v-if="arrow !== \'never\'" v-show="arrow === \'always\' || hover" @mouseenter="handleButtonEnter(\'left\')" @mouseleave="handleButtonLeave" @click.stop="throttledArrowClick(activeIndex - 1)" class="vue-carousel__arrow vue-carousel__arrow--left"><i class="vue-icon-arrow-left"></i></button></transition><transition name="carousel-arrow-right"><button v-if="arrow !== \'never\'" v-show="arrow === \'always\' || hover" @mouseenter="handleButtonEnter(\'right\')" @mouseleave="handleButtonLeave" @click.stop="throttledArrowClick(activeIndex + 1)" class="vue-carousel__arrow vue-carousel__arrow--right"><i class="vue-icon-arrow-right"></i></button></transition><slot></slot></div><ul v-if="indicatorPosition !== \'none\'" :class="[\'vue-carousel__indicators\', {\'vue-carousel__indicators--outside\': indicatorPosition === \'outside\' || type === \'card\'}]"><li v-for="(item, index) in items" :class="[\'vue-carousel__indicator\', {\'is-active\': index === activeIndex}]" @mouseenter="throttledIndicatorHover(index)" @click.stop="handleIndicatorClick(index)"><button class="vue-carousel__button"></button></li></ul></div>',
 		name: 'VueCarousel',
 		props: {
 			initialIndex: {
@@ -71,6 +71,32 @@
 			handleMouseLeave: function() {
 				this.hover = false;
 				if (this.hoverStop) this.startTimer();
+			},
+			handleTouchStart: function(e) {
+				e.stopImmediatePropagation();
+				var tocuhPlace = this.$options.tocuhPlace;
+				if (!VueUtil.isDef(tocuhPlace)) {
+					tocuhPlace = this.$options.tocuhPlace = {};
+				}
+				var touches = e.touches[0];
+				tocuhPlace.tocuhX = touches.pageX;
+				VueUtil.on(document, 'touchmove', this.handleTouchMove);
+				VueUtil.on(document, 'touchend', this.handleTouchEnd);
+			},
+			handleTouchMove: function(e) {
+				var touches = e.touches[0];
+				var tocuhPlace = this.$options.tocuhPlace;
+				tocuhPlace.touchMove = tocuhPlace.tocuhX - touches.pageX;
+			},
+			handleTouchEnd: function(e) {
+				var tocuhPlace = this.$options.tocuhPlace;
+				if (tocuhPlace.touchMove > 0) {
+					this.throttledArrowClick(this.activeIndex + 1)
+				} else {
+					this.throttledArrowClick(this.activeIndex - 1)
+				}
+				VueUtil.off(document, 'touchmove',this.handleTouchMove);
+				VueUtil.off(document, 'touchend', this.handleTouchEnd);
 			},
 			itemInStage: function(item, index) {
 				var length = this.items.length;
