@@ -1754,39 +1754,24 @@ var useMacroTask = false;
 // in IE. The only polyfill that consistently queues the callback after all DOM
 // events triggered in the same loop is by using MessageChannel.
 /* istanbul ignore if */
-//if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
-//  macroTimerFunc = function () {
-//    setImmediate(flushCallbacks);
-//  };
-//} else if (typeof MessageChannel !== 'undefined' && (
-//  isNative(MessageChannel) ||
-//  // PhantomJS
-//  MessageChannel.toString() === '[object MessageChannelConstructor]'
-//)) {
-if (isIOS) {
-  macroTimerFunc = function () {
-    var timer = requestAnimationFrame(function() {
-      flushCallbacks();
-      cancelAnimationFrame(timer);
-    });
-  };
-} else {
+if (typeof MessageChannel !== 'undefined' && (
+  isNative(MessageChannel) ||
+  MessageChannel.toString() === '[object MessageChannelConstructor]'
+)) {
   var channel = new MessageChannel();
   var port = channel.port2;
   channel.port1.onmessage = flushCallbacks;
   macroTimerFunc = function () {
     port.postMessage(1);
   };
+} else {
+  macroTimerFunc = function () {
+    var timer = requestAnimationFrame(function() {
+      flushCallbacks();
+      cancelAnimationFrame(timer);
+    });
+  };
 }
-//} else {
-//  /* istanbul ignore next */
-//  macroTimerFunc = function () {
-//    var timer = requestAnimationFrame(function() {
-//      flushCallbacks();
-//      cancelAnimationFrame(timer);
-//    });
-//  };
-//}
 
 // Determine MicroTask defer implementation.
 /* istanbul ignore next, $flow-disable-line */
