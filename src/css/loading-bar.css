@@ -6,7 +6,8 @@
 	right: 0;
 }
 .vue-loading-bar-inner {
-	transition: width .2s linear;
+	height: 2px;
+	transition: width .3s linear;
 }
 .vue-loading-bar-inner-color-primary {
 	background-color: #409eff;
