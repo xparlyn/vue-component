@@ -10,12 +10,13 @@
 	'use strict';
 	var loadingBarInstance = null;
 	var intervaler = null;
-	var LoadingBar = {
-		template: '<div class="vue-loading-bar"><div :class="innerClasses" :style="styles"></div></div>',
+	var LoadingBar = Vue.extend({
+		template: '<transition @after-leave="handleAfterLeave"><div v-show="visible" class="vue-loading-bar"><div :class="innerClasses" :style="styles"></div></div></transition>',
 		data: function() {
 			return {
 				percent: 0,
-				status: ''
+				status: '',
+				visible: false
 			};
 		},
 		computed: {
@@ -29,25 +30,31 @@
 				};
 				return style;
 			}
-		}
-	};
-	var newInstance = function() {
-		var div = document.createElement('loading-bar');
-		document.body.appendChild(div);
-		var loadingBar = new Vue({
-			components: {LoadingBar: LoadingBar},
-			mounted: function() {
-				this.$el.style.zIndex = VueUtil.nextZIndex();
+		},
+		methods: {
+			handleAfterLeave: function() {
+				this.$destroy();
+				this.$nextTick(function(){
+					loadingBarInstance = null;
+				});
 			}
-		}).$mount(div);
-		var loading_bar = loadingBar.$children[0];
+		},
+		mounted: function() {
+			this.$el.style.zIndex = VueUtil.nextZIndex();
+		}
+	});
+	var newInstance = function() {
+		var div = document.createElement('div');
+		document.body.appendChild(div);
+		var loadingBar = new LoadingBar({el: div});
 		return {
 			update: function(options) {
-				if (VueUtil.isDef(options.percent)) loading_bar.percent = options.percent;
-				if (VueUtil.isDef(options.status)) loading_bar.status = options.status;
+				loadingBar.visible = true;
+				if (VueUtil.isDef(options.percent)) loadingBar.percent = options.percent;
+				if (VueUtil.isDef(options.status)) loadingBar.status = options.status;
 			},
 			destroy: function() {
-				loadingBar.$destroy();
+				loadingBar.visible = false;
 			}
 		};
 	};
@@ -57,11 +64,8 @@
 	};
 	var destroyInstance = VueUtil.debounce(500, function(fn) {
 		if (VueUtil.isDef(loadingBarInstance)) {
+			if (VueUtil.isFunction(fn)) fn();
 			loadingBarInstance.destroy();
-			loadingBarInstance = null;
-			if (VueUtil.isFunction(fn)) {
-				fn();
-			}
 		}
 	});
 	var VueLoadingBar = {
@@ -77,16 +81,12 @@
 				}
 				updateInstance({percent: percent});
 			}, 200);
-			if (VueUtil.isFunction(fn)) {
-				fn();
-			}
+			if (VueUtil.isFunction(fn)) fn();
 		},
 		update: function(percent, fn) {
 			clearInterval(intervaler);
 			updateInstance({percent: percent});
-			if (VueUtil.isFunction(fn)) {
-				fn();
-			}
+			if (VueUtil.isFunction(fn)) fn();
 		},
 		finish: VueUtil.debounce(function(fn) {
 			clearInterval(intervaler);
