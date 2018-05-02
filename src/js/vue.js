@@ -1730,7 +1730,7 @@ var pending = false;
 
 function flushCallbacks () {
   pending = false;
-  var copies = callbacks.slice(0);
+  var copies = callbacks;
   callbacks = [];
   copies.forEach(function(cb){
     cb();
