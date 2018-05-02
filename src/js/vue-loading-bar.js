@@ -10,44 +10,35 @@
 	'use strict';
 	var loadingBar = null;
 	var intervaler = null;
-	var LoadingBar = Vue.extend({
-		template: '<div v-show="visible" class="vue-loading-bar"><div :class="innerClasses" :style="innerStyle"></div></div>',
-		data: function() {
-			return {
-				percent: 0,
-				error: false,
-				visible: false
-			};
-		},
-		watch: {
-			visible: function(val) {
-				if (val) this.$el.style.zIndex = VueUtil.nextZIndex();
-			}
-		},
-		computed: {
-			innerClasses: function() {
-				return ['vue-loading-bar-inner', 'vue-loading-bar-inner-color-primary', {'vue-loading-bar-inner-color-error': this.error}];
-			},
-			innerStyle: function() {
-				return {width: this.percent + '%'};
-			}
-		}
-	});
 	var newInstance = function() {
-		var div = document.createElement('div');
-		document.body.appendChild(div);
-		var loadingBar = new LoadingBar({el: div});
+		var loadingBar = document.createElement('div');
+		loadingBar.className = "vue-loading-bar";
+		loadingBar.style.display = "none";
+		var innerDiv = document.createElement('div');
+		VueUtil.addClass(innerDiv, "vue-loading-bar-inner");
+		VueUtil.addClass(innerDiv, "vue-loading-bar-inner-color-primary");
+		loadingBar.appendChild(innerDiv);
+		document.body.appendChild(loadingBar);
 		return {
 			show: function(options) {
-				if (!loadingBar.visible) loadingBar.visible = true;
-				loadingBar.error = options.error;
-				if (VueUtil.isDef(options.percent)) loadingBar.percent = options.percent;
+				if (loadingBar.style.display === "none") {
+					loadingBar.style.display = "";
+					loadingBar.style.zIndex = VueUtil.nextZIndex();
+				}
+				if (options.error) {
+					VueUtil.addClass(innerDiv, "vue-loading-bar-inner-color-error");
+				} else {
+					VueUtil.removeClass(innerDiv, "vue-loading-bar-inner-color-error");
+				}
+				if (VueUtil.isDef(options.percent)) {
+					innerDiv.style.width = options.percent + '%';
+				}
 			},
 			hide: function() {
-				loadingBar.visible = false;
+				loadingBar.style.display = "none";
 			},
 			isShow: function() {
-				return loadingBar.visible;
+				return (loadingBar.style.display !== "none");
 			}
 		};
 	};
