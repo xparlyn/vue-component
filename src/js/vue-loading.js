@@ -10,7 +10,7 @@
 	'use strict';
 	var directive = function() {
 		var VueLoading = Vue.extend({
-			template: '<transition name="loading-fade" @after-leave="handleAfterLeave"><div v-show="visible" :class="[\'vue-loading-mask\', customClass, {\'is-fullscreen\': fullscreen}]"><div class="vue-loading-spinner"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none"/></svg><p v-if="text" class="vue-loading-text">{{text}}</p></div></div></transition>',
+			template: '<transition @after-leave="handleAfterLeave"><div v-show="visible" :class="[\'vue-loading-mask\', customClass, {\'is-fullscreen\': fullscreen}]"><div class="vue-loading-spinner"><svg class="circular" viewBox="25 25 50 50"><circle class="path" cx="50" cy="50" r="20" fill="none"/></svg><p v-if="text" class="vue-loading-text">{{text}}</p></div></div></transition>',
 			data: function() {
 				return {
 					text: null,
@@ -49,30 +49,28 @@
 		};
 		var toggleLoading = function(el, binding) {
 			if (binding.value) {
-				Vue.nextTick(function() {
-					if (binding.modifiers.fullscreen) {
+				if (binding.modifiers.fullscreen) {
+					el.originalPosition = document.body.style.position;
+					el.originalOverflow = document.body.style.overflow;
+					VueUtil.addClass(el.mask, 'is-fullscreen');
+					insertDom(document.body, el, binding);
+				} else {
+					VueUtil.removeClass(el.mask, 'is-fullscreen');
+					if (binding.modifiers.body) {
 						el.originalPosition = document.body.style.position;
-						el.originalOverflow = document.body.style.overflow;
-						VueUtil.addClass(el.mask, 'is-fullscreen');
+						VueUtil.loop(['top', 'left'], function(property) {
+							var scroll = property === 'top' ? 'scrollTop' : 'scrollLeft';
+							el.maskStyle[property] = el.getBoundingClientRect()[property] + document.body[scroll] + document.documentElement[scroll] + 'px';
+						});
+						VueUtil.loop(['height', 'width'], function(property) {
+							el.maskStyle[property] = el.getBoundingClientRect()[property] + 'px';
+						});
 						insertDom(document.body, el, binding);
 					} else {
-						VueUtil.removeClass(el.mask, 'is-fullscreen');
-						if (binding.modifiers.body) {
-							el.originalPosition = document.body.style.position;
-							VueUtil.loop(['top', 'left'], function(property) {
-								var scroll = property === 'top' ? 'scrollTop' : 'scrollLeft';
-								el.maskStyle[property] = el.getBoundingClientRect()[property] + document.body[scroll] + document.documentElement[scroll] + 'px';
-							});
-							VueUtil.loop(['height', 'width'], function(property) {
-								el.maskStyle[property] = el.getBoundingClientRect()[property] + 'px';
-							});
-							insertDom(document.body, el, binding);
-						} else {
-							el.originalPosition = el.style.position;
-							insertDom(el, el, binding);
-						}
+						el.originalPosition = el.style.position;
+						insertDom(el, el, binding);
 					}
-				});
+				}
 			} else {
 				if (el.domVisible) {
 					el.instance.$once('after-leave', function() {

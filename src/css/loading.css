@@ -1,7 +1,3 @@
-.loading-fade-enter,
-.loading-fade-leave-active {
-	opacity: 0;
-}
 .vue-loading-mask {
 	position: absolute;
 	z-index: 10000;
