@@ -92,7 +92,8 @@
 				var tocuhPlace = this.$options.tocuhPlace;
 				if (tocuhPlace.touchMove > 0) {
 					this.throttledArrowClick(this.activeIndex + 1)
-				} else {
+				}
+				if (tocuhPlace.touchMove < 0) {
 					this.throttledArrowClick(this.activeIndex - 1)
 				}
 				VueUtil.off(document, 'touchmove',this.handleTouchMove);
