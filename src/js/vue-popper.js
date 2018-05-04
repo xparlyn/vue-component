@@ -638,9 +638,12 @@
 				if (!reference && self.$slots.reference && self.$slots.reference[0]) reference = self.referenceElm = self.$slots.reference[0].elm;
 				if (!popper || !reference) return;
 				if (self.visibleArrow) self.appendArrow(popper);
-				self.$options.appendElement = self.referenceElm.parentNode;
-				self.findeAbsoluteParent(self.referenceElm);
-				if (VueUtil.isElement(self.append)) self.$options.appendElement = self.append;
+				if (VueUtil.isElement(self.append)) {
+					self.$options.appendElement = self.append;
+				} else {
+					self.$options.appendElement = self.referenceElm.parentNode;
+					self.findeAbsoluteParent(self.referenceElm);
+				}
 				self.$options.appendElement.appendChild(self.popperElm);
 				if (self.popperJS && self.popperJS.destroy) self.popperJS.destroy();
 				options.placement = self.$options.currentPlacement;
@@ -692,9 +695,6 @@
 		beforeDestroy: function() {
 			!VueUtil.isIE && VueUtil.off(this.popperElm, 'click', this.stop);
 			this.doDestroy();
-		},
-		deactivated: function() {
-			this.$options.beforeDestroy[0].call(this);
 		}
 	};
 	return VuePopper;
