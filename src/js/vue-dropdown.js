@@ -35,7 +35,7 @@
 		},
 		data: function() {
 			return {
-				visible: false,
+				visible: false
 			};
 		},
 		beforeDestroy: function() {
@@ -53,16 +53,18 @@
 		methods: {
 			show: function() {
 				var self = this;
-				var timer = setTimeout(function(){
+				clearTimeout(self.$options.timer);
+				self.$options.timer = setTimeout(function(){
 					self.visible = true;
-					clearTimeout(timer);
+					clearTimeout(self.$options.timer);
 				}, 300);
 			},
 			hide: function() {
 				var self = this;
-				var timer = setTimeout(function(){
+				clearTimeout(self.$options.timer);
+				self.$options.timer = setTimeout(function(){
 					self.visible = false;
-					clearTimeout(timer);
+					clearTimeout(self.$options.timer);
 				}, 300);
 			},
 			handleClick: function() {

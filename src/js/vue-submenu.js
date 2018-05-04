@@ -70,16 +70,18 @@
 			},
 			handleMouseenter: function() {
 				var self = this;
-				var timer = setTimeout(function(){
+				clearTimeout(self.$options.timer);
+				self.$options.timer = setTimeout(function(){
 					self.rootMenu.openMenu(self.index, self.indexPath);
-					clearTimeout(timer);
+					clearTimeout(self.$options.timer);
 				}, 300);
 			},
 			handleMouseleave: function() {
 				var self = this;
-				var timer = setTimeout(function(){
+				clearTimeout(self.$options.timer);
+				self.$options.timer = setTimeout(function(){
 					self.rootMenu.closeMenu(self.index, self.indexPath);
-					clearTimeout(timer);
+					clearTimeout(self.$options.timer);
 				}, 300);
 			},
 			bindEvents: function() {
