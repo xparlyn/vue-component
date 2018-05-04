@@ -24,7 +24,6 @@
 		data: function() {
 			return {
 				pin: false,
-				scrollParent: null,
 				styles: {}
 			};
 		},
@@ -61,15 +60,15 @@
 						};
 					}
 				} else {
-					self.scrollParent = VueUtil.component.getScrollParent(self.$el);
-					VueUtil.on(self.scrollParent, 'scroll', self.handleScroll);
+					self.$options.scrollParent = VueUtil.component.getScrollParent(self.$el);
+					VueUtil.on(self.$options.scrollParent, 'scroll', self.handleScroll);
 					VueUtil.addResizeListener(self.handleScroll);
 				}
 			});
 		},
 		beforeDestroy: function() {
 			if (!this.fixed) {
-				VueUtil.off(this.scrollParent, 'scroll', this.handleScroll);
+				VueUtil.off(this.$options.scrollParent, 'scroll', this.handleScroll);
 				VueUtil.removeResizeListener(this.handleScroll);
 			}
 		},

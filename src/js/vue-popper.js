@@ -602,9 +602,7 @@
 		},
 		data: function() {
 			return {
-				showPopper: false,
-				currentPlacement: '',
-				appendElement: null
+				showPopper: false
 			};
 		},
 		watch: {
@@ -627,25 +625,25 @@
 			findeAbsoluteParent: function(element) {
 				if (element === document.body) return;
 				var elementPosition = VueUtil.getStyle(element, 'position');
-				if (elementPosition === 'absolute' && element.parentNode) this.appendElement = element.parentNode;
+				if (elementPosition === 'absolute' && element.parentNode) this.$options.appendElement = element.parentNode;
 				this.findeAbsoluteParent(element.parentNode);
 			},
 			createPopper: function() {
 				var self = this;
-				self.currentPlacement = self.currentPlacement || self.placement;
-				if (!/^(top|bottom|left|right)(-start|-end)?$/g.test(self.currentPlacement)) return;
+				self.$options.currentPlacement = self.$options.currentPlacement || self.placement;
+				if (!/^(top|bottom|left|right)(-start|-end)?$/g.test(self.$options.currentPlacement)) return;
 				var options = self.options || {};
 				var popper = self.popperElm = self.popperElm || self.popper || self.$refs.popper;
 				var reference = self.referenceElm = self.referenceElm || self.reference || self.$refs.reference;
 				if (!reference && self.$slots.reference && self.$slots.reference[0]) reference = self.referenceElm = self.$slots.reference[0].elm;
 				if (!popper || !reference) return;
 				if (self.visibleArrow) self.appendArrow(popper);
-				self.appendElement = self.referenceElm.parentNode;
+				self.$options.appendElement = self.referenceElm.parentNode;
 				self.findeAbsoluteParent(self.referenceElm);
-				if (VueUtil.isElement(self.append)) self.appendElement = self.append;
-				self.appendElement.appendChild(self.popperElm);
+				if (VueUtil.isElement(self.append)) self.$options.appendElement = self.append;
+				self.$options.appendElement.appendChild(self.popperElm);
 				if (self.popperJS && self.popperJS.destroy) self.popperJS.destroy();
-				options.placement = self.currentPlacement;
+				options.placement = self.$options.currentPlacement;
 				options.offset = self.offset;
 				options.autoWidth = self.autoWidth;
 				self.popperJS = new Popper(reference, popper, options);
