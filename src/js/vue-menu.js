@@ -66,13 +66,13 @@
 		},
 		methods: {
 			addItem: function(item) {
-				this.$set(this.items, item.index, item);
+				this.items[item.index] = item;
 			},
 			removeItem: function(item) {
 				delete this.items[item.index];
 			},
 			addSubmenu: function(item) {
-				this.$set(this.submenus, item.index, item);
+				this.submenus[item.index] = item;
 			},
 			removeSubmenu: function(item) {
 				delete this.submenus[item.index];

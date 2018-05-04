@@ -192,7 +192,7 @@
 								});
 							}
 						}
-						this.$set(row, this.showWeekNumber ? j + 1 : j, cell);
+						row.splice(this.showWeekNumber ? j + 1 : j, 1, cell);
 					}
 					if (this.selectionMode === 'week') {
 						var start = this.showWeekNumber ? 1 : 0;
