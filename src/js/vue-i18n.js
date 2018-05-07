@@ -45,6 +45,7 @@ var Asset = function (Vue, langVM) {
       } else {
         setLocale(id, definition, function (locale) {
           if (locale) {
+            //langVM.$set(langVM.locales, id, locale);
             langVM.locales[id] = locale;
           }
           cb && cb();

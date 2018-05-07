@@ -9,9 +9,13 @@
 })(this, function(Vue) {
 	'use strict';
 	var VueCard = {
-		template: '<div class="vue-card"><div class="vue-card__header" v-if="$slots.header || header"><slot name="header">{{header}}</slot></div><div class="vue-card__body" :style="bodyStyle"><slot></slot></div></div>',
+		template: '<div  :class="[shadow ? \'is-\' + shadow + \'-shadow\' : \'is-hover-shadow\', \'vue-card\']"><div class="vue-card__header" v-if="$slots.header || header"><slot name="header">{{header}}</slot></div><div class="vue-card__body" :style="bodyStyle"><slot></slot></div></div>',
 		name: 'VueCard',
-		props: ['header', 'bodyStyle']
+		props: {
+			header: {},
+			bodyStyle: {},
+			shadow: String
+		}
 	};
 	Vue.component(VueCard.name, VueCard);
 });
