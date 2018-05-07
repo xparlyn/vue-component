@@ -55,8 +55,9 @@
 				if (delta.total <= delta.keeps) return;
 				offset = offset || 0;
 				var overs = Math.floor(offset / delta.size);
-				var start = overs ? overs : 0;
-				var end = overs ? (overs + delta.keeps) : delta.keeps;
+				overs < 0 && (overs = 0);
+				var start = overs;
+				var end = overs + delta.keeps;
 				if (overs + delta.keeps >= delta.total) {
 					end = delta.total;
 					start = delta.total - delta.keeps;

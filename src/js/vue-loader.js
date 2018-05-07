@@ -151,12 +151,12 @@
 				});
 			});
 		},
-		compile: function(module) {
+		compile: function() {
 			var childModuleRequire = function(childURL) {
 				return httpVueLoader.require(resolveURL(this.component.baseURI, childURL));
 			}.bind(this);
-			var childLoader = function(childURL, childName) {
-				return VueLoader(resolveURL(this.component.baseURI, childURL), childName);
+			var childLoader = function(childURL) {
+				return VueLoader(resolveURL(this.component.baseURI, childURL));
 			}.bind(this);
 			try {
 				Function('exports', 'require', 'Vue', 'VueUtil', 'VueRouter', 'Vuex', 'VueLoader', 'module', this.getContent()).call(this.module.exports, this.module.exports, childModuleRequire, Vue, VueUtil, VueRouter, Vuex, childLoader, this.module);

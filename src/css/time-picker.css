@@ -26,7 +26,7 @@
 	width: 33.33%;
 }
 .vue-time-spinner.has-seconds .vue-time-spinner__wrapper .vue-scrollbar__wrap:not(.vue-scrollbar__wrap--hidden-default) {
-	padding-bottom: 15px;
+	padding-top: 15px;
 }
 .vue-time-spinner__wrapper {
 	max-height: 190px;
@@ -34,6 +34,9 @@
 	width: 50%;
 	vertical-align: top;
 	position: relative;
+}
+.vue-time-spinner__wrapper .is-horizontal{
+	display: none;
 }
 .vue-time-spinner__list {
 	padding: 0;
@@ -89,10 +92,8 @@
 	color: #fff;
 	position: absolute;
 	font-size: 14px;
-	margin-top: -7px;
-	line-height: 18px;
 	background-color: #409eff;
-	height: 32px;
+	height: 26px;
 	z-index: -1;
 	left: 0;
 	right: 0;
