@@ -625,13 +625,13 @@
 			findeAbsoluteParent: function(element) {
 				if (element === document.body) return;
 				var elementPosition = VueUtil.getStyle(element, 'position');
-				if (elementPosition === 'absolute' && element.parentNode) this.$options.appendElement = element.parentNode;
+				if (elementPosition === 'absolute' && element.parentNode) this.appendElement = element.parentNode;
 				this.findeAbsoluteParent(element.parentNode);
 			},
 			createPopper: function() {
 				var self = this;
-				self.$options.currentPlacement = self.$options.currentPlacement || self.placement;
-				if (!/^(top|bottom|left|right)(-start|-end)?$/g.test(self.$options.currentPlacement)) return;
+				self.currentPlacement = self.currentPlacement || self.placement;
+				if (!/^(top|bottom|left|right)(-start|-end)?$/g.test(self.currentPlacement)) return;
 				var options = self.options || {};
 				var popper = self.popperElm = self.popperElm || self.popper || self.$refs.popper;
 				var reference = self.referenceElm = self.referenceElm || self.reference || self.$refs.reference;
@@ -639,14 +639,14 @@
 				if (!popper || !reference) return;
 				if (self.visibleArrow) self.appendArrow(popper);
 				if (VueUtil.isElement(self.append)) {
-					self.$options.appendElement = self.append;
+					self.appendElement = self.append;
 				} else {
-					self.$options.appendElement = self.referenceElm.parentNode;
+					self.appendElement = self.referenceElm.parentNode;
 					self.findeAbsoluteParent(self.referenceElm);
 				}
-				self.$options.appendElement.appendChild(self.popperElm);
+				self.appendElement.appendChild(self.popperElm);
 				if (self.popperJS && self.popperJS.destroy) self.popperJS.destroy();
-				options.placement = self.$options.currentPlacement;
+				options.placement = self.currentPlacement;
 				options.offset = self.offset;
 				options.autoWidth = self.autoWidth;
 				self.popperJS = new Popper(reference, popper, options);

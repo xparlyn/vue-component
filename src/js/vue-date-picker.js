@@ -490,7 +490,7 @@
 		},
 		methods: {
 			handleClear: function() {
-				this.date = this.$options.defaultValue ? new Date(this.$options.defaultValue) : new Date();
+				this.date = this.defaultValue ? new Date(this.defaultValue) : new Date();
 				this.$emit('pick');
 			},
 			resetDate: function() {
@@ -624,7 +624,7 @@
 			return {
 				popperClass: '',
 				pickerWidth: 0,
-				date: this.$options.defaultValue ? new Date(this.$options.defaultValue) : new Date(),
+				date: this.defaultValue ? new Date(this.defaultValue) : new Date(),
 				value: '',
 				showTime: false,
 				selectionMode: 'day',

@@ -11,7 +11,6 @@
 	var VueOptionGroup = {
 		template: '<ul class="vue-select-group__wrap"><li class="vue-select-group__title" v-show="visible">{{label}}</li><li><ul class="vue-select-group"><slot></slot></ul></li></ul>',
 		name: 'VueOptionGroup',
-		componentName: 'VueOptionGroup',
 		mixins: [VueUtil.component.emitter],
 		props: {
 			label: String,

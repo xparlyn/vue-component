@@ -11,7 +11,6 @@
 	var VueSelectDropdown = {
 		template: '<div :class="[\'vue-select-dropdown\', {\'is-multiple\': $parent.multiple}, popperClass]"><slot></slot></div>',
 		name: 'VueSelectDropdown',
-		componentName: 'VueSelectDropdown',
 		mixins: [VuePopper],
 		props: {
 			placement: {

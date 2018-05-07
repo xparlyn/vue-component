@@ -12,7 +12,6 @@
 		template: '<label class="vue-radio"><span :class="[\'vue-radio__input\', {\'is-disabled\': isDisabled, \'is-checked\': model === label, \'is-focus\': focus}]"><span class="vue-radio__inner"></span><input class="vue-radio__original" :value="label" type="radio" v-model="model" @focus="focus=true" @blur="focus=false" :name="name" :disabled="isDisabled"></span><span class="vue-radio__label"><slot></slot><template v-if="!$slots.default">{{label}}</template></span></label>',
 		name: 'VueRadio',
 		mixins: [VueUtil.component.emitter],
-		componentName: 'VueRadio',
 		props: {
 			value: {},
 			label: {},
@@ -28,7 +27,7 @@
 			isGroup: function() {
 				var parent = this.$parent;
 				while (parent) {
-					if (parent.$options.componentName !== 'VueRadioGroup') {
+					if (parent.$options.name !== 'VueRadioGroup') {
 						parent = parent.$parent;
 					} else {
 						this._radioGroup = parent;

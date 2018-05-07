@@ -314,7 +314,7 @@
 				if (this.disabled)
 					return;
 				if (this.showClose) {
-					this.currentValue = this.$options.defaultValue || '';
+					this.currentValue = this.defaultValue || '';
 					this.showClose = false;
 				} else {
 					this.pickerVisible = !this.pickerVisible;

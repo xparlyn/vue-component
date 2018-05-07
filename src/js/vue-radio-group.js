@@ -11,7 +11,6 @@
 	var VueRadioGroup = {
 		template: '<div class="vue-radio-group"><slot></slot></div>',
 		name: 'VueRadioGroup',
-		componentName: 'VueRadioGroup',
 		mixins: [VueUtil.component.emitter],
 		props: {
 			value: {},

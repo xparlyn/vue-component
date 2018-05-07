@@ -11,7 +11,6 @@
 	var VueDropdown = {
 		template: '',
 		name: 'VueDropdown',
-		componentName: 'VueDropdown',
 		mixins: [VueUtil.component.emitter],
 		directives: {
 			Clickoutside: VueUtil.component.clickoutside()
@@ -53,18 +52,18 @@
 		methods: {
 			show: function() {
 				var self = this;
-				clearTimeout(self.$options.timer);
-				self.$options.timer = setTimeout(function(){
+				clearTimeout(self.timer);
+				self.timer = setTimeout(function(){
 					self.visible = true;
-					clearTimeout(self.$options.timer);
+					clearTimeout(self.timer);
 				}, 300);
 			},
 			hide: function() {
 				var self = this;
-				clearTimeout(self.$options.timer);
-				self.$options.timer = setTimeout(function(){
+				clearTimeout(self.timer);
+				self.timer = setTimeout(function(){
 					self.visible = false;
-					clearTimeout(self.$options.timer);
+					clearTimeout(self.timer);
 				}, 300);
 			},
 			handleClick: function() {

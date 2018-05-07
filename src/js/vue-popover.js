@@ -134,23 +134,23 @@
 			},
 			doShow: function() {
 				this.showPopper = true;
-				clearTimeout(this.$options.timer);
+				clearTimeout(this.timer);
 			},
 			doClose: function() {
 				this.showPopper = false;
-				clearTimeout(this.$options.timer);
+				clearTimeout(this.timer);
 			},
 			handleMouseEnter: function() {
 				var self = this;
-				clearTimeout(self.$options.timer);
-				self.$options.timer = setTimeout(function(){
+				clearTimeout(self.timer);
+				self.timer = setTimeout(function(){
 					self.doShow();
 				}, 300);
 			},
 			handleMouseLeave: function() {
 				var self = this;
-				clearTimeout(self.$options.timer);
-				self.$options.timer = setTimeout(function(){
+				clearTimeout(self.timer);
+				self.timer = setTimeout(function(){
 					self.doClose();
 				}, 300);
 			},

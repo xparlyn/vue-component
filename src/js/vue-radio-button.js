@@ -28,7 +28,7 @@
 			_radioGroup: function() {
 				var parent = this.$parent;
 				while (parent) {
-					if (parent.$options.componentName !== 'VueRadioGroup') {
+					if (parent.$options.name !== 'VueRadioGroup') {
 						parent = parent.$parent;
 					} else {
 						return parent;

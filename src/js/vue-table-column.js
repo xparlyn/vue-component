@@ -104,6 +104,10 @@
 	};
 	var VueTableColumn = {
 		name: 'VueTableColumn',
+		render: function(createElement) {
+			var slots = this.$slots.default;
+			return createElement('div', slots)
+		},
 		props: {
 			type: {
 				type: String,
@@ -162,11 +166,6 @@
 		},
 		created: function() {
 			var self = this;
-			var slots = self.$slots.default;
-			self.customRender = self.$options.render;
-			self.$options.render = function(createElement) {
-				return createElement('div', slots)
-			}
 			var columnId = self.columnId = ((self.$parent.tableId || (self.$parent.columnId + '_')) + 'column_' + columnIdSeed++);
 			var parent = self.$parent;
 			var owner = self.owner;
@@ -259,17 +258,7 @@
 				return;
 			}
 			column.renderCell = function(createElement, data) {
-				if (self.$vnode.data.inlineTemplate) {
-					renderCell = function() {
-						data.self = self.context || data.self;
-						if (VueUtil.isObject(data.self)) {
-							VueUtil.merge(data, data.self);
-						}
-						data._staticTrees = self._staticTrees;
-						data.$options.staticRenderFns = self.$options.staticRenderFns;
-						return self.customRender.call(data);
-					};
-				} else if (self.$scopedSlots.default) {
+				if (self.$scopedSlots.default) {
 					renderCell = function() {
 						return self.$scopedSlots.default(data);
 					};

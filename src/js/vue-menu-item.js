@@ -11,7 +11,6 @@
 	var VueMenuItem = {
 		template: '<li :style="paddingStyle" @click="handleClick" :class="[\'vue-menu-item\', {\'is-active\': active, \'is-disabled\': disabled}]"><slot></slot></li>',
 		name: 'VueMenuItem',
-		componentName: 'VueMenuItem',
 		mixins: [VueUtil.component.menumixin, VueUtil.component.emitter],
 		props: {
 			index: {

@@ -623,14 +623,14 @@
 		},
 		render: function(createElement) {
 			var self = this;
-			if (!VueUtil.isDef(self.$options.delta)) this.createDelta();
-			var delta = self.$options.delta;
+			if (!VueUtil.isDef(self.delta)) this.createDelta();
+			var delta = self.delta;
 			var columns = self.store.states.columns;
 			var storeData = self.store.states.data;
 			if (self.fixed) {
 				if (((self.fixed === 'left') && self.store.states.fixedColumns.length > 0)
 				|| (self.fixed === 'right' && self.store.states.rightFixedColumns.length > 0)) {
-					delta = self.tableBody.$options.delta;
+					delta = self.tableBody.delta;
 					self.$nextTick(self.doResetCurrentRow);
 				} else {
 					return null;
@@ -793,7 +793,7 @@
 		methods: {
 			createDelta: function() {
 				if (this.fixed) return;
-				var delta = this.$options.delta = {};
+				var delta = this.delta = {};
 				delta.start = 0;
 				delta.end = 0;
 				delta.total = 0;
@@ -812,7 +812,7 @@
 			},
 			resetDelta: function(dataLen) {
 				if (this.fixed) return;
-				var delta = this.$options.delta;
+				var delta = this.delta;
 				if (delta.keeps === 0) return;
 				delta.start = 0;
 				if (dataLen <= delta.remain) {
@@ -840,7 +840,7 @@
 			},
 			updateZone: function(offset) {
 				if (this.fixed) return;
-				var delta = this.$options.delta;
+				var delta = this.delta;
 				if (delta.keeps === 0) return;
 				delta.size = 40;
 				if (VueUtil.isElement(this.$refs.tbody)) delta.size = this.$refs.tbody.firstElementChild.offsetHeight;
@@ -881,7 +881,7 @@
 				var oldCurrentRow = this.currentRow;
 				oldCurrentRow && oldCurrentRow.classList.remove('current-row');
 				if (!VueUtil.isDef(currentRowObj)) currentRowObj = this.store.states.currentRow;
-				var data = this.tableBody.$options.delta.data;
+				var data = this.tableBody.delta.data;
 				var rows = tbody.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
 				var currentRow = rows[data.indexOf(currentRowObj)];
 				currentRow && currentRow.classList.add('current-row');
@@ -893,7 +893,7 @@
 				var oldHoverRow = this.hoverRow;
 				oldHoverRow && oldHoverRow.classList.remove('hover-row');
 				if (!VueUtil.isDef(hoverRowObj)) return;
-				var data = this.tableBody.$options.delta.data;
+				var data = this.tableBody.delta.data;
 				var rows = tbody.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
 				var hoverRow = rows[data.indexOf(hoverRowObj)];
 				hoverRow && hoverRow.classList.add('hover-row');
@@ -2074,7 +2074,7 @@
 			},
 			lazyload: function(val) {
 				if (this.height) {
-					var delta = this.$refs.tableBody.$options.delta;
+					var delta = this.$refs.tableBody.delta;
 					if (val) {
 						delta.keeps = this.height * 1;
 					} else {

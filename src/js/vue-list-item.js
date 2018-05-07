@@ -26,7 +26,7 @@
 		computed: {
 			list: function() {
 				var parent = this.$parent;
-				while (parent.$options.componentName !== 'VueList') {
+				while (parent.$options.name !== 'VueList') {
 					parent = parent.$parent;
 				}
 				return parent;

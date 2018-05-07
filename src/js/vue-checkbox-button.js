@@ -57,7 +57,7 @@
 			_checkboxGroup: function() {
 				var parent = this.$parent;
 				while (parent) {
-					if (parent.$options.componentName !== 'VueCheckboxGroup') {
+					if (parent.$options.name !== 'VueCheckboxGroup') {
 						parent = parent.$parent;
 					} else {
 						return parent;

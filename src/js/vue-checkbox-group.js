@@ -11,7 +11,6 @@
 	var VueCheckboxGroup = {
 		template: '<div class="vue-checkbox-group"><slot></slot></div>',
 		name: 'VueCheckboxGroup',
-		componentName: 'VueCheckboxGroup',
 		mixins: [VueUtil.component.emitter],
 		props: {
 			value: {},

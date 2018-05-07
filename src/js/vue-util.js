@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version = '1.48.9950';
+	var version = '1.48.9958';
 	var _toString = Object.prototype.toString;
 	var _forEach = Array.prototype.forEach;
 	var isDef = function(v) {
@@ -564,11 +564,11 @@
 		methods: {
 			dispatch: function(componentName, eventName, params) {
 				var parent = this.$parent || this.$root;
-				var name = parent.$options.componentName;
+				var name = parent.$options.name;
 				while (parent && (!name || name !== componentName)) {
 					parent = parent.$parent;
 					if (parent) {
-						name = parent.$options.componentName;
+						name = parent.$options.name;
 					}
 				}
 				if (parent) {
@@ -578,7 +578,7 @@
 			broadcast: function(componentName, eventName, params) {
 				var broadcast = function(componentName, eventName, params) {
 					loop(this.$children, function(child) {
-						var name = child.$options.componentName;
+						var name = child.$options.name;
 						if (name === componentName) {
 							child.$emit.apply(child, [eventName].concat(params));
 						} else {
@@ -595,7 +595,7 @@
 			indexPath: function() {
 				var path = [this.index];
 				var parent = this.$parent;
-				while (parent.$options.componentName !== 'VueMenu') {
+				while (parent.$options.name !== 'VueMenu') {
 					if (parent.index) {
 						path.unshift(parent.index);
 					}
@@ -605,14 +605,14 @@
 			},
 			rootMenu: function() {
 				var parent = this.$parent;
-				while (parent && parent.$options.componentName !== 'VueMenu') {
+				while (parent && parent.$options.name !== 'VueMenu') {
 					parent = parent.$parent;
 				}
 				return parent;
 			},
 			parentMenu: function() {
 				var parent = this.$parent;
-				while (parent && ['VueMenu', 'VueSubmenu'].indexOf(parent.$options.componentName) === -1) {
+				while (parent && ['VueMenu', 'VueSubmenu'].indexOf(parent.$options.name) === -1) {
 					parent = parent.$parent;
 				}
 				return parent;
@@ -621,8 +621,8 @@
 				if (this.rootMenu.mode !== 'vertical') return {};
 				var padding = 20;
 				var parent = this.$parent;
-				while (parent && parent.$options.componentName !== 'VueMenu') {
-					if (parent.$options.componentName === 'VueSubmenu') {
+				while (parent && parent.$options.name !== 'VueMenu') {
+					if (parent.$options.name === 'VueSubmenu') {
 						padding += 20;
 					}
 					parent = parent.$parent;

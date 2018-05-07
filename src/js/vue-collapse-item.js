@@ -11,7 +11,6 @@
 	var VueCollapseItem = {
 		template: '<div :class="[\'vue-collapse-item\', {\'is-active\': isActive}]"><div :class="[\'vue-collapse-item__header\', {\'header-expand\': headerExpand}]" @click="handleHeaderClick"><i class="vue-collapse-item__header__arrow vue-icon-arrow-right" @click="handleIconClick" v-show="expandOnClick"></i><slot name="title">{{title}}</slot></div><collapse-transition><div class="vue-collapse-item__wrap" v-show="isActive"><div class="vue-collapse-item__content"><slot></slot></div></div></collapse-transition></div>',
 		name: 'VueCollapseItem',
-		componentName: 'VueCollapseItem',
 		mixins: [VueUtil.component.emitter],
 		components: {
 			CollapseTransition: VueUtil.component.collapseTransition

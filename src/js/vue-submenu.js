@@ -11,7 +11,6 @@
 	var VueSubMenu = {
 		template: '<li :class="{\'vue-submenu\': true, \'is-active\': active, \'is-opened\': opened}"><div class="vue-submenu__title" ref="submenu-title" :style="paddingStyle"><slot name="title"></slot><i :class="[\'vue-icon-arrow-down\', {\'vue-submenu__icon-arrow\': true}]"></i></div><template v-if="rootMenu.mode === \'horizontal\'"><ul class="vue-menu" v-show="opened"><slot></slot></ul></template><collapse-transition v-else><ul class="vue-menu" v-show="opened"><slot></slot></ul></collapse-transition></li>',
 		name: 'VueSubmenu',
-		componentName: 'VueSubmenu',
 		mixins: [VueUtil.component.menumixin, VueUtil.component.emitter],
 		components: {
 			CollapseTransition: VueUtil.component.collapseTransition
@@ -70,18 +69,18 @@
 			},
 			handleMouseenter: function() {
 				var self = this;
-				clearTimeout(self.$options.timer);
-				self.$options.timer = setTimeout(function(){
+				clearTimeout(self.timer);
+				self.timer = setTimeout(function(){
 					self.rootMenu.openMenu(self.index, self.indexPath);
-					clearTimeout(self.$options.timer);
+					clearTimeout(self.timer);
 				}, 300);
 			},
 			handleMouseleave: function() {
 				var self = this;
-				clearTimeout(self.$options.timer);
-				self.$options.timer = setTimeout(function(){
+				clearTimeout(self.timer);
+				self.timer = setTimeout(function(){
 					self.rootMenu.closeMenu(self.index, self.indexPath);
-					clearTimeout(self.$options.timer);
+					clearTimeout(self.timer);
 				}, 300);
 			},
 			bindEvents: function() {

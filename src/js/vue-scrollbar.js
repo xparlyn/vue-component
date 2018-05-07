@@ -229,9 +229,9 @@
 				VueUtil.addClass(this.$el, 'is-touch');
 				var wrap = this.wrap;
 				var touches = e.touches[0];
-				var tocuhPlace = this.$options.tocuhPlace;
+				var tocuhPlace = this.tocuhPlace;
 				if (!VueUtil.isDef(tocuhPlace)) {
-					tocuhPlace = this.$options.tocuhPlace = {};
+					tocuhPlace = this.tocuhPlace = {};
 				}
 				tocuhPlace.startTime = e.timeStamp;
 				tocuhPlace.startY = wrap.scrollTop;
@@ -245,7 +245,7 @@
 				VueUtil.addClass(this.$el, 'touching');
 				var touches = e.touches[0];
 				var wrap = this.wrap;
-				var tocuhPlace = this.$options.tocuhPlace;
+				var tocuhPlace = this.tocuhPlace;
 				var scrollLeft = tocuhPlace.tocuhX - touches.pageX;
 				var scrollTop = tocuhPlace.tocuhY - touches.pageY;
 				wrap.scrollLeft = wrap.scrollLeft + scrollLeft;
@@ -256,7 +256,7 @@
 			touchEnd: function(e) {
 				var self = this;
 				var wrap = this.wrap;
-				var tocuhPlace = this.$options.tocuhPlace;
+				var tocuhPlace = this.tocuhPlace;
 				var timeStamp = e.timeStamp - tocuhPlace.startTime;
 				if (timeStamp <= 200) {
 					var moveY = Math.floor(((wrap.scrollTop - tocuhPlace.startY) * 100 / timeStamp) / 4);

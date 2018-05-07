@@ -11,7 +11,6 @@
 	var VueForm = {
 		template: '<form :class="[\'vue-form\', labelPosition ? \'vue-form--label-\' + labelPosition : \'\', {\'vue-form--inline\': inline}]"><slot></slot><input style="display:none" /></form>',
 		name: 'VueForm',
-		componentName: 'VueForm',
 		props: {
 			model: Object,
 			rules: Object,

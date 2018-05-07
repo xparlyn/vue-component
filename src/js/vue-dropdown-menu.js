@@ -11,7 +11,6 @@
 	var VueDropdownMenu = {
 		template: '<transition @after-leave="doDestroy"><div class="vue-dropdown-menu" v-show="showPopper"><ul class="vue-dropdown-menu__view"><slot></slot></ul></div></transition>',
 		name: 'VueDropdownMenu',
-		componentName: 'VueDropdownMenu',
 		mixins: [VuePopper],
 		created: function() {
 			var self = this;
@@ -28,7 +27,7 @@
 			'$parent.menuAlign': {
 				immediate: true,
 				handler: function(val) {
-					this.$options.currentPlacement = 'bottom-' + val;
+					this.currentPlacement = 'bottom-' + val;
 				}
 			}
 		}

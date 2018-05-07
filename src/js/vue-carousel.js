@@ -74,9 +74,9 @@
 			},
 			handleTouchStart: function(e) {
 				e.stopImmediatePropagation();
-				var tocuhPlace = this.$options.tocuhPlace;
+				var tocuhPlace = this.tocuhPlace;
 				if (!VueUtil.isDef(tocuhPlace)) {
-					tocuhPlace = this.$options.tocuhPlace = {};
+					tocuhPlace = this.tocuhPlace = {};
 				}
 				var touches = e.touches[0];
 				tocuhPlace.tocuhX = touches.pageX;
@@ -85,11 +85,11 @@
 			},
 			handleTouchMove: function(e) {
 				var touches = e.touches[0];
-				var tocuhPlace = this.$options.tocuhPlace;
+				var tocuhPlace = this.tocuhPlace;
 				tocuhPlace.touchMove = tocuhPlace.tocuhX - touches.pageX;
 			},
 			handleTouchEnd: function(e) {
-				var tocuhPlace = this.$options.tocuhPlace;
+				var tocuhPlace = this.tocuhPlace;
 				if (tocuhPlace.touchMove > 0) {
 					this.throttledArrowClick(this.activeIndex + 1)
 				}

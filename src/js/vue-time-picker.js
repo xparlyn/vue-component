@@ -214,7 +214,7 @@
 				minutes: 0,
 				seconds: 0,
 				selectableRange: [],
-				currentDate: this.$options.defaultValue || this.date || new Date(),
+				currentDate: this.defaultValue || this.date || new Date(),
 				currentVisible: this.visible || false
 			};
 		},
@@ -293,7 +293,7 @@
 		},
 		props: ['value'],
 		data: function() {
-			var time = this.clacTime(this.$options.defaultValue);
+			var time = this.clacTime(this.defaultValue);
 			var isDisabled = function(minTime, maxTime) {
 				var minValue = minTime.getHours() * 3600 + minTime.getMinutes() * 60 + minTime.getSeconds();
 				var maxValue = maxTime.getHours() * 3600 + maxTime.getMinutes() * 60 + maxTime.getSeconds();

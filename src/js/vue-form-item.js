@@ -12,7 +12,6 @@
 	var VueFormItem = {
 		template: '<div :class="[\'vue-form-item\', {\'is-notify\': form.notifyMessage || form.customMessageMethod,\'is-error\': validateState === \'error\',\'is-validating\': validateState === \'validating\',\'is-required\': isRequired || required}]"><label :for="prop" :class="[\'vue-form-item__label\', {\'is-responsive\': form.labelResponsive}]" :style="labelStyle" v-if="label" ref="label">{{label + form.labelSuffix}}</label><div class="vue-form-item__content" :style="contentStyle" ref="content"><slot></slot><div class="vue-form-item__error" v-if="validateState === \'error\' && showMessage && form.showMessage && !form.notifyMessage && !form.customMessageMethod">{{validateMessage}}</div></div></div>',
 		name: 'VueFormItem',
-		componentName: 'VueFormItem',
 		mixins: [VueUtil.component.emitter],
 		props: {
 			label: String,
@@ -71,7 +70,7 @@
 			},
 			form: function() {
 				var parent = this.$parent;
-				while (parent.$options.componentName !== 'VueForm') {
+				while (parent.$options.name !== 'VueForm') {
 					parent = parent.$parent;
 				}
 				return parent;

@@ -11,7 +11,6 @@
 	var VueOption = {
 		template: '<li @mouseenter="hoverItem" @click.stop="selectOptionClick" v-show="visible" :class="[\'vue-select-dropdown__item\', {\'selected\': itemSelected, \'is-disabled\': disabled || groupDisabled || limitReached, \'hover\': itemHover}]"><slot><span>{{currentLabel}}</span></slot></li>',
 		name: 'VueOption',
-		componentName: 'VueOption',
 		mixins: [VueUtil.component.emitter],
 		props: {
 			value: {

@@ -11,7 +11,6 @@
 	var VueTabPane = {
 		template: '<div class="vue-tab-pane" v-show="active"><keep-alive><router-view v-if="router && active && $route.meta.keepAlive"></router-view></keep-alive><router-view v-if="router && active && !$route.meta.keepAlive"></router-view><slot v-if="!router"></slot></div>',
 		name: 'VueTabPane',
-		componentName: 'VueTabPane',
 		props: {
 			label: String,
 			labelContent: Function,

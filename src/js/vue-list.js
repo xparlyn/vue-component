@@ -10,7 +10,6 @@
 	'use strict';
 	var VueList = {
 		name: 'VueList',
-		componentName: 'VueList',
 		data: function() {
 			return {
 				defaultSlotLen: 0,
@@ -50,7 +49,7 @@
 				this.$emit('scroll', e, scrollTop, isTop, isBottom)
 			},
 			updateZone: function(offset) {
-				var delta = this.$options.delta;
+				var delta = this.delta;
 				if (!VueUtil.isDef(delta)) return;
 				if (delta.total <= delta.keeps) return;
 				offset = offset || 0;
@@ -67,7 +66,7 @@
 				this.$forceUpdate();
 			},
 			filter: function(slots) {
-				var delta = this.$options.delta;
+				var delta = this.delta;
 				if (delta.keeps === 0 || slots.length <= delta.keeps) {
 					delta.marginTop = 0;
 					delta.marginBottom = 0;
@@ -83,7 +82,7 @@
 				return result;
 			},
 			createDelta: function(slots) {
-				var delta = this.$options.delta = {};
+				var delta = this.delta = {};
 				delta.start = 0;
 				delta.total = 0;
 				delta.marginTop = 0;
@@ -101,11 +100,11 @@
 		render: function(createElement) {
 			var slots = this.$slots.default;
 			if (!VueUtil.isArray(slots)) return null;
-			if (!VueUtil.isDef(this.$options.delta) || this.defaultSlotLen !== slots.length) {
+			if (!VueUtil.isDef(this.delta) || this.defaultSlotLen !== slots.length) {
 				this.createDelta(slots);
 				this.defaultSlotLen = slots.length;
 			}
-			var delta = this.$options.delta;
+			var delta = this.delta;
 			var showList = this.filter(slots);
 			var style = {
 				'margin-top': delta.marginTop + 'px',

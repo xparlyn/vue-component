@@ -12,7 +12,6 @@
 		template: '<label class="vue-checkbox"><span :class="[\'vue-checkbox__input\', {\'is-disabled\': disabled, \'is-checked\': isChecked, \'is-indeterminate\': indeterminate, \'is-focus\': focus}]"><span class="vue-checkbox__inner"></span><input v-if="trueLabel || falseLabel" class="vue-checkbox__original" type="checkbox" :name="name" :disabled="disabled" :true-value="trueLabel" :false-value="falseLabel" v-model="model" @change="handleChange" @focus="focus = true" @blur="focus = false"><input v-else class="vue-checkbox__original" type="checkbox" :disabled="disabled" :value="label" :name="name" v-model="model" @change="handleChange" @focus="focus = true" @blur="focus = false"></span><span class="vue-checkbox__label" v-if="$slots.default || label"><slot></slot><template v-if="!$slots.default">{{label}}</template></span></label>',
 		name: 'VueCheckbox',
 		mixins: [VueUtil.component.emitter],
-		componentName: 'VueCheckbox',
 		data: function() {
 			return {
 				selfModel: false,
@@ -48,7 +47,7 @@
 			isGroup: function() {
 				var parent = this.$parent;
 				while (parent) {
-					if (parent.$options.componentName !== 'VueCheckboxGroup') {
+					if (parent.$options.name !== 'VueCheckboxGroup') {
 						parent = parent.$parent;
 					} else {
 						this._checkboxGroup = parent;

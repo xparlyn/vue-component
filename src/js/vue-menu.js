@@ -11,7 +11,6 @@
 	var VueMenu = {
 		template: '<ul :class="[\'vue-menu\', {\'vue-menu--horizontal\': mode === \'horizontal\', \'vue-menu--dark\': theme === \'dark\'}]"><slot></slot></ul>',
 		name: 'VueMenu',
-		componentName: 'VueMenu',
 		mixins: [VueUtil.component.emitter],
 		props: {
 			mode: {

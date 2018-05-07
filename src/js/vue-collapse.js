@@ -11,7 +11,6 @@
 	var VueCollapse = {
 		template: '<div class="vue-collapse"><slot></slot></div>',
 		name: 'VueCollapse',
-		componentName: 'VueCollapse',
 		props: {
 			accordion: Boolean,
 			value: {

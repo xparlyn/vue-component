@@ -11,7 +11,7 @@
 	var VueAutocompleteSuggestions = {
 		template: '<transition @after-leave="doDestroy"><div v-show="showPopper" :class="[\'vue-autocomplete-suggestion\', {\'is-loading\': parent.loading}]" :style="{width: dropdownWidth}"><ul class="vue-autocomplete-suggestion__wrap" ref="suggestion"><li v-if="parent.loading"><i class="vue-icon-loading"></i></li><template v-for="(item, index) in suggestions" v-else><li ref="suggestionList" v-if="!parent.customItem" :class="{\'highlighted\': parent.highlightedIndex === index}" @click="select(item)">{{item[props.label]}}</li><component v-else :class="{\'highlighted\': parent.highlightedIndex === index}" @click="select(item)" :is="parent.customItem" :item="item" :index="index"></component></template></ul></div></transition>',
 		mixins: [VuePopper, VueUtil.component.emitter],
-		componentName: 'VueAutocompleteSuggestions',
+		name: 'VueAutocompleteSuggestions',
 		data: function() {
 			return {
 				parent: this.$parent,
@@ -49,7 +49,6 @@
 		template: '<div class="vue-autocomplete" v-clickoutside="close"><vue-input :text-align="textAlign" :autofocus="autofocus" :tabindex="tabindex" ref="input" v-bind="$props" @compositionstart.native="handleComposition" @compositionupdate.native="handleComposition" @compositionend.native="handleComposition" @change="handleChange" @focus="handleFocus" @keydown.up.native.prevent="highlight(highlightedIndex - 1)" @keydown.down.native.prevent="highlight(highlightedIndex + 1)" @keydown.enter.native.prevent="handleKeyEnter" @keydown.native.tab="close"><template slot="prepend" v-if="$slots.prepend"><slot name="prepend"></slot></template><template slot="append" v-if="$slots.append"><slot name="append"></slot></template></vue-input><vue-autocomplete-suggestions :props="props" :class="[popperClass ? popperClass : \'\']" ref="suggestions" :suggestions="suggestions" v-if="suggestionVisible"></vue-autocomplete-suggestions></div>',
 		name: 'VueAutocomplete',
 		mixins: [VueUtil.component.emitter],
-		componentName: 'VueAutocomplete',
 		components: {
 			VueAutocompleteSuggestions: VueAutocompleteSuggestions
 		},
