@@ -67,28 +67,25 @@
 			handleClick: function() {
 				this.dispatch('VueMenu', 'submenu-click', this);
 			},
-			handleMouseenter: function() {
-				var self = this;
-				clearTimeout(self.timer);
-				self.timer = setTimeout(function(){
-					self.rootMenu.openMenu(self.index, self.indexPath);
-					clearTimeout(self.timer);
-				}, 300);
+			mouseToggle: VueUtil.debounce(300, function(val) {
+				if (val) {
+					this.rootMenu.openMenu(this.index, this.indexPath);
+				} else {
+					this.rootMenu.closeMenu(this.index, this.indexPath);
+				}
+			}),
+			mouseEnter: function() {
+				this.mouseToggle(true);
 			},
-			handleMouseleave: function() {
-				var self = this;
-				clearTimeout(self.timer);
-				self.timer = setTimeout(function(){
-					self.rootMenu.closeMenu(self.index, self.indexPath);
-					clearTimeout(self.timer);
-				}, 300);
+			mouseLeave: function() {
+				this.mouseToggle(false);
 			},
 			bindEvents: function() {
 				var triggerElm;
 				if (this.rootMenu.mode === 'horizontal' && this.rootMenu.menuTrigger === 'hover') {
 					triggerElm = this.$el;
-					VueUtil.on(triggerElm, 'mouseenter', this.handleMouseenter);
-					VueUtil.on(triggerElm, 'mouseleave', this.handleMouseleave);
+					VueUtil.on(triggerElm, 'mouseenter', this.mouseEnter);
+					VueUtil.on(triggerElm, 'mouseleave', this.mouseLeave);
 				} else {
 					triggerElm = this.$refs['submenu-title'];
 					VueUtil.on(triggerElm, 'click', this.handleClick);
@@ -98,8 +95,8 @@
 				var triggerElm;
 				if (this.rootMenu.mode === 'horizontal' && this.rootMenu.menuTrigger === 'hover') {
 					triggerElm = this.$el;
-					VueUtil.off(triggerElm, 'mouseenter', this.handleMouseenter);
-					VueUtil.off(triggerElm, 'mouseleave', this.handleMouseleave);
+					VueUtil.off(triggerElm, 'mouseenter', this.mouseEnter);
+					VueUtil.off(triggerElm, 'mouseleave', this.mouseLeave);
 				} else {
 					triggerElm = this.$refs['submenu-title'];
 					VueUtil.off(triggerElm, 'click', this.handleClick);

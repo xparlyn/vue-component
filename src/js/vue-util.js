@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version = '1.48.9968';
+	var version = '1.48.9973';
 	var _toString = Object.prototype.toString;
 	var _forEach = Array.prototype.forEach;
 	var isDef = function(v) {
@@ -349,7 +349,7 @@
 				});
 			}
 		}
-	}
+	};
 	var throttle = function(delay, callback) {
 		return performance(delay, callback, true);
 	};

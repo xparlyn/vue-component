@@ -60,12 +60,12 @@
 				}
 				if (self.trigger === 'click') {
 					VueUtil.on(reference, 'click', self.doToggle);
-					VueUtil.on(document, 'click', self.handleDocumentClick);
+					VueUtil.on(document, 'click', self.documentClick);
 				} else if (self.trigger === 'hover') {
-					VueUtil.on(reference, 'mouseenter', self.handleMouseEnter);
-					VueUtil.on(popper, 'mouseenter', self.handleMouseEnter);
-					VueUtil.on(reference, 'mouseleave', self.handleMouseLeave);
-					VueUtil.on(popper, 'mouseleave', self.handleMouseLeave);
+					VueUtil.on(reference, 'mouseenter', self.mouseEnter);
+					VueUtil.on(popper, 'mouseenter', self.mouseEnter);
+					VueUtil.on(reference, 'mouseleave', self.mouseLeave);
+					VueUtil.on(popper, 'mouseleave', self.mouseLeave);
 				} else if (self.trigger === 'focus') {
 					var found = false;
 					if ([].slice.call(reference.children).length) {
@@ -99,12 +99,12 @@
 				}
 				if (self.trigger === 'click') {
 					VueUtil.off(reference, 'click', self.doToggle);
-					VueUtil.off(document, 'click', self.handleDocumentClick);
+					VueUtil.off(document, 'click', self.documentClick);
 				} else if (self.trigger === 'hover') {
-					VueUtil.off(reference, 'mouseenter', self.handleMouseEnter);
-					VueUtil.off(popper, 'mouseenter', self.handleMouseEnter);
-					VueUtil.off(reference, 'mouseleave', self.handleMouseLeave);
-					VueUtil.off(popper, 'mouseleave', self.handleMouseLeave);
+					VueUtil.off(reference, 'mouseenter', self.mouseEnter);
+					VueUtil.off(popper, 'mouseenter', self.mouseEnter);
+					VueUtil.off(reference, 'mouseleave', self.mouseLeave);
+					VueUtil.off(popper, 'mouseleave', self.mouseLeave);
 				} else if (self.trigger === 'focus') {
 					var found = false;
 					if ([].slice.call(reference.children).length) {
@@ -134,27 +134,20 @@
 			},
 			doShow: function() {
 				this.showPopper = true;
-				clearTimeout(this.timer);
 			},
 			doClose: function() {
 				this.showPopper = false;
-				clearTimeout(this.timer);
 			},
-			handleMouseEnter: function() {
-				var self = this;
-				clearTimeout(self.timer);
-				self.timer = setTimeout(function(){
-					self.doShow();
-				}, 300);
+			mouseToggle: VueUtil.debounce(300, function(showPopper) {
+				this.showPopper = showPopper;
+			}),
+			mouseEnter: function() {
+				this.mouseToggle(true);
 			},
-			handleMouseLeave: function() {
-				var self = this;
-				clearTimeout(self.timer);
-				self.timer = setTimeout(function(){
-					self.doClose();
-				}, 300);
+			mouseLeave: function() {
+				this.mouseToggle(false);
 			},
-			handleDocumentClick: function(e) {
+			documentClick: function(e) {
 				var reference = this.reference || this.$refs.reference;
 				var popper = this.popper || this.$refs.popper;
 				if (!reference && this.$slots.reference && this.$slots.reference[0]) {

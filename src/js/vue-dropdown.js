@@ -50,21 +50,14 @@
 			}
 		},
 		methods: {
+			toggle: VueUtil.debounce(300, function(visible) {
+				this.visible = visible;
+			}),
 			show: function() {
-				var self = this;
-				clearTimeout(self.timer);
-				self.timer = setTimeout(function(){
-					self.visible = true;
-					clearTimeout(self.timer);
-				}, 300);
+				this.toggle(true);
 			},
 			hide: function() {
-				var self = this;
-				clearTimeout(self.timer);
-				self.timer = setTimeout(function(){
-					self.visible = false;
-					clearTimeout(self.timer);
-				}, 300);
+				this.toggle(false);
 			},
 			handleClick: function() {
 				this.visible = !this.visible;
