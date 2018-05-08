@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version = '1.48.9973';
+	var version = '1.48.9977';
 	var _toString = Object.prototype.toString;
 	var _forEach = Array.prototype.forEach;
 	var isDef = function(v) {
@@ -317,35 +317,39 @@
 	var performance = function(delay, callback, throttleflg) {
 		if (!isFunction(callback)) callback = delay;
 		if (!isFunction(callback)) return function() {};
-		var timer = null;
+		var defaultTimer = {};
 		if (isNumber(delay)) {
 			return function() {
 				var self = this;
+				var timer = this;
+				if (!isDef(timer)) timer = defaultTimer;
 				var args = arguments;
 				if (throttleflg) {
-					if (timer) return false;
+					if (timer.__timer__) return false;
 				} else {
-					clearTimeout(timer);
+					clearTimeout(timer.__timer__);
 				}
-				timer = setTimeout(function() {
+				timer.__timer__ = setTimeout(function() {
 					callback.apply(self, args);
-					clearTimeout(timer);
-					timer = null;
+					clearTimeout(timer.__timer__);
+					timer.__timer__ = null;
 				}, delay);
 			}
 		} else {
 			return function() {
 				var self = this;
+				var timer = this;
+				if (!isDef(timer)) timer = defaultTimer;
 				var args = arguments;
 				if (throttleflg) {
-					if (timer) return false;
+					if (timer.__timer__) return false;
 				} else {
-					cancelAnimationFrame(timer);
+					cancelAnimationFrame(timer.__timer__);
 				}
-				timer = requestAnimationFrame(function() {
+				timer.__timer__ = requestAnimationFrame(function() {
 					callback.apply(self, args);
-					cancelAnimationFrame(timer);
-					timer = null;
+					cancelAnimationFrame(timer.__timer__);
+					timer.__timer__ = null;
 				});
 			}
 		}
