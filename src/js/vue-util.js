@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version = '1.48.9963';
+	var version = '1.48.9968';
 	var _toString = Object.prototype.toString;
 	var _forEach = Array.prototype.forEach;
 	var isDef = function(v) {
@@ -172,6 +172,31 @@
 		if (!isString(str)) str = '';
 		return str.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '');
 	};
+	var deepCopy = function(obj, parent) {
+		if (!isDef(parent)) parent = null;
+		var result = {};
+		if (isArray(obj)) result = [];
+		var _parent = parent;
+		while (_parent) {
+			if (_parent.originalParent === obj) {
+				return _parent.currentParent;
+			}
+			_parent = _parent.parent;
+		}
+		ownPropertyLoop(obj, function(key) {
+			var temp = obj[key];
+			if (temp && typeof temp === 'object') {
+				result[key] = deepCopy(temp, {
+					originalParent: obj,
+					currentParent: result,
+					parent: parent
+				});
+			} else {
+				result[key] = temp;
+			}
+		});
+		return result;
+	};
 	var merge = function(target) {
 		loop(arguments, function(source, index) {
 			if (index === 0) return;
@@ -192,7 +217,7 @@
 			if (!isArray(array)) {
 				target.push(array)
 			} else {
-				loop(array, function(item){
+				loop(array, function(item) {
 					if (isArray(item)) item = mergeArray([], item);
 					target.push(item);
 				});
@@ -811,6 +836,7 @@
 		loop: loop,
 		ownPropertyLoop: ownPropertyLoop,
 		trim: trim,
+		deepCopy: deepCopy,
 		merge: merge,
 		mergeArray: mergeArray,
 		createUuid: createUuid,
