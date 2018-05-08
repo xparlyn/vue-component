@@ -85,7 +85,7 @@
 							}
 							return result;
 						};
-						disabledHours = disabledHours.concat(newArray(value[0], value[1]));
+						VueUtil.mergeArray(disabledHours, newArray(value[0], value[1]));
 					});
 					var i = 24;
 					while (i--) {

@@ -1,12 +1,12 @@
 (function(context, definition) {
 	'use strict';
 	if (typeof define === 'function' && define.amd) {
-		define(['Vue'], definition);
+		define(['Vue', 'VueUtil'], definition);
 	} else {
-		context.VueCollapse = definition(context.Vue);
+		context.VueCollapse = definition(context.Vue, context.VueUtil);
 		delete context.VueCollapse;
 	}
-})(this, function(Vue) {
+})(this, function(Vue, VueUtil) {
 	'use strict';
 	var VueCollapse = {
 		template: '<div class="vue-collapse"><slot></slot></div>',
@@ -26,17 +26,17 @@
 		},
 		data: function() {
 			return {
-				activeNames: [].concat(this.value)
+				activeNames: VueUtil.mergeArray([], this.value)
 			};
 		},
 		watch: {
 			value: function(value) {
-				this.activeNames = [].concat(value);
+				this.activeNames = VueUtil.mergeArray([], value);
 			}
 		},
 		methods: {
 			setActiveNames: function(activeNames) {
-				activeNames = [].concat(activeNames);
+				activeNames = VueUtil.mergeArray([], activeNames);
 				var value = this.accordion ? activeNames[0] : activeNames;
 				this.activeNames = activeNames;
 				this.$emit('input', value);
@@ -49,7 +49,7 @@
 							? '' : item.name
 					);
 				} else {
-					var activeNames = this.activeNames.slice(0);
+					var activeNames = VueUtil.mergeArray([], this.activeNames);
 					var index = activeNames.indexOf(item.name);
 					if (index !== -1) {
 						activeNames.splice(index, 1);

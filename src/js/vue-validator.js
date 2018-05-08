@@ -560,7 +560,7 @@
 						errors = [errors];
 					}
 					if (errors.length && rule.message) {
-						errors = [].concat(rule.message);
+						errors = VueUtil.mergeArray([], rule.message);
 					}
 					errors = errors.map(complementError(rule));
 					if (options.first && errors.length) {
@@ -572,7 +572,7 @@
 					} else {
 						if (rule.required && !data.value) {
 							if (rule.message) {
-								errors = [].concat(rule.message).map(complementError(rule));
+								errors = VueUtil.mergeArray([], rule.message).map(complementError(rule));
 							} else if (options.error) {
 								errors = [options.error(rule, options.messages.default)];
 							} else {
@@ -598,7 +598,7 @@
 							data.rule.options.error = options.error;
 						}
 						schema.validate(data.value, data.rule.options || options, function(errs) {
-							doIt(errs && errs.length ? errors.concat(errs) : errs);
+							doIt(errs && errs.length ? VueUtil.mergeArray(errors, errs) : errs);
 						});
 					}
 				}

@@ -17,7 +17,7 @@
 		var BindAsEventListener = function(object, fun) {
 			var args = [].slice.call(arguments).slice(2);
 			return function(e) {
-				return fun.apply(object, [e || event].concat(args));
+				return fun.apply(object, VueUtil.mergeArray([e || event], args));
 			}
 		};
 		var Class = function(properties) {

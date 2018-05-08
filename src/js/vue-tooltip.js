@@ -94,7 +94,7 @@
 		},
 		methods: {
 			addEventHandle: function(old, fn) {
-				return old ? VueUtil.isArray(old) ? old.concat(fn) : [old, fn] : fn;
+				return old ? VueUtil.isArray(old) ? VueUtil.mergeArray(old, fn) : [old, fn] : fn;
 			},
 			concatClass: function(a, b) {
 				if (a && a.indexOf(b) !== -1) return a;

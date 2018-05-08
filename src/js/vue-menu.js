@@ -36,7 +36,7 @@
 		data: function() {
 			return {
 				activedIndex: this.defaultActive,
-				openedMenus: this.defaultOpeneds ? this.defaultOpeneds.slice(0) : [],
+				openedMenus: VueUtil.mergeArray([], this.defaultOpeneds),
 				items: {},
 				submenus: {}
 			};

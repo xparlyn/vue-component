@@ -61,7 +61,7 @@
 			}
 			this.updateAllSelected();
 			if (states.defaultExpandAll) {
-				states.expandRows = states.data.slice(0);
+				states.expandRows = VueUtil.mergeArray([], states.data);
 			}
 			VueUtil.isVueComponent(table.$refs.tableBody) && table.$refs.tableBody.resetDelta(data.length);
 			Vue.nextTick(function() {
@@ -282,7 +282,7 @@
 			} else {
 				if (colColumns.length > 0) {
 					colColumns.reverse();
-					column.colColumns = [].concat(colColumns);
+					column.colColumns = VueUtil.mergeArray([], colColumns);
 					colColumns = [];
 				}
 				labelColumns.push(column);
@@ -296,7 +296,7 @@
 		var columns = [];
 		states.fixedColumns = [];
 		states.rightFixedColumns = [];
-		VueUtil.loop((states._columns || []).slice(0), function(column) {
+		VueUtil.loop(VueUtil.mergeArray([], states._columns), function(column) {
 			if (column.visible) {
 				columns.push(column);
 				if (column.fixed === true || column.fixed === 'left') {
@@ -325,9 +325,9 @@
 			columns[0].fixed = true;
 			states.fixedColumns.unshift(columns[0]);
 		}
-		states.columns = [].concat(states.fixedColumns).concat(columns.filter(function(column) {
+		states.columns = VueUtil.mergeArray([], states.fixedColumns, columns.filter(function(column) {
 			return !column.fixed
-		})).concat(states.rightFixedColumns);
+		}), states.rightFixedColumns);
 		this.updateLabelColumns();
 	}
 	TableStore.prototype.rowspanData = function(data) {
@@ -365,7 +365,7 @@
 		var sortingColumns = states.sortingColumns;
 		if (sortingColumns.length !== 0) {
 			var orderBy = function(data, sortList) {
-				return data.slice(0).sort(function(data1, data2) {
+				return VueUtil.mergeArray([], data).sort(function(data1, data2) {
 					var index = 0;
 					var column = sortList[index];
 					index++;
@@ -491,7 +491,7 @@
 			args.push(arg);
 		});
 		if (mutations[name]) {
-			mutations[name].apply(this, [this.states].concat(args));
+			mutations[name].apply(this, VueUtil.mergeArray([this.states], args));
 		} else {
 			throw 'Action not found: ' + name;
 		}
@@ -664,7 +664,7 @@
 					name: 'gutter',
 					width: 0
 				}
-			}, []) : '']), createElement('tbody', {ref: 'tbody'}, [self._l(delta.data, function(row, index) {
+			}, []) : '']), createElement('tbody', {ref: 'tbody'}, [VueUtil.mergeArray(self._l(delta.data, function(row, index) {
 				var $index = storeData.indexOf(row);
 				return [createElement('tr', {
 					style: self.rowStyle ? self.getRowStyle(row, $index) : null,
@@ -741,7 +741,7 @@
 					$index: $index,
 					store: self.store
 				}) : ''])]) : null]
-			}).concat(self._self.$parent.$slots.append)])]);
+			}), self._self.$parent.$slots.append)])]);
 		},
 		watch: {
 			'store.states.hoverRow': function(newVal) {
@@ -1770,7 +1770,7 @@
 						columnOrder = [];
 						VueUtil.loop(datas, function(v) {
 							if (!VueUtil.isArray(v)) {
-								columnOrder = columnOrder.concat(Object.keys(v));
+								VueUtil.mergeArray(columnOrder, Object.keys(v));
 							}
 						});
 						if (columnOrder.length > 0) {

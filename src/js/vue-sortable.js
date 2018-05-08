@@ -141,7 +141,7 @@
 		watch: {
 			options: {
 				handler: function(newOptionValue) {
-					var readonlyProperties = ['Move'].concat(eventsListened, eventsToEmit).map(function(evt) {
+					var readonlyProperties = VueUtil.mergeArray(['Move'], eventsListened, eventsToEmit).map(function(evt) {
 						return 'on' + evt;
 					});
 					var sortable = this._sortable;
@@ -170,7 +170,7 @@
 					var elmFromNodes = slots.map(function(elt) {
 						return elt.elm;
 					});
-					var rawIndexes = [].concat(toConsumableArray(children)).map(function(elt) {
+					var rawIndexes = VueUtil.mergeArray([], toConsumableArray(children)).map(function(elt) {
 						return elmFromNodes.indexOf(elt);
 					});
 					return rawIndexes.filter(function(index) {
@@ -211,7 +211,7 @@
 				});
 			},
 			alterList: function(onList) {
-				var newList = [].concat(toConsumableArray(this.value));
+				var newList = VueUtil.mergeArray([], toConsumableArray(this.value));
 				onList(newList);
 				this.$emit('input', newList);
 			},
@@ -313,7 +313,7 @@
 				if (!relatedContext.element) {
 					return 0;
 				}
-				var domChildren = [].concat(toConsumableArray(evt.to.children)).filter(function(el) {
+				var domChildren = VueUtil.mergeArray([], toConsumableArray(evt.to.children)).filter(function(el) {
 					return el.style['display'] !== 'none';
 				});
 				var currentDOMIndex = domChildren.indexOf(evt.related);

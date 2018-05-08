@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version = '1.48.9958';
+	var version = '1.48.9963';
 	var _toString = Object.prototype.toString;
 	var _forEach = Array.prototype.forEach;
 	var isDef = function(v) {
@@ -185,14 +185,22 @@
 		});
 		return target;
 	};
-	var arrayToObject = function(arr) {
-		var res = {};
-		loop(arr, function(obj) {
-			merge(res, obj);
+	var mergeArray = function(target) {
+		if (!isArray(target)) target = [];
+		loop(arguments, function(array, index) {
+			if (index === 0 || !isDef(array)) return;
+			if (!isArray(array)) {
+				target.push(array)
+			} else {
+				loop(array, function(item){
+					if (isArray(item)) item = mergeArray([], item);
+					target.push(item);
+				});
+			}
 		});
-		return res;
+		return target;
 	};
-	var creationUuid = function() {
+	var createUuid = function() {
 		var s4 = function() {
 			return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
 		};
@@ -572,7 +580,7 @@
 					}
 				}
 				if (parent) {
-					parent.$emit.apply(parent, [eventName].concat(params));
+					parent.$emit.apply(parent, mergeArray([eventName], params));
 				}
 			},
 			broadcast: function(componentName, eventName, params) {
@@ -580,9 +588,9 @@
 					loop(this.$children, function(child) {
 						var name = child.$options.name;
 						if (name === componentName) {
-							child.$emit.apply(child, [eventName].concat(params));
+							child.$emit.apply(child, mergeArray([eventName], params));
 						} else {
-							broadcast.apply(child, [componentName, eventName].concat([params]));
+							broadcast.apply(child, mergeArray([componentName, eventName], [params]));
 						}
 					});
 				};
@@ -804,8 +812,8 @@
 		ownPropertyLoop: ownPropertyLoop,
 		trim: trim,
 		merge: merge,
-		arrayToObject: arrayToObject,
-		creationUuid: creationUuid,
+		mergeArray: mergeArray,
+		createUuid: createUuid,
 		on: on,
 		off: off,
 		once: once,

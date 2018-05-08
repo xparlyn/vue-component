@@ -203,7 +203,7 @@
 		},
 		getScopeId: function() {
 			if (this._scopeId === '') {
-				this._scopeId = 'scope-' + VueUtil.creationUuid();
+				this._scopeId = 'scope-' + VueUtil.createUuid();
 				this.template.getRootElt().setAttribute(this._scopeId, '');
 			}
 			return this._scopeId;
@@ -269,12 +269,12 @@
 			});
 		},
 		normalize: function() {
-			return Promise.all(Array.prototype.concat(this._normalizeSection(this.template), this._normalizeSection(this.script), this.styles.map(this._normalizeSection))).then(function() {
+			return Promise.all(VueUtil.mergeArray(this._normalizeSection(this.template), this._normalizeSection(this.script), this.styles.map(this._normalizeSection))).then(function() {
 				return this;
 			}.bind(this));
 		},
 		compile: function() {
-			return Promise.all(Array.prototype.concat(this.template && this.template.compile(), this.script && this.script.compile(), this.styles.map(function(style) {
+			return Promise.all(VueUtil.mergeArray(this.template && this.template.compile(), this.script && this.script.compile(), this.styles.map(function(style) {
 				return style.compile();
 			}))).then(function() {
 				return this;

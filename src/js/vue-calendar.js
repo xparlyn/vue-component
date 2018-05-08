@@ -43,11 +43,7 @@
 				var eventClass = [];
 				var customClass = event.customClass;
 				if (VueUtil.isDef(customClass)) {
-					if (VueUtil.isArray(customClass)) {
-						eventClass = [].concat(customClass);
-					} else {
-						eventClass.push(customClass);
-					}
+					VueUtil.mergeArray(eventClass, customClass);
 				}
 				if (VueUtil.formatDate(start) === VueUtil.formatDate(self.date)) {
 					eventClass.push('is-start');
@@ -168,7 +164,7 @@
 			WEEKS: function() {
 				var WEEKS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 				var week = this.firstDay;
-				return WEEKS.concat(WEEKS).slice(week, week + 7);
+				return VueUtil.mergeArray(WEEKS, WEEKS).slice(week, week + 7);
 			},
 			eventDayStyle: function() {
 				var style = {};
@@ -227,22 +223,12 @@
 						var dayClass = [];
 						VueUtil.loop(dateClassAry, function(dateClass) {
 							if (VueUtil.formatDate(dateClass.date) === VueUtil.formatDate(monthViewStartDate)) {
-								var customClass = dateClass.customClass
-								if (VueUtil.isArray(customClass)) {
-									dayClass = dayClass.concat(customClass);
-								} else {
-									dayClass.push(customClass);
-								}
+								VueUtil.mergeArray(dayClass, dateClass.customClass);
 							}
 						});
 						VueUtil.loop(weekClassAry, function(weekClass) {
 							if (weekClass.week === perDay) {
-								var customClass = weekClass.customClass
-								if (VueUtil.isArray(customClass)) {
-									dayClass = dayClass.concat(customClass);
-								} else {
-									dayClass.push(customClass);
-								}
+								VueUtil.mergeArray(dayClass, weekClass.customClass);
 							}
 						});
 						week.push({
@@ -273,7 +259,7 @@
 			},
 			slotEvents: function(date) {
 				var cellIndexArr = [];
-				var events = [].concat(this.events);
+				var events = VueUtil.mergeArray([], this.events);
 				var thisDayEvents = events.filter(function(day) {
 					var st = VueUtil.parseDate(day.start).getTime();
 					var ed = VueUtil.parseDate(day.end ? day.end : st).getTime();

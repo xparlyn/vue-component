@@ -313,7 +313,7 @@
 				if (!self.menu) {
 					self.initMenu();
 				}
-				self.menu.value = self.currentValue.slice(0);
+				self.menu.value = VueUtil.mergeArray([], self.currentValue);
 				self.menu.visible = true;
 				self.menu.options = self.options;
 				self.$nextTick(function() {
@@ -403,14 +403,14 @@
 				var self = this;
 				var flatOptions = [];
 				VueUtil.loop(options, function(option) {
-					var optionsStack = ancestor.concat(option);
+					var optionsStack = VueUtil.mergeArray(ancestor, option);
 					if (!option[self.childrenKey]) {
 						flatOptions.push(optionsStack);
 					} else {
 						if (self.changeOnSelect) {
 							flatOptions.push(optionsStack);
 						}
-						flatOptions = flatOptions.concat(self.flattenOptions(option[self.childrenKey], optionsStack));
+						VueUtil.mergeArray(flatOptions, self.flattenOptions(option[self.childrenKey], optionsStack));
 					}
 				});
 				return flatOptions;

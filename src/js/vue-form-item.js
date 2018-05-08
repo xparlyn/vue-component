@@ -198,7 +198,7 @@
 				var formRules = this.form.rules;
 				var selfRuels = this.rules;
 				formRules = formRules ? formRules[this.prop] : [];
-				return [].concat(selfRuels || formRules || []);
+				return VueUtil.mergeArray([], (selfRuels || formRules || []));
 			},
 			getFilteredRule: function(trigger) {
 				var rules = this.getRules();

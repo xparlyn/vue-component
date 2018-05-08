@@ -118,7 +118,7 @@
 			WEEKS: function() {
 				var WEEKS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 				var week = this.firstDayOfWeek;
-				return WEEKS.concat(WEEKS).slice(week, week + 7);
+				return VueUtil.mergeArray(WEEKS, WEEKS).slice(week, week + 7);
 			},
 			monthDate: function() {
 				return this.date.getDate();
