@@ -159,6 +159,7 @@
 				return VueLoader(resolveURL(this.component.baseURI, childURL));
 			}.bind(this);
 			try {
+				Vue.config.devtools && this.addContent('debugger');
 				Function('exports', 'require', 'Vue', 'VueUtil', 'VueRouter', 'Vuex', 'VueLoader', 'module', this.getContent()).call(this.module.exports, this.module.exports, childModuleRequire, Vue, VueUtil, VueRouter, Vuex, childLoader, this.module);
 			} catch (ex) {
 				Vue.config.productionTip && console.error("[VueLoader error]: in '" + this.component.url + "'\n\n" + ex);
