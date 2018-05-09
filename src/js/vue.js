@@ -1766,10 +1766,7 @@ if (typeof MessageChannel !== 'undefined' && (
   };
 } else {
   macroTimerFunc = function () {
-    var timer = requestAnimationFrame(function() {
-      flushCallbacks();
-      cancelAnimationFrame(timer);
-    });
+    setTimeout(flushCallbacks);
   };
 }
 
@@ -7866,9 +7863,8 @@ function setSelected (el, binding, vm) {
   actuallySetSelected(el, binding, vm);
   /* istanbul ignore if */
   if (isIE || isEdge) {
-    var timer = requestAnimationFrame(function () {
+    setTimeout(function () {
       actuallySetSelected(el, binding, vm);
-      cancelAnimationFrame(timer);
     });
   }
 }

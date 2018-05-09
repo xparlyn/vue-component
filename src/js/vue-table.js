@@ -992,104 +992,104 @@
 		}
 	};
 	var VueTableFilterPanel = {
-			template: '<transition @after-leave="doDestroy"><div class="vue-table-filter" v-show="showPopper" v-clickoutside="handleOutsideClick"><div class="vue-table-filter__content"><vue-checkbox-group v-model="filteredValue"><vue-list scrollbar :height="150" ref="list" class="vue-table-filter__list"><vue-list-item  v-for="(filter, index) in filters" :key="index" class="vue-table-filter__list-item"><vue-checkbox :label="filter">{{filter}}</vue-checkbox></vue-list-item></vue-list></vue-checkbox-group></div><div class="vue-table-filter__bottom"><vue-button @click="handleConfirm" type="text" :disabled="filteredValue.length === 0">{{$t(\'vue.table.confirmFilter\')}}</vue-button><vue-button type="text" @click="handleReset">{{$t(\'vue.table.resetFilter\')}}</vue-button></div></div></transition>',
-			name: 'VueTableFilterPanel',
-			mixins: [VuePopper],
-			directives: {
-				Clickoutside: VueUtil.component.clickoutside()
+		template: '<transition @after-leave="doDestroy"><div class="vue-table-filter" v-show="showPopper" v-clickoutside="handleOutsideClick"><div class="vue-table-filter__content"><vue-checkbox-group v-model="filteredValue"><vue-list scrollbar :height="150" ref="list" class="vue-table-filter__list"><vue-list-item  v-for="(filter, index) in filters" :key="index" class="vue-table-filter__list-item"><vue-checkbox :label="filter">{{filter}}</vue-checkbox></vue-list-item></vue-list></vue-checkbox-group></div><div class="vue-table-filter__bottom"><vue-button @click="handleConfirm" type="text" :disabled="filteredValue.length === 0">{{$t(\'vue.table.confirmFilter\')}}</vue-button><vue-button type="text" @click="handleReset">{{$t(\'vue.table.resetFilter\')}}</vue-button></div></div></transition>',
+		name: 'VueTableFilterPanel',
+		mixins: [VuePopper],
+		directives: {
+			Clickoutside: VueUtil.component.clickoutside()
+		},
+		props: {
+			placement: {
+				type: String,
+				default: 'bottom'
+			}
+		},
+		methods: {
+			handleOutsideClick: function() {
+				this.showPopper = false;
 			},
-			props: {
-				placement: {
-					type: String,
-					default: 'bottom'
+			handleConfirm: function() {
+				this.confirmFilter(this.filteredValue);
+				this.handleOutsideClick();
+			},
+			handleReset: function() {
+				this.filteredValue = [];
+				this.handleConfirm();
+			},
+			confirmFilter: function(filteredValue) {
+				this.column.filtered = false;
+				if (filteredValue.length > 0) {
+					this.column.filtered = true;
 				}
-			},
-			methods: {
-				handleOutsideClick: function() {
-					this.showPopper = false;
-				},
-				handleConfirm: function() {
-					this.confirmFilter(this.filteredValue);
-					this.handleOutsideClick();
-				},
-				handleReset: function() {
-					this.filteredValue = [];
-					this.handleConfirm();
-				},
-				confirmFilter: function(filteredValue) {
-					this.column.filtered = false;
-					if (filteredValue.length > 0) {
-						this.column.filtered = true;
-					}
-					this.table.store.commit('filterChange', {
-						column: this.column,
-						values: filteredValue
-					});
-				}
-			},
-			data: function() {
-				return {
-					table: null,
-					cell: null,
-					column: null,
-					dropdown: {
-						dropdowns: [],
-						open: function(instance) {
-							if (instance) {
-								this.dropdowns.push(instance);
-							}
-						},
-						close: function(instance) {
-							var index = this.dropdowns.indexOf(instance);
-							if (index !== -1) {
-								this.dropdowns.splice(instance, 1);
-							}
-						}
-					}
-				};
-			},
-			computed: {
-				filters: function() {
-					var filterList = [];
-					var column = this.column;
-					VueUtil.loop(this.table.store.states._data, function(row) {
-						var columnData = row[column.property];
-						if (filterList.indexOf(columnData) === -1) {
-							filterList.push(columnData);
-						}
-					});
-					return filterList
-				},
-				filteredValue: {
-					get: function() {
-						if (this.column) {
-							return this.column.filteredValue || [];
-						}
-						return [];
-					},
-					set: function(value) {
-						if (this.column) {
-							this.column.filteredValue = value;
-						}
-					}
-				}
-			},
-			mounted: function() {
-				var self = this;
-				self.popperElm = self.$el;
-				self.referenceElm = self.cell;
-				self.$watch('showPopper', function(value) {
-					if (self.column)
-						self.column.filterOpened = value;
-					if (value) {
-						self.dropdown.open(self);
-						self.$nextTick(self.$refs.list.updateZone)
-					} else {
-						self.dropdown.close(self);
-					}
+				this.table.store.commit('filterChange', {
+					column: this.column,
+					values: filteredValue
 				});
 			}
-		};
+		},
+		data: function() {
+			return {
+				table: null,
+				cell: null,
+				column: null,
+				dropdown: {
+					dropdowns: [],
+					open: function(instance) {
+						if (instance) {
+							this.dropdowns.push(instance);
+						}
+					},
+					close: function(instance) {
+						var index = this.dropdowns.indexOf(instance);
+						if (index !== -1) {
+							this.dropdowns.splice(instance, 1);
+						}
+					}
+				}
+			};
+		},
+		computed: {
+			filters: function() {
+				var filterList = [];
+				var column = this.column;
+				VueUtil.loop(this.table.store.states._data, function(row) {
+					var columnData = row[column.property];
+					if (filterList.indexOf(columnData) === -1) {
+						filterList.push(columnData);
+					}
+				});
+				return filterList
+			},
+			filteredValue: {
+				get: function() {
+					if (this.column) {
+						return this.column.filteredValue || [];
+					}
+					return [];
+				},
+				set: function(value) {
+					if (this.column) {
+						this.column.filteredValue = value;
+					}
+				}
+			}
+		},
+		mounted: function() {
+			var self = this;
+			self.popperElm = self.$el;
+			self.referenceElm = self.cell;
+			self.$watch('showPopper', function(value) {
+				if (self.column)
+					self.column.filterOpened = value;
+				if (value) {
+					self.dropdown.open(self);
+					self.$nextTick(self.$refs.list.updateZone)
+				} else {
+					self.dropdown.close(self);
+				}
+			});
+		}
+	};
 	var TableHeader = {
 		render: function(createElement) {
 			if (!this.$parent.showHeader

@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version = '1.48.9982';
+	var version = '1.48.9987';
 	var _toString = Object.prototype.toString;
 	var _forEach = Array.prototype.forEach;
 	var isDef = function(v) {
@@ -877,9 +877,9 @@
 		produceModel: produceModel,
 		nextZIndex: popupManager.nextZIndex,
 		version: version,
-		isIE: getSystemInfo().browser.toLowerCase() === 'ie',
-		isFirefox: getSystemInfo().browser.toLowerCase() === 'firefox',
-		isChrome: getSystemInfo().browser.toLowerCase() === 'chrome',
+		isIE: SystemInfo.browser.toLowerCase() === 'ie',
+		isFirefox: SystemInfo.browser.toLowerCase() === 'firefox',
+		isChrome: SystemInfo.browser.toLowerCase() === 'chrome',
 		component: {
 			menumixin: menumixin,
 			emitter: emitter,
