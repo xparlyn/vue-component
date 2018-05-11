@@ -111,7 +111,7 @@
 						var boxSizing = style.getPropertyValue('box-sizing');
 						var paddingSize = (parseFloat(style.getPropertyValue('padding-bottom')) + parseFloat(style.getPropertyValue('padding-top')));
 						var borderSize = (parseFloat(style.getPropertyValue('border-bottom-width')) + parseFloat(style.getPropertyValue('border-top-width')));
-						var contextStyle = CONTEXT_STYLE.map(function(name) {
+						var contextStyle = VueUtil.map(CONTEXT_STYLE, function(name) {
 							return name + ':' + style.getPropertyValue(name)
 						}).join(';');
 						var calculateNodeStylingObj = {};

@@ -81,7 +81,7 @@
 				if (openedMenus.indexOf(index) !== -1)
 					return;
 				if (this.uniqueOpened) {
-					this.openedMenus = openedMenus.filter(function(index) {
+					this.openedMenus = VueUtil.filter(openedMenus, function(index) {
 						return indexPath.indexOf(index) !== -1;
 					});
 				}

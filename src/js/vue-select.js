@@ -47,7 +47,7 @@
 			},
 			showNewOption: function() {
 				var self = this;
-				var hasExistingOption = self.options.filter(function(option) {
+				var hasExistingOption = VueUtil.filter(self.options, function(option) {
 					return !option.created;
 				}).some(function(option) {
 					return option.currentLabel === self.query;
@@ -234,7 +234,7 @@
 			},
 			options: function(val) {
 				var self = this;
-				self.optionsAllDisabled = val.length === val.filter(function(item) {
+				self.optionsAllDisabled = val.length === VueUtil.filter(val, function(item) {
 					return item.disabled === true;
 				}).length;
 				if (self.multiple) {
@@ -277,7 +277,7 @@
 				}
 			},
 			getOption: function(value) {
-				var option = this.cachedOptions.filter(function(option) {
+				var option = VueUtil.filter(this.cachedOptions, function(option) {
 					return option.value === value;
 				})[0];
 				if (option)
@@ -387,7 +387,7 @@
 						self.hoverIndex = self.options.indexOf(self.selected);
 					} else {
 						if (self.selected.length > 0) {
-							self.hoverIndex = Math.min.apply(null, self.selected.map(function(item) {
+							self.hoverIndex = Math.min.apply(null, VueUtil.map(self.selected, function(item) {
 								return self.options.indexOf(item);
 							}));
 						} else {
@@ -436,7 +436,7 @@
 				}
 				if (this.options.length === 0 || this.filteredOptionsCount === 0)
 					return;
-				this.optionsAllDisabled = this.options.length === this.options.filter(function(item) {return item.disabled === true;}).length;
+				this.optionsAllDisabled = this.options.length === VueUtil.filter(this.options, function(item) {return item.disabled === true;}).length;
 				if (!this.optionsAllDisabled) {
 					if (direction === 'next') {
 						this.hoverIndex++;

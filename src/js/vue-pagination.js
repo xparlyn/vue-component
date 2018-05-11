@@ -146,7 +146,7 @@
 				slot: createElement('my-slot', null, []),
 				total: createElement('total', null, [])
 			};
-			var components = layout.split(',').map(function(item) {return item.trim();});
+			var components = VueUtil.map(layout.split(','), function(item) {return item.trim();});
 			var rightWrapper = createElement('div', {class: 'vue-pagination__rightwrapper'}, []);
 			var haveRightWrapper = false;
 			if (self.small) {
@@ -200,7 +200,7 @@
 				},
 				render: function(createElement) {
 					var self = this;
-					return createElement('span', {class: 'vue-pagination__sizes'}, [createElement('vue-select', {attrs: {value: this.$parent.internalPageSize}, on: {input: this.handleChange}}, [this.pageSizes.map(function(item) {return createElement('vue-option', {attrs: {value: item, label: item + ' ' + self.$t('vue.pagination.pagesize')}}, [])})])]);
+					return createElement('span', {class: 'vue-pagination__sizes'}, [createElement('vue-select', {attrs: {value: this.$parent.internalPageSize}, on: {input: this.handleChange}}, [VueUtil.map(this.pageSizes, function(item) {return createElement('vue-option', {attrs: {value: item, label: item + ' ' + self.$t('vue.pagination.pagesize')}}, [])})])]);
 				},
 				methods: {
 					handleChange: function(val) {

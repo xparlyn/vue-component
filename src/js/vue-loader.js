@@ -180,11 +180,11 @@
 		},
 		getRootElt: function() {
 			var tplElt = this.elt.content || this.elt;
-			if ('firstElementChild'in tplElt)
-				return tplElt.firstElementChild;
-			for (tplElt = tplElt.firstChild; tplElt !== null; tplElt = tplElt.nextSibling)
-				if (tplElt.nodeType === Node.ELEMENT_NODE)
-					return tplElt;
+			var firstElt = tplElt.firstElementChild;
+			if (VueUtil.isElement(firstElt)) return firstElt;
+			for (tplElt = tplElt.firstChild; tplElt !== null; tplElt = tplElt.nextSibling) {
+				if (VueUtil.isElement(tplElt)) return tplElt;
+			}
 			return null;
 		},
 		compile: function() {
@@ -270,12 +270,12 @@
 			});
 		},
 		normalize: function() {
-			return Promise.all(VueUtil.mergeArray(this._normalizeSection(this.template), this._normalizeSection(this.script), this.styles.map(this._normalizeSection))).then(function() {
+			return Promise.all(VueUtil.mergeArray(this._normalizeSection(this.template), this._normalizeSection(this.script), VueUtil.map(this.styles, this._normalizeSection))).then(function() {
 				return this;
 			}.bind(this));
 		},
 		compile: function() {
-			return Promise.all(VueUtil.mergeArray(this.template && this.template.compile(), this.script && this.script.compile(), this.styles.map(function(style) {
+			return Promise.all(VueUtil.mergeArray(this.template && this.template.compile(), this.script && this.script.compile(), VueUtil.map(this.styles, function(style) {
 				return style.compile();
 			}))).then(function() {
 				return this;

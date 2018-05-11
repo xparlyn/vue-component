@@ -11,9 +11,11 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version = '1.48.9987';
+	var version = '1.48.9992';
 	var _toString = Object.prototype.toString;
 	var _forEach = Array.prototype.forEach;
+	var _map = Array.prototype.map;
+	var _filter = Array.prototype.filter;
 	var isDef = function(v) {
 		return v !== undefined && v !== null
 	};
@@ -167,6 +169,18 @@
 	};
 	var ownPropertyLoop = function (obj, fn) {
 		isDef(obj) && loop(Object.keys(obj), fn);
+	};
+	var map = function(arr, fn) {
+		if (isArray(arr) && isFunction(fn)) {
+			return _map.call(arr, fn);
+		}
+		return [];
+	};
+	var filter = function(arr, fn) {
+		if (isArray(arr) && isFunction(fn)) {
+			return _filter.call(arr, fn);
+		}
+		return [];
 	};
 	var trim = function(str) {
 		if (!isString(str)) str = '';
@@ -839,6 +853,8 @@
 		addDate: addDate,
 		loop: loop,
 		ownPropertyLoop: ownPropertyLoop,
+		map: map,
+		filter: filter,
 		trim: trim,
 		deepCopy: deepCopy,
 		merge: merge,

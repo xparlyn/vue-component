@@ -49,7 +49,7 @@
 				this.clearSelection();
 			} else {
 				var selection = states.selection || [];
-				var deleted = selection.filter(function(item) {
+				var deleted = VueUtil.filter(selection, function(item) {
 					return states.data.indexOf(item) === -1;
 				});
 				VueUtil.loop(deleted, function(deletedItem) {
@@ -98,14 +98,14 @@
 				var column = self.getColumnById(columnId);
 				if (column) {
 					if (column.filterMethod) {
-						data = data.filter(function(row) {
+						data = VueUtil.filter(data, function(row) {
 							return values.some(function(value) {
 								return column.filterMethod.call(null, value, row)
 							});
 						});
 					} else {
 						var columnKey = column.property
-						data = data.filter(function(row) {
+						data = VueUtil.filter(data, function(row) {
 							return values.some(function(value) {
 								return row[columnKey] === value;
 							});
@@ -325,7 +325,7 @@
 			columns[0].fixed = true;
 			states.fixedColumns.unshift(columns[0]);
 		}
-		states.columns = VueUtil.mergeArray([], states.fixedColumns, columns.filter(function(column) {
+		states.columns = VueUtil.mergeArray([], states.fixedColumns, VueUtil.filter(columns, function(column) {
 			return !column.fixed
 		}), states.rightFixedColumns);
 		this.updateLabelColumns();
@@ -1193,8 +1193,9 @@
 			this.setDefaultSortColumn();
 		},
 		beforeDestroy: function() {
-			VueUtil.ownPropertyLoop(this.filterPanels, function(prop) {
-				if (VueUtil.isDef(panels[prop])) {
+			var panels = this.filterPanels;
+			VueUtil.ownPropertyLoop(panels, function(prop) {
+				if (VueUtil.isVueComponent(panels[prop])) {
 					panels[prop].$destroy();
 				}
 			});
@@ -1732,7 +1733,7 @@
 				}
 				if (!VueUtil.isDef(params.original)) params.original = true;
 				var columns = params.original ? this.store.states._columns : this.store.states.columns;
-				columns = columns.filter(function(column) {
+				columns = VueUtil.filter(columns, function(column) {
 					return (column.property !== 'selectionColumn'
 						&& column.property !== 'indexColumn'
 						&& column.property !== 'expandColumn')
@@ -1740,17 +1741,17 @@
 				var datas = params.original ? this.store.states._data : this.store.states.data;
 				var footer = [];
 				if (this.showFooter) {
-					footer = this.store.states.aggregates.filter(function(aggregate) {
+					footer = VueUtil.map(VueUtil.filter(this.store.states.aggregates, function(aggregate) {
 						return (aggregate.property !== 'selectionColumn'
 							&& aggregate.property !== 'indexColumn'
 							&& aggregate.property !== 'expandColumn')
-					}).map(function(aggregate) {
+					}), function(aggregate) {
 						return aggregate.label;
 					});
 				}
 				var appendLine = function(content, row, options) {
 					var separator = options.separator;
-					var line = row.map(function(data) {
+					var line = VueUtil.map(row, function(data) {
 						return '"' + VueUtil.toString(data).replace(/"/g, '""') + '"';
 					});
 					content.push(line.join(separator));
@@ -1761,7 +1762,7 @@
 					var content = [];
 					var column = [];
 					if (columns) {
-						columnOrder = columns.map(function(v) {
+						columnOrder = VueUtil.map(columns, function(v) {
 							if (VueUtil.isString(v)) return v;
 							column.push(VueUtil.isDef(v.printLabel) ? v.printLabel : VueUtil.isDef(v.label) ? v.label : v.property);
 							return v.property;
@@ -1775,13 +1776,13 @@
 							}
 						});
 						if (columnOrder.length > 0) {
-							columnOrder = columnOrder.filter(function(value, index, self) {return self.indexOf(value) === index;});
+							columnOrder = VueUtil.filter(columnOrder, function(value, index, self) {return self.indexOf(value) === index;});
 							appendLine(content, columnOrder, options);
 						}
 					}
 					VueUtil.loop(datas, function(row) {
 						if (!VueUtil.isArray(row)) {
-							row = columnOrder.map(function(k) {return VueUtil.isDef(row[k]) ? row[k] : '';});
+							row = VueUtil.map(columnOrder, function(k) {return VueUtil.isDef(row[k]) ? row[k] : '';});
 						}
 						appendLine(content, row, options);
 					});

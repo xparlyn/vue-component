@@ -141,7 +141,7 @@
 		watch: {
 			options: {
 				handler: function(newOptionValue) {
-					var readonlyProperties = VueUtil.mergeArray(['Move'], eventsListened, eventsToEmit).map(function(evt) {
+					var readonlyProperties = VueUtil.map(VueUtil.mergeArray(['Move'], eventsListened, eventsToEmit), function(evt) {
 						return 'on' + evt;
 					});
 					var sortable = this._sortable;
@@ -167,13 +167,13 @@
 			computeIndexes: function() {
 				var computeIndexes = function(slots, children) {
 					if (!VueUtil.isArray(slots)) return [];
-					var elmFromNodes = slots.map(function(elt) {
+					var elmFromNodes = VueUtil.map(slots, function(elt) {
 						return elt.elm;
 					});
-					var rawIndexes = VueUtil.mergeArray([], toConsumableArray(children)).map(function(elt) {
+					var rawIndexes = VueUtil.map(VueUtil.mergeArray([], toConsumableArray(children)), function(elt) {
 						return elmFromNodes.indexOf(elt);
 					});
-					return rawIndexes.filter(function(index) {
+					return VueUtil.filter(rawIndexes, function(index) {
 						return index !== -1;
 					});
 				};
@@ -185,7 +185,7 @@
 			getUnderlyingVm: function(htmlElt) {
 				var computeVmIndex = function(vnodes, element) {
 					if (VueUtil.isArray(vnodes)) {
-						return vnodes.map(function(elt) {
+						return VueUtil.map(vnodes, function(elt) {
 							return elt.elm;
 						}).indexOf(element)
 					} else {
@@ -313,7 +313,7 @@
 				if (!relatedContext.element) {
 					return 0;
 				}
-				var domChildren = VueUtil.mergeArray([], toConsumableArray(evt.to.children)).filter(function(el) {
+				var domChildren = VueUtil.filter(VueUtil.mergeArray([], toConsumableArray(evt.to.children)), function(el) {
 					return el.style['display'] !== 'none';
 				});
 				var currentDOMIndex = domChildren.indexOf(evt.related);

@@ -75,13 +75,12 @@
 			}
 			if (!self.$slots.default || !self.$slots.default.length) return self.$slots.default;
 			var getFirstComponentChild = function(children) {
-				return children && children.filter(function(c) {
+				return VueUtil.filter(children, function(c) {
 					return c && c.tag;
 				})[0];
 			};
 			var vnode = getFirstComponentChild(self.$slots.default);
-			if (!vnode)
-				return vnode;
+			if (!vnode) return vnode;
 			var data = vnode.data = vnode.data || {};
 			var on = vnode.data.on = vnode.data.on || {};
 			on.mouseenter = self.addEventHandle(on.mouseenter, function() {self.setExpectedState(true); self.handleShowPopper();});

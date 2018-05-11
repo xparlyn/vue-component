@@ -75,7 +75,7 @@
 					var hours = [];
 					var disabledHours = [];
 					VueUtil.loop(ranges, function(range) {
-						var value = range.map(function(date) {
+						var value = VueUtil.map(range, function(date) {
 							return VueUtil.toDate(date).getHours();
 						});
 						var newArray = function(start, end) {

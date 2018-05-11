@@ -106,7 +106,7 @@
 				});
 			},
 			validateField: function(prop, cb) {
-				var field = this.fields.filter(function(field) {
+				var field = VueUtil.filter(this.fields, function(field) {
 					return (field.prop === prop)
 				})[0];
 				if (!field) {

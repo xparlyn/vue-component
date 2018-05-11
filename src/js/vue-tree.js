@@ -348,7 +348,7 @@
 	Node.prototype.updateChildren = function() {
 		var self = this;
 		var newData = self.getChildren() || [];
-		var oldData = self.childNodes.map(function(node) {
+		var oldData = VueUtil.map(self.childNodes, function(node) {
 			return node.data;
 		});
 		var newDataMap = {};

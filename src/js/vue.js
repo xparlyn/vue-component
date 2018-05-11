@@ -4,9 +4,9 @@
  * Released under the MIT License.
  */
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.Vue = factory());
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.Vue = factory());
 }(this, (function () { 'use strict';
 
 /*  */
@@ -29,6 +29,18 @@ function isTrue (v) {
 
 function isFalse (v) {
   return v === false
+}
+
+function forEach(arr, fn) {
+  Array.prototype.forEach.call(arr, fn);
+}
+
+function map(arr, fn) {
+  return Array.prototype.map.call(arr, fn);
+}
+
+function filter(arr, fn) {
+  return Array.prototype.filter.call(arr, fn);
 }
 
 /**
@@ -644,8 +656,7 @@ var formatComponentName = (noop);
         tree.push(vm);
         vm = vm.$parent;
       }
-      return '\n\nfound in\n\n' + tree
-        .map(function (vm, i) { return ("" + (i === 0 ? '---> ' : repeat(' ', 5 + i * 2)) + (Array.isArray(vm)
+      return '\n\nfound in\n\n' + map(tree, function (vm, i) { return ("" + (i === 0 ? '---> ' : repeat(' ', 5 + i * 2)) + (Array.isArray(vm)
             ? ((formatComponentName(vm[0])) + "... (" + (vm[1]) + " recursive calls)")
             : formatComponentName(vm))); })
         .join('\n')
@@ -816,7 +827,8 @@ function cloneVNodes (vnodes, deep) {
  */
 
 var arrayProto = Array.prototype;
-var arrayMethods = Object.create(arrayProto);[
+var arrayMethods = Object.create(arrayProto);
+forEach([
   'push',
   'pop',
   'shift',
@@ -824,7 +836,7 @@ var arrayMethods = Object.create(arrayProto);[
   'splice',
   'sort',
   'reverse'
-].forEach(function (method) {
+], function (method) {
   // cache original method
   var original = arrayProto[method];
   def(arrayMethods, method, function mutator () {
@@ -1216,7 +1228,7 @@ function mergeHook (
     : parentVal
 }
 
-LIFECYCLE_HOOKS.forEach(function (hook) {
+forEach(LIFECYCLE_HOOKS, function (hook) {
   strats[hook] = mergeHook;
 });
 
@@ -1242,7 +1254,7 @@ function mergeAssets (
   }
 }
 
-ASSET_TYPES.forEach(function (type) {
+forEach(ASSET_TYPES, function (type) {
   strats[type + 's'] = mergeAssets;
 });
 
@@ -1612,7 +1624,7 @@ function assertProp (
   if (!valid) {
     warn(
       "Invalid prop: type check failed for prop \"" + name + "\"." +
-      " Expected " + (expectedTypes.map(capitalize).join(', ')) +
+      " Expected " + (map(expectedTypes, capitalize).join(', ')) +
       ", got " + (toRawType(value)) + ".",
       vm
     );
@@ -1732,7 +1744,7 @@ function flushCallbacks () {
   pending = false;
   var copies = callbacks;
   callbacks = [];
-  copies.forEach(function(cb){
+  forEach(copies, function(cb){
     cb();
   });
 }
@@ -3589,7 +3601,7 @@ function initInjections (vm) {
   var result = resolveInject(vm.$options.inject, vm);
   if (result) {
     observerState.shouldConvert = false;
-    Object.keys(result).forEach(function (key) {
+    forEach(Object.keys(result), function (key) {
       /* istanbul ignore else */
       {
         defineReactive(vm, key, result[key], function () {
@@ -3611,7 +3623,7 @@ function resolveInject (inject, vm) {
     // inject is :any because flow is not smart enough to figure out cached
     var result = Object.create(null);
     var keys = hasSymbol
-      ? Reflect.ownKeys(inject).filter(function (key) {
+      ? filter(Reflect.ownKeys(inject), function (key) {
         /* istanbul ignore next */
         return Object.getOwnPropertyDescriptor(inject, key).enumerable
       })
@@ -4710,7 +4722,7 @@ function initExtend (Vue) {
 
     // create asset registers, so extended classes
     // can have their private assets too.
-    ASSET_TYPES.forEach(function (type) {
+    forEach(ASSET_TYPES, function (type) {
       Sub[type] = Super[type];
     });
     // enable recursive self-lookup
@@ -4751,7 +4763,7 @@ function initAssetRegisters (Vue) {
   /**
    * Create asset registration methods.
    */
-  ASSET_TYPES.forEach(function (type) {
+  forEach(ASSET_TYPES, function (type) {
     Vue[type] = function (
       id,
       definition
@@ -4939,7 +4951,7 @@ function initGlobalAPI (Vue) {
   Vue.nextTick = nextTick;
 
   Vue.options = Object.create(null);
-  ASSET_TYPES.forEach(function (type) {
+  forEach(ASSET_TYPES, function (type) {
     Vue.options[type + 's'] = Object.create(null);
   });
 
@@ -5248,18 +5260,18 @@ function setAttribute (node, key, val) {
 
 
 var nodeOps = Object.freeze({
-	createElement: createElement$1,
-	createElementNS: createElementNS,
-	createTextNode: createTextNode,
-	createComment: createComment,
-	insertBefore: insertBefore,
-	removeChild: removeChild,
-	appendChild: appendChild,
-	parentNode: parentNode,
-	nextSibling: nextSibling,
-	tagName: tagName,
-	setTextContent: setTextContent,
-	setAttribute: setAttribute
+  createElement: createElement$1,
+  createElementNS: createElementNS,
+  createTextNode: createTextNode,
+  createComment: createComment,
+  insertBefore: insertBefore,
+  removeChild: removeChild,
+  appendChild: appendChild,
+  parentNode: parentNode,
+  nextSibling: nextSibling,
+  tagName: tagName,
+  setTextContent: setTextContent,
+  setAttribute: setAttribute
 });
 
 /*  */
@@ -6406,7 +6418,7 @@ function pluckModuleFunction (
   key
 ) {
   return modules
-    ? modules.map(function (m) { return m[key]; }).filter(function (_) { return _; })
+    ? filter(map(modules, function (m) { return m[key]; }), function (_) { return _; })
     : []
 }
 
@@ -7058,7 +7070,7 @@ var parseStyleText = cached(function (cssText) {
   var res = {};
   var listDelimiter = /;(?![^(]*\))/g;
   var propertyDelimiter = /:(.+)/;
-  cssText.split(listDelimiter).forEach(function (item) {
+  forEach(cssText.split(listDelimiter), function (item) {
     if (item) {
       var tmp = item.split(propertyDelimiter);
       tmp.length > 1 && (res[tmp[0].trim()] = tmp[1].trim());
@@ -7228,7 +7240,7 @@ function addClass (el, cls) {
   /* istanbul ignore else */
   if (el.classList) {
     if (cls.indexOf(' ') > -1) {
-      cls.split(/\s+/).forEach(function (c) { return el.classList.add(c); });
+      forEach(cls.split(/\s+/), function (c) { return el.classList.add(c); });
     } else {
       el.classList.add(cls);
     }
@@ -7253,7 +7265,7 @@ function removeClass (el, cls) {
   /* istanbul ignore else */
   if (el.classList) {
     if (cls.indexOf(' ') > -1) {
-      cls.split(/\s+/).forEach(function (c) { return el.classList.remove(c); });
+      forEach(cls.split(/\s+/), function (c) { return el.classList.remove(c); });
     } else {
       el.classList.remove(cls);
     }
@@ -7446,7 +7458,7 @@ function getTimeout (delays, durations) {
     delays = delays.concat(delays);
   }
 
-  return Math.max.apply(null, durations.map(function (d, i) {
+  return Math.max.apply(null, map(durations, function (d, i) {
     return toMs(d) + toMs(delays[i])
   }))
 }
@@ -8082,7 +8094,7 @@ var Transition = {
     }
 
     // filter out text nodes (possible whitespaces)
-    children = children.filter(function (c) { return c.tag || isAsyncPlaceholder(c); });
+    children = filter(children, function (c) { return c.tag || isAsyncPlaceholder(c); });
     /* istanbul ignore if */
     if (!children.length) {
       return
@@ -8273,16 +8285,16 @@ var TransitionGroup = {
 
     // we divide the work into three loops to avoid mixing DOM reads and writes
     // in each iteration - which helps prevent layout thrashing.
-    children.forEach(callPendingCbs);
-    children.forEach(recordPosition);
-    children.forEach(applyTranslation);
+    forEach(children, callPendingCbs);
+    forEach(children, recordPosition);
+    forEach(children, applyTranslation);
 
     // force reflow to put everything in position
     // assign to this to avoid being removed in tree-shaking
     // $flow-disable-line
     this._reflow = document.body.offsetHeight;
 
-    children.forEach(function (c) {
+    forEach(children, function (c) {
       if (c.data.moved) {
         var el = c.elm;
         var s = el.style;
@@ -8316,7 +8328,7 @@ var TransitionGroup = {
       // is applied.
       var clone = el.cloneNode();
       if (el._transitionClasses) {
-        el._transitionClasses.forEach(function (cls) { removeClass(clone, cls); });
+        forEach(el._transitionClasses, function (cls) { removeClass(clone, cls); });
       }
       addClass(clone, moveClass);
       clone.style.display = 'none';
@@ -9453,7 +9465,7 @@ function parseModifiers (name) {
   var match = name.match(modifierRE);
   if (match) {
     var ret = {};
-    match.forEach(function (m) { ret[m.slice(1)] = true; });
+    forEach(match, function (m) { ret[m.slice(1)] = true; });
     return ret
   }
 }
@@ -9817,7 +9829,7 @@ function genHandler (
   }
 
   if (Array.isArray(handler)) {
-    return ("[" + (handler.map(function (handler) { return genHandler(name, handler); }).join(',')) + "]")
+    return ("[" + (map(handler, function (handler) { return genHandler(name, handler); }).join(',')) + "]")
   }
 
   var isMethodPath = simplePathRE.test(handler.value);
@@ -9843,9 +9855,9 @@ function genHandler (
       } else if (key === 'exact') {
         var modifiers = (handler.modifiers);
         genModifierCode += genGuard(
-          ['ctrl', 'shift', 'alt', 'meta']
-            .filter(function (keyModifier) { return !modifiers[keyModifier]; })
-            .map(function (keyModifier) { return ("$event." + keyModifier + "Key"); })
+          filter(map(['ctrl', 'shift', 'alt', 'meta']
+            , function (keyModifier) { return !modifiers[keyModifier]; })
+            , function (keyModifier) { return ("$event." + keyModifier + "Key"); })
             .join('||')
         );
       } else {
@@ -9870,7 +9882,7 @@ function genHandler (
 }
 
 function genKeyFilter (keys) {
-  return ("if(!('button' in $event)&&" + (keys.map(genFilterCode).join('&&')) + ")return null;")
+  return ("if(!('button' in $event)&&" + (map(keys, genFilterCode).join('&&')) + ")return null;")
 }
 
 function genFilterCode (key) {
@@ -10186,7 +10198,7 @@ function genInlineTemplate (el, state) {
   }
   if (ast.type === 1) {
     var inlineRenderFns = generate(ast, state.options);
-    return ("inlineTemplate:{render:function(){" + (inlineRenderFns.render) + "},staticRenderFns:[" + (inlineRenderFns.staticRenderFns.map(function (code) { return ("function(){" + code + "}"); }).join(',')) + "]}")
+    return ("inlineTemplate:{render:function(){" + (inlineRenderFns.render) + "},staticRenderFns:[" + (map(inlineRenderFns.staticRenderFns, function (code) { return ("function(){" + code + "}"); }).join(',')) + "]}")
   }
 }
 
@@ -10194,7 +10206,7 @@ function genScopedSlots (
   slots,
   state
 ) {
-  return ("scopedSlots:_u([" + (Object.keys(slots).map(function (key) {
+  return ("scopedSlots:_u([" + (map(Object.keys(slots), function (key) {
       return genScopedSlot(key, slots[key], state)
     }).join(',')) + "])")
 }
@@ -10254,7 +10266,7 @@ function genChildren (
       ? getNormalizationType(children, state.maybeComponent)
       : 0;
     var gen = altGenNode || genNode;
-    return ("[" + (children.map(function (c) { return gen(c, state); }).join(',')) + "]" + (normalizationType ? ("," + normalizationType) : ''))
+    return ("[" + (map(children, function (c) { return gen(c, state); }).join(',')) + "]" + (normalizationType ? ("," + normalizationType) : ''))
   }
 }
 
@@ -10313,7 +10325,7 @@ function genSlot (el, state) {
   var slotName = el.slotName || '"default"';
   var children = genChildren(el, state);
   var res = "_t(" + slotName + (children ? ("," + children) : '');
-  var attrs = el.attrs && ("{" + (el.attrs.map(function (a) { return ((camelize(a.name)) + ":" + (a.value)); }).join(',')) + "}");
+  var attrs = el.attrs && ("{" + (map(el.attrs, function (a) { return ((camelize(a.name)) + ":" + (a.value)); }).join(',')) + "}");
   var bind$$1 = el.attrsMap['v-bind'];
   if ((attrs || bind$$1) && !children) {
     res += ",null";
@@ -10520,12 +10532,12 @@ function createCompileToFunctionFn (compile) {
       if (compiled.errors && compiled.errors.length) {
         warn$$1(
           "Error compiling template:\n\n" + template + "\n\n" +
-          compiled.errors.map(function (e) { return ("- " + e); }).join('\n') + '\n',
+          map(compiled.errors, function (e) { return ("- " + e); }).join('\n') + '\n',
           vm
         );
       }
       if (compiled.tips && compiled.tips.length) {
-        compiled.tips.forEach(function (msg) { return tip(msg, vm); });
+        forEach(compiled.tips, function (msg) { return tip(msg, vm); });
       }
     }
 
@@ -10533,7 +10545,7 @@ function createCompileToFunctionFn (compile) {
     var res = {};
     var fnGenErrors = [];
     res.render = createFunction(compiled.render, fnGenErrors);
-    res.staticRenderFns = compiled.staticRenderFns.map(function (code) {
+    res.staticRenderFns = map(compiled.staticRenderFns, function (code) {
       return createFunction(code, fnGenErrors)
     });
 
@@ -10545,7 +10557,7 @@ function createCompileToFunctionFn (compile) {
       if ((!compiled.errors || !compiled.errors.length) && fnGenErrors.length) {
         warn$$1(
           "Failed to generate render function:\n\n" +
-          fnGenErrors.map(function (ref) {
+          map(fnGenErrors, function (ref) {
             var err = ref.err;
             var code = ref.code;
 

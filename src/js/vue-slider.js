@@ -317,12 +317,12 @@
 					result.push(i * stepWidth);
 				}
 				if (self.range) {
-					return result.filter(function(step) {
+					return VueUtil.filter(result, function(step) {
 						return step < 100 * (self.minValue - self.min) / (self.max - self.min) ||
 							step > 100 * (self.maxValue - self.min) / (self.max - self.min);
 					});
 				} else {
-					return result.filter(function(step) {return step > 100 * (self.firstValue - self.min) / (self.max - self.min);});
+					return VueUtil.filter(result, function(step) {return step > 100 * (self.firstValue - self.min) / (self.max - self.min);});
 				}
 			},
 			minValue: function() {
@@ -338,7 +338,7 @@
 				return this.range ? 100 * (this.minValue - this.min) / (this.max - this.min) + '%' : '0%'
 			},
 			precision: function() {
-				var precisions = [this.min, this.max, this.step].map(function(item) {
+				var precisions = VueUtil.map([this.min, this.max, this.step], function(item) {
 					var decimal = ('' + item).split('.')[1];
 					return decimal ? decimal.length : 0;
 				});

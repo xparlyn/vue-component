@@ -396,7 +396,7 @@
 						var parser = TYPE_VALUE_RESOLVER_MAP.datetimerange.parser;
 						var format = DEFAULT_FORMATS.timerange;
 						ranges = VueUtil.isArray(ranges) ? ranges : [ranges];
-						self.picker.selectableRange = ranges.map(function(range) {return parser(range, format, self.rangeSeparator);});
+						self.picker.selectableRange = VueUtil.map(ranges, function(range) {return parser(range, format, self.rangeSeparator);});
 					}
 					VueUtil.ownPropertyLoop(options, function(option) {
 						if (option !== 'selectableRange') {

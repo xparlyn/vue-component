@@ -469,7 +469,7 @@
 				immediate: true,
 				handler: function(fileList) {
 					var self = this;
-					self.uploadFiles = fileList.map(function(item) {
+					self.uploadFiles = VueUtil.map(fileList, function(item) {
 						item.uid = item.uid || (Date.now() + self.tempIndex++);
 						item.status = self.autoUpload ? 'success' : 'ready';
 						return item;
@@ -545,7 +545,7 @@
 			},
 			submit: function() {
 				var self = this;
-				VueUtil.loop(self.uploadFiles.filter(function(file) {
+				VueUtil.loop(VueUtil.filter(self.uploadFiles, function(file) {
 					return file.status === 'ready';
 				}), function(file) {
 					self.$refs['upload-inner'].upload(file.raw);

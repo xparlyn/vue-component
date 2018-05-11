@@ -202,7 +202,7 @@
 			},
 			getFilteredRule: function(trigger) {
 				var rules = this.getRules();
-				return rules.filter(function(rule) {
+				return VueUtil.filter(rules, function(rule) {
 					return !rule.trigger || rule.trigger.indexOf(trigger) !== -1;
 				});
 			},

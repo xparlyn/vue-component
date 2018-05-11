@@ -80,7 +80,7 @@
 			this._popper = popper.jquery ? popper[0] : popper;
 		}
 		this._options = VueUtil.merge({}, DEFAULTS, options);
-		this._options.modifiers = this._options.modifiers.map(function(modifier) {
+		this._options.modifiers = VueUtil.map(this._options.modifiers, function(modifier) {
 			if (this._options.modifiersIgnored.indexOf(modifier) !== -1)
 				return;
 			if (modifier === 'applyStyle') {
@@ -357,7 +357,7 @@
 	}
 	Popper.prototype.isModifierRequired = function(requesting, requested) {
 		var index = getArrayKeyIndex(this._options.modifiers, requesting);
-		return !!this._options.modifiers.slice(0, index).filter(function(modifier) {
+		return !!VueUtil.filter(this._options.modifiers.slice(0, index), function(modifier) {
 			return modifier === requested;
 		}).length;
 	}

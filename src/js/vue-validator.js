@@ -562,7 +562,7 @@
 					if (errors.length && rule.message) {
 						errors = VueUtil.mergeArray([], rule.message);
 					}
-					errors = errors.map(complementError(rule));
+					errors = VueUtil.map(errors, complementError(rule));
 					if (options.first && errors.length) {
 						errorFields[rule.field] = 1;
 						return doIt(errors);
@@ -572,7 +572,7 @@
 					} else {
 						if (rule.required && !data.value) {
 							if (rule.message) {
-								errors = VueUtil.mergeArray([], rule.message).map(complementError(rule));
+								errors = VueUtil.map(VueUtil.mergeArray([], rule.message), complementError(rule));
 							} else if (options.error) {
 								errors = [options.error(rule, options.messages.default)];
 							} else {
@@ -589,7 +589,7 @@
 						fieldsSchema = VueUtil.merge({}, fieldsSchema, data.rule.fields);
 						VueUtil.ownPropertyLoop(fieldsSchema, function(f) {
 							var fieldSchema = VueUtil.isArray(fieldsSchema[f]) ? fieldsSchema[f] : [fieldsSchema[f]];
-							fieldsSchema[f] = fieldSchema.map(addFullfield.bind(null, f));
+							fieldsSchema[f] = VueUtil.map(fieldSchema, addFullfield.bind(null, f));
 						});
 						var schema = new Schema(fieldsSchema);
 						schema.messages(options.messages);

@@ -243,7 +243,7 @@
 					}
 					var self = this;
 					VueUtil.loop(week, function(day) {
-						day.showEvents = day.events.filter(function(event) {
+						day.showEvents = VueUtil.filter(day.events, function(event) {
 							return event.isShow === true;
 						});
 						day.moreCount = 0;
@@ -260,7 +260,7 @@
 			slotEvents: function(date) {
 				var cellIndexArr = [];
 				var events = VueUtil.mergeArray([], this.events);
-				var thisDayEvents = events.filter(function(day) {
+				var thisDayEvents = VueUtil.filter(events, function(day) {
 					var st = VueUtil.parseDate(day.start).getTime();
 					var ed = VueUtil.parseDate(day.end ? day.end : st).getTime();
 					var de = VueUtil.parseDate(date).getTime();

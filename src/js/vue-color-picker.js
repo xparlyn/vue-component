@@ -126,7 +126,7 @@
 			self.doOnChange();
 		};
 		if (value.indexOf('hsl') !== -1) {
-			var parts = value.replace(/hsla|hsl|\(|\)/gm, '').split(/\s|,/g).filter(function(val) {return val !== '';}).map(function(val, index) {return index > 2 ? parseFloat(val) : parseInt(val, 10);});
+			var parts = VueUtil.map(VueUtil.filter(value.replace(/hsla|hsl|\(|\)/gm, '').split(/\s|,/g), function(val) {return val !== '';}), function(val, index) {return index > 2 ? parseFloat(val) : parseInt(val, 10);});
 			if (parts.length === 4) {
 				this._alpha = Math.floor(parseFloat(parts[3]) * 100);
 			}
@@ -156,7 +156,7 @@
 				fromHSV(h, s, v);
 			}
 		} else if (value.indexOf('hsv') !== -1) {
-			var parts = value.replace(/hsva|hsv|\(|\)/gm, '').split(/\s|,/g).filter(function(val) {return val !== '';}).map(function(val, index) {return index > 2 ? parseFloat(val) : parseInt(val, 10);});
+			var parts = VueUtil.map(VueUtil.filter(value.replace(/hsva|hsv|\(|\)/gm, '').split(/\s|,/g), function(val) {return val !== '';}), function(val, index) {return index > 2 ? parseFloat(val) : parseInt(val, 10);});
 			if (parts.length === 4) {
 				this._alpha = Math.floor(parseFloat(parts[3]) * 100);
 			}
@@ -164,7 +164,7 @@
 				fromHSV(parts[0], parts[1], parts[2]);
 			}
 		} else if (value.indexOf('rgb') !== -1) {
-			var parts = value.replace(/rgba|rgb|\(|\)/gm, '').split(/\s|,/g).filter(function(val) {return val !== '';}).map(function(val, index) {return index > 2 ? parseFloat(val) : parseInt(val, 10);});
+			var parts = VueUtil.map(VueUtil.filter(value.replace(/rgba|rgb|\(|\)/gm, '').split(/\s|,/g), function(val) {return val !== '';}), function(val, index) {return index > 2 ? parseFloat(val) : parseInt(val, 10);});
 			if (parts.length === 4) {
 				this._alpha = Math.floor(parseFloat(parts[3]) * 100);
 			}
@@ -403,15 +403,17 @@
 				var thumb = this.$refs.thumb;
 				var hue;
 				if (!this.vertical) {
+					var thumbWidth = thumb.offsetWidth;
 					var left = (event.clientX || event.touches[0].clientX) - rect.left;
-					left = Math.min(left, rect.width - thumb.offsetWidth / 2);
-					left = Math.max(thumb.offsetWidth / 2, left);
-					hue = Math.round((left - thumb.offsetWidth / 2) / (rect.width - thumb.offsetWidth) * 360);
+					left = Math.min(left, rect.width - thumbWidth / 2);
+					left = Math.max(thumbWidth / 2, left);
+					hue = Math.round((left - thumbWidth / 2) / (rect.width - thumbWidth) * 360);
 				} else {
+					var thumbHeight = thumb.offsetHeight;
 					var top = (event.clientY || event.touches[0].clientY) - rect.top;
-					top = Math.min(top, rect.height - thumb.offsetHeight / 2);
-					top = Math.max(thumb.offsetHeight / 2, top);
-					hue = Math.round((top - thumb.offsetHeight / 2) / (rect.height - thumb.offsetHeight) * 360);
+					top = Math.min(top, rect.height - thumbHeight / 2);
+					top = Math.max(thumbHeight / 2, top);
+					hue = Math.round((top - thumbHeight / 2) / (rect.height - thumbHeight) * 360);
 				}
 				this.color.set('hue', hue);
 			},
@@ -486,15 +488,17 @@
 				var rect = this.$el.getBoundingClientRect();
 				var thumb = this.$refs.thumb;
 				if (!this.vertical) {
+					var thumbWidth = thumb.offsetWidth;
 					var left = (event.clientX || event.touches[0].clientX) - rect.left;
-					left = Math.max(thumb.offsetWidth / 2, left);
-					left = Math.min(left, rect.width - thumb.offsetWidth / 2);
-					this.color.set('alpha', Math.round((left - thumb.offsetWidth / 2) / (rect.width - thumb.offsetWidth) * 100));
+					left = Math.max(thumbWidth / 2, left);
+					left = Math.min(left, rect.width - thumbWidth / 2);
+					this.color.set('alpha', Math.round((left - thumbWidth / 2) / (rect.width - thumbWidth) * 100));
 				} else {
+					var thumbHeight = thumb.offsetHeight;
 					var top = (event.clientY || event.touches[0].clientY) - rect.top;
-					top = Math.max(thumb.offsetHeight / 2, top);
-					top = Math.min(top, rect.height - thumb.offsetHeight / 2);
-					this.color.set('alpha', Math.round((top - thumb.offsetHeight / 2) / (rect.height - thumb.offsetHeight) * 100));
+					top = Math.max(thumbHeight / 2, top);
+					top = Math.min(top, rect.height - thumbHeight / 2);
+					this.color.set('alpha', Math.round((top - thumbHeight / 2) / (rect.height - thumbHeight) * 100));
 				}
 			},
 			getThumbLeft: function() {

@@ -63,7 +63,7 @@
 						activeOptions[level] = options;
 						var active = activeValue[level];
 						if (active) {
-							options = options.filter(function(option) {
+							options = VueUtil.filter(options, function(option) {
 								return option.value === active;
 							})[0];
 							if (options && options.children) {
@@ -260,7 +260,7 @@
 				var options = self.options || [];
 				var labels = [];
 				VueUtil.loop(self.currentValue, function(value) {
-					var targetOption = options && options.filter(function(option) {
+					var targetOption = VueUtil.filter(options, function(option) {
 						return option[self.valueKey] === value;
 					})[0];
 					if (targetOption) {
@@ -351,16 +351,16 @@
 					self.menu.options = self.options;
 					return;
 				}
-				var filteredFlatOptions = flatOptions.filter(function(optionsStack) {
+				var filteredFlatOptions = VueUtil.filter(flatOptions, function(optionsStack) {
 					return optionsStack.some(function(option) {
 						return new RegExp(value, 'i').test(option[self.labelKey]);
 					});
 				});
 				if (filteredFlatOptions.length > 0) {
-					filteredFlatOptions = filteredFlatOptions.map(function(optionStack) {
+					filteredFlatOptions = VueUtil.map(filteredFlatOptions, function(optionStack) {
 						return {
 							__IS__FLAT__OPTIONS: true,
-							value: optionStack.map(function(item) {
+							value:  VueUtil.map(optionStack, function(item) {
 								return item[self.valueKey];
 							}),
 							label: self.renderFilteredOptionLabel(value, optionStack)
@@ -378,7 +378,7 @@
 			},
 			renderFilteredOptionLabel: function(inputValue, optionsStack) {
 				var self = this;
-				return optionsStack.map(function(option, index) {
+				return  VueUtil.map(optionsStack, function(option, index) {
 					var label = option[self.labelKey];
 					var keywordIndex = label.toLowerCase().indexOf(inputValue.toLowerCase());
 					var labelPart = label.slice(keywordIndex, inputValue.length + keywordIndex);
@@ -389,7 +389,7 @@
 			highlightKeyword: function(label, keyword) {
 				var self = this;
 				var h = self._c;
-				return label.split(keyword).map(function(node, index) {
+				return  VueUtil.map(label.split(keyword), function(node, index) {
 					return index === 0 ? node : [h('span', {
 						class: {
 							'vue-cascader-menu__item__keyword': true

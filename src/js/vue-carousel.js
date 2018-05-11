@@ -123,7 +123,7 @@
 				});
 			},
 			updateItems: function() {
-				this.items = this.$children.filter(function(child) {
+				this.items = VueUtil.filter(this.$children, function(child) {
 					return child.$options.name === 'VueCarouselItem';
 				});
 			},
@@ -149,7 +149,7 @@
 			},
 			setActiveItem: function(index) {
 				if (VueUtil.isString(index)) {
-					var filteredItems = this.items.filter(function(item) {
+					var filteredItems = VueUtil.filter(this.items, function(item) {
 						return item.name === index;
 					});
 					if (filteredItems.length > 0) {
