@@ -21,8 +21,7 @@
 				scale: 1,
 				active: false,
 				ready: false,
-				inStage: false,
-				cardScale: 0.83
+				inStage: false
 			};
 		},
 		methods: {
@@ -74,6 +73,7 @@
 		},
 		created: function() {
 			this.$parent && this.$parent.updateItems();
+			this.cardScale = 0.83;
 		},
 		destroyed: function() {
 			this.$parent && this.$parent.updateItems();

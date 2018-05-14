@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version = '1.48.9992';
+	var version = '1.48.9998';
 	var _toString = Object.prototype.toString;
 	var _forEach = Array.prototype.forEach;
 	var _map = Array.prototype.map;
@@ -331,41 +331,33 @@
 	var performance = function(delay, callback, throttleflg) {
 		if (!isFunction(callback)) callback = delay;
 		if (!isFunction(callback)) return function() {};
-		var defaultTimer = {};
+		var defaultTimer = Object.create(null);
+		var _setTime = requestAnimationFrame;
+		var _clearTime = cancelAnimationFrame;
 		if (isNumber(delay)) {
-			return function() {
-				var self = this;
-				var timer = this;
-				if (!isDef(timer)) timer = defaultTimer;
-				var args = arguments;
-				if (throttleflg) {
-					if (timer.__timer__) return false;
-				} else {
-					clearTimeout(timer.__timer__);
-				}
-				timer.__timer__ = setTimeout(function() {
-					callback.apply(self, args);
-					clearTimeout(timer.__timer__);
-					timer.__timer__ = null;
-				}, delay);
+			_setTime = setTimeout;
+			_clearTime = clearTimeout;
+		}
+		return function() {
+			var self = this;
+			var timer = null;
+			if (!isDef(self)) {
+				timer = defaultTimer;
+			} else {
+				if (!isDef(self[callback])) self[callback] = Object.create(null);
+				timer = self[callback];
 			}
-		} else {
-			return function() {
-				var self = this;
-				var timer = this;
-				if (!isDef(timer)) timer = defaultTimer;
-				var args = arguments;
-				if (throttleflg) {
-					if (timer.__timer__) return false;
-				} else {
-					cancelAnimationFrame(timer.__timer__);
-				}
-				timer.__timer__ = requestAnimationFrame(function() {
-					callback.apply(self, args);
-					cancelAnimationFrame(timer.__timer__);
-					timer.__timer__ = null;
-				});
+			var args = arguments;
+			if (throttleflg) {
+				if (timer.__timer__) return false;
+			} else {
+				_clearTime(timer.__timer__);
 			}
+			timer.__timer__ = _setTime(function() {
+				callback.apply(self, args);
+				_clearTime(timer.__timer__);
+				timer.__timer__ = null;
+			}, delay);
 		}
 	};
 	var throttle = function(delay, callback) {

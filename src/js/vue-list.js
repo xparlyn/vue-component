@@ -82,7 +82,7 @@
 				return result;
 			},
 			createDelta: function(slots) {
-				var delta = this.delta = {};
+				var delta = this.delta = Object.create(null);
 				delta.start = 0;
 				delta.total = 0;
 				delta.marginTop = 0;

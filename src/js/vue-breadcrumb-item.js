@@ -9,16 +9,11 @@
 })(this, function(Vue, VueUtil) {
 	'use strict';
 	var VueBreadcrumbItem = {
-		template: '<span class="vue-breadcrumb__item"><span class="vue-breadcrumb__item__inner" ref="link"><slot></slot></span><span class="vue-breadcrumb__separator">{{separator}}</span></span>',
+		template: '<span class="vue-breadcrumb__item"><span class="vue-breadcrumb__item__inner" ref="link"><slot></slot></span><span class="vue-breadcrumb__separator">{{$parent.separator}}</span></span>',
 		name: 'VueBreadcrumbItem',
 		props: {
 			to: {},
 			replace: Boolean
-		},
-		data: function() {
-			return {
-				separator: ''
-			};
 		},
 		methods: {
 			linkToDo: function() {
@@ -31,7 +26,6 @@
 			}
 		},
 		mounted: function() {
-			this.separator = this.$parent.separator;
 			VueUtil.on(this.$refs.link, 'click', this.linkToDo);
 		},
 		beforeDestroy: function() {

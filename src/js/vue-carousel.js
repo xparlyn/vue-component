@@ -48,8 +48,6 @@
 			return {
 				items: [],
 				activeIndex: -1,
-				containerWidth: 0,
-				timer: null,
 				hover: false
 			};
 		},
@@ -119,7 +117,7 @@
 			handleButtonLeave: function() {
 				var self = this;
 				VueUtil.loop(self.items, function(item) {
-					item.hover = self;
+					item.hover = false;
 				});
 			},
 			updateItems: function() {
@@ -186,6 +184,7 @@
 		},
 		created: function() {
 			var self = this;
+			self.timer = null;
 			self.throttledArrowClick = function(index) {
 				self.setActiveItem(index);
 			};

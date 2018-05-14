@@ -786,15 +786,13 @@
 		},
 		data: function() {
 			return {
-				tooltipContent: '',
-				currentRow: null,
-				hoverRow: null
+				tooltipContent: ''
 			};
 		},
 		methods: {
 			createDelta: function() {
 				if (this.fixed) return;
-				var delta = this.delta = {};
+				var delta = this.delta = Object.create(null);
 				delta.start = 0;
 				delta.end = 0;
 				delta.total = 0;
@@ -1027,27 +1025,6 @@
 				});
 			}
 		},
-		data: function() {
-			return {
-				table: null,
-				cell: null,
-				column: null,
-				dropdown: {
-					dropdowns: [],
-					open: function(instance) {
-						if (instance) {
-							this.dropdowns.push(instance);
-						}
-					},
-					close: function(instance) {
-						var index = this.dropdowns.indexOf(instance);
-						if (index !== -1) {
-							this.dropdowns.splice(instance, 1);
-						}
-					}
-				}
-			};
-		},
 		computed: {
 			filters: function() {
 				var filterList = [];
@@ -1078,6 +1055,19 @@
 			var self = this;
 			self.popperElm = self.$el;
 			self.referenceElm = self.cell;
+			self.dropdown = Object.create(null);
+			self.dropdown.dropdowns = [];
+			self.dropdown.open = function(instance) {
+				if (instance) {
+					this.dropdowns.push(instance);
+				}
+			};
+			self.dropdown.close = function(instance) {
+				var index = this.dropdowns.indexOf(instance);
+				if (index !== -1) {
+					this.dropdowns.splice(instance, 1);
+				}
+			};
 			self.$watch('showPopper', function(value) {
 				if (self.column)
 					self.column.filterOpened = value;
@@ -1190,6 +1180,9 @@
 			this.filterPanels = {};
 		},
 		mounted: function() {
+			this.draggingColumn = null;
+			this.dragging = false;
+			this.dragState = {};
 			this.setDefaultSortColumn();
 		},
 		beforeDestroy: function() {
@@ -1373,13 +1366,6 @@
 				}
 				this.store.commit('changeSortCondition');
 			}
-		},
-		data: function() {
-			return {
-				draggingColumn: null,
-				dragging: false,
-				dragState: {}
-			};
 		}
 	};
 	var TableFooter = {
