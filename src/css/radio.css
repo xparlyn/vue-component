@@ -86,6 +86,7 @@
 .vue-radio-group {
 	display: inline-block;
 	line-height: 1;
+	font-size: 0;
 }
 .vue-radio-group .vue-radio {
 	font-size: 14px;
