@@ -332,11 +332,11 @@
 		if (!isFunction(callback)) callback = delay;
 		if (!isFunction(callback)) return function() {};
 		var defaultTimer = Object.create(null);
-		var _setTime = requestAnimationFrame;
-		var _clearTime = cancelAnimationFrame;
+		var setTimer = requestAnimationFrame;
+		var clearTimer = cancelAnimationFrame;
 		if (isNumber(delay)) {
-			_setTime = setTimeout;
-			_clearTime = clearTimeout;
+			setTimer = setTimeout;
+			clearTimer = clearTimeout;
 		}
 		return function() {
 			var self = this;
@@ -351,11 +351,11 @@
 			if (throttleflg) {
 				if (timer.__timer__) return false;
 			} else {
-				_clearTime(timer.__timer__);
+				clearTimer(timer.__timer__);
 			}
-			timer.__timer__ = _setTime(function() {
+			timer.__timer__ = setTimer(function() {
 				callback.apply(self, args);
-				_clearTime(timer.__timer__);
+				clearTimer(timer.__timer__);
 				timer.__timer__ = null;
 			}, delay);
 		}
