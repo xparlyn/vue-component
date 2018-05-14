@@ -113,10 +113,6 @@
 				selectableRange: []
 			};
 		},
-		created: function() {
-			var self = this;
-			self.debounceAjustElTop = VueUtil.debounce(100, function(type) {self.ajustElTop(type, self[type + 's']);});
-		},
 		mounted: function() {
 			var self = this;
 			self.$nextTick(function() {
@@ -124,6 +120,9 @@
 			});
 		},
 		methods: {
+			debounceAjustElTop: VueUtil.debounce(100, function(type) {
+				this.ajustElTop(type, this[type + 's']);
+			}),
 			handleClick: function(type, value, disabled) {
 				if (value.disabled) {
 					return;

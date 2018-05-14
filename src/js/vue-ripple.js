@@ -29,7 +29,7 @@
 				animation.style.display = "none";
 				ripple.style.display = "none";
 				el.style.position = el.__originalPosition__;
-			})();
+			}).call();
 		});
 		Vue.directive('ripple', {
 			bind: function(el, binding) {
@@ -44,7 +44,7 @@
 					ripple.appendChild(animation);
 					el.appendChild(ripple);
 					VueUtil.on(el, 'mousedown', doRipple);
-				})();
+				}).call();
 			},
 			unbind: function(el) {
 				VueUtil.off(el, 'mousedown', doRipple);

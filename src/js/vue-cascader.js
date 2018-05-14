@@ -430,13 +430,10 @@
 					return;
 				}
 				this.menuVisible = !this.menuVisible;
-			}
-		},
-		created: function() {
-			var self = this;
-			self.debouncedInputChange = VueUtil.debounce(function(value) {
-				self.handleInputChange(value);
-			});
+			},
+			debouncedInputChange: VueUtil.debounce(function(value) {
+				this.handleInputChange(value);
+			})
 		},
 		mounted: function() {
 			this.flatOptions = this.flattenOptions(this.options);

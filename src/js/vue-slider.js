@@ -122,16 +122,15 @@
 				}
 			},
 			onDragEnd: function() {
-				var self = this;
-				if (self.dragging) {
+				if (this.dragging) {
 					VueUtil.debounce(function() {
-						self.dragging = false;
-						self.hideTooltip();
-						self.setPosition(self.newPosition);
-					})();
+						this.dragging = false;
+						this.hideTooltip();
+						this.setPosition(this.newPosition);
+					}).call(this);
 					VueUtil.removeTouchMove(document, this.onDragging);
 					VueUtil.removeTouchEnd(document, this.onDragEnd);
-					VueUtil.off(document, 'contextmenu', self.onDragEnd);
+					VueUtil.off(document, 'contextmenu', this.onDragEnd);
 				}
 			},
 			setPosition: function(newPosition) {

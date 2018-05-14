@@ -9,7 +9,7 @@
 })(this, function(Vue, VueUtil) {
 	'use strict';
 	var VueSelect = {
-		template: '<div class="vue-select" v-clickoutside="handleClose"><div :class="[\'vue-select__tags\', {\'no-reset-height\': !autoHeight}]" v-if="multiple" @click.stop="toggleMenu" ref="tags" :style="{\'max-width\': inputWidth - 32 + \'px\'}"><transition-group @after-leave="resetInputHeight"><vue-tag v-for="(item, index) in selected" :key="index" :closable="!disabled" hit :type="disabled ? \'\' : \'info\'" @close="deleteTag($event, item)"><span class="vue-select__tags-text">{{item.currentLabel}}</span></vue-tag></transition-group><input type="text" :class="[\'vue-select__input\', {\'is-mini\': size===\'mini\'}]" @focus="visible = true" :disabled="disabled" @keyup="managePlaceholder" @keydown="resetInputState" @keydown.down.prevent="navigateOptions(\'next\')" @keydown.up.prevent="navigateOptions(\'prev\')" @keydown.enter.prevent="selectOption" @keydown.esc.prevent="visible = false" @keydown.delete="deletePrevTag" v-model="query" :debounce="remote ? 300 : 0" v-if="filterable" :style="{width: inputLength + \'px\', \'max-width\': inputWidth - 42 + \'px\'}" ref="input"></div><vue-input ref="reference" v-model="selectedLabel" type="text" :text-align="textAlign" :placeholder="placeholderLang" :autofocus="autofocus" :tabindex="tabindex" :name="name" :size="size" :disabled="disabled" :readonly="!filterable || multiple" :validate-event="false" @click="handleIconClick" @mousedown.native="handleMouseDown" @keyup.native="debouncedOnInputChange" @keydown.native.down.prevent="navigateOptions(\'next\')" @keydown.native.up.prevent="navigateOptions(\'prev\')" @keydown.native.enter.prevent="selectOption" @keydown.native.esc.prevent="visible = false" @keydown.native.tab="visible = false" @paste.native="debouncedOnInputChange" @mouseenter.native="inputHovering = true" @mouseleave.native="inputHovering = false" :icon="iconClass"></vue-input><transition @after-leave="doDestroy" @after-enter="handleMenuEnter"><vue-select-dropdown ref="popper" v-show="visible && emptyText !== false"><ul :class="[\'vue-select-dropdown__list\', {\'is-empty\': !allowCreate && filteredOptionsCount === 0}]" v-show="options.length > 0 && !loading"><vue-option :value="query" created v-if="showNewOption"></vue-option><slot></slot></ul><p class="vue-select-dropdown__empty" v-if="emptyText && !allowCreate">{{emptyText}}</p></vue-select-dropdown></transition></div>',
+		template: '<div class="vue-select" v-clickoutside="handleClose"><div :class="[\'vue-select__tags\', {\'no-reset-height\': !autoHeight}]" v-if="multiple" @click.stop="toggleMenu" ref="tags" :style="{\'max-width\': inputWidth - 32 + \'px\'}"><transition-group @after-leave="resetInputHeight"><vue-tag v-for="(item, index) in selected" :key="index" :closable="!disabled" hit :type="disabled ? \'\' : \'info\'" @close="deleteTag($event, item)"><span class="vue-select__tags-text">{{item.currentLabel}}</span></vue-tag></transition-group><input type="text" :class="[\'vue-select__input\', {\'is-mini\': size===\'mini\'}]" @focus="visible = true" :disabled="disabled" @keyup="managePlaceholder" @keydown="resetInputState" @keydown.down.prevent="navigateOptions(\'next\')" @keydown.up.prevent="navigateOptions(\'prev\')" @keydown.enter.prevent="selectOption" @keydown.esc.prevent="visible = false" @keydown.delete="deletePrevTag" v-model="query" v-if="filterable" :style="{width: inputLength + \'px\', \'max-width\': inputWidth - 42 + \'px\'}" ref="input"></div><vue-input ref="reference" v-model="selectedLabel" type="text" :text-align="textAlign" :placeholder="placeholderLang" :autofocus="autofocus" :tabindex="tabindex" :name="name" :size="size" :disabled="disabled" :readonly="!filterable || multiple" :validate-event="false" @click="handleIconClick" @mousedown.native="handleMouseDown" @keyup.native="debouncedOnInputChange" @keydown.native.down.prevent="navigateOptions(\'next\')" @keydown.native.up.prevent="navigateOptions(\'prev\')" @keydown.native.enter.prevent="selectOption" @keydown.native.esc.prevent="visible = false" @keydown.native.tab="visible = false" @paste.native="debouncedOnInputChange" @mouseenter.native="inputHovering = true" @mouseleave.native="inputHovering = false" :icon="iconClass"></vue-input><transition @after-leave="doDestroy" @after-enter="handleMenuEnter"><vue-select-dropdown ref="popper" v-show="visible && emptyText !== false"><ul :class="[\'vue-select-dropdown__list\', {\'is-empty\': !allowCreate && filteredOptionsCount === 0}]" v-show="options.length > 0 && !loading"><vue-option :value="query" created v-if="showNewOption"></vue-option><slot></slot></ul><p class="vue-select-dropdown__empty" v-if="emptyText && !allowCreate">{{emptyText}}</p></vue-select-dropdown></transition></div>',
 		mixins: [VueUtil.component.emitter],
 		name: 'VueSelect',
 		computed: {
@@ -26,9 +26,6 @@
 					var criteria = this.clearable && !this.disabled && this.inputHovering && VueUtil.isDef(this.value) && this.value !== '';
 					return criteria ? 'vue-icon-error is-show-close' : (this.remote && this.filterable ? '' : 'vue-icon-arrow-up');
 				}
-			},
-			debounce: function() {
-				return this.remote ? 300 : 0;
 			},
 			emptyText: function() {
 				if (this.loading) {
@@ -514,36 +511,33 @@
 			handleResize: function() {
 				this.resetInputWidth();
 				if (this.multiple) this.resetInputHeight();
-			}
+			},
+			debouncedOnInputChange: VueUtil.debounce(function() {
+				this.onInputChange();
+			})
 		},
 		created: function() {
-			var self = this;
-			self.cachedPlaceHolder = self.currentPlaceholder = self.placeholder;
-			if (self.multiple && !VueUtil.isArray(self.value)) self.$emit('input', []);
-			if (!self.multiple && VueUtil.isArray(self.value)) self.$emit('input', '');
-			self.setSelected();
-			self.debouncedOnInputChange = VueUtil.debounce(self.debounce, function() {
-				self.onInputChange();
-			});
-			self.$on('handleOptionClick', self.handleOptionSelect);
-			self.$on('onOptionDestroy', self.onOptionDestroy);
-			self.$on('setSelected', self.setSelected);
+			this.cachedPlaceHolder = this.currentPlaceholder = this.placeholder;
+			if (this.multiple && !VueUtil.isArray(this.value)) this.$emit('input', []);
+			if (!this.multiple && VueUtil.isArray(this.value)) this.$emit('input', '');
+			this.setSelected();
+			this.$on('handleOptionClick', this.handleOptionSelect);
+			this.$on('onOptionDestroy', this.onOptionDestroy);
+			this.$on('setSelected', this.setSelected);
 		},
 		mounted: function() {
-			var self = this;
-			VueUtil.addResizeListener(self.$el, self.handleResize);
-			if (self.remote && self.multiple) {
-				self.resetInputHeight();
+			VueUtil.addResizeListener(this.$el, this.handleResize);
+			if (this.remote && this.multiple) {
+				this.resetInputHeight();
 			}
-			self.$nextTick(function() {
-				if (self.$refs.reference.$el) {
-					self.inputWidth = self.$refs.reference.$el.getBoundingClientRect().width;
+			this.$nextTick(function() {
+				if (this.$refs.reference.$el) {
+					this.inputWidth = this.$refs.reference.$el.getBoundingClientRect().width;
 				}
 			});
 		},
 		beforeDestroy: function() {
-			if (this.$el && this.handleResize)
-				VueUtil.removeResizeListener(this.$el, this.handleResize);
+			VueUtil.removeResizeListener(this.$el, this.handleResize);
 		}
 	};
 	Vue.component(VueSelect.name, VueSelect);

@@ -37,9 +37,6 @@
 					return this.node;
 				}
 			}).$mount();
-			self.debounceClose = VueUtil.debounce(function() {
-				self.handleClosePopper();
-			});
 		},
 		beforeDestroy: function() {
 			this.popperVM.$destroy();
@@ -92,6 +89,9 @@
 			this.referenceElm = this.$el;
 		},
 		methods: {
+			debounceClose: VueUtil.debounce(function() {
+				this.handleClosePopper();
+			}),
 			addEventHandle: function(old, fn) {
 				return old ? VueUtil.isArray(old) ? VueUtil.mergeArray(old, fn) : [old, fn] : fn;
 			},

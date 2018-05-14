@@ -96,7 +96,7 @@
 						VueUtil.debounce(function() {
 							process();
 							styleElt.sheet.disabled = false;
-						})();
+						}).call();
 					});
 					return;
 				}
