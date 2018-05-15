@@ -515,10 +515,13 @@
 		VueUtil.merge(this, options);
 	};
 	TableLayout.prototype.updateScrollY = function() {
-		if (!VueUtil.isNumber(this.height)) return;
-		var tbody = this.table.$refs.tableBody.$refs.tbody;
-		var bodyWrapper = this.table.$refs.bodyWrapper;
-		VueUtil.isElement(tbody) && (this.scrollY = tbody.offsetHeight > bodyWrapper.offsetHeight);
+		this.scrollY = false;
+		var refs = this.table.$refs;
+		var tbody = refs.tableBody.$refs.tbody;
+		if (VueUtil.isNumber(this.height) && VueUtil.isElement(tbody)) {
+			var bodyWrapper = refs.bodyWrapper;
+			if (tbody.offsetHeight > bodyWrapper.offsetHeight) this.scrollY = true;
+		}
 	}
 	TableLayout.prototype.setHeight = function(value) {
 		var prop = 'height';
@@ -538,7 +541,9 @@
 		this.updateHeight();
 	}
 	TableLayout.prototype.updateHeight = function() {
-		var height = this.table.$el ? this.table.$el.clientHeight : 0;
+		var height = 0;
+		var el = this.table.$el;
+		if (VueUtil.isElement(el)) height = el.clientHeight;
 		this.headerHeight = 0;
 		if (!this.showHeader) {
 			if (VueUtil.isNumber(this.height)) {
@@ -569,7 +574,9 @@
 	TableLayout.prototype.update = function() {
 		var fit = this.fit;
 		var columns = this.store.states.columns;
-		var bodyWidth = this.table.$el ? this.table.$el.clientWidth : 0;
+		var bodyWidth = 0;
+		var el = this.table.$el;
+		if (VueUtil.isElement(el)) bodyWidth = el.clientWidth;
 		var bodyMinWidth = 0;
 		var flexColumns = [];
 		var allColumnsWidth = 0;
