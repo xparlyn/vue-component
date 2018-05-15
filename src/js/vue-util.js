@@ -329,7 +329,10 @@
 		setCookie(name, val, -1);
 	};
 	var performance = function(delay, callback, throttleflg) {
-		if (!isFunction(callback)) callback = delay;
+		if (!isFunction(callback)) {
+			callback = delay;
+			delay = null;
+		}
 		if (!isFunction(callback)) return function() {};
 		var defaultTimer = Object.create(null);
 		var setTimer = requestAnimationFrame;
@@ -349,7 +352,7 @@
 			}
 			var args = arguments;
 			if (throttleflg) {
-				if (timer.__timer__) return false;
+				if (isDef(timer.__timer__)) return false;
 			} else {
 				clearTimer(timer.__timer__);
 			}
