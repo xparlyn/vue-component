@@ -37,12 +37,14 @@
 		selection: {
 			property: 'selectionColumn',
 			renderHeader: function(createElement) {
+				var states = this.store.states;
 				return createElement('vue-checkbox', {
 					on: {
 						change: this.toggleAllSelection
 					},
 					attrs: {
-						value: this.store.states.isAllSelected
+						value: states.isAllSelected,
+						indeterminate: states.selection.length > 0 && !states.isAllSelected
 					}
 				}, []);
 			},
