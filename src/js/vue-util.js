@@ -11,7 +11,7 @@
 	}
 })(this, function(Vue, SystemInfo, DateUtil) {
 	'use strict';
-	var version = '1.48.180515';
+	var version = '1.49.180516';
 	var _toString = Object.prototype.toString;
 	var _forEach = Array.prototype.forEach;
 	var _map = Array.prototype.map;
@@ -551,11 +551,6 @@
 	var setLocale = function(lang, langObjs) {
 		Vue.locale(lang, merge({}, Vue.locale(lang), langObjs));
 	};
-	var produceModel = function() {
-		Vue.config.productionTip = false;
-		Vue.config.devtools = false;
-		Vue.config.silent = true;
-	};
 	var popupManager = {
 		instances: {},
 		zIndex: 2000,
@@ -823,6 +818,21 @@
 		}
 		return getScrollParent(el.parentNode);
 	};
+	var config = new Vue({
+		data: function() {
+			return {
+				notifyStack: false,
+				produceModel: false
+			}
+		},
+		watch: {
+			produceModel: function(val) {
+				Vue.config.productionTip = !val;
+				Vue.config.devtools = !val;
+				Vue.config.silent = val;
+			}
+		}
+	});
 	var VueUtil = {
 		isDef: isDef,
 		isString: isString,
@@ -885,7 +895,7 @@
 		getSystemInfo: getSystemInfo,
 		setLang: setLang,
 		setLocale: setLocale,
-		produceModel: produceModel,
+		config: config,
 		nextZIndex: popupManager.nextZIndex,
 		version: version,
 		isIE: SystemInfo.browser.toLowerCase() === 'ie',
