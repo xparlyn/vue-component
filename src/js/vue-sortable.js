@@ -260,11 +260,14 @@
 			},
 			onDragStart: function(evt) {
 				this.context = this.getUnderlyingVm(evt.item);
-				evt.item._underlying_vm_ = this.clone(this.context.element);
+				evt.item._underlying_vm_ = this.context.element;
 				draggingElement = evt.item;
 			},
 			onDragAdd: function(evt) {
 				var element = evt.item._underlying_vm_;
+				if (this.isCloning) {
+					element = this.clone(evt.item._underlying_vm_);
+				}
 				if (!VueUtil.isDef(element)) return;
 				VueUtil.removeNode(evt.item);
 				var newIndex = this.getVmIndex(evt.newIndex);
