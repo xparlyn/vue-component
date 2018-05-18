@@ -20,9 +20,11 @@
 		};
 		Vue.directive('imgload', {
 			bind: function(el, binding) {
+				el._src_ = el.src;
 				loadImg(el, binding);
 			},
 			update: function(el, binding) {
+				el.src = el._src_;
 				loadImg(el, binding);
 			}
 		});
