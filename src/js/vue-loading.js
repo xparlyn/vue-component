@@ -126,6 +126,7 @@
       unbind: function(el, binding) {
         if (el.domInserted) {
           el.instance.$destroy();
+          VueUtil.off(document, 'keydown', doKeyDown);
         }
       }
     });
