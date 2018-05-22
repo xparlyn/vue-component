@@ -524,18 +524,17 @@
 		}
 	}
 	TableLayout.prototype.setHeight = function(value) {
-		var prop = 'height';
 		var el = this.table.$el;
 		if (!el) return;
 		if (VueUtil.isString(value) && /^\d+$/.test(value)) {
 			value = Number(value);
 		}
-		this.height = value;
 		if (VueUtil.isNumber(value)) {
-			el.style[prop] = value + 'px';
+			this.height = value;
+			el.style.height = value + 'px';
 		} else if (VueUtil.isString(value)) {
 			if (value === '') {
-				el.style[prop] = '';
+				el.style.height = '';
 			}
 		}
 		this.updateHeight();
@@ -559,7 +558,7 @@
 			var footerHeight = 0;
 			var footerWrapper = this.table.$refs.footerWrapper;
 			if (this.table.showFooter && footerWrapper) {
-				footerHeight = footerWrapper.offsetHeight - 1;
+				footerHeight = footerWrapper.clientHeight;
 			}
 			var hfHeight = headerHeight + footerHeight;
 			var bodyHeight = height - hfHeight;
