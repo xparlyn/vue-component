@@ -1814,17 +1814,19 @@ function withMacroTask (fn) {
 }
 
 function nextTick (cb, ctx) {
-  var _resolve;
+  var _resolve = Promise.resolve();
   callbacks.push(function () {
-    if (cb) {
-      try {
-        cb.call(ctx);
-      } catch (e) {
-        handleError(e, ctx, 'nextTick');
+    _resolve.then(function(){
+      if (cb) {
+        try {
+          cb.call(ctx);
+        } catch (e) {
+          handleError(e, ctx, 'nextTick');
+        }
+//      } else if (_resolve) {
+//        _resolve(ctx);
       }
-    } else if (_resolve) {
-      _resolve(ctx);
-    }
+    });
   });
   if (!pending) {
     pending = true;
@@ -1834,12 +1836,12 @@ function nextTick (cb, ctx) {
       microTimerFunc();
     }
   }
-  // $flow-disable-line
-  if (!cb && typeof Promise !== 'undefined') {
-    return new Promise(function (resolve) {
-      _resolve = resolve;
-    })
-  }
+//  // $flow-disable-line
+//  if (!cb && typeof Promise !== 'undefined') {
+//    return new Promise(function (resolve) {
+//      _resolve = resolve;
+//    })
+//  }
 }
 
 /*  */
