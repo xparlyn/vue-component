@@ -1984,8 +1984,8 @@
       doLayout: function() {
         var self = this;
         self.store.updateColumns();
-        self.layout.update();
         self.$nextTick(function() {
+          self.layout.update();
           self.layout.updateHeight();
           self.updateScrollY();
           self.resizeZone();
@@ -2060,10 +2060,10 @@
           }
         }
       },
-      showHeader: function(val) {
+      showHeader: function() {
         this.doLayout();
       },
-      showFooter: function(val) {
+      showFooter: function() {
         this.doLayout();
       },
       lazyload: function(val) {
@@ -2082,14 +2082,9 @@
       this.unBindEvents();
     },
     mounted: function() {
-      var self = this;
-      if (self.height) {
-        self.layout.setHeight(self.height);
-      }
-      self.$nextTick(function() {
-        self.bindEvents();
-        self.doLayout();
-      });
+      this.layout.setHeight(this.height);
+      this.bindEvents();
+      this.doLayout();
     },
     data: function() {
       var store = new TableStore(this, {defaultExpandAll: self.defaultExpandAll});
