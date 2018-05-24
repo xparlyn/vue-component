@@ -1795,6 +1795,17 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
     // "force" the microtask queue to be flushed by adding an empty timer.
     if (isIOS) { setTimeout(noop); }
   };
+} else if (typeof MutationObserver !== 'undefined') {
+  var counter = 1
+  var observer = new MutationObserver(flushCallbacks);
+  var textNode = document.createTextNode(counter);
+  observer.observe(textNode, {
+    characterData: true
+  });
+  microTimerFunc = function () {
+    counter = (counter + 1) % 2;
+    textNode.data = counter;
+  }
 } else {
   // fallback to macro
   microTimerFunc = macroTimerFunc;
@@ -1814,20 +1825,28 @@ function withMacroTask (fn) {
 }
 
 function nextTick (cb, ctx) {
-  var _resolve = Promise.resolve();
-  callbacks.push(function () {
-    _resolve.then(function(){
-      if (cb) {
-        try {
-          cb.call(ctx);
-        } catch (e) {
-          handleError(e, ctx, 'nextTick');
-        }
-//      } else if (_resolve) {
-//        _resolve(ctx);
-      }
+  var _callback = function () {
+    cb.call(ctx);
+  };
+  var callback = _callback;
+  if (typeof Promise !== 'undefined' && isNative(Promise)) {
+    var _resolve = Promise.resolve();
+    callback = function() {
+      _resolve.then(_callback);
+    };
+  } else if (typeof MutationObserver !== 'undefined') {
+    var counter = 1
+    var observer = new MutationObserver(_callback);
+    var textNode = document.createTextNode(counter);
+    observer.observe(textNode, {
+      characterData: true
     });
-  });
+    callback = function () {
+      counter = (counter + 1) % 2;
+      textNode.data = counter;
+    };
+  }
+  callbacks.push(callback);
   if (!pending) {
     pending = true;
     if (useMacroTask) {

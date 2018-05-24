@@ -515,8 +515,9 @@
     VueUtil.merge(this, options);
   };
   TableLayout.prototype.updateScrollY = function() {
-    this.scrollY = false;
     var refs = this.table.$refs;
+    if (!refs.tableBody || !refs.bodyWrapper) return;
+    this.scrollY = false;
     var tbody = refs.tableBody.$refs.tbody;
     if (VueUtil.isNumber(this.height) && VueUtil.isElement(tbody)) {
       var bodyWrapper = refs.bodyWrapper;

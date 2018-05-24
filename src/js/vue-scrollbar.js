@@ -204,7 +204,6 @@
     methods: {
       isScrollCancel: function(el) {
         if (el === this.wrap) return false;
-        if (VueUtil.isIE && el.querySelectorAll('.vue-scrollbar__wrap').length >0) return true;
         var overflowY = VueUtil.getStyle(el, 'overflowY');
         if (['auto', 'scroll'].indexOf(overflowY) !== -1 && el.scrollHeight > el.clientHeight) return true;
         return this.isScrollCancel(el.parentElement);
