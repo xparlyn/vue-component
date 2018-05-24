@@ -1826,7 +1826,7 @@ function withMacroTask (fn) {
 
 function nextTick (cb, ctx) {
   var _callback = function () {
-    cb.call(ctx);
+    cb && cb.call(ctx);
   };
   var callback = _callback;
   if (typeof Promise !== 'undefined' && isNative(Promise)) {
