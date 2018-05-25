@@ -13,6 +13,16 @@
 
 var emptyObject = Object.freeze({});
 
+var nativePromise = null;
+if (typeof Promise !== 'undefined' && isNative(Promise)) {
+  nativePromise = Promise;
+}
+
+var nativeMutationObserver = null;
+if (typeof MutationObserver !== 'undefined' && isNative(MutationObserver)) {
+  nativeMutationObserver = MutationObserver;
+}
+
 // these helpers produces better vm code in JS engines due to their
 // explicitness and function inlining
 function isUndef (v) {
@@ -1784,8 +1794,8 @@ if (typeof MessageChannel !== 'undefined' && (
 
 // Determine MicroTask defer implementation.
 /* istanbul ignore next, $flow-disable-line */
-if (typeof Promise !== 'undefined' && isNative(Promise)) {
-  var p = Promise.resolve();
+if (nativePromise) {
+  var p = nativePromise.resolve();
   microTimerFunc = function () {
     p.then(flushCallbacks);
     // in problematic UIWebViews, Promise.then doesn't completely break, but
@@ -1795,9 +1805,9 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
     // "force" the microtask queue to be flushed by adding an empty timer.
     if (isIOS) { setTimeout(noop); }
   };
-} else if (typeof MutationObserver !== 'undefined') {
+} else if (nativeMutationObserver) {
   var counter = 1
-  var observer = new MutationObserver(flushCallbacks);
+  var observer = new nativeMutationObserver(flushCallbacks);
   var textNode = document.createTextNode(counter);
   observer.observe(textNode, {
     characterData: true
@@ -1829,14 +1839,14 @@ function nextTick (cb, ctx) {
     cb && cb.call(ctx);
   };
   var callback = _callback;
-  if (typeof Promise !== 'undefined' && isNative(Promise)) {
-    var _resolve = Promise.resolve();
+  if (nativePromise) {
+    var _resolve = nativePromise.resolve();
     callback = function() {
       _resolve.then(_callback);
     };
-  } else if (typeof MutationObserver !== 'undefined') {
+  } else if (nativeMutationObserver) {
     var counter = 1
-    var observer = new MutationObserver(_callback);
+    var observer = new nativeMutationObserver(_callback);
     var textNode = document.createTextNode(counter);
     observer.observe(textNode, {
       characterData: true
