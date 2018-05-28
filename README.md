@@ -40,7 +40,7 @@ you only need to include compiled CSS and JS.
 # License
 [MIT](https://opensource.org/licenses/MIT)
 
-### Donation
+# Donation
 
 如果对您有帮助，您可以点右上角 "Star" 支持一下，谢谢！ 
 或者您可以 "follow" 一下，鞭策我项目不断的完善。
