@@ -47,4 +47,4 @@ you only need to include compiled CSS and JS.
 	
 如果觉得不错，可以请我喝杯咖啡
  
-<img src="./image/alipay.jpg " width="200"/> 
+<img src="./img/alipay.png" width="200"/> 
