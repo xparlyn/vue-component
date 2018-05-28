@@ -21,6 +21,7 @@ you only need to include compiled CSS and JS.
 6. 一大波的控件，满足企业开发需求。
 7. 提供各种Case场景的控件综合使用实例。
 8. 使用简单，展示的画面漂亮。
+9. 内置VueLoader, 异步读取.vue文件, 无需WebPack,vue-cli等手脚架, ES5一样开发
 
 ### DEMO
 [DEMO](https://xparlyn.github.io/vue-component/examples/index.html)
