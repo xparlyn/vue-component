@@ -277,15 +277,14 @@
                 var paths = prop.split('.');
                 var current = object;
                 var result = null;
-                for (var i = 0, j = paths.length; i < j; i++) {
-                  var path = paths[i];
-                  if (!current) break;
-                  if (i === j - 1) {
+                VueUtil.loop(paths, function(path, i) {
+                  if (!current) return false;
+                  if (i === paths.length - 1) {
                     result = current[path];
-                    break;
+                    return false;
                   }
                   current = current[path];
-                }
+                });
                 return result;
               };
               value = getValueByPath(row, property);

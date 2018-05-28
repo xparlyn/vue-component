@@ -69,16 +69,14 @@
         } else if (self.trigger === 'focus') {
           var found = false;
           if ([].slice.call(reference.children).length) {
-            var children = reference.childNodes;
-            var len = children.length;
-            for (var i = 0; i < len; i++) {
-              if (children[i].nodeName === 'INPUT' || children[i].nodeName === 'TEXTAREA') {
-                VueUtil.on(children[i], 'focus', self.doShow);
-                VueUtil.on(children[i], 'blur', self.doClose);
+            VueUtil.loop(reference.childNodes, function(child) {
+              if (child.nodeName === 'INPUT' || child.nodeName === 'TEXTAREA') {
+                VueUtil.on(child, 'focus', self.doShow);
+                VueUtil.on(child, 'blur', self.doClose);
                 found = true;
-                break;
+                return false;
               }
-            }
+            });
           }
           if (found) return;
           if (reference.nodeName === 'INPUT' || reference.nodeName === 'TEXTAREA') {
@@ -108,16 +106,14 @@
         } else if (self.trigger === 'focus') {
           var found = false;
           if ([].slice.call(reference.children).length) {
-            var children = reference.childNodes;
-            var len = children.length;
-            for (var i = 0; i < len; i++) {
-              if (children[i].nodeName === 'INPUT' || children[i].nodeName === 'TEXTAREA') {
-                VueUtil.off(children[i], 'focus', self.doShow);
-                VueUtil.off(children[i], 'blur', self.doClose);
+            VueUtil.loop(reference.childNodes, function(child) {
+              if (child.nodeName === 'INPUT' || child.nodeName === 'TEXTAREA') {
+                VueUtil.off(child, 'focus', self.doShow);
+                VueUtil.off(child, 'blur', self.doClose);
                 found = true;
-                break;
+                return false;
               }
-            }
+            })
           }
           if (found) return;
           if (reference.nodeName === 'INPUT' || reference.nodeName === 'TEXTAREA') {

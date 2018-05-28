@@ -11,9 +11,8 @@
   }
 })(this, function(Vue, SystemInfo, DateUtil) {
   'use strict';
-  var version = '1.49.180525';
+  var version = '1.49.180526';
   var _toString = Object.prototype.toString;
-  var _forEach = Array.prototype.forEach;
   var _map = Array.prototype.map;
   var _filter = Array.prototype.filter;
   var isDef = function(v) {
@@ -165,7 +164,11 @@
     return result;
   };
   var loop = function(arr, fn) {
-    isDef(arr) && arr.length && isFunction(fn) && _forEach.call(arr, fn);
+    if (isDef(arr) && arr.length && isFunction(fn)) {
+      for (var i=0, j=arr.length; i<j; i++) {
+        if (fn(arr[i], i) === false) break;
+      }
+    }
   };
   var ownPropertyLoop = function (obj, fn) {
     isDef(obj) && loop(Object.keys(obj), fn);

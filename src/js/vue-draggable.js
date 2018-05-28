@@ -119,15 +119,13 @@
         var cancelObj = [];
         var cancelSelectors = el.getAttribute('draggable-cancel-selector');
         if (cancelSelectors) {
-          var cancelSelectorAry = cancelSelectors.split(',');
-          for (var i = 0, j = cancelSelectorAry.length; i < j; i++) {
-            var cancelSelector = cancelSelectorAry[i];
+          VueUtil.loop(cancelSelectors.split(','), function(cancelSelector) {
             if (VueUtil.hasClass(el, cancelSelector.split('.')[1])) {
               cancelObj.push(el);
-              break;
+              return false;
             }
             cancelObj.push(el.querySelector(cancelSelector));
-          }
+          });
         }
         if (cancelObj.indexOf(el) !== -1) return;
         var resizeObj = null;

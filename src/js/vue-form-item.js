@@ -224,7 +224,7 @@
         self.initValue();
         var rules = self.getRules();
         if (rules.length) {
-          rules.every(function(rule) {
+          VueUtil.loop(rules, function(rule) {
             if (rule.required) {
               self.isRequired = true;
               return false;

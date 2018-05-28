@@ -673,10 +673,11 @@
           width: 0
         }
       }, []) : '']), createElement('tbody', {ref: 'tbody'}, [VueUtil.mergeArray(self._l(delta.data, function(row, index) {
-        var $index = storeData.indexOf(row);
+        var $index = row.$index;
         return [createElement('tr', {
           style: self.rowStyle ? self.getRowStyle(row, $index) : null,
           key: $index,
+          ref: 'trow'+$index,
           on: {
             dblclick: function(e) {
               return self.handleDoubleClick(e, row)
@@ -834,12 +835,16 @@
         if (delta.keeps === 0 || slots.length <= delta.keeps) {
           delta.marginTop = 0;
           delta.marginBottom = 0;
+          VueUtil.loop(slots, function(slot, index){
+            slot.$index = index;
+          });
           delta.data = slots;
         } else {
           delta.total = slots.length;
           delta.marginTop = delta.size * delta.start;
           delta.marginBottom = delta.size * (delta.total - delta.keeps - delta.start);
           for (var i = delta.start, j = delta.end; i < j; i++) {
+            slots[i].$index = i;
             delta.data.push(slots[i]);
           }
         }
@@ -882,26 +887,21 @@
         this.rightFixedTableBody.resetHoverRow(hoverRow);
       }),
       resetCurrentRow: function(currentRowObj) {
-        if (!this.highlightCurrent || !VueUtil.isElement(this.$refs.tbody)) return;
-        var tbody = this.$refs.tbody;
+        if (!this.highlightCurrent) return;
         var oldCurrentRow = this.currentRow;
         oldCurrentRow && oldCurrentRow.classList.remove('current-row');
         if (!VueUtil.isDef(currentRowObj)) currentRowObj = this.store.states.currentRow;
-        var data = this.tableBody.delta.data;
-        var rows = tbody.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
-        var currentRow = rows[data.indexOf(currentRowObj)];
+        if (!VueUtil.isDef(currentRowObj)) return;
+        var currentRow = this.$refs['trow'+currentRowObj.$index];
         currentRow && currentRow.classList.add('current-row');
         this.currentRow = currentRow;
       },
       resetHoverRow: function(hoverRowObj) {
-        if (!this.highlightHover ||!VueUtil.isElement(this.$refs.tbody)) return;
-        var tbody = this.$refs.tbody;
+        if (!this.highlightHover) return;
         var oldHoverRow = this.hoverRow;
         oldHoverRow && oldHoverRow.classList.remove('hover-row');
         if (!VueUtil.isDef(hoverRowObj)) return;
-        var data = this.tableBody.delta.data;
-        var rows = tbody.querySelectorAll('.vue-table__row:not(.vue-table__expanded-row)');
-        var hoverRow = rows[data.indexOf(hoverRowObj)];
+        var hoverRow = this.$refs['trow'+hoverRowObj.$index];
         hoverRow && hoverRow.classList.add('hover-row');
         this.hoverRow = hoverRow;
       },
