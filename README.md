@@ -21,6 +21,8 @@ you only need to include compiled CSS and JS.
 6. 一大波的控件，满足企业开发需求。
 7. 提供各种Case场景的控件综合使用实例。
 8. 使用简单，展示的画面漂亮。
+9. 内置VueUtil, 提供各种便利方法, javascript开发不再难。
+10. 内置VueLoader, 异步读取.vue文件, 无需WebPack,vue-cli等脚手架, ES5一样开发。
 
 ### DEMO
 [DEMO](https://xparlyn.github.io/vue-component/examples/index.html)
@@ -40,11 +42,8 @@ you only need to include compiled CSS and JS.
 # License
 [MIT](https://opensource.org/licenses/MIT)
 
-### Donation
-
-如果对您有帮助，您可以点右上角 "Star" 支持一下，谢谢！ 
-或者您可以 "follow" 一下，鞭策我项目不断的完善。
+# Donation
 	
-如果觉得不错，可以请我喝杯咖啡
+如果觉得不错或者对你有帮助, 可以请我喝杯咖啡 ^_^
  
 <img src="./img/alipay.png" width="200"/> 
