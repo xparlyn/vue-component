@@ -211,6 +211,7 @@
         }
         instance.vm.visible = false;
         instances.splice(i, 1);
+        return false;
       }
     });
   };

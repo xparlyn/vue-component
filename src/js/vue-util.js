@@ -11,7 +11,7 @@
   }
 })(this, function(Vue, SystemInfo, DateUtil) {
   'use strict';
-  var version = '1.49.180526';
+  var version = '1.49.180531';
   var _toString = Object.prototype.toString;
   var _map = Array.prototype.map;
   var _filter = Array.prototype.filter;
