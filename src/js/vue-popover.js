@@ -9,7 +9,7 @@
 })(this, function(Vue, VueUtil, VuePopper) {
   'use strict';
   var VuePopover = {
-    template: '<span><transition @after-leave="doDestroy"><div :class="[\'vue-popover\', popperClass, {\'no-arrow\': !visibleArrow}]" ref="popper" v-show="!disabled && showPopper" :style="{width: popoverWidth + \'px\' \}"><div class="vue-popover__title" v-if="title" v-text="title"></div><slot>{{content}}</slot></div></transition><slot name="reference"></slot></span>',
+    template: '<span><transition @after-leave="destroyPopper"><div :class="[\'vue-popover\', popperClass, {\'no-arrow\': !visibleArrow}]" ref="popper" v-show="!disabled && showPopper" :style="{width: popoverWidth + \'px\' \}"><div class="vue-popover__title" v-if="title" v-text="title"></div><slot>{{content}}</slot></div></transition><slot name="reference"></slot></span>',
     name: 'VuePopover',
     mixins: [VuePopper],
     props: {

@@ -9,7 +9,7 @@
 })(this, function(Vue, VuePicker) {
   'use strict';
   var TimeSelect = {
-    template: '<transition @after-leave="$emit(\'doDestroy\')"><div v-show="visible" :style="{width: width + \'px\'}" :class="[\'vue-picker-panel time-select\', popperClass]"><div class="vue-picker-panel__content"><div v-for="item in items" :class="[\'time-select-item\', {selected: value === item.value, disabled: item.disabled}]" :disabled="item.disabled" @click="handleClick(item)">{{item.value}}</div></div></div></transition>',
+    template: '<transition @after-leave="$emit(\'destroyPopper\')"><div v-show="visible" :style="{width: width + \'px\'}" :class="[\'vue-picker-panel time-select\', popperClass]"><div class="vue-picker-panel__content"><div v-for="item in items" :class="[\'time-select-item\', {selected: value === item.value, disabled: item.disabled}]" :disabled="item.disabled" @click="handleClick(item)">{{item.value}}</div></div></div></transition>',
     watch: {
       value: function(val) {
         if (!val) return;

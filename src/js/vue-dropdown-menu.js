@@ -9,7 +9,7 @@
 })(this, function(Vue, VuePopper) {
   'use strict';
   var VueDropdownMenu = {
-    template: '<transition @after-leave="doDestroy"><div class="vue-dropdown-menu" v-show="showPopper"><ul class="vue-dropdown-menu__view"><slot></slot></ul></div></transition>',
+    template: '<transition @after-leave="destroyPopper"><div class="vue-dropdown-menu" v-show="showPopper"><ul class="vue-dropdown-menu__view"><slot></slot></ul></div></transition>',
     name: 'VueDropdownMenu',
     mixins: [VuePopper],
     created: function() {

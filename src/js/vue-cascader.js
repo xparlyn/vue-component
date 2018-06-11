@@ -306,7 +306,7 @@
         this.popperElm = this.menu.$el;
         this.menu.$on('pick', this.handlePick);
         this.menu.$on('activeItemChange', this.handleActiveItemChange);
-        this.menu.$on('menuLeave', this.doDestroy);
+        this.menu.$on('menuLeave', this.destroyPopper);
       },
       showMenu: function() {
         var self = this;

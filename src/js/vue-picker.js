@@ -358,7 +358,6 @@
         if (this.picker) {
           this.picker.resetView && this.picker.resetView();
           this.pickerVisible = this.picker.visible = false;
-          this.destroyPopper();
         }
       },
       showPicker: function() {
@@ -408,7 +407,7 @@
         self.unwatchPickerOptions = self.$watch('pickerOptions', function() {updateOptions();}, {deep: true});
         self.$el.appendChild(self.picker.$el);
         self.picker.resetView && self.picker.resetView();
-        self.picker.$on('doDestroy', self.doDestroy);
+        self.picker.$on('destroyPopper', self.destroyPopper);
         self.picker.$on('pick', function(date, visible) {
           date = date || '';
           visible = visible || false;

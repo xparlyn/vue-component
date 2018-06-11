@@ -523,8 +523,7 @@
         data.offsets.popper = this._getOffsets(this._popper, this._reference, data.placement).popper;
         data = this.runModifiers(data, this._options.modifiers, this._flip);
       }
-    }
-      .bind(this));
+    }.bind(this));
     return data;
   }
   Popper.prototype.modifiers.offset = function(data) {
@@ -610,11 +609,10 @@
         immediate: true,
         handler: function(val) {
           this.showPopper = val;
-          this.$emit('input', val);
         }
       },
       showPopper: function(val) {
-        val ? this.$nextTick(this.updatePopper) : this.$nextTick(this.destroyPopper);
+        if (val) this.$nextTick(this.updatePopper);
         this.$emit('input', val);
       }
     },
@@ -664,13 +662,10 @@
       updatePopper: function() {
         this.popperJS ? this.popperJS.update() : this.createPopper();
       },
-      doDestroy: function() {
+      destroyPopper: function() {
         if (this.showPopper || !this.popperJS) return;
         this.popperJS.destroy();
         this.popperJS = null;
-      },
-      destroyPopper: function() {
-        if (this.popperJS) this.resetTransformOrigin();
       },
       resetTransformOrigin: function() {
         var placementMap = {
@@ -694,7 +689,7 @@
     },
     beforeDestroy: function() {
       !VueUtil.isIE && VueUtil.off(this.popperElm, 'click', this.stop);
-      this.doDestroy();
+      this.destroyPopper();
     }
   };
   return VuePopper;

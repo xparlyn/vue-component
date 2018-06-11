@@ -997,7 +997,7 @@
     }
   };
   var VueTableFilterPanel = {
-    template: '<transition @after-leave="doDestroy"><div class="vue-table-filter" v-show="showPopper" v-clickoutside="handleOutsideClick"><div class="vue-table-filter__content"><vue-checkbox-group v-model="filteredValue"><vue-list scrollbar :height="150" ref="list" class="vue-table-filter__list"><vue-list-item  v-for="(filter, index) in filters" :key="index" class="vue-table-filter__list-item"><vue-checkbox :label="filter">{{filter}}</vue-checkbox></vue-list-item></vue-list></vue-checkbox-group></div><div class="vue-table-filter__bottom"><vue-button @click="handleConfirm" type="text" :disabled="filteredValue.length === 0">{{$t(\'vue.table.confirmFilter\')}}</vue-button><vue-button type="text" @click="handleReset">{{$t(\'vue.table.resetFilter\')}}</vue-button></div></div></transition>',
+    template: '<transition @after-leave="destroyPopper"><div class="vue-table-filter" v-show="showPopper" v-clickoutside="handleOutsideClick"><div class="vue-table-filter__content"><vue-checkbox-group v-model="filteredValue"><vue-list scrollbar :height="150" ref="list" class="vue-table-filter__list"><vue-list-item  v-for="(filter, index) in filters" :key="index" class="vue-table-filter__list-item"><vue-checkbox :label="filter">{{filter}}</vue-checkbox></vue-list-item></vue-list></vue-checkbox-group></div><div class="vue-table-filter__bottom"><vue-button @click="handleConfirm" type="text" :disabled="filteredValue.length === 0">{{$t(\'vue.table.confirmFilter\')}}</vue-button><vue-button type="text" @click="handleReset">{{$t(\'vue.table.resetFilter\')}}</vue-button></div></div></transition>',
     name: 'VueTableFilterPanel',
     mixins: [VuePopper],
     directives: {

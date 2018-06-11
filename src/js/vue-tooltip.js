@@ -50,7 +50,7 @@
             name: 'tooltip-fade'
           },
           on: {
-            afterLeave: self.doDestroy
+            afterLeave: self.destroyPopper
           }
         }, [createElement('div', {
           on: {

@@ -9,7 +9,7 @@
 })(this, function(Vue, VueUtil, VuePopper) {
   'use strict';
   var VueAutocompleteSuggestions = {
-    template: '<transition @after-leave="doDestroy"><div v-show="showPopper" :class="[\'vue-autocomplete-suggestion\', {\'is-loading\': $parent.loading}]" :style="{width: dropdownWidth}"><ul class="vue-autocomplete-suggestion__wrap" ref="suggestion"><li v-if="$parent.loading"><i class="vue-icon-loading"></i></li><template v-for="(item, index) in suggestions" v-else><li ref="suggestionList" v-if="!$parent.customItem" :class="{\'highlighted\': $parent.highlightedIndex === index}" @click="select(item)">{{item[props.label]}}</li><component v-else :class="{\'highlighted\': $parent.highlightedIndex === index}" @click="select(item)" :is="$parent.customItem" :item="item" :index="index"></component></template></ul></div></transition>',
+    template: '<transition @after-leave="destroyPopper"><div v-show="showPopper" :class="[\'vue-autocomplete-suggestion\', {\'is-loading\': $parent.loading}]" :style="{width: dropdownWidth}"><ul class="vue-autocomplete-suggestion__wrap" ref="suggestion"><li v-if="$parent.loading"><i class="vue-icon-loading"></i></li><template v-for="(item, index) in suggestions" v-else><li ref="suggestionList" v-if="!$parent.customItem" :class="{\'highlighted\': $parent.highlightedIndex === index}" @click="select(item)">{{item[props.label]}}</li><component v-else :class="{\'highlighted\': $parent.highlightedIndex === index}" @click="select(item)" :is="$parent.customItem" :item="item" :index="index"></component></template></ul></div></transition>',
     mixins: [VuePopper, VueUtil.component.emitter],
     name: 'VueAutocompleteSuggestions',
     data: function() {
@@ -86,7 +86,8 @@
       return {
         suggestions: [],
         loading: false,
-        highlightedIndex: -1
+        highlightedIndex: -1,
+        activated: false
       };
     },
     computed: {
@@ -181,7 +182,6 @@
     },
     mounted: function() {
       var self = this;
-      self.activated = false;
       self.isOnComposition = false;
       self.$on('item-click', function(item) {
         self.select(item);
