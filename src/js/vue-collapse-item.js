@@ -62,8 +62,6 @@
       collapseAfterLeave: function() {
         this.$parent.$emit('change', this.$parent.activeNames);
       }
-    },
-    mounted: function() {
     }
   };
   Vue.component(VueCollapseItem.name, VueCollapseItem);
