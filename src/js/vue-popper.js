@@ -589,7 +589,7 @@
       autoWidth: Boolean,
       transition: String,
       append: {},
-      options: {
+      popperOptions: {
         type: Object,
         default: function() {
           return {
@@ -630,7 +630,7 @@
         var self = this;
         self.currentPlacement = self.currentPlacement || self.placement;
         if (!/^(top|bottom|left|right)(-start|-end)?$/g.test(self.currentPlacement)) return;
-        var options = self.options || {};
+        var options = self.popperOptions || {};
         var popper = self.popperElm = self.popperElm || self.popper || self.$refs.popper;
         var reference = self.referenceElm = self.referenceElm || self.reference || self.$refs.reference;
         if (!reference && self.$slots.reference && self.$slots.reference[0]) reference = self.referenceElm = self.$slots.reference[0].elm;
