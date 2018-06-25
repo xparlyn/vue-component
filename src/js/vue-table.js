@@ -243,7 +243,7 @@
         resultMap.count = data.length;
         VueUtil.loop(data, function(row) {
           var value = Number(row[column.property]);
-          if (!isNaN(value)) {
+          if (VueUtil.isNumber(value)) {
             var decimal = ('' + value).split('.')[1];
             decimal && decimal.length > precision ? precision = decimal.length : null;
             VueUtil.isDef(max) ? value > max ? max = value : null : max = value;
@@ -255,13 +255,15 @@
         if (valueCount > 0) {
           resultMap.max = max;
           resultMap.min = min;
-          resultMap.sum = parseFloat(sum.toFixed(precision));
-          resultMap.average = parseFloat((sum / valueCount).toFixed(precision));
+          resultMap.sum = sum;
+          resultMap.average = (sum / valueCount);
         }
-        var columnAggregate = resultMap[aggregateType] || '';
-        if (!columnAggregate) {
+        var columnAggregate = resultMap[aggregateType];
+        if (!VueUtil.isNumber(columnAggregate)) {
           aggregate = aggregateLabel;
         } else {
+          if (aggregateType === 'count') precision = 0;
+          columnAggregate = VueUtil.formatNumber(columnAggregate, precision); 
           aggregateLabel ? aggregate = aggregateLabel + ': ' + columnAggregate : aggregate = columnAggregate;
         }
         resultMap.label = aggregate;
