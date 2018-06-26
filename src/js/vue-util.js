@@ -758,47 +758,45 @@
     }
   };
   var clickoutside = function() {
-    var nodes = document.__clickoutsideNodes__;
-    var CTX = '@@clickoutsideContext';
+    var body = document.body;
+    var nodes = body.__clickoutsideNodes__;
+    var CTX = '__clickoutsideContext__';
     if (!isArray(nodes)) {
-      nodes = document.__clickoutsideNodes__ = [];
+      nodes = body.__clickoutsideNodes__ = [];
       var clickOutSideFn = function(e) {
         loop(nodes, function(node) {
-          node[CTX].documentHandler(e)
+          var vnode = node[CTX].vnode;
+          var binding = node[CTX].binding;
+          if (!vnode.context || node.contains(e.target) || (vnode.context.popperElm && vnode.context.popperElm.contains(e.target))) return;
+          if (binding.expression && vnode.context[binding.expression]) {
+            vnode.context[binding.expression]();
+          } else {
+            binding.value && binding.value();
+          }
         });
       };
-      on(document, 'click', clickOutSideFn);
+      on(body, 'click', clickOutSideFn);
     }
     return {
       bind: function(el, binding, vnode) {
-        var id = nodes.push(el) - 1;
-        var documentHandler = function(e) {
-          if (!vnode.context || el.contains(e.target) || (vnode.context.popperElm && vnode.context.popperElm.contains(e.target)))
-            return;
-          if (binding.expression && el[CTX].methodName && vnode.context[el[CTX].methodName]) {
-            vnode.context[el[CTX].methodName]();
-          } else {
-            el[CTX].bindingFn && el[CTX].bindingFn();
-          }
-        };
         el[CTX] = {
-          id: id,
-          documentHandler: documentHandler,
-          methodName: binding.expression,
-          bindingFn: binding.value
+          id: createUuid(),
+          vnode: vnode,
+          binding: binding
         };
+        nodes.push(el);
       },
       update: function(el, binding) {
-        el[CTX].methodName = binding.expression;
-        el[CTX].bindingFn = binding.value;
+        el[CTX].binding = binding;
       },
       unbind: function(el) {
-        for (var i = 0, j = nodes.length; i < j; i++) {
-          if (nodes[i][CTX].id === el[CTX].id) {
+        var id = el[CTX].id;
+        loop(nodes, function(node, i) {
+          if (node[CTX].id === id) {
             nodes.splice(i, 1);
-            break;
+            return false;
           }
-        }
+        });
       }
     }
   };
