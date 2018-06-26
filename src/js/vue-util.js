@@ -11,7 +11,7 @@
   }
 })(this, function(Vue, SystemInfo, DateUtil) {
   'use strict';
-  var version = '1.49.180625';
+  var version = '1.49.180626';
   var _toString = Object.prototype.toString;
   var _map = Array.prototype.map;
   var _filter = Array.prototype.filter;
@@ -486,9 +486,9 @@
           return ret;
         }
       }
-      return false;
+      return null;
     })();
-    if (!fn) {
+    if (!isDef(fn)) {
       Vue.notify.warning({message: Vue.t('vue.screenfull.canot')});
       return false;
     }
@@ -539,7 +539,7 @@
         }
       }
     });
-    if (!screenfull.enabled) {
+    if (!isDef(screenfull.enabled)) {
       Vue.notify.warning({message: Vue.t('vue.screenfull.canot')});
       return false;
     }
@@ -576,7 +576,7 @@
     },
     modalStack: [],
     openModal: function(id, zIndex) {
-      if (!id || !isDef(zIndex)) return;
+      if (!isDef(id) || !isDef(zIndex)) return;
       var modalStack = this.modalStack;
       for (var i = 0, j = modalStack.length; i < j; i++) {
         var item = modalStack[i];
@@ -609,7 +609,7 @@
       dispatch: function(componentName, eventName, params) {
         var parent = this.$parent || this.$root;
         var name = parent.$options.name;
-        while (parent && (!name || name !== componentName)) {
+        while (parent && (!isDef(name) || name !== componentName)) {
           parent = parent.$parent;
           if (parent) {
             name = parent.$options.name;
@@ -685,7 +685,7 @@
       var data = {
         on: {
           'beforeEnter': function(el) {
-            if (!el.dataset) el.dataset = {};
+            if (!isDef(el.dataset)) el.dataset = {};
             el.dataset.oldPaddingTop = el.style.paddingTop;
             el.dataset.oldPaddingBottom = el.style.paddingBottom;
             el.style.height = '0';
@@ -719,8 +719,7 @@
             }
           },
           'beforeLeave': function(el) {
-            if (!el.dataset)
-              el.dataset = {};
+            if (!isDef(el.dataset)) el.dataset = {};
             el.dataset.oldPaddingTop = el.style.paddingTop;
             el.dataset.oldPaddingBottom = el.style.paddingBottom;
             el.dataset.oldOverflow = el.style.overflow;
@@ -767,11 +766,11 @@
         loop(nodes, function(node) {
           var vnode = node[CTX].vnode;
           var binding = node[CTX].binding;
-          if (!vnode.context || node.contains(e.target) || (vnode.context.popperElm && vnode.context.popperElm.contains(e.target))) return;
-          if (binding.expression && vnode.context[binding.expression]) {
+          if (!isDef(vnode) || !isDef(vnode.context) || !isDef(e.target) || node.contains(e.target) || node === e.target || (isDef(vnode.context.popperElm) && vnode.context.popperElm.contains(e.target))) return;
+          if (isDef(binding.expression) && isFunction(vnode.context[binding.expression])) {
             vnode.context[binding.expression]();
           } else {
-            binding.value && binding.value();
+            isFunction(binding.value) && binding.value();
           }
         });
       };
@@ -786,14 +785,16 @@
         };
         nodes.push(el);
       },
-      update: function(el, binding) {
+      update: function(el, binding, vnode) {
         el[CTX].binding = binding;
+        el[CTX].vnode = vnode;
       },
       unbind: function(el) {
         var id = el[CTX].id;
         loop(nodes, function(node, i) {
           if (node[CTX].id === id) {
             nodes.splice(i, 1);
+            delete el[CTX];
             return false;
           }
         });
@@ -802,7 +803,7 @@
   };
   var getScrollParent = function(el) {
     var parent = el.parentNode;
-    if (!parent) {
+    if (!isDef(parent)) {
       return el;
     }
     if (parent === document) {
