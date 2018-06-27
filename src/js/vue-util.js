@@ -757,11 +757,10 @@
     }
   };
   var clickoutside = function() {
-    var body = document.body;
-    var nodes = body.__clickoutsideNodes__;
+    var nodes = document.__clickoutsideNodes__;
     var CTX = '__clickoutsideContext__';
     if (!isArray(nodes)) {
-      nodes = body.__clickoutsideNodes__ = [];
+      nodes = document.__clickoutsideNodes__ = [];
       var clickOutSideFn = function(e) {
         loop(nodes, function(node) {
           var vnode = node[CTX].vnode;
@@ -774,7 +773,7 @@
           }
         });
       };
-      on(body, 'click', clickOutSideFn);
+      on(document, 'click', clickOutSideFn);
     }
     return {
       bind: function(el, binding, vnode) {
