@@ -11,7 +11,7 @@
   }
 })(this, function(Vue, SystemInfo, DateUtil) {
   'use strict';
-  var version = '1.49.180626';
+  var version = '1.49.180628';
   var _toString = Object.prototype.toString;
   var _map = Array.prototype.map;
   var _filter = Array.prototype.filter;
@@ -171,7 +171,7 @@
     }
   };
   var ownPropertyLoop = function (obj, fn) {
-    isObject(obj) && loop(Object.keys(obj), fn);
+    isDef(obj) && loop(Object.keys(obj), fn);
   };
   var map = function(arr, fn) {
     if (isArray(arr) && isFunction(fn)) {
