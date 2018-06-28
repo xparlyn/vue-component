@@ -38,6 +38,9 @@
       var dataInstanceChanged = states._data !== data;
       states._data = data;
       states.data = this.sortData((data || []), states);
+      VueUtil.loop(states.data, function(data, index) {
+        data.$index = index;
+      });
       var oldCurrentRow = states.currentRow;
       if (states.data.indexOf(oldCurrentRow) === -1) {
         states.currentRow = null;
@@ -832,22 +835,18 @@
           delta.keeps = delta.remain;
         }
       },
-      scrollFilter: function(slots, delta) {
+      scrollFilter: function(storeData, delta) {
         delta.data = [];
-        if (delta.keeps === 0 || slots.length <= delta.keeps) {
+        if (delta.keeps === 0 || storeData.length <= delta.keeps) {
           delta.marginTop = 0;
           delta.marginBottom = 0;
-          VueUtil.loop(slots, function(slot, index){
-            slot.$index = index;
-          });
-          delta.data = slots;
+          delta.data = storeData;
         } else {
-          delta.total = slots.length;
+          delta.total = storeData.length;
           delta.marginTop = delta.size * delta.start;
           delta.marginBottom = delta.size * (delta.total - delta.keeps - delta.start);
           for (var i = delta.start, j = delta.end; i < j; i++) {
-            slots[i].$index = i;
-            delta.data.push(slots[i]);
+            delta.data.push(storeData[i]);
           }
         }
       },
